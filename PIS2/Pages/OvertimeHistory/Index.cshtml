@@ -1,0 +1,49 @@
+﻿@page
+@model PIS2.Pages.OvertimHistory.IndexModel
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-page="Create">Create New</a>
+</p>
+<table class="table" id="dataTable">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.overtimeHistoryModel[0].overtimeRecordModel)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.overtimeHistoryModel[0].overtimeHistoryDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.overtimeHistoryModel[0].overtimeHistoryAction)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model.overtimeHistoryModel) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.overtimeRecordModel.overtimeRecordID)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.overtimeHistoryDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.overtimeHistoryAction)
+            </td>
+            <td>
+                <a asp-page="./Edit" asp-route-id="@item.overtimeHistoryID">Edit</a> |
+                <a asp-page="./Details" asp-route-id="@item.overtimeHistoryID">Details</a> |
+                <a asp-page="./Delete" asp-route-id="@item.overtimeHistoryID">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

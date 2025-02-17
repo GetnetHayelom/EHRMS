@@ -1,0 +1,67 @@
+﻿@page
+@model PIS2.Pages.PersonEducationLevel.IndexModel
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-page="Create">Create New</a>
+</p>
+<table class="table" id="dataTable">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.personEducationLevelModel[0].personModel)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.personEducationLevelModel[0].educationLevelModel)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.personEducationLevelModel[0].educationLevelDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.personEducationLevelModel[0].educationLevelMark)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.personEducationLevelModel[0].educationLevelInstitutionName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.personEducationLevelModel[0].educationLevelNumber)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model.personEducationLevelModel) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.personModel.personID)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.educationLevelModel.educationLevelName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.educationLevelDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.educationLevelMark)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.educationLevelInstitutionName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.educationLevelNumber)
+            </td>
+            <td>
+                <a asp-page="./Edit" asp-route-id="@item.personEducationLevelID">Edit</a> |
+                <a asp-page="./Details" asp-route-id="@item.personEducationLevelID">Details</a> |
+                <a asp-page="./Delete" asp-route-id="@item.personEducationLevelID">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

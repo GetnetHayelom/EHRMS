@@ -1,0 +1,56 @@
+﻿@page
+@model PIS2.Pages.Shift.IndexModel
+
+@{
+    ViewData["Title"] = "Shifts";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<h1>Shifts</h1>
+
+<p>
+    <a asp-page="Create">Add New Shift</a>
+</p>
+@await Html.PartialAsync("filter")
+<table class="table table-striped table-hover" id="dataTable">
+    <thead>
+        <tr class="bg-dark text-white">
+            <th>
+                Shift Name
+            </th>
+            <th>
+                Shift Starting Time
+            </th>
+            <th>
+               Shift Ending Time
+            </th>
+            <th>
+               Status
+            </th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model.shiftModel) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.shiftName)
+            </td>
+            <td>
+                @DateTime.Today.Add(item.shiftStart).ToString("hh:mm tt")
+            </td>
+            <td>
+                @DateTime.Today.Add(item.shiftEnd).ToString("hh:mm tt")
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.shiftStatus)
+            </td>
+            <td>
+                <a asp-page="./Edit" asp-route-id="@item.shiftID">Edit</a> |
+                <a asp-page="./Details" asp-route-id="@item.shiftID">Details</a> |
+                <a asp-page="./Delete" asp-route-id="@item.shiftID">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

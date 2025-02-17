@@ -1,0 +1,62 @@
+﻿@page
+@model PIS2.Pages.JobGrade.IndexModel
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<h1>Job Grades</h1>
+
+<p>
+    <a asp-page="Create">Add New Job Grade</a>
+</p>
+@await Html.PartialAsync("filter")
+<table class="table table-striped table-hover" id="dataTable">
+    <thead>
+        <tr class="bg-dark text-white">
+            <th>
+                Job Grade Name
+            </th>
+            <th>
+                Description
+            </th>
+            <th>
+                Basic Salary
+            </th>
+            <th>
+                Maximum Salary
+            </th>
+            <th>
+                Status
+            </th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model.jobGradeModel) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.jobGradeName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.jobGradeDescription)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.jobGradeBasicSalary)
+            </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.jobGradeMaxSalary)
+                </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.jobGradeStatus)
+            </td>
+            <td>
+                <a asp-page="./Edit" asp-route-id="@item.jobGradeID">Edit</a> |
+                <a asp-page="./Details" asp-route-id="@item.jobGradeID">Details</a> |
+                <a asp-page="./Delete" asp-route-id="@item.jobGradeID">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

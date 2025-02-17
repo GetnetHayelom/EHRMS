@@ -1,0 +1,50 @@
+﻿@page
+@model PIS2.Pages.LeaveType.IndexModel
+
+@{
+    ViewData["Title"] = "Leave Types";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<h1>Leave Types</h1>
+
+<p>
+    <a asp-page="Create">Add New Leave Types</a>
+</p>
+@await Html.PartialAsync("filter")
+<table class="table table-striped table-hover" id="dataTable">
+    <thead>
+        <tr class="bg-dark text-white">
+            <th>
+                Leave Type Name
+            </th>
+            <th>
+                Leave Type Impact
+            </th>
+            <th>
+                Status
+            </th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model.leaveTypeModel) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.leaveTypeName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.leaveTypeImpact)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.leaveTypeStatus)
+            </td>
+            <td>
+                <a asp-page="./Edit" asp-route-id="@item.leaveTypeID">Edit</a> |
+                <a asp-page="./Details" asp-route-id="@item.leaveTypeID">Details</a> |
+                <a asp-page="./Delete" asp-route-id="@item.leaveTypeID">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

@@ -1,0 +1,48 @@
+﻿@page
+@model PIS2.Pages.EmploymentHistory.IndexModel
+
+<p>
+    <a asp-page="Create">Create New</a>
+</p>
+<table class="table" id="dataTable">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.employmentHistoryModel[0].employmentModel)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.employmentHistoryModel[0].employmentHistoryDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.employmentHistoryModel[0].employmentTypeModel)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.employmentHistoryModel[0].employmentHistoryRemark)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model.employmentHistoryModel) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.employmentModel.givenID)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.employmentHistoryDate.Date)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.employmentTypeModel.employmentTypeName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.employmentHistoryRemark)
+            </td>
+            <td>
+                <a asp-page="./Edit" asp-route-id="@item.employmentHistoryID">Edit</a> |
+                <a asp-page="./Details" asp-route-id="@item.employmentHistoryID">Details</a> |
+                <a asp-page="./Delete" asp-route-id="@item.employmentHistoryID">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

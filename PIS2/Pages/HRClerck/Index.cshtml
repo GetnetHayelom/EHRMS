@@ -1,0 +1,97 @@
+﻿@page
+@model PIS2.Pages.HRClerck.IndexModel
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-page="Create">Create New</a>
+</p>
+<table class="table" id="dataTable">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.persons[0].personFirstName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.persons[0].personFatherName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.persons[0].personLastName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.persons[0].personDoB)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.persons[0].personGender)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.persons[0].personIDType)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.persons[0].personIDNumber)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.persons[0].personPhoneNumber)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.persons[0].personRecordNumber)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.persons[0].addressModel)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.persons[0].personEmailAddress)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model.persons) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.personFirstName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.personFatherName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.personLastName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.personDoB)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.personGender)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.personIDType)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.personIDNumber)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.personPhoneNumber)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.personRecordNumber)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.addressModel.addressRegion)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.personEmailAddress)
+            </td>
+            <td>
+                <a asp-page="./Edit" asp-route-id="@item.personID">Edit</a> |
+                <a asp-page="./Details" asp-route-id="@item.personID">Details</a> |
+                <a asp-page="./Delete" asp-route-id="@item.personID">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

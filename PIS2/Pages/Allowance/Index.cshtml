@@ -1,0 +1,62 @@
+﻿@page
+@model PIS2.Pages.Allowance.IndexModel
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<h1>Allowances</h1>
+
+<p>
+    <a asp-page="Create">Add New Allowance</a>
+</p>
+@await Html.PartialAsync("filter")
+<table class="table table-striped table-hover id="dataTable">
+    <thead>
+        <tr class="bg-dark text-white">
+            <th>
+                Allowance Name
+            </th>
+            <th>
+                Description
+            </th>
+            <th>
+                Amount
+            </th>
+            <th>
+                Taxable
+            </th>
+            <th>
+                Status
+            </th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model.allowanceModel) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.allowanceName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.allowanceDescription)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.allowanceAmount)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.allowanceTaxable)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.allowanceStatus)
+            </td>
+            <td>
+                <a asp-page="./Edit" asp-route-id="@item.allowanceID">Edit</a> |
+                <a asp-page="./Details" asp-route-id="@item.allowanceID">Details</a> |
+                <a asp-page="./Delete" asp-route-id="@item.allowanceID">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

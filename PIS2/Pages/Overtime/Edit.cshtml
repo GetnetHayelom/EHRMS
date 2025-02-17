@@ -1,0 +1,50 @@
+﻿@page
+@model PIS2.Pages.Overtime.EditModel
+
+@{
+    ViewData["Title"] = "Edit Overtime Type";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<h1>Overtime Types</h1>
+<h4>Edit Overtime Type</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="overtimeModel.overtimeID" />
+            <div class="form-group">
+                <label asp-for="overtimeModel.overtimeName" class="control-label">Name</label>
+                <input asp-for="overtimeModel.overtimeName" class="form-control" />
+                <span asp-validation-for="overtimeModel.overtimeName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="overtimeModel.overtimeDescription" class="control-label">Description</label>
+                <input asp-for="overtimeModel.overtimeDescription" class="form-control" />
+                <span asp-validation-for="overtimeModel.overtimeDescription" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="overtimeModel.overtimeStatus" class="control-label">Status</label>
+                <select asp-for="overtimeModel.overtimeStatus" class="form-control" asp-items="Html.GetEnumSelectList<Models.mainStatus>()"></select>
+                <span asp-validation-for="overtimeModel.overtimeStatus" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="overtimeModel.overtimeRate" class="control-label">Rate</label>
+                <input asp-for="overtimeModel.overtimeRate" class="form-control" />
+                <span asp-validation-for="overtimeModel.overtimeRate" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-page="./Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

@@ -1,0 +1,62 @@
+﻿
+@page
+@model PIS2.Pages.WorkSite.IndexModel
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-page="Create">Create New</a>
+</p>
+<table class="table" id="dataTable">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.workSiteModel[0].workSiteName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.workSiteModel[0].workSiteNature)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.workSiteModel[0].workSiteEstablishDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.workSiteModel[0].workSiteStatus)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.workSiteModel[0].addressModel)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model.workSiteModel) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.workSiteName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.workSiteNature)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.workSiteEstablishDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.workSiteStatus)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.addressModel.addressFormatted)
+            </td>
+            <td>
+                <a asp-page="./Edit" asp-route-id="@item.workSiteID">Edit</a> |
+                <a asp-page="./Details" asp-route-id="@item.workSiteID">Details</a> |
+                <a asp-page="./Delete" asp-route-id="@item.workSiteID">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

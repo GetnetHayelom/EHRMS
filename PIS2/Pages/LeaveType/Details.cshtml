@@ -1,0 +1,38 @@
+﻿@page
+@model PIS2.Pages.LeaveType.DetailsModel
+
+@{
+    ViewData["Title"] = "Leave Type Details";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<h1>Leave Types</h1>
+
+<div>
+    <h4>Leave Type Details</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">
+            Leave Type Name:
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.leaveTypeModel.leaveTypeName)
+        </dd>
+        <dt class="col-sm-2">
+            Leave Type Impact:
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.leaveTypeModel.leaveTypeImpact)
+        </dd>
+        <dt class="col-sm-2">
+            Status:
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.leaveTypeModel.leaveTypeStatus)
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-page="./Edit" asp-route-id="@Model.leaveTypeModel.leaveTypeID">Edit</a> |
+    <a asp-page="./Index">Back to List</a>
+</div>

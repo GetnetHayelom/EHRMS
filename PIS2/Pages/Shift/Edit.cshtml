@@ -1,0 +1,52 @@
+﻿@page
+@model PIS2.Pages.Shift.EditModel
+
+@{
+    ViewData["Title"] = "Edit Shift";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<h1>Shifts</h1>
+
+<h4>Edit Shift</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="shiftModel.shiftID" />
+            <div class="form-group">
+                <span class="text-danger">*</span>
+                <label asp-for="shiftModel.shiftName" class="control-label">Shift Name</label>
+                <input asp-for="shiftModel.shiftName" class="form-control" />
+                <span asp-validation-for="shiftModel.shiftName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="shiftModel.shiftStart" class="control-label">Shift Start Time</label>
+                <input type="time" asp-for="shiftModel.shiftStart" class="form-control" />
+                <span asp-validation-for="shiftModel.shiftStart" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="shiftModel.shiftEnd" class="control-label">Shift End Time</label>
+                <input type="time" asp-for="shiftModel.shiftEnd" class="form-control" />
+                <span asp-validation-for="shiftModel.shiftEnd" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="shiftModel.shiftStatus" class="control-label">Status</label>
+                <select asp-for="shiftModel.shiftStatus" class="form-control" asp-items="Html.GetEnumSelectList<Models.mainStatus>()"></select>
+                <span asp-validation-for="shiftModel.shiftStatus" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-page="./Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

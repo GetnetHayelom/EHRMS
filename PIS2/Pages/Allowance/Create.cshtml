@@ -1,0 +1,56 @@
+﻿@page
+@model PIS2.Pages.Allowance.CreateModel
+
+@{
+    ViewData["Title"] = "New Allowance Type";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<h1>AllowanceTypes</h1>
+
+<h4>Add New Allowance Type</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <span class="text-danger">*</span>
+                <label asp-for="allowanceModel.allowanceName" class="control-label">Allowance Name</label>
+                <input asp-for="allowanceModel.allowanceName" class="form-control" />
+                <span asp-validation-for="allowanceModel.allowanceName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="allowanceModel.allowanceDescription" class="control-label">Description</label>
+                <input asp-for="allowanceModel.allowanceDescription" class="form-control" />
+                <span asp-validation-for="allowanceModel.allowanceDescription" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="allowanceModel.allowanceAmount" class="control-label">Amount</label>
+                <input asp-for="allowanceModel.allowanceAmount" class="form-control" />
+                <span asp-validation-for="allowanceModel.allowanceAmount" class="text-danger"></span>
+            </div>
+            <div class="form-group form-check">
+                <label class="form-check-label">Taxable: 
+                    <input class="form-check-input" asp-for="allowanceModel.allowanceTaxable" />
+                </label>
+            </div>
+            <div class="form-group">
+                <label asp-for="allowanceModel.allowanceStatus" class="control-label">Status</label>
+                <select asp-for="allowanceModel.allowanceStatus" class="form-control" asp-items="Html.GetEnumSelectList<Models.mainStatus>()"></select>
+                <span asp-validation-for="allowanceModel.allowanceStatus" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-page="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

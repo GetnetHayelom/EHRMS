@@ -1,0 +1,62 @@
+﻿@page
+@model PIS2.Pages.Leave.DetailsModel
+
+@{
+    ViewData["Title"] = "Details";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<h1>Details</h1>
+
+<div>
+    <h4>leaveModel</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.leaveModel.employmentModel)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.leaveModel.employmentModel.givenID)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.leaveModel.leaveReaquestDate)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.leaveModel.leaveReaquestDate)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.leaveModel.leaveStartDate)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.leaveModel.leaveStartDate)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.leaveModel.leaveEndDate)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.leaveModel.leaveEndDate)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.leaveModel.leaveDays)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.leaveModel.leaveDays)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.leaveModel.leaveTypeModel)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.leaveModel.leaveTypeModel.leaveTypeID)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.leaveModel.leaveStatus)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.leaveModel.leaveStatus)
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-page="./Edit" asp-route-id="@Model.leaveModel.leaveID">Edit</a> |
+    <a asp-page="./Index">Back to List</a>
+</div>

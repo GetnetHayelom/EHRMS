@@ -1,0 +1,92 @@
+﻿@page
+@model PIS2.Pages.EmploymentType.IndexModel
+
+@{
+    ViewData["Title"] = "Employment Types";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<h1>Employment Types</h1>
+
+<p>
+    <a asp-page="Create" class="btn-primary rounded-2">Add New Employment Type</a>
+</p>
+@await Html.PartialAsync("filter")
+<table class="table table-striped table-hover" id="dataTable">
+    <thead>
+        <tr class="bg-dark text-white">
+            <th>
+                Type Name
+            </th>
+            <th>
+                Description
+            </th>
+            <th>
+                Leave
+            </th>
+            <th>
+                Experience
+            </th>
+            <th>
+                Salary
+            </th>
+            <th>
+                Loyalty
+            </th>
+            <th>
+                Severance
+            </th>
+            <th>
+                Status
+            </th>
+            <th>
+                Leave Rate
+            </th>
+            <th>
+                Base Leave
+            </th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model.employmentTypeModel) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.employmentTypeName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.employmentTypeDescription)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.isLeaveCount)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.isExprienceCount)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.isSalaryAllowed)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.isLoyalityAllowed)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.isSeveranceAllowed)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.employmentTypeStatus)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.annualAccrualRate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.employmentBaseLeave)
+            </td>
+            <td>
+                <a asp-page="./Edit" asp-route-id="@item.employmentTypeID">Edit</a> |
+                <a asp-page="./Details" asp-route-id="@item.employmentTypeID">Details</a> |
+                <a asp-page="./Delete" asp-route-id="@item.employmentTypeID">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

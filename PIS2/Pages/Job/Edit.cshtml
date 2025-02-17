@@ -1,0 +1,61 @@
+﻿@page
+@model PIS2.Pages.Job.EditModel
+
+@{
+    ViewData["Title"] = "Edit Job";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<h1>Jobs</h1>
+
+<h4>Edit Job</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="jobModel.jobID" />
+            <div class="form-group">
+                <label asp-for="jobModel.jobTitle" class="control-label">Job Title</label>
+                <input asp-for="jobModel.jobTitle" class="form-control" />
+                <span asp-validation-for="jobModel.jobTitle" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="jobModel.jobGradeID" class="control-label">Job Grade</label>
+                <select asp-for="jobModel.jobGradeID" class="form-control" asp-items="ViewBag.jobGradeID"></select>
+                <span asp-validation-for="jobModel.jobGradeID" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="jobModel.jobCategoryID" class="control-label">Job Category</label>
+                <select asp-for="jobModel.jobCategoryID" class="form-control" asp-items="ViewBag.jobCategoryID"></select>
+                <span asp-validation-for="jobModel.jobCategoryID" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="jobModel.jobClassID" class="control-label">Job Class</label>
+                <select asp-for="jobModel.jobClassID" class="form-control" asp-items="ViewBag.jobClassID"></select>
+                <span asp-validation-for="jobModel.jobClassID" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="jobModel.jobDescription" class="control-label">Description</label>
+                <input asp-for="jobModel.jobDescription" class="form-control" />
+                <span asp-validation-for="jobModel.jobDescription" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="jobModel.jobStatus" class="control-label">Status</label>
+                <select asp-for="jobModel.jobStatus" class="form-control" asp-items="Html.GetEnumSelectList<Models.mainStatus>()"></select>
+                <span asp-validation-for="jobModel.jobStatus" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-page="./Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

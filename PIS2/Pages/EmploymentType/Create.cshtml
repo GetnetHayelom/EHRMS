@@ -1,0 +1,128 @@
+﻿@page
+@model PIS2.Pages.EmploymentType.CreateModel
+
+@{
+    ViewData["Title"] = "New Employment Type";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<h1>Employment Types</h1>
+
+<h4>New Employment Type</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form method="post" class="d-flex flex-wrap">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group m-4">
+                <label asp-for="employmentTypeModel.employmentTypeName" class="control-label">Type Name</label>
+                <input asp-for="employmentTypeModel.employmentTypeName" class="form-control" />
+                <span asp-validation-for="employmentTypeModel.employmentTypeName" class="text-danger"></span>
+            </div>
+            <div class="form-group m-4">
+                <label asp-for="employmentTypeModel.employmentTypeDescription" class="control-label">Description</label>
+                <input asp-for="employmentTypeModel.employmentTypeDescription" class="form-control" />
+                <span asp-validation-for="employmentTypeModel.employmentTypeDescription" class="text-danger"></span>
+            </div>
+      
+            <div class="form-group m-4">
+                <label asp-for="employmentTypeModel.employmentTypeStatus" class="control-label">Status</label>
+                <select asp-for="employmentTypeModel.employmentTypeStatus" class="form-control" asp-items="Html.GetEnumSelectList<Models.mainStatus>()">
+                <option>Select Status..</option></select>
+                <span asp-validation-for="employmentTypeModel.employmentTypeStatus" class="text-danger"></span>
+            </div>
+       
+            <div class="form-group m-4">
+                <label asp-for="employmentTypeModel.employmentMinAge" class="control-label">Minimum Age</label>
+                <input asp-for="employmentTypeModel.employmentMinAge" class="form-control" />
+                <span asp-validation-for="employmentTypeModel.employmentMinAge" class="text-danger"></span>
+            </div>
+            <div class="form-group m-4">
+                <label asp-for="employmentTypeModel.employmentMaxAge" class="control-label">Maximum Age</label>
+                <input asp-for="employmentTypeModel.employmentMaxAge" class="form-control" />
+                <span asp-validation-for="employmentTypeModel.employmentMaxAge" class="text-danger"></span>
+            </div>
+            <div class="form-check-inline d-flex flex-wrap">
+                <div class="form-group form-check m-4">
+                    <label class="form-check-label">
+                        Leave<input class="form-check-input" asp-for="employmentTypeModel.isLeaveCount" />
+                    </label>
+                </div>
+                <div class="form-group form-check m-4">
+                    <label class="form-check-label">
+                        Career<input class="form-check-input" asp-for="employmentTypeModel.isCarrierAllowed" />
+                    </label>
+                </div>
+                <div class="form-group form-check m-4">
+                    <label class="form-check-label">
+                        Step<input class="form-check-input" asp-for="employmentTypeModel.isStepAllowed" />
+                    </label>
+                </div>
+                <div class="form-group form-check m-4">
+                    <label class="form-check-label">
+                        Experience<input class="form-check-input" asp-for="employmentTypeModel.isExprienceCount" />
+                    </label>
+                </div>
+                <div class="form-group form-check m-4">
+                    <label class="form-check-label">
+                        Salary<input class="form-check-input" asp-for="employmentTypeModel.isSalaryAllowed" />
+                    </label>
+                </div>
+                <div class="form-group form-check m-4">
+                    <label class="form-check-label">
+                        Loaylty<input class="form-check-input" asp-for="employmentTypeModel.isLoyalityAllowed" />
+                    </label>
+                </div>
+                <div class="form-group form-check m-4">
+                    <label class="form-check-label">
+                        Severance<input class="form-check-input" asp-for="employmentTypeModel.isSeveranceAllowed" />
+                    </label>
+                </div>
+            </div>
+            <div class="form-group m-4" id="txtIncrement">
+                <label asp-for="employmentTypeModel.annualAccrualRate" class="control-label">Leave Increment Rate</label>
+                <input asp-for="employmentTypeModel.annualAccrualRate" class="form-control" />
+                <span asp-validation-for="employmentTypeModel.annualAccrualRate" class="text-danger"></span>
+            </div>
+            <div class="form-group m-4" id="txtBaseLeave">
+                <label asp-for="employmentTypeModel.employmentBaseLeave" class="control-label">Base Leave</label>
+                <input asp-for="employmentTypeModel.employmentBaseLeave" class="form-control" />
+                <span asp-validation-for="employmentTypeModel.employmentBaseLeave" class="text-danger"></span>
+            </div>
+            <div class="form-group m-4" id="txtMaxLeave">
+                <label asp-for="employmentTypeModel.maxLeaveIncrement" class="control-label">Maximum Leave Increment</label>
+                <input asp-for="employmentTypeModel.maxLeaveIncrement" class="form-control" />
+                <span asp-validation-for="employmentTypeModel.maxLeaveIncrement" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-page="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        let checkbox = document.getElementById("chkLeave");
+        let increment = document.getElementById("txtIncrement");
+        let baseLeave = document.getElementById("txtBaseLeave");
+        let maxLeave = document.getElementById("txtMaxLeave");
+        increment.style.display = this.checked ? "block" : "none";
+        baseLeave.style.display = this.checked ? "block" : "none";
+        maxLeave.style.display = this.checked ? "block" : "none";
+      
+        checkbox.addEventListener("change", function () {
+            increment.style.display = this.checked ? "block" : "none";
+            baseLeave.style.display = this.checked ? "block" : "none";
+            maxLeave.style.display = this.checked ? "block" : "none";
+            
+        });
+    });
+</script>

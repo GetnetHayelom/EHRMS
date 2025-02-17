@@ -1,0 +1,64 @@
+﻿@page
+@model PIS2.Pages.Department.EditModel
+
+@{
+    ViewData["Title"] = "Edit Department";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<h1>Departments</h1>
+
+<h4>Edit Department</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="departmentModel.departmentID" />
+            <div class="form-group">
+                <label asp-for="departmentModel.departmentShort" class="control-label">Department Alias</label>
+                <input asp-for="departmentModel.departmentShort" class="form-control" />
+                <span asp-validation-for="departmentModel.departmentShort" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <span class="text-danger">*</span>
+                <label asp-for="departmentModel.departmentName" class="control-label">Department Name</label>
+                <input asp-for="departmentModel.departmentName" class="form-control" />
+                <span asp-validation-for="departmentModel.departmentName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="departmentModel.departmentStatus" class="control-label">Status</label>
+                <select asp-for="departmentModel.departmentStatus" class="form-control" asp-items="Html.GetEnumSelectList<Models.mainStatus>()"></select>
+                <span asp-validation-for="departmentModel.departmentStatus" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="departmentModel.subAccountID" class="control-label">Sub-Account</label>
+                <select asp-for="departmentModel.subAccountID" class="form-control" asp-items="ViewBag.subAccountID"></select>
+                <span asp-validation-for="departmentModel.subAccountID" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="departmentModel.companyID" class="control-label">Company</label>
+                <select asp-for="departmentModel.companyID" class="form-control" asp-items="ViewBag.companyID"></select>
+                <span asp-validation-for="departmentModel.companyID" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="departmentModel.employmentID" class="control-label">Manager</label>
+                <select asp-for="departmentModel.employmentID" asp-items="@(ViewData["employmentID"] as SelectList)" class="form-control">
+                    <option value="">-- Select Manager --</option>
+                </select>
+                <span asp-validation-for="departmentModel.employmentID" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-page="./Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

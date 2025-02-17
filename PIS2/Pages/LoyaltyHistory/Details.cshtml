@@ -1,0 +1,44 @@
+﻿@page
+@model PIS2.Pages.LoyaltyHistory.DetailsModel
+
+@{
+    ViewData["Title"] = "Details";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<h1>Details</h1>
+
+<div>
+    <h4>loyaltyHistoryModel</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.loyaltyHistoryModel.employmentModel)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.loyaltyHistoryModel.employmentModel.givenID)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.loyaltyHistoryModel.loyaltyModel)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.loyaltyHistoryModel.loyaltyModel.loyaltyName)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.loyaltyHistoryModel.loyaltyAmount)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.loyaltyHistoryModel.loyaltyAmount)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.loyaltyHistoryModel.loyaltyHistoryStatus)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.loyaltyHistoryModel.loyaltyHistoryStatus)
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-page="./Edit" asp-route-id="@Model.loyaltyHistoryModel.loyaltyHistoryID">Edit</a> |
+    <a asp-page="./Index">Back to List</a>
+</div>

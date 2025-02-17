@@ -1,0 +1,55 @@
+﻿@page
+@model PIS2.Pages.Loyalty.IndexModel
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-page="Create">Create New</a>
+</p>
+<table class="table" id="dataTable">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.loyaltyModel[0].loyaltyName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.loyaltyModel[0].loyaltyAmount)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.loyaltyModel[0].loyaltyCounter)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.loyaltyModel[0].loyaltyStatus)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model.loyaltyModel) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.loyaltyName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.loyaltyAmount)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.loyaltyCounter)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.loyaltyStatus)
+            </td>
+            <td>
+                <a asp-page="./Edit" asp-route-id="@item.loyaltyID">Edit</a> |
+                <a asp-page="./Details" asp-route-id="@item.loyaltyID">Details</a> |
+                <a asp-page="./Delete" asp-route-id="@item.loyaltyID">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

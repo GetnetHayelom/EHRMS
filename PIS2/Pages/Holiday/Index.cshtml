@@ -1,0 +1,68 @@
+﻿@page
+@model PIS2.Pages.Holiday.IndexModel
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<h1>Holidays</h1>
+
+<p>
+    <a asp-page="Create">Add New Holiday</a>
+</p>
+@await Html.PartialAsync("filter")
+<table class="table table-striped table-hover" id="dataTable">
+    <thead>
+        <tr class="bg-dark text-white">
+            <th>
+                Holiday Name
+            </th>
+            <th>
+               Type
+            </th>
+            <th>
+                Start
+            </th>
+            <th>
+                End
+            </th>
+            <th>
+                Cycle
+            </th>
+            <th>
+                Staus
+            </th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model.holidayModel) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.holidayName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.holidayType)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.holidayStart)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.holidayEnd)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.holidayCycle)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.holidayStatus)
+            </td>
+            <td>
+                <a asp-page="./Edit" asp-route-id="@item.holidayID">Edit</a> |
+                <a asp-page="./Details" asp-route-id="@item.holidayID">Details</a> |
+                <a asp-page="./Delete" asp-route-id="@item.holidayID">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

@@ -1,0 +1,55 @@
+﻿@page
+@model PIS2.Pages.JobGrade.CreateModel
+
+@{
+    ViewData["Title"] = "Create";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<h1>Job Grade</h1>
+
+<h4>Add New Job Grade</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form method="post">
+            <div asp-validation-summary="All" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="jobGradeModel.jobGradeName" class="control-label">Job Grade Name</label>
+                <input asp-for="jobGradeModel.jobGradeName" class="form-control" />
+                <span asp-validation-for="jobGradeModel.jobGradeName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="jobGradeModel.jobGradeDescription" class="control-label">Decription</label>
+                <input asp-for="jobGradeModel.jobGradeDescription" class="form-control" />
+                <span asp-validation-for="jobGradeModel.jobGradeDescription" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="jobGradeModel.jobGradeBasicSalary" class="control-label">Basic Salary</label>
+                <input asp-for="jobGradeModel.jobGradeBasicSalary" class="form-control" />
+                <span asp-validation-for="jobGradeModel.jobGradeBasicSalary" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="jobGradeModel.jobGradeMaxSalary" class="control-label">Maximum Salary</label>
+                <input asp-for="jobGradeModel.jobGradeMaxSalary" class="form-control" />
+                <span asp-validation-for="jobGradeModel.jobGradeMaxSalary" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="jobGradeModel.jobGradeStatus" class="control-label">Status</label>
+                <select asp-for="jobGradeModel.jobGradeStatus" class="form-control" asp-items="Html.GetEnumSelectList<Models.mainStatus>()"></select>
+                <span asp-validation-for="jobGradeModel.jobGradeStatus" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-page="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

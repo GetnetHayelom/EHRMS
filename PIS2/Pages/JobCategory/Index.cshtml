@@ -1,0 +1,50 @@
+﻿@page
+@model PIS2.Pages.JobCategory.IndexModel
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<h1>Job Categories</h1>
+
+<p>
+    <a asp-page="Create">Add New Job Category</a>
+</p>
+@await Html.PartialAsync("filter")
+<table class="table table-striped table-hover" id="dataTable">
+    <thead>
+        <tr class="bg-dark text-white">
+            <th>
+                Category Name
+            </th>
+            <th>
+                Description
+            </th>
+            <th>
+                Status
+            </th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model.jobCategoryModel) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.jobCategoryName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.jobCategoryDescription)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.jobCategoryStatus)
+            </td>
+            <td>
+                <a asp-page="./Edit" asp-route-id="@item.jobCategoryID">Edit</a> |
+                <a asp-page="./Details" asp-route-id="@item.jobCategoryID">Details</a> |
+                <a asp-page="./Delete" asp-route-id="@item.jobCategoryID">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

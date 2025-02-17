@@ -1,0 +1,56 @@
+﻿@page
+@model PIS2.Pages.Department.DetailsModel
+
+@{
+    ViewData["Title"] = "Department Details";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<h1>Department</h1>
+
+<div>
+    <h4>Department Details</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">
+            Department Alias:
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.departmentModel.departmentShort)
+        </dd>
+        <dt class="col-sm-2">
+            Department Name:
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.departmentModel.departmentName)
+        </dd>
+        <dt class="col-sm-2">
+            Status:
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.departmentModel.departmentStatus)
+        </dd>
+        <dt class="col-sm-2">
+            Sub-Account:
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.departmentModel.subAccountModel.subAccountDescription)
+        </dd>
+        <dt class="col-sm-2">
+            Company:
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.departmentModel.companyModel.companyName)
+        </dd>
+        <dt class="col-sm-2">
+            Manager:
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.departmentModel.employmentID)
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-page="./Edit" asp-route-id="@Model.departmentModel.departmentID">Edit</a> |
+    <a asp-page="./Index">Back to List</a>
+</div>

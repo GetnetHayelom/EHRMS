@@ -1,0 +1,51 @@
+﻿@page
+@model PIS2.Pages.Account.CreateModel
+
+@{
+    ViewData["Title"] = "Create";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<h1>Accounts</h1>
+
+<h4>Add New Account</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <span class="text-danger">*</span>
+                <label asp-for="accountModel.accountNumber" class="control-label">Account Number</label>
+                <input asp-for="accountModel.accountNumber" class="form-control" />
+                <span asp-validation-for="accountModel.accountNumber" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="accountModel.accountName" class="control-label">Account Name</label>
+                <input asp-for="accountModel.accountName" class="form-control" />
+                <span asp-validation-for="accountModel.accountName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="accountModel.accountDescription" class="control-label">Description</label>
+                <input asp-for="accountModel.accountDescription" class="form-control" />
+                <span asp-validation-for="accountModel.accountDescription" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="accountModel.accountStatus" class="control-label">Status</label>
+                <select asp-for="accountModel.accountStatus" class="form-control" asp-items="Html.GetEnumSelectList<Models.mainStatus>()"></select>
+                <span asp-validation-for="accountModel.accountStatus" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-page="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

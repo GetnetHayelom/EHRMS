@@ -1,0 +1,87 @@
+﻿@page
+@model PIS2.Pages.Employment.CreateModel
+
+@{
+    ViewData["Title"] = "Create";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+    var successMessage = TempData["SuccessMessage"] as string;
+}
+
+<h1>Create</h1>
+
+<h4>employmentModel</h4>
+<hr />
+@if (!string.IsNullOrEmpty(successMessage))
+{
+<div class="alert alert-success" role="alert">
+    @successMessage
+</div>
+}
+<div class="row">
+    <div class="col-md-4">
+        <form method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="employmentModel.personID" class="control-label">Full Name</label>
+                <select asp-for="employmentModel.personID" class="form-control" asp-items="ViewBag.personID"></select>
+            </div>
+            <div class="form-group">
+                <span class="text-danger">*</span>
+                <label asp-for="employmentModel.givenID" class="control-label">Employment ID</label>
+                <input asp-for="employmentModel.givenID" class="form-control" />
+                <span asp-validation-for="employmentModel.givenID" class="text-danger"></span>
+            </div>
+            
+            <div class="form-group">
+                <label asp-for="employmentModel.employmentTypeID" class="control-label">Employment Type</label>
+                <select asp-for="employmentModel.employmentTypeID" class="form-control" asp-items="ViewBag.employmentTypeID"></select>
+            </div>
+            <div class="form-group">
+                <span class="text-danger">*</span>
+                <label asp-for="employmentModel.employmentDate" class="control-label">Employment Date</label>
+                <input asp-for="employmentModel.employmentDate" class="form-control" type="date" />
+                <span asp-validation-for="employmentModel.employmentDate" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="employmentModel.employmentStatus" class="control-label">Employment Status</label>
+                <select asp-for="employmentModel.employmentStatus" class="form-control" asp-items="Html.GetEnumSelectList<Models.mainStatus>()"></select>
+                <span asp-validation-for="employmentModel.employmentStatus" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="employmentModel.employmentReference" class="control-label">Employment Reference</label>
+                <input asp-for="employmentModel.employmentReference" class="form-control" />
+                <span asp-validation-for="employmentModel.employmentReference" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="employmentModel.workingHoursPerWeek" class="control-label">Work Hours</label>
+                <input asp-for="employmentModel.workingHoursPerWeek" class="form-control" />
+                <span asp-validation-for="employmentModel.workingHoursPerWeek" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+            <div asp-asp-validation-summary="All" class="text-danger"></div>
+            @if (TempData["successMessage"] != null)
+            {
+                var errors = TempData["successMessage"] as List<string>;
+                <div class="alert alert-danger">
+                    <ul>
+                        @foreach (var error in errors)
+                        {
+                            <li>@error</li>
+                        }
+                    </ul>
+                </div>
+            }
+
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-page="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

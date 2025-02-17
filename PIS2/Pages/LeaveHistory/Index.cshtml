@@ -1,0 +1,49 @@
+﻿@page
+@model PIS2.Pages.LeaveHistory.IndexModel
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-page="Create">Create New</a>
+</p>
+<table class="table" id="dataTable">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.leaveHistoryModel[0].leaveModel)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.leaveHistoryModel[0].leaveHistoryAction)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.leaveHistoryModel[0].leaveHistoryDate)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model.leaveHistoryModel) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.leaveModel.leaveID)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.leaveHistoryAction)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.leaveHistoryDate)
+            </td>
+            <td>
+                <a asp-page="./Edit" asp-route-id="@item.leaveHistoryID">Edit</a> |
+                <a asp-page="./Details" asp-route-id="@item.leaveHistoryID">Details</a> |
+                <a asp-page="./Delete" asp-route-id="@item.leaveHistoryID">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

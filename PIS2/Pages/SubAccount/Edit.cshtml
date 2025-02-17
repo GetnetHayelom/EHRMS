@@ -1,0 +1,55 @@
+﻿@page
+@model PIS2.Pages.SubAccount.EditModel
+
+@{
+    ViewData["Title"] = "Edit";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<h1>Sub-Accounts</h1>
+
+<h4>Edit Sub-Account</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="subAccountModel.subAccountID" />
+            <div class="form-group">
+                <span class="text-danger">*</span>
+                <label asp-for="subAccountModel.accountID" class="control-label">Master Account</label>
+                <select asp-for="subAccountModel.accountID" class="form-control" asp-items="ViewBag.accountID"></select>
+                <span asp-validation-for="subAccountModel.accountID" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <span class="text-danger">*</span>
+                <label asp-for="subAccountModel.subAccountName" class="control-label">Sub-Account Name</label>
+                <input asp-for="subAccountModel.subAccountName" class="form-control" />
+                <span asp-validation-for="subAccountModel.subAccountName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <span class="text-danger">*</span>
+                <label asp-for="subAccountModel.subAccountDescription" class="control-label">Description</label>
+                <input asp-for="subAccountModel.subAccountDescription" class="form-control" />
+                <span asp-validation-for="subAccountModel.subAccountDescription" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <span class="text-danger">*</span>
+                <label asp-for="subAccountModel.subAccountStatus" class="control-label">Status</label>
+                <select asp-for="subAccountModel.subAccountStatus" class="form-control" asp-items="Html.GetEnumSelectList<Models.mainStatus>()"></select>
+                <span asp-validation-for="subAccountModel.subAccountStatus" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-page="./Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

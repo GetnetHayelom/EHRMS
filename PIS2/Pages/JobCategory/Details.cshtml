@@ -1,0 +1,37 @@
+﻿@page
+@model PIS2.Pages.JobCategory.DetailsModel
+
+@{
+    ViewData["Title"] = "Details";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<h1>Jab Categoty Details</h1>
+
+<div>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">
+            Category Name:
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.jobCategoryModel.jobCategoryName)
+        </dd>
+        <dt class="col-sm-2">
+            Description
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.jobCategoryModel.jobCategoryDescription)
+        </dd>
+        <dt class="col-sm-2">
+            Status
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.jobCategoryModel.jobCategoryStatus)
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-page="./Edit" asp-route-id="@Model.jobCategoryModel.jobCategoryID">Edit</a> |
+    <a asp-page="./Index">Back to List</a>
+</div>

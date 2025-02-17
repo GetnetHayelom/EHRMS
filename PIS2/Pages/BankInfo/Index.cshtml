@@ -1,0 +1,62 @@
+﻿@page
+@model PIS2.Pages.BankInfo.IndexModel
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-page="Create">Create New</a>
+    @await Html.PartialAsync("filter")
+</p>
+<table class="table" id="dataTable">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.bankInfoModel[0].personModel)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.bankInfoModel[0].bankName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.bankInfoModel[0].bankAccountNumber)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.bankInfoModel[0].bankBranch)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.bankInfoModel[0].banikInfoStatus)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model.bankInfoModel) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.personModel.personID)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.bankName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.bankAccountNumber)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.bankBranch)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.banikInfoStatus)
+            </td>
+            <td>
+                <a asp-page="./Edit" asp-route-id="@item.bankInfoID">Edit</a> |
+                <a asp-page="./Details" asp-route-id="@item.bankInfoID">Details</a> |
+                <a asp-page="./Delete" asp-route-id="@item.bankInfoID">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

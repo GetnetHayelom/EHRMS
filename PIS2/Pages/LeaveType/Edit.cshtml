@@ -1,0 +1,46 @@
+﻿@page
+@model PIS2.Pages.LeaveType.EditModel
+
+@{
+    ViewData["Title"] = "Edit Leave type";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<h1>Leave Types</h1>
+
+<h4>Edit Leave Type</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="leaveTypeModel.leaveTypeID" />
+            <div class="form-group">
+                <label asp-for="leaveTypeModel.leaveTypeName" class="control-label">Name</label>
+                <input asp-for="leaveTypeModel.leaveTypeName" class="form-control" />
+                <span asp-validation-for="leaveTypeModel.leaveTypeName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="leaveTypeModel.leaveTypeImpact" class="control-label">Impact</label>
+                <select asp-for="leaveTypeModel.leaveTypeImpact" class="form-control" asp-items="Html.GetEnumSelectList<Models.leaveTypeImpact>()"></select>
+                <span asp-validation-for="leaveTypeModel.leaveTypeImpact" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="leaveTypeModel.leaveTypeStatus" class="control-label">Status</label>
+                <select asp-for="leaveTypeModel.leaveTypeStatus" class="form-control" asp-items="Html.GetEnumSelectList<Models.mainStatus>()"></select>
+                <span asp-validation-for="leaveTypeModel.leaveTypeStatus" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-page="./Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

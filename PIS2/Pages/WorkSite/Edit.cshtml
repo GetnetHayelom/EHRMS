@@ -1,0 +1,91 @@
+﻿@page
+@model PIS2.Pages.WorkSite.EditModel
+
+@{
+    ViewData["Title"] = "Edit";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<h1>Edit</h1>
+
+<h4>workSiteModel</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="workSiteModel.workSiteID" />
+            <div class="form-group">
+                <label asp-for="workSiteModel.workSiteName" class="control-label">Site Name</label>
+                <input asp-for="workSiteModel.workSiteName" class="form-control" />
+                <span asp-validation-for="workSiteModel.workSiteName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="workSiteModel.workSiteNature" class="control-label">Site Type</label>
+                <input asp-for="workSiteModel.workSiteNature" class="form-control" />
+                <span asp-validation-for="workSiteModel.workSiteNature" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="workSiteModel.workSiteEstablishDate" class="control-label">Date</label>
+                <input asp-for="workSiteModel.workSiteEstablishDate" class="form-control" type="date"/>
+                <span asp-validation-for="workSiteModel.workSiteEstablishDate" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="workSiteModel.workSiteStatus" class="control-label">Status</label>
+                <select asp-for="workSiteModel.workSiteStatus" class="form-control" asp-items="Html.GetEnumSelectList<Models.mainStatus>()"></select>
+                <span asp-validation-for="workSiteModel.workSiteStatus" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="workSiteModel.addressID" class="control-label">Address</label>
+                <select asp-for="workSiteModel.addressID" class="form-control" asp-items="ViewBag.addressID"></select>
+                <span asp-validation-for="workSiteModel.addressID" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+    <div class="md-4">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>
+                        @Html.DisplayNameFor(model => model.workSiteHistoryModel[0].workSiteModel)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.workSiteHistoryModel[0].workSiteHistoryAction)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.workSiteHistoryModel[0].workSiteHistoryDate)
+                    </th>
+                   
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.workSiteModel.WorkSiteHistories)
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.workSiteModel.workSiteName)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.workSiteHistoryAction)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.workSiteHistoryDate)
+                        </td>
+                        
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div>
+    <a asp-page="./Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

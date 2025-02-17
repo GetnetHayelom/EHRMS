@@ -1,0 +1,60 @@
+﻿@page
+@model PIS2.Pages.Company.EditModel
+
+@{
+    ViewData["Title"] = "Edit Company";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<h1>Companies</h1>
+
+<h4>Edit Company</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="companyModel.companyID" />
+            <div class="form-group">
+                <span class="text-danger">*</span>
+                <label asp-for="companyModel.companyName" class="control-label">Company Name</label>
+                <input asp-for="companyModel.companyName" class="form-control" />
+                <span asp-validation-for="companyModel.companyName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="companyModel.companyAlias" class="control-label">Aompany Alias</label>
+                <input asp-for="companyModel.companyAlias" class="form-control" />
+                <span asp-validation-for="companyModel.companyAlias" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="companyModel.employmentID" class="control-label">Manager</label>
+                <select asp-for="companyModel.employmentID" asp-items="@(ViewData["employmentID"] as SelectList)" class="form-control">
+                    <option value="">-- Select Manager --</option>
+                </select>
+
+                <span asp-validation-for="companyModel.employmentID" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="companyModel.addressID" class="control-label">Address</label>
+                <select asp-for="companyModel.addressID" class="form-control" asp-items="ViewBag.addressID"></select>
+                <span asp-validation-for="companyModel.addressID" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="companyModel.companyStatus" class="control-label">Status</label>
+                <select asp-for="companyModel.companyStatus" class="form-control" asp-items="Html.GetEnumSelectList<Models.mainStatus>()"></select>
+                <span asp-validation-for="companyModel.companyStatus" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-page="./Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

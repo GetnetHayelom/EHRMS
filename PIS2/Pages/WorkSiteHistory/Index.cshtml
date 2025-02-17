@@ -1,0 +1,42 @@
+﻿@page
+@model PIS2.Pages.WorkSiteHistory.IndexModel
+
+<p>
+    <a asp-page="Create">Create New</a>
+</p>
+<table class="table" id="dataTable">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.workSiteHistoryModel[0].workSiteModel)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.workSiteHistoryModel[0].workSiteHistoryAction)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.workSiteHistoryModel[0].workSiteHistoryDate)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model.workSiteHistoryModel) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.workSiteModel.workSiteName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.workSiteHistoryAction)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.workSiteHistoryDate)
+            </td>
+            <td>
+                <a asp-page="./Edit" asp-route-id="@item.workSiteHistoryID">Edit</a> |
+                <a asp-page="./Details" asp-route-id="@item.workSiteHistoryID">Details</a> |
+                <a asp-page="./Delete" asp-route-id="@item.workSiteHistoryID">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

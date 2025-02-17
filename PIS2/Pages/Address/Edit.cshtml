@@ -1,0 +1,67 @@
+﻿@page
+@model PIS2.Pages.Address.EditModel
+
+@{
+    ViewData["Title"] = "Edit";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<h1>Update Address</h1>
+
+<h4>@Model.addressModel.addressFormatted</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="addressModel.addressID" />
+            <div class="form-group">
+                <span class="text-danger">*</span>
+                <label asp-for="addressModel.addressCountry" class="control-label">Country</label>
+                <select asp-for="addressModel.addressCountry" class="form-control" asp-items="Html.GetEnumSelectList<Models.Country>()"></select>
+                <span asp-validation-for="addressModel.addressCountry" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <span class="text-danger">*</span>
+                <label asp-for="addressModel.addressRegion" class="control-label">Region</label>
+                <input asp-for="addressModel.addressRegion" class="form-control" />
+                <span asp-validation-for="addressModel.addressRegion" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <span class="text-danger">*</span>
+                <label asp-for="addressModel.addressZone" class="control-label">Zone</label>
+                <input asp-for="addressModel.addressZone" class="form-control" />
+                <span asp-validation-for="addressModel.addressZone" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <span class="text-danger">*</span>
+                <label asp-for="addressModel.addressWoreda" class="control-label">Woreda</label>
+                <input asp-for="addressModel.addressWoreda" class="form-control" />
+                <span asp-validation-for="addressModel.addressWoreda" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <span class="text-danger">*</span>
+                <label asp-for="addressModel.addressTabya" class="control-label">Tabiya</label>
+                <input asp-for="addressModel.addressTabya" class="form-control" />
+                <span asp-validation-for="addressModel.addressTabya" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <span class="text-danger">*</span>
+                <label asp-for="addressModel.addressStatus" class="control-label">Status</label>
+                <select asp-for="addressModel.addressStatus" class="form-control" asp-items="Html.GetEnumSelectList<Models.mainStatus>()"></select>
+                <span asp-validation-for="addressModel.addressStatus" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-page="./Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

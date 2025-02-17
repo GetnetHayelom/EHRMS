@@ -1,0 +1,68 @@
+﻿@page
+@model PIS2.Pages.Address.IndexModel
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<h1>Addresses</h1>
+
+<p>
+    <a asp-page="Create">Add New Address</a>
+</p>
+@await Html.PartialAsync("filter")
+<table class="table table-stripped table-hover" id="dataTable">
+    <thead>
+        <tr class="bg-dark text-white">
+            <th>
+                Country
+            </th>
+            <th>
+                Region
+            </th>
+            <th>
+                zone
+            </th>
+            <th>
+                Woreda
+            </th>
+            <th>
+                Tabiya
+            </th>
+            <th>
+                Status
+            </th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model.addressModel) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.addressCountry)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.addressRegion)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.addressZone)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.addressWoreda)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.addressTabya)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.addressStatus)
+            </td>
+            <td>
+                <a asp-page="./Edit" asp-route-id="@item.addressID">Edit</a> |
+                <a asp-page="./Details" asp-route-id="@item.addressID">Details</a> |
+                <a asp-page="./Delete" asp-route-id="@item.addressID">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

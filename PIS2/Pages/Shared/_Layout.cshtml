@@ -1,0 +1,130 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - PIS2</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/PIS2.styles.css" asp-append-version="true" />
+   
+</head>
+<body>
+    <header>
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-dark border-bottom box-shadow mb-3">
+            <div class="container">
+                <a class="navbar-brand text-white" asp-area="" asp-page="/Index">PIS2</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                        aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                    <ul class="navbar-nav flex-grow-1">
+                        <li class="nav-item ">
+                            <a class="nav-link text-white" asp-area="" asp-page="/Index" style="">Home</a>
+                        </li>
+                        @if (User.IsInRole("mie\\PMS_HRMANAGER"))
+                        {
+                            <li class="nav-item dropdown">
+                                <a class="nav-link text-white dropdown-toggle" asp-area="" role="button" data-bs-toggle="dropdown">Primary Setup</a>
+                                <div class="dropdown-menu bg-secondary" aria-labelledby="navbarDropdownMenuLink">
+                                    <a class="dropdown-item text-white" asp-page="/Address/Index">Addresses</a>
+                                    <a class="dropdown-item" asp-page="/EducationLevel/Index">Education Levels</a>
+                                    <a class="dropdown-item" asp-page="/Holiday/Index">Holidays</a>
+                                    <a class="dropdown-item" asp-page="/Overtime/Index">Overtime</a>
+                                    <a class="dropdown-item" asp-page="/JobCategory/Index">Job Categories</a>
+                                    <a class="dropdown-item" asp-page="/JobClass/Index">Job Classes</a>
+                                    <a class="dropdown-item" asp-page="/JobGrade/Index">Job Grades</a>
+                                    <a class="dropdown-item" asp-page="/Shift/Index">Shift</a>
+
+                                </div>
+                            </li>
+
+
+                            <li class="nav-item dropdown">
+                                <a class="nav-link text-white dropdown-toggle" asp-area="" role="button" data-bs-toggle ="dropdown">Company Setup</a>
+                                <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                                    <a class="dropdown-item" asp-page ="/WorkSite/Index">Worksites</a>
+                                    <a class="dropdown-item" asp-page ="/Account/Index">Accounts</a>
+                                    <a class="dropdown-item" asp-page ="/SubAccount/Index">Sub-Accounts</a>
+                                    <a class="dropdown-item" asp-page ="/Company/Index">Companies</a>
+                                    <a class="dropdown-item" asp-page ="/Department/Index">Departments</a>
+
+                                </div>
+                            </li>
+                            <li class="nav-item dropdown">
+                                <a class="nav-link text-white dropdown-toggle" asp-area="" role="button" data-bs-toggle="dropdown">HR Setup</a>
+                                <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                                    <a class="dropdown-item" asp-page="/JobCategory/Index">Job Categories</a>
+                                    <a class="dropdown-item" asp-page="/JobClass/Index">Job Classes</a>
+                                    <a class="dropdown-item" asp-page="/JobGrade/Index">Job Grades</a>
+                                    <a class="dropdown-item" asp-page="/Job/Index">Jobs</a>
+                                    <a class="dropdown-item" asp-page="/EmploymentType/Index">Employment Types</a>
+                                    <a class="dropdown-item" asp-page="/Overtime/Index">Overtime Setup</a>
+                                    <a class="dropdown-item" asp-page="/Shift/Index">Shifts</a>
+                                    <a class="dropdown-item" asp-page="/Break/Index">Breaks</a>
+                                    <a class="dropdown-item" asp-page="/LeaveType/Index">Leave Setup</a>
+                                    <a class="dropdown-item" asp-page="/Allowance/Index">Allowance Setup</a>
+                                </div>
+                            </li>
+                        }
+                        @if (User.IsInRole("mie\\PMS_HRCLERK"))
+                        {
+                            <li class="nav-item dropdown">
+                            <a class="nav-link text-white dropdown-toggle" asp-area="" role="button" data-bs-toggle="dropdown">HR Clerk</a>
+                            <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                                <a class="dropdown-item" asp-page="/Person/Index">Person</a>
+                                <a class="dropdown-item" asp-page="/Employment/Index">Employments</a>
+                                <a class="dropdown-item" asp-page="/JobPlacement/Index">Job Placements</a>
+                                <a class="dropdown-item" asp-page="/AllowanceAssignment/Index">Allowance Assignment</a>
+                                <a class="dropdown-item" asp-page="/Leave/Index">Leave</a>
+                                <a class="dropdown-item" asp-page="/OvertimeRecord/Index">Overtime Records</a>
+                            </div>
+                        </li>
+                        }
+                        @if (User.IsInRole("mie\\PMS_ADMIN"))
+                        {
+                            <li class="nav-item dropdown">
+                            <a class="nav-link text-white dropdown-toggle" role = "button" data-bs-toggle = "dropdown">System Adminstration</a>
+                            <div class="dropdown-menu">
+                                <a class="dropdown-item" asp-page="">Users</a>
+                                <a class="dropdown-item" asp-page="">Backup</a>
+                                <a class="dropdown-item" asp-page="">Restore</a>
+                                <a class="dropdown-item" asp-page="">Backup</a>
+                            </div>
+                        </li>
+                        }
+                                               
+                      
+                        <li class="nav-item">
+                            <a class="nav-link text-white" asp-area="" asp-page="/Privacy">Privacy</a>
+                        </li>
+                    </ul>
+                    <p class="nav navbar-text text-white">Hello, @User.Identity?.Name!</p>
+                </div>
+            </div>
+        </nav>
+    </header>
+    <div class="container">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+
+    <footer class="border-top footer text-muted">
+        <div class="container">
+            &copy; 2024 - PIS2 - <a asp-area="" asp-page="/Privacy">Privacy</a>
+        </div>
+    </footer>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/js/funcs.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js?v=@DateTime.UtcNow.Ticks"></script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+
+    
+</body>
+
+</html>

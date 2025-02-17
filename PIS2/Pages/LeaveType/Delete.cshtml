@@ -1,0 +1,41 @@
+﻿@page
+@model PIS2.Pages.LeaveType.DeleteModel
+
+@{
+    ViewData["Title"] = "Delete Leave Type";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<h1>Leave Types</h1>
+
+<h3>Are you sure you want to delete this leave type?</h3>
+<div>
+
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">
+            Name:
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.leaveTypeModel.leaveTypeName)
+        </dd>
+        <dt class="col-sm-2">
+            Impact:
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.leaveTypeModel.leaveTypeImpact)
+        </dd>
+        <dt class="col-sm-2">
+            Status:
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.leaveTypeModel.leaveTypeStatus)
+        </dd>
+    </dl>
+    
+    <form method="post">
+        <input type="hidden" asp-for="leaveTypeModel.leaveTypeID" />
+        <input type="submit" value="Delete" class="btn btn-danger" /> |
+        <a asp-page="./Index">Back to List</a>
+    </form>
+</div>

@@ -1,0 +1,63 @@
+﻿@page
+@model PIS2.Pages.Break.IndexModel
+
+@{
+    ViewData["Title"] = "Breaks";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<h1>Breaks</h1>
+
+<p>
+    <a asp-page="Create">Add New Break</a>
+</p>
+@await Html.PartialAsync("filter")
+<table class="table table-striped table-hover" id="dataTable">
+    <thead>
+        <tr class="bg-dark text-white">
+            <th>
+                Name
+            </th>
+            <th>
+                Shift
+            </th>
+            <th>
+                Start
+            </th>
+            <th>
+                End
+            </th>
+            <th>
+                Status
+            </th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model.breakModel) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.breakName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.shiftModel.shiftName)
+            </td>
+            <td>
+                @DateTime.Today.Add(item.breakStart).ToString("hh:mm tt")
+            </td>
+            <td>
+                @DateTime.Today.Add(item.breakEnd).ToString("hh:mm tt")
+            </td>
+        
+            <td>
+                @Html.DisplayFor(modelItem => item.breakStatus)
+            </td>
+            <td>
+                <a asp-page="./Edit" asp-route-id="@item.breakID">Edit</a> |
+                <a asp-page="./Details" asp-route-id="@item.breakID">Details</a> |
+                <a asp-page="./Delete" asp-route-id="@item.breakID">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

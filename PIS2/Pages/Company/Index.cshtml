@@ -1,0 +1,63 @@
+﻿@page
+@model PIS2.Pages.Company.IndexModel
+
+@{
+    ViewData["Title"] = "Companies";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<h1>Companies</h1>
+
+<p>
+    <a asp-page="Create">Add New Company</a>
+    
+</p>
+@await Html.PartialAsync("filter")
+<table class="table table-striped table-hover" id="dataTable">
+    <thead>
+        <tr class="bg-dark text-white">
+            <th>
+                Company Name
+            </th>
+            <th>
+                Company Alias
+            </th>
+            <th>
+                Manager
+            </th>
+            <th>
+                Address
+            </th>
+            <th>
+                Status
+            </th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model.companyModel) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.companyName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.companyAlias)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.employmentID)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.addressModel.addressFormatted)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.companyStatus)
+            </td>
+            <td>
+                <a asp-page="./Edit" asp-route-id="@item.companyID">Edit</a> |
+                <a asp-page="./Details" asp-route-id="@item.companyID">Details</a> |
+                <a asp-page="./Delete" asp-route-id="@item.companyID">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

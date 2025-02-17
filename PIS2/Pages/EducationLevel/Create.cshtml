@@ -1,0 +1,56 @@
+﻿@page
+@model PIS2.Pages.EducationLevel.CreateModel
+
+@{
+    ViewData["Title"] = "Create";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<h1>Add New Academic Level</h1>
+
+<h4>Enter new academic level details below</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <span class="text-danger">*</span>
+                <label asp-for="educationLevelModel.educationLevelName" class="control-label">Level Name</label>
+                <input asp-for="educationLevelModel.educationLevelName" class="form-control" />
+                <span asp-validation-for="educationLevelModel.educationLevelName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="educationLevelModel.educationLevelGrade" class="control-label">Grade</label>
+                <input asp-for="educationLevelModel.educationLevelGrade" class="form-control" />
+                <span asp-validation-for="educationLevelModel.educationLevelGrade" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="educationLevelModel.educationLevelCategory" class="control-label">Category</label>
+                <input asp-for="educationLevelModel.educationLevelCategory" class="form-control" />
+                <span asp-validation-for="educationLevelModel.educationLevelCategory" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="educationLevelModel.educationLevelDescription" class="control-label">Description</label>
+                <input asp-for="educationLevelModel.educationLevelDescription" class="form-control" />
+                <span asp-validation-for="educationLevelModel.educationLevelDescription" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="educationLevelModel.educationLevelStatus" class="control-label">Status</label>
+                <select asp-for="educationLevelModel.educationLevelStatus" class="form-control" asp-items="Html.GetEnumSelectList<Models.mainStatus>()"></select>
+                <span asp-validation-for="educationLevelModel.educationLevelStatus" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-page="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
