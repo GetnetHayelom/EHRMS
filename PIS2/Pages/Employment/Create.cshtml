@@ -2,14 +2,14 @@
 @model PIS2.Pages.Employment.CreateModel
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Add New Employment";
     Layout = "~/Pages/Shared/_Layout.cshtml";
     var successMessage = TempData["SuccessMessage"] as string;
 }
 
-<h1>Create</h1>
+<h1>Employment</h1>
 
-<h4>employmentModel</h4>
+<h4>Add New Employment</h4>
 <hr />
 @if (!string.IsNullOrEmpty(successMessage))
 {
