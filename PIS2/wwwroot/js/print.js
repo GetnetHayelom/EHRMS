@@ -2,12 +2,15 @@
     function printDiv(divId) {
         // Get the content of the div
         var content = document.getElementById(divId).innerHTML;
-
+        // Get the current date
+        var currentDate = new Date().toLocaleDateString('en-US', {
+            year: 'numeric', month: 'long', day: 'numeric'
+        });
     // Open a new window for printing
     var printWindow = window.open('', '', 'height=600,width=800');
 
     // Write the HTML structure to the print window
-    printWindow.document.write('<html><head><title>PIS2</title>');
+        printWindow.document.write('<!DOCTYPE html><html><head><title>PIS2</title>');
 
         // You can include your own styles or link to external stylesheets
 
@@ -35,6 +38,7 @@
                 <!-- Right Logo -->
                 <div style="width: 15%; text-align: right;">
                     <img src="/assets/mie_logo.png" alt="Logo" style="width: 100%; max-height: 80px;">
+                    <p>Date: ${currentDate}</p>
                 </div>
             </div>
             <hr>
@@ -49,4 +53,5 @@
                 printWindow.document.close(); // Close the document for writing
                 //printWindow.focus(); // Focus the new window
                 printWindow.print(); // Print the content
-  
+    }
+ 
