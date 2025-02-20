@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -37,6 +38,7 @@ namespace PIS2.Pages
         public ICollection<leaveModel>? Leaves { get; set; } = new List<leaveModel>();
         [BindProperty]
         public List<jobPlacementModel>? JobPlacements { get; set; } = default!;
+        public List<overtimeRecordModel>? Overtimes { get; set; }=default!;
         public leaveDetail? LeaveDetail { get; set; } = new leaveDetail();
         public Core methods { get; set; } = default!;
         public IndexModel(PISContext ctx, Core methods)
@@ -65,8 +67,9 @@ namespace PIS2.Pages
                     PersonEmployments = await _context.Employments
                         .Include(e => e.Leaves)
                         .Include(e => e.JobPlacements).ThenInclude(j => j.jobModel)
-                        .Include(e => e.JobPlacements).ThenInclude(j => j.departmentModel)
-                        .Include(e => e.EmploymentHistories).Where(e => e.personID == Person.personID).ToListAsync();
+                        .Include(e => e.JobPlacements).ThenInclude(j => j.departmentModel).ThenInclude(d => d.companyModel)
+                        .Include(e => e.EmploymentHistories)
+                        .Include(e => e.OvertimeRecords).Where(e => e.personID == Person.personID).ToListAsync();
                     if (PersonEmployments != null && PersonEmployments.Any())
                     {
                         Employment = PersonEmployments.OrderBy(e => e.employmentDate).LastOrDefault();
@@ -75,6 +78,8 @@ namespace PIS2.Pages
                             Leaves = Employment.Leaves.ToList();
                             JobPlacements = await _context.JobPlacements.Where(l => l.employmentID == Employment.employmentID).ToListAsync();
                             LeaveDetail = _core.GetLeaveSummary(Employment.employmentID);
+                            Overtimes =await _context.OvertimeRecords.Include(ot=> ot.overtimeModel)
+                                .Include(ot=>ot.OvertimeHistories).Where(l => l.employmentID == Employment.employmentID).ToListAsync();
                         }
 
                     }
@@ -127,7 +132,9 @@ namespace PIS2.Pages
                             JobPlacements = await _context.JobPlacements.Where(l => l.employmentID == Employment.employmentID).ToListAsync();
                            
                             LeaveDetail = _core.GetLeaveSummary(Employment.employmentID);
-                            
+                            Overtimes = await _context.OvertimeRecords.Include(ot => ot.overtimeModel)
+                                .Include(ot => ot.OvertimeHistories).Where(l => l.employmentID == Employment.employmentID).ToListAsync();
+
                         }
 
                     }
@@ -174,6 +181,8 @@ namespace PIS2.Pages
                             JobPlacements = await _context.JobPlacements.Where(l => l.employmentID == Employment.employmentID).ToListAsync();
                             Leaves = await _context.Leaves.Where(l => l.employmentID == Employment.employmentID).ToListAsync(); //Employment.Leaves.ToList();
                             LeaveDetail = _core.GetLeaveSummary(Employment.employmentID);
+                            Overtimes = await _context.OvertimeRecords.Include(ot => ot.overtimeModel)
+                                .Include(ot => ot.OvertimeHistories).Where(l => l.employmentID == Employment.employmentID).ToListAsync();
                         }
 
                     }
@@ -197,6 +206,7 @@ namespace PIS2.Pages
         public int personID { get; set; }
         public async Task<IActionResult> OnPostCreateLeave()
         {
+            
             ModelState.Remove(nameof(searchID));
             ModelState.Remove(nameof(searchName));
             //ModelState.Clear();
@@ -225,8 +235,7 @@ namespace PIS2.Pages
                         await _context.SaveChangesAsync();
                         TempData["SuccessMessage"] = $"Leave Saved with ID {Leave.leaveID}";
                         TempData["LeaveID"] = Leave.leaveID;
-                    }
-                    
+                    }    
 
                 }
                 catch(DbUpdateException ex)
@@ -234,11 +243,20 @@ namespace PIS2.Pages
                     // Check if the exception is an inner SqlException
                     if (ex.InnerException is SqlException sqlEx)
                     {
-                        // You can now access the message from SQL Server
+                        // access the message from SQL Server
                         string sqlErrorMessage = sqlEx.Message;
-
-                        // Add the SQL error message to ModelState
+                        if(sqlEx.Number ==2627 || sqlEx.Number == 2601)
+                        {
+                            ModelState.AddModelError(string.Empty, "Error: Duplicate Record!");
+                        }
+                       else if (sqlEx.Number == 547)
+                        {
+                            ModelState.AddModelError(string.Empty, "Error: Constraint Violation!");
+                        }
+                        else { // SQL error message to ModelState
                         ModelState.AddModelError(string.Empty, "Database error: " + sqlErrorMessage);
+                        }
+                        
                     }
                     else
                     {
@@ -264,13 +282,15 @@ namespace PIS2.Pages
             LeaveDetail = _core.GetLeaveSummary(Employment.employmentID);
             People = await _context.Persons.ToListAsync();
             Employments = await _context.Employments.ToListAsync();
+            Overtimes = await _context.OvertimeRecords.Include(ot => ot.overtimeModel)
+                                .Include(ot => ot.OvertimeHistories).Where(l => l.employmentID == Employment.employmentID).ToListAsync();
             return Page();
         }
         [BindProperty]
         public overtimeRecordModel overtimeRecordModel { get; set; } = default!;
 
         // For more information, see https://aka.ms/RazorPagesCRUD.
-        public async Task<IActionResult> OnPostCreateOvertime()
+        public async Task<IActionResult> OnPostCreateOvertimeRecord()
         {
             ModelState.Remove(nameof(searchID));
             ModelState.Remove(nameof(searchName));
@@ -308,6 +328,8 @@ namespace PIS2.Pages
             LeaveDetail = _core.GetLeaveSummary(Employment.employmentID);
             People = await _context.Persons.ToListAsync();
             Employments = await _context.Employments.ToListAsync();
+            Overtimes = await _context.OvertimeRecords.Include(ot => ot.overtimeModel)
+                                .Include(ot => ot.OvertimeHistories).Where(l => l.employmentID == Employment.employmentID).ToListAsync();
             return Page();
         }
         public async Task<IActionResult> GetEmploymentHistory(int personID)

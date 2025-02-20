@@ -21,6 +21,8 @@ namespace PIS2.Pages.Leave
         public IList<leaveModel> leaveModel { get;set; } = default!;
         [BindProperty]
         public double totalUnposted {  get; set; }= default!;
+        [BindProperty]
+        public double CountUnposted { get; set; } = default!;
 
         public async Task OnGetAsync()
         {
@@ -28,7 +30,8 @@ namespace PIS2.Pages.Leave
                 .Include(l => l.employmentModel)
                 .Include(l => l.leaveTypeModel)
                 .Where( l=> l.leaveStatus == leaveStatus.Hold).ToListAsync();
-            totalUnposted = leaveModel.Count();
+            totalUnposted = leaveModel.Sum(l => l.leaveDays);
+            CountUnposted = leaveModel.Count();
         }
         // Post handler
         [BindProperty]
