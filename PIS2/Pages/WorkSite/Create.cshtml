@@ -2,40 +2,40 @@
 @model PIS2.Pages.WorkSite.CreateModel
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "New Work Location";
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
 
-<h1>Create</h1>
+<h1>Work Locations</h1>
 
-<h4>workSiteModel</h4>
+<h4>Add New Work Location</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
         <form method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
-                <label asp-for="workSiteModel.workSiteName" class="control-label"></label>
+                <label asp-for="workSiteModel.workSiteName" class="control-label">Work Location Name</label>
                 <input asp-for="workSiteModel.workSiteName" class="form-control" />
                 <span asp-validation-for="workSiteModel.workSiteName" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="workSiteModel.workSiteNature" class="control-label"></label>
+                <label asp-for="workSiteModel.workSiteNature" class="control-label">Work Location Type</label>
                 <input asp-for="workSiteModel.workSiteNature" class="form-control" />
                 <span asp-validation-for="workSiteModel.workSiteNature" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="workSiteModel.workSiteEstablishDate" class="control-label"></label>
+                <label asp-for="workSiteModel.workSiteEstablishDate" class="control-label">Established Date</label>
                 <input asp-for="workSiteModel.workSiteEstablishDate" class="form-control" type="date"/>
                 <span asp-validation-for="workSiteModel.workSiteEstablishDate" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="workSiteModel.workSiteStatus" class="control-label"></label>
+                <label asp-for="workSiteModel.workSiteStatus" class="control-label">Status</label>
                 <select asp-for="workSiteModel.workSiteStatus" class="form-control" asp-items="Html.GetEnumSelectList<Models.mainStatus>()"></select>
                 <span asp-validation-for="workSiteModel.workSiteStatus" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="workSiteModel.addressID" class="control-label"></label>
+                <label asp-for="workSiteModel.addressID" class="control-label">Location</label>
                 <select asp-for="workSiteModel.addressID" class ="form-control" asp-items="ViewBag.addressID"></select>
             </div>
             <div class="form-group">

@@ -2,43 +2,43 @@
 @model PIS2.Pages.WorkSite.DeleteModel
 
 @{
-    ViewData["Title"] = "Delete";
+    ViewData["Title"] = "Delete Work Location";
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
 
-<h1>Delete</h1>
+<h1>Work Locations</h1>
 
-<h3>Are you sure you want to delete this?</h3>
-<div>
-    <h4>workSiteModel</h4>
+<h3>Are you sure you want to delete this work location?</h3>
+<div class="d-flex flex-wrap d-print-flex print-wrap">
+    
     <hr />
     <dl class="row">
         <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.workSiteModel.workSiteName)
+            Work Location Name:
         </dt>
         <dd class="col-sm-10">
             @Html.DisplayFor(model => model.workSiteModel.workSiteName)
         </dd>
         <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.workSiteModel.workSiteNature)
+            Work Location Type:
         </dt>
         <dd class="col-sm-10">
             @Html.DisplayFor(model => model.workSiteModel.workSiteNature)
         </dd>
         <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.workSiteModel.workSiteEstablishDate)
+            Establish Date:
         </dt>
         <dd class="col-sm-10">
             @Html.DisplayFor(model => model.workSiteModel.workSiteEstablishDate)
         </dd>
         <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.workSiteModel.workSiteStatus)
+            Status:
         </dt>
         <dd class="col-sm-10">
             @Html.DisplayFor(model => model.workSiteModel.workSiteStatus)
         </dd>
         <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.workSiteModel.addressModel)
+            Location
         </dt>
         <dd class="col-sm-10">
             @Html.DisplayFor(model => model.workSiteModel.addressModel.addressRegion)

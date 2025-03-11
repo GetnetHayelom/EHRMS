@@ -61,6 +61,7 @@ namespace PIS2.Models
         public virtual leaveModel leaveModel { get; set; }
         public leaveStatus leaveHistoryAction { get; set; }
         public DateTime leaveHistoryDate { get; set; }
+        public string leaveUser{get; set;}
         public leaveHistoryModel()
         {
 

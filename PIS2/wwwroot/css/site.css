@@ -16,3 +16,12 @@ html {
 body {
   margin-bottom: 60px;
 }
+@media print{
+    .print-wrap{
+        flex-wrap:wrap;
+    }
+    .print-dark{
+        background-color: black;
+        color:white;
+    }
+}

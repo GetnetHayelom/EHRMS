@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PIS2.Models;
 
@@ -11,9 +12,11 @@ using PIS2.Models;
 namespace PIS2.Migrations
 {
     [DbContext(typeof(PISContext))]
-    partial class PISContextModelSnapshot : ModelSnapshot
+    [Migration("20250220073939_migration20")]
+    partial class migration20
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1038,6 +1041,11 @@ namespace PIS2.Migrations
                         .HasColumnType("int")
                         .HasColumnName("employmentID");
 
+                    b.Property<string>("loyalityUser")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("loyaltyUser");
+
                     b.Property<double>("loyaltyAmount")
                         .HasColumnType("float")
                         .HasColumnName("loyaltyAmount");
@@ -1049,11 +1057,6 @@ namespace PIS2.Migrations
                     b.Property<int>("loyaltyID")
                         .HasColumnType("int")
                         .HasColumnName("loyaltyID");
-
-                    b.Property<string>("loyaltyUser")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("loyaltyUser");
 
                     b.HasKey("loyaltyHistoryID");
 
@@ -1118,11 +1121,6 @@ namespace PIS2.Migrations
                     b.Property<int>("overtimeRecordID")
                         .HasColumnType("int")
                         .HasColumnName("overtimeRecordID");
-
-                    b.Property<string>("overtimeUser")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("overtimeUser");
 
                     b.HasKey("overtimeHistoryID");
 
@@ -1189,11 +1187,6 @@ namespace PIS2.Migrations
                     b.Property<TimeSpan>("overtimeRecordEndTime")
                         .HasColumnType("time")
                         .HasColumnName("overtimeRecordEndTime");
-
-                    b.Property<string>("overtimeRecordReason")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("overtimeRecordReason");
 
                     b.Property<TimeSpan>("overtimeRecordStartTime")
                         .HasColumnType("time")
@@ -1417,13 +1410,6 @@ namespace PIS2.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("workSiteHistoryID"));
 
-                    b.Property<int>("addressID")
-                        .HasColumnType("int")
-                        .HasColumnName("addressID");
-
-                    b.Property<int?>("addressModeladdressID")
-                        .HasColumnType("int");
-
                     b.Property<int>("workSiteHistoryAction")
                         .HasColumnType("int")
                         .HasColumnName("workSiteHistoryAction");
@@ -1436,19 +1422,7 @@ namespace PIS2.Migrations
                         .HasColumnType("int")
                         .HasColumnName("workSiteID");
 
-                    b.Property<string>("workSiteUser")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("workSiteUser");
-
-                    b.Property<string>("worksiteName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("workSiteName");
-
                     b.HasKey("workSiteHistoryID");
-
-                    b.HasIndex("addressModeladdressID");
 
                     b.HasIndex("workSiteID");
 
@@ -1834,17 +1808,11 @@ namespace PIS2.Migrations
 
             modelBuilder.Entity("PIS2.Models.workSiteHistoryModel", b =>
                 {
-                    b.HasOne("PIS2.Models.addressModel", "addressModel")
-                        .WithMany()
-                        .HasForeignKey("addressModeladdressID");
-
                     b.HasOne("PIS2.Models.workSiteModel", "workSiteModel")
                         .WithMany("WorkSiteHistories")
                         .HasForeignKey("workSiteID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("addressModel");
 
                     b.Navigation("workSiteModel");
                 });

@@ -14,37 +14,46 @@
        <hr />
     <dl class="row">
         <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.employmentModel.givenID)
+            Employee ID:
         </dt>
         <dd class="col-sm-10">
             @Html.DisplayFor(model => model.employmentModel.givenID)
         </dd>
         <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.employmentModel.personModel)
+            Full Name:
         </dt>
         <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.employmentModel.personModel.personID)
+            @Html.DisplayFor(model => model.employmentModel.personModel.personFullName)
         </dd>
         <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.employmentModel.employmentDate)
+            Hire Date:
         </dt>
         <dd class="col-sm-10">
             @Html.DisplayFor(model => model.employmentModel.employmentDate)
         </dd>
         <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.employmentModel.employmentStatus)
+            Status:
         </dt>
         <dd class="col-sm-10">
             @Html.DisplayFor(model => model.employmentModel.employmentStatus)
         </dd>
+        @if(Model.employmentModel.employmentStatus == Models.mainStatus.Inactive)
+        {
+            <dt class="col-sm-2">
+                Termination Date:
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.employmentModel.employmentTerminationDate)
+            </dd>
+        }
         <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.employmentModel.employmentReference)
+            Reference:
         </dt>
         <dd class="col-sm-10">
             @Html.DisplayFor(model => model.employmentModel.employmentReference)
         </dd>
         <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.employmentModel.workingHoursPerWeek)
+            Hours Per Week:
         </dt>
         <dd class="col-sm-10">
             @Html.DisplayFor(model => model.employmentModel.workingHoursPerWeek)

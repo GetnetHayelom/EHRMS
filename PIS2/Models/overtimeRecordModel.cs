@@ -12,10 +12,11 @@ namespace PIS2.Models
         public virtual employmentModel? employmentModel { get; set; }
         public int overtimeID { get; set; }
         public virtual overtimeModel? overtimeModel { get; set; } = null!;
+        public string overtimeRecordReason { get; set; }    
         public DateTime overtimeRecordDate { get; set; } = DateTime.Now;
         public TimeSpan overtimeRecordStartTime { get; set; }
         public TimeSpan overtimeRecordEndTime { get; set; }
-        public overtimeStatus overtimeRecordStatus { get; set; } = overtimeStatus.Requested;
+        public overtimeStatus overtimeRecordStatus { get; set; } = overtimeStatus.Hold;
         public virtual ICollection<overtimeHistoryModel>? OvertimeHistories { get; set; }
         public overtimeRecordModel() { }
 

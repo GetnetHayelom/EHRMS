@@ -209,7 +209,7 @@ namespace PIS2.Pages
             
             ModelState.Remove(nameof(searchID));
             ModelState.Remove(nameof(searchName));
-            //ModelState.Clear();
+            ModelState.Clear();
             Leave.employmentID = employmentID;
             Leave.leaveStatus = leaveStatus.Hold;
             //TempData["LeaveID"] = null;

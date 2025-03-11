@@ -29,7 +29,7 @@ namespace PIS2.Pages.Leave
             leaveModel = await _context.Leaves
                 .Include(l => l.employmentModel)
                 .Include(l => l.leaveTypeModel)
-                .Where( l=> l.leaveStatus == leaveStatus.Hold).ToListAsync();
+                .Where( l=> l.leaveStatus == leaveStatus.Hold || l.leaveStatus == leaveStatus.Approved).ToListAsync();
             totalUnposted = leaveModel.Sum(l => l.leaveDays);
             CountUnposted = leaveModel.Count();
         }

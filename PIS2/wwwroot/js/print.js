@@ -15,7 +15,7 @@
         // You can include your own styles or link to external stylesheets
 
         printWindow.document.write('<link rel="stylesheet" href="/lib/bootstrap/dist/css/bootstrap.min.css" />');
-        printWindow.document.write('<link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />');
+        printWindow.document.write('<link rel="stylesheet" href="/css/site.css" asp-append-version="true" />');
         printWindow.document.write('<link rel="stylesheet" href="~/PIS2.styles.css" asp-append-version="true" />');
 
         printWindow.document.write('</head><body>');

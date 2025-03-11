@@ -24,7 +24,8 @@ namespace PIS2.Pages.OvertimeRecord
         {
             overtimeRecordModel = await _context.OvertimeRecords
                 .Include(o => o.employmentModel)
-                .Include(o => o.overtimeModel).ToListAsync();
+                .Include(o => o.overtimeModel)
+                .Include(o => o.OvertimeHistories).ToListAsync();
         }
     }
 }

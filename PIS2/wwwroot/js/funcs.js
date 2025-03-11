@@ -76,3 +76,54 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 });
 
+// Filter by column
+let filters = [];
+function filterVisibleRows(inputId, columnIndex) {
+    
+    let filterInput = document.getElementById(inputId).value.toLowerCase().trim();
+    //let visibleRows = document.querySelectorAll("#dataTable tbody tr:not([style*='display: none'])");
+    let visibleRows = document.querySelectorAll("#dataTable tbody tr");
+    //
+    filters[columnIndex] = filterInput;
+    visibleRows.forEach(row => {
+        let isVisible = true; // Assume row should be shown
+
+        filters.forEach((item, index) => {
+            if (item) {
+                visibleRows.forEach(row => {
+                    let cell = row.cells[index]; // Get the specific column cell
+                    let cellText = cell ? cell.textContent.toLowerCase().trim() : "";
+
+                    if (!cellText.includes(filterValue)) {
+                        isVisible = false; // If any filter fails, hide the row
+                    }
+
+                });
+            }
+        });
+        row.style.display = isVisible ? "" : "none";
+    });
+    
+    updateRowCount("countId");
+    //
+    //visibleRows.forEach(row => {
+    //    let cell = row.cells[columnIndex]; // Get the specific column cell
+    //    let cellText = cell ? cell.textContent.toLowerCase().trim() : "";
+
+    //    row.style.display = cellText.includes(filterInput) ? "" : "none";
+    //    updateRowCount("countId");
+    //});
+}
+
+// Function to count total and visible rows
+function updateRowCount(countId) {
+    let totalRows = document.querySelectorAll("#dataTable tbody tr").length;
+    let visibleRows = document.querySelectorAll("#dataTable tbody tr:not([style*='display: none'])").length;
+    let countElement = document.getElementById(countId);
+    countElement.textContent = `Showing ${visibleRows} of ${totalRows} rows`;
+}
+
+// Run on page load to set initial row count
+document.addEventListener("DOMContentLoaded", function () {
+    updateRowCount("countId");
+});

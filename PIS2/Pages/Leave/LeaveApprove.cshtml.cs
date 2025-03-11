@@ -41,7 +41,7 @@ namespace PIS2.Pages.Leave
             }
 
             // Update the leaveStatus
-            leave.leaveStatus = leaveStatus.Posted;
+            leave.leaveStatus = leaveStatus.Approved;
             _context.Update(leave);
             await _context.SaveChangesAsync();
             leaveModel = await _context.Leaves

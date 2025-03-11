@@ -2,14 +2,14 @@
 @model PIS2.Pages.Leave.LeaveApproveModel
 
 @{
-    ViewData["Title"] = "LeaveApprove";
+    ViewData["Title"] = "Leave Approve";
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
 
-<h1>LeaveApprove</h1>
+<h1>Leave Approve</h1>
 
 <p>
-    <a asp-page="Create">Create New</a>
+    <a asp-page="Create">Add New Leave Request</a>
     @await Html.PartialAsync("filter")
 </p>
 <table class="table table-striped table-hover">
@@ -37,7 +37,7 @@
             <th>
                 Status
             </th>
-            <th></th>
+            <th>Actions</th>
         </tr>
     </thead>
     <tbody>
@@ -75,7 +75,7 @@
                     {
                         <form method="post" asp-page-handler="Approve">
                             <input asp-for="@item.leaveID" name="leaveId" type="hidden"></input>
-                            <button type="submit" class="btn btn-success post-button" data-id="@item.leaveID">Post</button>
+                            <button type="submit" class="btn btn-success post-button" data-id="@item.leaveID">Approve</button>
                         </form>
                         <form method="post" asp-page-handler="Reject">
                             <input asp-for="@item.leaveID" name="leaveId" type="hidden"></input>

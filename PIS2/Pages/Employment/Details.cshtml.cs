@@ -27,7 +27,9 @@ namespace PIS2.Pages.Employment
                 return NotFound();
             }
 
-            var employmentmodel = await _context.Employments.FirstOrDefaultAsync(m => m.employmentID == id);
+            var employmentmodel = await _context.Employments.Include(e=>e.EmploymentHistories)
+                .Include(e=>e.personModel)
+                .Include(e=>e.employmentTypeModel).FirstOrDefaultAsync(m => m.employmentID == id);
             if (employmentmodel == null)
             {
                 return NotFound();

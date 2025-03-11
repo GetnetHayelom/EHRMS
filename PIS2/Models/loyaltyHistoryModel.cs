@@ -13,7 +13,7 @@ namespace PIS2.Models
         public virtual loyaltyModel? loyaltyModel { get; set; }  
         public double loyaltyAmount { get; set; }
         public mainStatus loyaltyHistoryStatus { get; set; } 
-
+        public string loyaltyUser { get; set; }
         public loyaltyHistoryModel() { }
     }
     public enum loyaltyStatus

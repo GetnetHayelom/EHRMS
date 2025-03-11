@@ -10,7 +10,10 @@ namespace PIS2.Models
         [Required]
         public mainStatus workSiteHistoryAction {get; set;}
         public DateTime workSiteHistoryDate {get; set;}
-
+        public string worksiteName { get; set; }
+        public string workSiteUser { get; set; }
+        public int addressID { get; set; }
+        public virtual addressModel? addressModel {get; set; }
         public workSiteHistoryModel()
         {
 

@@ -11,6 +11,7 @@ public class overtimeHistoryModel
     public virtual overtimeRecordModel? overtimeRecordModel { get; set; }
     public DateTime overtimeHistoryDate { get; set; } = DateTime.Now;
     public overtimeStatus overtimeHistoryAction { get; set; }
+    public string overtimeUser { get; set; }
 
     public overtimeHistoryModel()
     {
@@ -20,7 +21,11 @@ public class overtimeHistoryModel
 }
 public enum overtimeStatus
 {
-    Requested,
+    Hold,
     Approved,
-    Declined
+    Posted,
+    Released,
+    Completed,
+    Cancelled,
+    Void
 }

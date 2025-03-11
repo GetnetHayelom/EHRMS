@@ -82,9 +82,19 @@
             <td>
                 @Html.DisplayFor(modelItem => item.leaveTypeModel.leaveTypeName)
             </td>
-            <td>
+                @if(@item.leaveStatus == Models.leaveStatus.Approved)
+                {
+                    <td>
+                        <p class="border-success p-1">@Html.DisplayFor(modelItem => item.leaveStatus)</p>
+                    </td>
+                }
+                else
+                {
+                    <td>
                 @Html.DisplayFor(modelItem => item.leaveStatus)
             </td>
+                }
+                
             <td class="d-flex flex-grow-1">
                 @if(item.leaveStatus == Models.leaveStatus.Posted)
                 {

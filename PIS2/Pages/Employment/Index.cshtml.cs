@@ -24,7 +24,8 @@ namespace PIS2.Pages.Employment
         {
             employmentModel = await _context.Employments
                 .Include(e => e.personModel)
-                .Include(e => e.employmentTypeModel).ToListAsync();
+                .Include(e => e.employmentTypeModel)
+                .Include(e => e.JobPlacements).ThenInclude(jp => jp.departmentModel).ToListAsync();
         }
     }
 }

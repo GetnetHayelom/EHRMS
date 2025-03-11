@@ -2,48 +2,48 @@
 @model PIS2.Pages.Leave.CreateModel
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "New Leave";
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
 
-<h1>Create</h1>
+<h1>Leaves</h1>
 
-<h4>leaveModel</h4>
+<h4>Add New Leave</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
         <form method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
-                <label asp-for="leaveModel.employmentID" class="control-label"></label>
+                <label asp-for="leaveModel.employmentID" class="control-label">Employee ID</label>
                 <select asp-for="leaveModel.employmentID" class ="form-control" asp-items="ViewBag.employmentID"></select>
             </div>
             <div class="form-group">
-                <label asp-for="leaveModel.leaveReaquestDate" class="control-label"></label>
+                <label asp-for="leaveModel.leaveReaquestDate" class="control-label">Request Date</label>
                 <input asp-for="leaveModel.leaveReaquestDate" class="form-control" type="date"/>
                 <span asp-validation-for="leaveModel.leaveReaquestDate" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="leaveModel.leaveStartDate" class="control-label"></label>
+                <label asp-for="leaveModel.leaveStartDate" class="control-label">Leave Start Date</label>
                 <input asp-for="leaveModel.leaveStartDate" class="form-control" type="date"/>
                 <span asp-validation-for="leaveModel.leaveStartDate" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="leaveModel.leaveEndDate" class="control-label"></label>
+                <label asp-for="leaveModel.leaveEndDate" class="control-label">Leave End Date:</label>
                 <input asp-for="leaveModel.leaveEndDate" class="form-control" type="date"/>
                 <span asp-validation-for="leaveModel.leaveEndDate" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="leaveModel.leaveDays" class="control-label"></label>
+                <label asp-for="leaveModel.leaveDays" class="control-label">Leave Days</label>
                 <input asp-for="leaveModel.leaveDays" class="form-control"/>
                 <span asp-validation-for="leaveModel.leaveDays" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="leaveModel.leaveTypeID" class="control-label"></label>
+                <label asp-for="leaveModel.leaveTypeID" class="control-label">Leave Type</label>
                 <select asp-for="leaveModel.leaveTypeID" class ="form-control" asp-items="ViewBag.leaveTypeID"></select>
             </div>
             <div class="form-group">
-                <label asp-for="leaveModel.leaveStatus" class="control-label"></label>
+                <label asp-for="leaveModel.leaveStatus" class="control-label">Leave Status</label>
                 <select asp-for="leaveModel.leaveStatus" class="form-control" asp-items="Html.GetEnumSelectList<Models.leaveStatus>()"></select>
                 <span asp-validation-for="leaveModel.leaveStatus" class="text-danger"></span>
             </div>

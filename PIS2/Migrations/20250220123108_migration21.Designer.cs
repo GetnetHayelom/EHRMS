@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PIS2.Models;
 
@@ -11,9 +12,11 @@ using PIS2.Models;
 namespace PIS2.Migrations
 {
     [DbContext(typeof(PISContext))]
-    partial class PISContextModelSnapshot : ModelSnapshot
+    [Migration("20250220123108_migration21")]
+    partial class migration21
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1189,11 +1192,6 @@ namespace PIS2.Migrations
                     b.Property<TimeSpan>("overtimeRecordEndTime")
                         .HasColumnType("time")
                         .HasColumnName("overtimeRecordEndTime");
-
-                    b.Property<string>("overtimeRecordReason")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("overtimeRecordReason");
 
                     b.Property<TimeSpan>("overtimeRecordStartTime")
                         .HasColumnType("time")

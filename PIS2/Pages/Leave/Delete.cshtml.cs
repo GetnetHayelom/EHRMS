@@ -28,7 +28,7 @@ namespace PIS2.Pages.Leave
                 return NotFound();
             }
 
-            var leavemodel = await _context.Leaves.FirstOrDefaultAsync(m => m.leaveID == id);
+            var leavemodel = await _context.Leaves.Include(l => l.employmentModel).FirstOrDefaultAsync(m => m.leaveID == id);
 
             if (leavemodel == null)
             {

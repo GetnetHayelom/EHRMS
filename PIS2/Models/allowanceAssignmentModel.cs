@@ -29,6 +29,7 @@ namespace PIS2.Models
         public virtual allowanceAssignmentModel? allowanceAssignmentModel { get; set; }
         public DateTime allowanceAssignmentHistoryDate { get; set;} = DateTime.Now;
         public mainStatus allowanceAssignmentHistoryStatus { get; set; }
+        public string allowanceUser { get; set; }
         public allowanceAssignmentHistoryModel()
         {
         }
