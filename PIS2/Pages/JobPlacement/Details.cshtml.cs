@@ -19,6 +19,7 @@ namespace PIS2.Pages.JobPlacement
         }
 
         public jobPlacementModel jobPlacementModel { get; set; } = default!;
+        public List<jobPlacementModel> jobPlacementList { get; set; } = default!;
 
         public async Task<IActionResult> OnGetAsync(int? id)
         {
@@ -34,7 +35,13 @@ namespace PIS2.Pages.JobPlacement
             }
             else
             {
+                
                 jobPlacementModel = jobplacementmodel;
+
+                jobPlacementList = await _context.JobPlacements.Where(jp => jp.employmentID == jobPlacementModel.employmentID)
+                    .Include(jp=>jp.jobModel)
+                    .Include(jp => jp.departmentModel)
+                    .Include(jp => jp.shiftModel).ToListAsync();
             }
             return Page();
         }

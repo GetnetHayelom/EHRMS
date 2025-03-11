@@ -78,41 +78,32 @@ document.addEventListener("DOMContentLoaded", function () {
 
 // Filter by column
 let filters = [];
+
 function filterVisibleRows(inputId, columnIndex) {
-    
     let filterInput = document.getElementById(inputId).value.toLowerCase().trim();
-    //let visibleRows = document.querySelectorAll("#dataTable tbody tr:not([style*='display: none'])");
     let visibleRows = document.querySelectorAll("#dataTable tbody tr");
-    //
+
+    // Store the filter value in the global array
     filters[columnIndex] = filterInput;
+
     visibleRows.forEach(row => {
         let isVisible = true; // Assume row should be shown
 
-        filters.forEach((item, index) => {
-            if (item) {
-                visibleRows.forEach(row => {
-                    let cell = row.cells[index]; // Get the specific column cell
-                    let cellText = cell ? cell.textContent.toLowerCase().trim() : "";
+        filters.forEach((filterValue, index) => {
+            if (filterValue) { // Ignore empty filters
+                let cell = row.cells[index];
+                let cellText = cell ? cell.textContent.toLowerCase().trim() : "";
 
-                    if (!cellText.includes(filterValue)) {
-                        isVisible = false; // If any filter fails, hide the row
-                    }
-
-                });
+                if (!cellText.includes(filterValue)) {
+                    isVisible = false; // If any filter fails, hide the row
+                }
             }
         });
+
         row.style.display = isVisible ? "" : "none";
     });
-    
-    updateRowCount("countId");
-    //
-    //visibleRows.forEach(row => {
-    //    let cell = row.cells[columnIndex]; // Get the specific column cell
-    //    let cellText = cell ? cell.textContent.toLowerCase().trim() : "";
 
-    //    row.style.display = cellText.includes(filterInput) ? "" : "none";
-    //    updateRowCount("countId");
-    //});
+    updateRowCount("countId"); // Call this once after filtering
 }
 
 // Function to count total and visible rows
