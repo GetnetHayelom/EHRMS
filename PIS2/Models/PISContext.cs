@@ -301,6 +301,7 @@ namespace PIS2.Models
                     .HasColumnName("jobPlacementSalary");
                 entity.Property(e => e.jobPlacementStatus).HasColumnName("jobPlacementStatus");
                 entity.Property(e => e.shiftID).HasColumnName("shiftID");
+                entity.Property(e => e.workSiteID).HasColumnName("workSiteID");
                 entity.Property(e => e.jobPlacementReason).HasColumnName("jobPlacementReason");
 
                 entity.HasOne(d => d.departmentModel).WithMany(p => p.JobPlacements)
@@ -313,6 +314,7 @@ namespace PIS2.Models
 
                 entity.HasOne(d => d.jobModel).WithMany(p => p.JobPlacements).HasForeignKey(d => d.jobID);
                 entity.HasOne(d => d.shiftModel).WithMany(p => p.JobPlacements).HasForeignKey(d => d.shiftID);
+                entity.HasOne(d => d.workSiteModel).WithMany(p => p.JobPlacements).HasForeignKey(d => d.workSiteID);
                 entity.HasIndex(d => new { d.jobID, d.employmentID }).HasFilter("[jobPlacementStatus]=1").IsUnique();
                 entity.HasIndex(d => d.employmentID).HasFilter("[jobPlacementStatus]=1").IsUnique();
             });

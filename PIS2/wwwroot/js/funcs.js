@@ -133,7 +133,7 @@ function updateRowCount(countId) {
     let totalRows = document.querySelectorAll("#dataTable tbody tr").length;
     let visibleRows = document.querySelectorAll("#dataTable tbody tr:not([style*='display: none'])").length;
     let countElement = document.getElementById(countId);
-    countElement.textContent = `Showing ${visibleRows} of ${totalRows} rows`;
+    countElement.textContent = `Filter result= ${visibleRows}`;
 }
 
 // Run on page load to set initial row count

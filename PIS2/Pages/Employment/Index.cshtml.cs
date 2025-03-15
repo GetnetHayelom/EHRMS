@@ -27,7 +27,7 @@ namespace PIS2.Pages.Employment
         public IList<jobModel> JobTitles { get; set; } = default!;
         public IList<workSiteModel> WorkLocations { get; set; } = default!;
         public IList<companyModel> Companies { get; set; } = default!;
-        public DateTime StartDate { get; set; } = DateTime.MinValue;
+        public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; } = DateTime.Now;
         public int totalCount { get; set; }
         public int filteredCount { get; set; }
@@ -45,7 +45,7 @@ namespace PIS2.Pages.Employment
                 .Include(e => e.JobPlacements.OrderByDescending(jp => jp.jobPlacementDate).Take(1)).ThenInclude(jp => jp.departmentModel)
                 .Include(e => e.JobPlacements.OrderByDescending(jp => jp.jobPlacementDate).Take(1)).ThenInclude(jp => jp.jobModel)
                 .ToListAsync();
-
+            StartDate = employmentModel.Min(e => e.employmentDate);
             totalCount = employmentModel.Count;            
         }
      
@@ -90,6 +90,27 @@ namespace PIS2.Pages.Employment
             {
                 employmentModel = employmentModel
                     .Where(e => e.employmentTypeID == empType);
+            }
+            
+            // Filter by Job Title (if provided)
+            if (company.HasValue && company != null)
+            {
+                employmentModel = employmentModel
+                   .Where(e => e.JobPlacements != null && e.JobPlacements
+                   .Any(jp => jp.departmentModel.companyID == company));
+            }
+            // Filter by Job Title (if provided)
+            if (workLoc.HasValue && workLoc != null)
+            {
+                employmentModel = employmentModel
+                   .Where(e => e.JobPlacements != null && e.JobPlacements
+                   .Any(jp => jp.workSiteID == workLoc));
+            }
+            // Filter by Start TIme (if provided)
+            if (dateStart.HasValue && dateStart != null && dateEnd.HasValue && dateEnd != null)
+            {
+                employmentModel = employmentModel
+                    .Where(e => e.employmentDate >= dateStart && e.employmentDate <= dateEnd);
             }
 
             // Execute the query and get the filtered results

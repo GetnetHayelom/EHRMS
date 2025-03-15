@@ -14,6 +14,8 @@ namespace PIS2.Models
         public jobModel? jobModel { get; set; }
         public int? shiftID { get; set; }
         public virtual shiftModel? shiftModel { get; set; }
+        public int? workSiteID { get; set; }
+        public virtual workSiteModel? workSiteModel { get; set; }
         [Required]
         public decimal jobPlacementSalary { get; set; }
         public DateTime jobPlacementDate { get; set; } = DateTime.Now;
