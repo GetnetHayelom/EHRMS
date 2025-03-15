@@ -11,7 +11,29 @@
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-dark border-bottom box-shadow mb-3">
+        <div class="d-none d-print-flex align-items-center justify-content-between mb-2 w-100">
+            <!-- Left Logo -->
+            <div style="width: 15%; text-align: left;">
+                <img src="/assets/mie_logo.png" alt="Logo" style="width: 100%; max-height: 80px;">
+                <p>Form No. WF/HRM/11</p>
+            </div>
+
+            <!-- Centered Company Info -->
+            <div style="width: 70%; text-align: center;">
+                <h3 style="margin: 0;">መስፍን ኢንዳስትሪያል ኢንጂነሪንግ ሓ/የተ/የግ/ኩባንያ</h3>
+                <h2 style="margin: 0;">Mefin Industrial Engineering PLC</h2>
+                <p style="margin: 0;">Mekelle, Ethiopia</p>
+                <p style="margin: 0;">Phone: +123 456 789 | Email: contact@company.com</p>
+            </div>
+
+            <!-- Right Logo -->
+            <div style="width: 15%; text-align: right;">
+                <img src="/assets/mie_logo.png" alt="Logo" style="width: 100%; max-height: 80px;">
+                <p style="margin: 10px 0; font-weight: bold;">Date: @DateTime.Now.ToString("MMM dd, yyyy")</p>
+            </div>
+        </div>
+        
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-dark border-bottom box-shadow mb-3 d-print-none">
             <div class="container">
                 <a class="navbar-brand text-white" asp-area="" asp-page="/Index">PIS2</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
@@ -105,13 +127,13 @@
             </div>
         </nav>
     </header>
-    <div class="container">
+    <div class="d-print-flex container print-full-width">
         <main role="main" class="pb-3">
             @RenderBody()
         </main>
     </div>
 
-    <footer class="border-top footer text-muted">
+    <footer class="border-top footer text-muted d-print-none">
         <div class="container">
             &copy; 2024 - PIS2 - <a asp-area="" asp-page="/Privacy">Privacy</a>
         </div>

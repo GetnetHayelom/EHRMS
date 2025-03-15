@@ -24,4 +24,14 @@ body {
         background-color: black;
         color:white;
     }
+    .print-full-width{
+        width:100%;
+        max-width:100%;
+    }
+    table, thead, tbody, th,td{
+        width:auto;
+    }
+}
+table select{
+    max-width:100px;
 }
