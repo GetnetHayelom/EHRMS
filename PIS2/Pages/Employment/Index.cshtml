@@ -7,15 +7,17 @@
 }
 
 <h1>Employments</h1>
+<div class="d-flex justify-content-between">
+    <p>
+        <a asp-page="Create" class="d-print-none">Add New Employee</a>
+    </p>
+    <div class="d-inline-flex">
+        @await Html.PartialAsync("filter")
+        @await Html.PartialAsync("print")
 
-<p>
-    <a asp-page="Create" class="d-print-none">Add New Employee</a>
-</p>
-<div class="d-inline-flex">
-    @await Html.PartialAsync("filter")
-    @await Html.PartialAsync("print")
-    
+    </div>
 </div>
+
 <div class="row">
     <div class="col-3">
         <label for="filter-status">Filter Status:</label>
@@ -180,18 +182,43 @@
         empType = (!empType || empType === "") ? null : empType;
         workLoc = (!workLoc || workLoc === "") ? null : workLoc;
         company = (!company || company === "") ? null : company;
-        dateStart = (!dateStart || dateStart === "") ? null : dateStart;
+        dateStart = (!dateStart || dateStart === "") ? null : new Date(dateStart).toISOString();
         dateEnd = (!dateEnd || dateEnd === "") ? null : dateEnd;
 
         // Build the URL with multiple filters
         const url = `/Employment/Index?handler=Filter&department=${encodeURIComponent(department)}&jobTitle=${encodeURIComponent(jobTitle)}&empStatus=${encodeURIComponent(empStatus)}&empType=${encodeURIComponent(empType)}&company=${encodeURIComponent(company)}&workLoc=${encodeURIComponent(workLoc)}&dateStart=${encodeURIComponent(dateStart)}&dateEnd=${encodeURIComponent(dateEnd)}`;
-
+        
         fetch(url)
-            .then(response => response.text())
+            //.then(response => response.text())
+            .then(response => response.json())
             .then(data => {
-                document.getElementById('table-body').innerHTML = data;
+                console.log("Received Data:", data); // Debug output
+                const selectDepartment = document.getElementById("filter-department");
+                // ✅ Check if the selected value exists in the new data
+                const existsInNewData = data.departs.some(d => d.id == department);
+                
+                document.getElementById('table-body').innerHTML = data.tableHtml;
+                selectDepartment.innerHTML = "";
+                var option = document.createElement('option');
+                option.value = ""; option.textContent = "All";
+                selectDepartment.appendChild(option)
+                data.departs.forEach(dep => {
+                    var option = document.createElement('option');
+                    option.value = dep.id;  // Set the value of the option (you can customize this)
+                    option.textContent = dep.name;  // Set the visible text of the option
+                    // ✅ Restore selection if it matches
+                    if (existsInNewData && option.value === department) {
+                        option.selected = true;
+                    }
+                    selectDepartment.appendChild(option);
+                });
+                if (!existsInNewData) {
+                    selectDepartment.selected = ""; // Reset to default "All"
+                    department = null;
+                }
                 updateRowCount("countID");
             })
             .catch(error => console.error('Error:', error));
     }
+    enableTableSorting("dataTable");
 </script>

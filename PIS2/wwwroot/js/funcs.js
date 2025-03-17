@@ -140,3 +140,78 @@ function updateRowCount(countId) {
 document.addEventListener("DOMContentLoaded", function () {
     updateRowCount("countId");
 });
+
+//sorting
+
+
+function enableTableSorting(tableId) {
+    let table = document.getElementById(tableId);
+    if (!table) {
+        console.error(`Table with ID "${tableId}" not found.`);
+        return;
+    }
+
+    table.querySelectorAll("th").forEach((header, columnIndex) => {
+        header.style.cursor = "pointer";
+        header.addEventListener("click", function () {
+            sortTable(table, columnIndex);
+        });
+    });
+}
+
+let sortStates = {}; // Store sorting state per table
+
+function sortTable(table, columnIndex) {
+    let tbody = table.querySelector("tbody");
+    let rows = Array.from(tbody.rows);
+
+    // Initialize sort state if not set
+    if (!sortStates[table.id]) {
+        sortStates[table.id] = { column: columnIndex, direction: 1 };
+    }
+
+    let sortState = sortStates[table.id];
+
+    // Toggle sort direction if clicking the same column
+    if (sortState.column === columnIndex) {
+        sortState.direction *= -1;
+    } else {
+        sortState.column = columnIndex;
+        sortState.direction = 1;
+    }
+
+    // Sort rows
+    rows.sort((rowA, rowB) => {
+        let cellA = rowA.cells[columnIndex].innerText.trim();
+        let cellB = rowB.cells[columnIndex].innerText.trim();
+
+        // Handle numeric sorting
+        if (!isNaN(Date.parse(cellA)) && !isNaN(Date.parse(cellB))) {
+            return (new Date(cellA) - new Date(cellB)) * sortState.direction;
+        } else if (!isNaN(cellA) && !isNaN(cellB)) {
+            return (parseFloat(cellA) - parseFloat(cellB)) * sortState.direction;
+        }
+
+        // String sorting (case insensitive)
+        return cellA.localeCompare(cellB) * sortState.direction;
+    });
+
+    // Clear and re-add sorted rows
+    tbody.innerHTML = "";
+    rows.forEach(row => tbody.appendChild(row));
+
+    // Update sorting icons
+    updateSortingIcons(table, columnIndex, sortState.direction);
+}
+
+function updateSortingIcons(table, columnIndex, direction) {
+    table.querySelectorAll("th").forEach((th, index) => {
+        let icon = th.querySelector("span.sort-icon");
+        if (!icon) {
+            icon = document.createElement("span");
+            icon.classList.add("sort-icon");
+            th.appendChild(icon);
+        }
+        icon.innerText = index === columnIndex ? (direction === 1 ? " 🔼" : " 🔽") : "";
+    });
+}

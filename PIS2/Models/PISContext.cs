@@ -531,6 +531,7 @@ namespace PIS2.Models
                 entity.Property(e => e.workSiteName).HasColumnName("workSiteName");
                 entity.Property(e => e.workSiteNature).HasColumnName("workSiteNature");
                 entity.Property(e => e.workSiteStatus).HasColumnName("worksiteStatus");
+                entity.Property(e => e.workSiteCode).HasColumnName("workSiteCode");
 
                 entity.HasOne(d => d.addressModel).WithMany(p => p.WorkSites).HasForeignKey(d => d.addressID);
                 entity.HasMany(d => d.WorkSiteHistories).WithOne(p => p.workSiteModel).HasForeignKey(d => d.workSiteID);

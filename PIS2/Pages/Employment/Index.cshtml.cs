@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Azure;
 using Microsoft.AspNetCore.Mvc;
@@ -34,11 +35,11 @@ namespace PIS2.Pages.Employment
 
         public async Task OnGetAsync()
         {
-            EmploymentTypes = await _context.EmploymentTypes.ToListAsync();
-            Departments = await _context.Departments.ToListAsync();
-            JobTitles = await _context.Jobs.ToListAsync();
-            WorkLocations = await _context.WorkSites.ToListAsync();
-            Companies = await _context.Companies.ToListAsync();
+            EmploymentTypes = await _context.EmploymentTypes.OrderBy(e => e.employmentTypeName).ToListAsync();
+            Departments = await _context.Departments.OrderBy(d => d.departmentName).ToListAsync();
+            JobTitles = await _context.Jobs.OrderBy(j => j.jobTitle).ToListAsync();
+            WorkLocations = await _context.WorkSites.OrderBy(w => w.workSiteName).ToListAsync();
+            Companies = await _context.Companies.OrderBy(c => c.companyName).ToListAsync();
             employmentModel = await _context.Employments
                 .Include(e => e.personModel)
                 .Include(e => e.employmentTypeModel)
@@ -51,6 +52,7 @@ namespace PIS2.Pages.Employment
      
         public IActionResult OnGetFilter(int? department, int? jobTitle, int? empStatus, int? empType, int? company, int? workLoc, DateTime? dateStart, DateTime? dateEnd)
         {
+            Console.WriteLine("the Date is " + dateStart);
             // Start with the full list of employees
             var employmentModel = _context.Employments
                 .Include(e => e.personModel)
@@ -58,15 +60,24 @@ namespace PIS2.Pages.Employment
                 .Include(e => e.JobPlacements.OrderByDescending(jp => jp.jobPlacementDate).Take(1)).ThenInclude(jp => jp.departmentModel)
                 .Include(e => e.JobPlacements.OrderByDescending(jp => jp.jobPlacementDate).Take(1)).ThenInclude(jp => jp.jobModel)
                 .AsQueryable(); // Using IQueryable to build a dynamic query
-
+            var departments = _context.Departments.AsQueryable();
             // Apply filters based on the provided query parameters
 
+            // Filter by company (if provided)
+            if (company.HasValue && company != null)
+            {
+                employmentModel = employmentModel
+                   .Where(e => e.JobPlacements != null && e.JobPlacements
+                   .Any(jp => jp.departmentModel.companyID == company));
+                departments = departments.Where(d => d.companyID == company);
+                
+            }
             // Filter by Department (if provided)
             if (department.HasValue)
             {
                 employmentModel = employmentModel
                     .Where(e => e.JobPlacements != null && e.JobPlacements
-                    .Any(jp => jp.departmentModel.departmentID==department));
+                    .Any(jp => jp.departmentModel.departmentID == department));
             }
 
             // Filter by Status (if provided)
@@ -85,21 +96,15 @@ namespace PIS2.Pages.Employment
                     .Where(e => e.JobPlacements != null && e.JobPlacements
                     .Any(jp => jp.jobModel.jobID==jobTitle));
             }
-            // Filter by Job Title (if provided)
+            // Filter by type (if provided)
             if (empType.HasValue && empType != null)
             {
                 employmentModel = employmentModel
                     .Where(e => e.employmentTypeID == empType);
             }
             
-            // Filter by Job Title (if provided)
-            if (company.HasValue && company != null)
-            {
-                employmentModel = employmentModel
-                   .Where(e => e.JobPlacements != null && e.JobPlacements
-                   .Any(jp => jp.departmentModel.companyID == company));
-            }
-            // Filter by Job Title (if provided)
+            
+            // Filter by workloc (if provided)
             if (workLoc.HasValue && workLoc != null)
             {
                 employmentModel = employmentModel
@@ -107,10 +112,16 @@ namespace PIS2.Pages.Employment
                    .Any(jp => jp.workSiteID == workLoc));
             }
             // Filter by Start TIme (if provided)
-            if (dateStart.HasValue && dateStart != null && dateEnd.HasValue && dateEnd != null)
+            if (dateStart.HasValue && dateStart != null)
             {
                 employmentModel = employmentModel
-                    .Where(e => e.employmentDate >= dateStart && e.employmentDate <= dateEnd);
+                    .Where(e => e.employmentDate >= dateStart);
+            }
+            // Filter by end TIme (if provided)
+            if (dateEnd.HasValue && dateEnd != null)
+            {
+                employmentModel = employmentModel
+                    .Where(e => e.employmentDate <= dateEnd);
             }
 
             // Execute the query and get the filtered results
@@ -130,9 +141,18 @@ namespace PIS2.Pages.Employment
                         $"<td><a href='/Employment/Edit?id={e.employmentID}'>Edit</a> |" +
                         $"<a href='/Employment/Details?id={e.employmentID}'>Details</a></td></tr>";
             }));
-            filteredCount= employmentModel.Count();
+
+            var selectedDeparts = departments.ToList();
+            var departs = selectedDeparts.Select(d => new
+            {
+                id = d.departmentID,
+                name = d.departmentName
+            }).ToList();
+            Console.WriteLine($"Departments Count: {departs.Count}");
+            filteredCount = employmentModel.Count();
             // Return the generated HTML
-            return Content(tableHtml);
+            //return Content(tableHtml);
+            return new JsonResult(new { tableHtml, departs });
         }
     }
 }

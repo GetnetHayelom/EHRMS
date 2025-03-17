@@ -10,13 +10,13 @@ public partial class workSiteModel
     public int workSiteID { get; set; }
 
     public string workSiteName { get; set; } = null!;
-
+    public string workSiteCode { get; set; } = null!;
     public string workSiteNature { get; set; } = null!;
 
     public DateOnly workSiteEstablishDate { get; set; }
 
     public mainStatus workSiteStatus { get; set; }
-
+   
     public int addressID { get; set; }
 
     public virtual addressModel? addressModel { get; set; } = null!;
