@@ -21,6 +21,7 @@ namespace PIS2.Models
 
         public virtual ICollection<educationLevelModel>? EducationLevels {get; set; }
         public virtual ICollection<jobPlacementModel>? JobPlacements { get; set; }
+        public virtual ICollection<jobRequirementModel>? JobRequirements { get; set; }
         public string modifiedBy { get; set; }
 
         public jobModel() { }

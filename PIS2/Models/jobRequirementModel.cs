@@ -14,9 +14,27 @@ namespace PIS2.Models
         public virtual jobModel JobModel { get; set; }
         [Required]
         public int requiredNumber { get; set; }
+        public mainStatus jobRequirementStatus { get; set; }
         public string modifiedBy { get; set; }
         public DateTime modifiedDate { get; set; }= DateTime.Now;
+        public virtual ICollection<jobRequirementHistoryModel>? JobRequirementHistories { get; set; }
         public jobRequirementModel() { }
 
     }
+    public class jobRequirementHistoryModel
+    {
+        [Key]
+        public int jobRequirementHistoryID { get; set; }
+        [Required]
+        public int jobRequirementID { get; set; }
+        public virtual jobRequirementModel JobRequirementModel { get; set; }
+        [Required]
+        public int requiredNumber { get; set; }
+        public mainStatus jobRequirementStatus { get; set; }
+        public string modifiedBy { get; set; }
+        public DateTime modifiedDate { get; set; } = DateTime.Now;
+        public jobRequirementHistoryModel() { }
+
+    }
 }
+

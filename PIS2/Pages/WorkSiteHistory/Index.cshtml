@@ -14,7 +14,7 @@
                 @Html.DisplayNameFor(model => model.workSiteHistoryModel[0].workSiteHistoryAction)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.workSiteHistoryModel[0].workSiteHistoryDate)
+                @Html.DisplayNameFor(model => model.workSiteHistoryModel[0].modifiedDate)
             </th>
             <th></th>
         </tr>
@@ -29,7 +29,7 @@
                 @Html.DisplayFor(modelItem => item.workSiteHistoryAction)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.workSiteHistoryDate)
+                @Html.DisplayFor(modelItem => item.modifiedDate)
             </td>
             <td>
                 <a asp-page="./Edit" asp-route-id="@item.workSiteHistoryID">Edit</a> |

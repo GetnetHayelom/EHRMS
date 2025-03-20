@@ -81,7 +81,7 @@
                     @foreach(var item in Model.employmentModel.EmploymentHistories)
                     {
                         <tr>
-                            <td>@item.employmentHistoryDate.ToString("MMM dd, yyyy")</td>
+                            <td>@item.modifiedDate.ToString("MMM dd, yyyy")</td>
                             <td>@item.employmentTypeModel.employmentTypeName</td>
 
                             <td>@item.employmentStatus</td>
