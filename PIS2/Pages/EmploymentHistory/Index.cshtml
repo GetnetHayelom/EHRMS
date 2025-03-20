@@ -11,7 +11,7 @@
                 @Html.DisplayNameFor(model => model.employmentHistoryModel[0].employmentModel)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.employmentHistoryModel[0].employmentHistoryDate)
+                @Html.DisplayNameFor(model => model.employmentHistoryModel[0].modifiedDate)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.employmentHistoryModel[0].employmentTypeModel)
@@ -29,7 +29,7 @@
                 @Html.DisplayFor(modelItem => item.employmentModel.givenID)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.employmentHistoryDate.Date)
+                @Html.DisplayFor(modelItem => item.modifiedDate.Date)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.employmentTypeModel.employmentTypeName)

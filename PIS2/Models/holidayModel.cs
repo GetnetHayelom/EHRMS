@@ -15,7 +15,7 @@ namespace PIS2.Models
         public DateTime holidayEnd { get; set; }
         public string holidayCycle { get; set; }
         public mainStatus holidayStatus { get; set; }
-
+        public string modifiedBy { get; set; }
         public holidayModel() { }
     }
 }

@@ -12,6 +12,7 @@ namespace PIS2.Models
         public double loyaltyCounter { get; set; }
         public mainStatus loyaltyStatus { get; set; }
         public virtual ICollection<loyaltyHistoryModel>? LoyaltyHistories { get; set; }
+        public string modifiedBy { get; set; }
         public loyaltyModel() { }
     }
 }

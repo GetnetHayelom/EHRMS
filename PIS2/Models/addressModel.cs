@@ -28,10 +28,11 @@ namespace PIS2.Models
         }
         //Navigation Property
         public virtual ICollection<personModel>? Persons { get; set; }
+        public virtual ICollection<personHistoryModel>? PersonHistories { get; set; }
         public virtual ICollection<companyModel>? Companies { get; set; }
         public virtual ICollection<workSiteModel>? WorkSites { get; set; }
         //public virtual companyModel? companyModel { get; set; }
-       
+        public string modifiedBy { get; set; }
         public addressModel() { }
       
     }

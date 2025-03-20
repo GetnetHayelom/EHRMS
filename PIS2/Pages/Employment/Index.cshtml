@@ -192,30 +192,9 @@
             //.then(response => response.text())
             .then(response => response.json())
             .then(data => {
-                console.log("Received Data:", data); // Debug output
-                const selectDepartment = document.getElementById("filter-department");
-                // ✅ Check if the selected value exists in the new data
-                const existsInNewData = data.departs.some(d => d.id == department);
-                
+                console.log("Received Data:", data); // Debug output             
                 document.getElementById('table-body').innerHTML = data.tableHtml;
-                selectDepartment.innerHTML = "";
-                var option = document.createElement('option');
-                option.value = ""; option.textContent = "All";
-                selectDepartment.appendChild(option)
-                data.departs.forEach(dep => {
-                    var option = document.createElement('option');
-                    option.value = dep.id;  // Set the value of the option (you can customize this)
-                    option.textContent = dep.name;  // Set the visible text of the option
-                    // ✅ Restore selection if it matches
-                    if (existsInNewData && option.value === department) {
-                        option.selected = true;
-                    }
-                    selectDepartment.appendChild(option);
-                });
-                if (!existsInNewData) {
-                    selectDepartment.selected = ""; // Reset to default "All"
-                    department = null;
-                }
+
                 updateRowCount("countID");
             })
             .catch(error => console.error('Error:', error));

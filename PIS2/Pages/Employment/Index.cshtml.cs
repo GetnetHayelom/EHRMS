@@ -60,7 +60,7 @@ namespace PIS2.Pages.Employment
                 .Include(e => e.JobPlacements.OrderByDescending(jp => jp.jobPlacementDate).Take(1)).ThenInclude(jp => jp.departmentModel)
                 .Include(e => e.JobPlacements.OrderByDescending(jp => jp.jobPlacementDate).Take(1)).ThenInclude(jp => jp.jobModel)
                 .AsQueryable(); // Using IQueryable to build a dynamic query
-            var departments = _context.Departments.AsQueryable();
+            var departments = _context.Departments.OrderBy(d=>d.departmentName).AsQueryable();
             // Apply filters based on the provided query parameters
 
             // Filter by company (if provided)
@@ -70,10 +70,17 @@ namespace PIS2.Pages.Employment
                    .Where(e => e.JobPlacements != null && e.JobPlacements
                    .Any(jp => jp.departmentModel.companyID == company));
                 departments = departments.Where(d => d.companyID == company);
-                
+                if (departments.Any(d => d.departmentID ==department)) {
+                    department = null;
+                }
+
+            }
+            else
+            {
+                departments = _context.Departments.OrderBy(d => d.departmentName).AsQueryable();
             }
             // Filter by Department (if provided)
-            if (department.HasValue)
+            if (department.HasValue && department !=null)
             {
                 employmentModel = employmentModel
                     .Where(e => e.JobPlacements != null && e.JobPlacements
@@ -125,7 +132,7 @@ namespace PIS2.Pages.Employment
             }
 
             // Execute the query and get the filtered results
-            var filteredEmployees = employmentModel.ToList();
+            var filteredEmployees = employmentModel.OrderBy(e => e.givenID).ToList();
 
             // Generate the table HTML
             var tableHtml = string.Join("", filteredEmployees.Select(e =>

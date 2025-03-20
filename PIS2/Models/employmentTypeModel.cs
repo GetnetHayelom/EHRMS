@@ -24,7 +24,7 @@ namespace PIS2.Models
             
         public ICollection<employmentHistoryModel>? EmploymentHistories { get; set; } = null!;
         public ICollection<employmentModel>? Employments { get; set; } = null!;
-
+        public string modifiedBy { get; set; }
         public employmentTypeModel()
         {
 

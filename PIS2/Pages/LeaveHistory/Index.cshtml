@@ -21,7 +21,7 @@
                 @Html.DisplayNameFor(model => model.leaveHistoryModel[0].leaveHistoryAction)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.leaveHistoryModel[0].leaveHistoryDate)
+                @Html.DisplayNameFor(model => model.leaveHistoryModel[0].modifiedDate)
             </th>
             <th></th>
         </tr>
@@ -36,7 +36,7 @@
                 @Html.DisplayFor(modelItem => item.leaveHistoryAction)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.leaveHistoryDate)
+                @Html.DisplayFor(modelItem => item.modifiedDate)
             </td>
             <td>
                 <a asp-page="./Edit" asp-route-id="@item.leaveHistoryID">Edit</a> |

@@ -6,7 +6,7 @@
         public double TotalLeave, AllowedLeave, LastAccrualIncrement;
         public DateTime LeaveDetailStartDate, LeaveDetailsEndDate;
         public List<leavePerYear> AnnualLeaveHistory;
-        
+       
         public leaveDetail(
             double totalLeave, double allowedLeave, double lastAccrualIncrement, 
             DateTime leaveDetailStartDate, DateTime leaveDetailEndDate, 

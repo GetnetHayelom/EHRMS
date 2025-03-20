@@ -32,10 +32,10 @@ namespace PIS2.Models
         public virtual ICollection<leaveModel>? Leaves { get; set; }
         public virtual ICollection<allowanceAssignmentModel>? AllowanceAssignments { get; set; }
         public virtual ICollection<employmentHistoryModel>? EmploymentHistories { get; set; }
-        public virtual ICollection<loyaltyHistoryModel>? LoyaltyHistories { get; set; } 
+        public virtual ICollection<loyaltyHistoryModel>? LoyaltyHistories { get; set; }
         //public virtual departmentModel? departmentModel { get; set; }
         //public virtual companyModel? companyModel { get; set; }
-        
+        public string modifiedBy { get; set; }
         public employmentModel() { }
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
@@ -74,12 +74,13 @@ namespace PIS2.Models
         public int employmentID { get; set; }
         public string givenID { get; set; }
         public virtual employmentModel? employmentModel { get; set; } = default!;
-        public DateTime employmentHistoryDate { get; set; }
+        public DateTime modifiedDate { get; set; } = DateTime.Now;
         public int employmentTypeID { get; set; }
         public virtual employmentTypeModel? employmentTypeModel { get; set; }
         public mainStatus employmentStatus { get; set; } = mainStatus.Active;
         public string? employmentHistoryRemark { get; set; }
         public string employmentHistoryUser {  get; set; }
+        public string modifiedBy { get; set; }
         public void validateAge()
         {
             int age = 0;

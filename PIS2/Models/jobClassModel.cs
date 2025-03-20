@@ -12,6 +12,7 @@ namespace PIS2.Models
         public mainStatus JobClasStatus { get; set; }
 
         public virtual ICollection<jobModel>? Jobs { get; set; }
+        public string modifiedBy { get; set; }
 
         public jobClassModel() { }
     }

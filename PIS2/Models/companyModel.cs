@@ -15,6 +15,7 @@ namespace PIS2.Models
         public virtual addressModel? addressModel { get; set; } = null!;
         public mainStatus companyStatus { get; set; }
         public virtual ICollection<departmentModel>? Departments { get; set; } = null!;
+        public string modifiedBy { get; set; }
         public companyModel()
         {
 

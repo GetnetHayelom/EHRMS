@@ -15,6 +15,7 @@ namespace PIS2.Models
         public mainStatus allowanceStatus { get; set; }
         //Navigation Property
         public virtual ICollection<allowanceAssignmentModel>? AllowanceAssignments { get; set; }
+        public string modifiedBy { get; set; }
         public allowanceModel() { }
     }
 

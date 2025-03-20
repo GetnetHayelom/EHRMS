@@ -33,6 +33,9 @@ namespace PIS2.Models
         public virtual ICollection<bankInfoModel>? Banks { get; set; }
         public virtual ICollection<employmentModel>? Employments { get; set; }
         public virtual ICollection<personEducationLevelModel>? PersonEducationLevels { get; set; }
+        public virtual ICollection<personHistoryModel> PersonHistories { get; set; }
+        public virtual userModel? userModel { get; set; }
+        public string modifiedBy { get; set; }
         public personModel()
         {
 
@@ -77,5 +80,31 @@ namespace PIS2.Models
 
         }
        
+    }
+    public class personHistoryModel
+    {
+        [Key]
+        public int personHistoryID { get; set; }
+        [Required]
+        public int personID { get; set; }
+        public virtual personModel personModel { get; set; }
+        public string personFirstName { get; set; }
+        public string personFatherName { get; set; }
+        public string? personLastName { get; set; }
+        public DateTime personDoB { get; set; }
+        public Gender personGender { get; set; }
+        public String? personIDType { get; set; }//kebelle ID, Passport, Driving license etc
+        public String? personIDNumber { get; set; }// Number of the provided identification card
+        public String? personPhoneNumber { get; set; }
+        public String? personRecordNumber { get; set; }
+        public int? addressID { get; set; }
+        public virtual addressModel? addressModel { get; set; } 
+        public string? personEmailAddress { get; set; }
+        public string personFullName => $"{personFirstName} {personFatherName} {personLastName}";
+        public int personsAge => DateTime.Now.Year - personDoB.Year;
+        public virtual userModel? userModel { get; set; }
+        public string modifiedBy { get; set; }
+        public string modifiedDate { get; set; }
+        public personHistoryModel() { }
     }
 }

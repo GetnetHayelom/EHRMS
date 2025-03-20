@@ -10,7 +10,7 @@ namespace PIS2.Models
         public string? jobCategoryDescription { get; set; }
         public mainStatus jobCategoryStatus { get; set; }
         public virtual ICollection<jobModel>? Jobs { get; set; }
-
+        public string modifiedBy { get; set; }
         public jobCategoryModel() { }
     }
 }

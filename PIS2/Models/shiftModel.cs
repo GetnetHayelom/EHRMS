@@ -14,6 +14,7 @@ namespace PIS2.Models
         public mainStatus shiftStatus { get; set; }
         public virtual ICollection<breakModel>? Breaks { get; set; }
         public virtual ICollection<jobPlacementModel>? JobPlacements { get; set; }
+        public string modifiedBy { get; set; }
         public shiftModel() { }
     }
 }

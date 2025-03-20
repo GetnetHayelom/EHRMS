@@ -17,8 +17,8 @@ namespace PIS2.Models
         public virtual employmentModel? employmentModel { get; set; }
         public double allowanceAssignmentAmount { get; set; } = 0;
         public mainStatus allowanceStatus { get; set; } = mainStatus.Active;
-        public virtual ICollection<allowanceAssignmentHistoryModel>? AllowanceAssignmentHistories { get; set; } 
-        
+        public virtual ICollection<allowanceAssignmentHistoryModel>? AllowanceAssignmentHistories { get; set; }
+        public string modifiedBy { get; set; }
         public allowanceAssignmentModel() { }
     }
     public class allowanceAssignmentHistoryModel
@@ -27,9 +27,10 @@ namespace PIS2.Models
         public int allowanceAssignmentHistoryID { get; set; }
         public int allowanceAssignmentID { get; set; }
         public virtual allowanceAssignmentModel? allowanceAssignmentModel { get; set; }
-        public DateTime allowanceAssignmentHistoryDate { get; set;} = DateTime.Now;
+        public DateTime modifiedDate { get; set;} = DateTime.Now;
         public mainStatus allowanceAssignmentHistoryStatus { get; set; }
-        public string allowanceUser { get; set; }
+        public string modifiedBy { get; set; }
+       
         public allowanceAssignmentHistoryModel()
         {
         }

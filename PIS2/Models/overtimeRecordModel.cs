@@ -18,6 +18,7 @@ namespace PIS2.Models
         public TimeSpan overtimeRecordEndTime { get; set; }
         public overtimeStatus overtimeRecordStatus { get; set; } = overtimeStatus.Hold;
         public virtual ICollection<overtimeHistoryModel>? OvertimeHistories { get; set; }
+        public string modifiedBy { get; set; }
         public overtimeRecordModel() { }
 
     }

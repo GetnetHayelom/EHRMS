@@ -22,7 +22,7 @@ namespace PIS2.Models
         public mainStatus jobPlacementStatus { get; set; }
         public string jobPlacementReference { get; set; }
         public string jobPlacementReason { get; set; }
-
+        public string modifiedBy { get; set; }
         public jobPlacementModel() { }
     }
 }

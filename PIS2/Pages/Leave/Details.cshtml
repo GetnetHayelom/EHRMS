@@ -78,9 +78,9 @@
                 @foreach (var item in Model.leaveModel.LeaveHistories)
                 {
                     <tr>
-                        <td>@item.leaveHistoryDate</td>
+                        <td>@item.modifiedDate</td>
                         <td>@item.leaveHistoryAction</td>
-                        <td>@item.leaveUser</td>
+                        <td>@item.modifiedBy</td>
                     </tr>
                 }
             </tbody>

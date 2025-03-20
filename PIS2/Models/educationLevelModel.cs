@@ -14,6 +14,7 @@ namespace PIS2.Models
         public mainStatus educationLevelStatus { get; set; }
         public virtual ICollection<jobModel>? Jobs { get; set; } = new List<jobModel>();
         public virtual ICollection<personEducationLevelModel>? PersonEducationLevels { get; set; }
+        public string modifiedBy { get; set; }
         public educationLevelModel()
         {
 

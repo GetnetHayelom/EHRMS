@@ -18,7 +18,7 @@ namespace PIS2.Models
         public string educationLevelInstitutionName { get; set; }
         public string? educationLevelNumber { get; set; }
         //public ICollection<personModel> Persons { get; set; } = null!;
-    
+        public string modifiedBy { get; set; }
         public personEducationLevelModel()
         {
 

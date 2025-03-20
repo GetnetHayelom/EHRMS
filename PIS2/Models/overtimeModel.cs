@@ -11,7 +11,7 @@ namespace PIS2.Models
         public mainStatus overtimeStatus { get; set; }
         public double overtimeRate { get; set; }
         public virtual ICollection<overtimeRecordModel>? OvertimeRecords { get; set; }
-       
+        public string modifiedBy { get; set; }
         public overtimeModel() { }
     }
 }

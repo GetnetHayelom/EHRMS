@@ -95,6 +95,8 @@ namespace PIS2.Pages
         }
         [BindProperty]
         public string searchID { get; set; } = default!;
+        [BindProperty]
+        public string Department { get; set; } = default!;
         public async Task<IActionResult> OnPostSearchID()
         {
             Console.WriteLine($"Search ID: {searchID}");
@@ -129,7 +131,7 @@ namespace PIS2.Pages
                            // List<employmentHistoryModel> histories =_context.EmploymentHistories.Include(e => e.employmentTypeModel).Where(e => e.employmentID == Employment.employmentID).ToList();
 
                             Leaves = Employment.Leaves.ToList();// _context.Leaves.Where(l => l.employmentID == Employment.employmentID).ToList();
-                            JobPlacements = await _context.JobPlacements.Where(l => l.employmentID == Employment.employmentID).ToListAsync();
+                            //JobPlacements = await _context.JobPlacements.OrderByDescending(jp => jp.jobPlacementDate).Where(l => l.employmentID == Employment.employmentID).ToListAsync();
                            
                             LeaveDetail = _core.GetLeaveSummary(Employment.employmentID);
                             Overtimes = await _context.OvertimeRecords.Include(ot => ot.overtimeModel)

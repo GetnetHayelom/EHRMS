@@ -13,6 +13,7 @@ namespace PIS2.Models
         public mainStatus accountStatus { get; set; }
         //Navigation Property
         public virtual ICollection<subAccountModel>? SubAccounts { get; set; }
+        public string modifiedBy { get; set; }
         public accountModel() { }
         public accountModel(string accountNumber, string accountName, string accountDescription, mainStatus accountStatus)
         {

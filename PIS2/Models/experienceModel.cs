@@ -16,6 +16,7 @@ namespace PIS2.Models
         public DateTime experienceEndDate { get; set; }
         public int jobPlacementID { get; set; }
         public virtual jobPlacementModel? jobPlacementModel { get; set; }
+       
         public experienceModel()
         {
 

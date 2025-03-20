@@ -11,7 +11,7 @@ namespace PIS2.Models
         public leaveTypeImpact leaveTypeImpact { get; set; }
         public mainStatus leaveTypeStatus { get; set; }
         public virtual ICollection<leaveModel>? Leaves { get; set; }
-       
+        public string modifiedBy { get; set; }
         public leaveTypeModel() { }
     }
 }

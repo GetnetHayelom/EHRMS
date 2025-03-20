@@ -22,6 +22,6 @@ public partial class workSiteModel
     public virtual addressModel? addressModel { get; set; } = null!;
     public virtual ICollection<workSiteHistoryModel>? WorkSiteHistories { get; set; }
     public virtual ICollection<jobPlacementModel>? JobPlacements { get; set; }
-
+    public string modifiedBy { get; set; }
     public workSiteModel() { }
 }

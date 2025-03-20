@@ -41,7 +41,7 @@ namespace PIS2.Models
                     new[] { nameof(leaveDays) });
             }
         }
-
+        public string modifiedBy { get; set; }
         public leaveModel() { }
        
     }
@@ -60,8 +60,9 @@ namespace PIS2.Models
         public int leaveID { get; set; }
         public virtual leaveModel leaveModel { get; set; }
         public leaveStatus leaveHistoryAction { get; set; }
-        public DateTime leaveHistoryDate { get; set; }
-        public string leaveUser{get; set;}
+        public DateTime modifiedDate { get; set; }
+        public string modifiedBy {get; set;}
+        
         public leaveHistoryModel()
         {
 

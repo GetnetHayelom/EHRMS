@@ -30,8 +30,8 @@ namespace PIS2.Models
             employmentHistories = _context.EmploymentHistories.Include(e => e.employmentTypeModel)
                 .Where(e => e.employmentID == employee.employmentID).ToList();
             //check employment status and employment type
-            startDate = employmentHistories.Where(eh => eh.employmentTypeModel.isLeaveCount == true).FirstOrDefault().employmentHistoryDate;
-            endDate = employmentHistories.Where(eh => eh.employmentTypeModel.isLeaveCount == true).LastOrDefault().employmentHistoryDate;
+            startDate = employmentHistories.Where(eh => eh.employmentTypeModel.isLeaveCount == true).FirstOrDefault().modifiedDate;
+            endDate = employmentHistories.Where(eh => eh.employmentTypeModel.isLeaveCount == true).LastOrDefault().modifiedDate;
                         
             if (startDate == endDate)
             { 
@@ -308,7 +308,7 @@ namespace PIS2.Models
             DateTime leaveCountEndDate;// = DateTime.Now;
            if(employment.employmentStatus == mainStatus.Inactive)
             {
-                leaveCountEndDate = GetEmpHist(empID).Last().employmentHistoryDate;
+                leaveCountEndDate = GetEmpHist(empID).Last().modifiedDate;
             }
             else
             {

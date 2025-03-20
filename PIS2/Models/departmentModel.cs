@@ -19,7 +19,7 @@ namespace PIS2.Models
         public int? employmentID { get; set; }
         public virtual employmentModel? employmentModel { get; set; }
         public ICollection<jobPlacementModel>? JobPlacements { get; set; } = null!;
-        
+        public string modifiedBy { get; set; }
         public departmentModel() { }
     }
 }

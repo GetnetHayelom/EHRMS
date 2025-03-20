@@ -24,6 +24,6 @@ namespace PIS2.Models
             this.subAccountDescription = subAccountDescription;
             this.subAccountStatus = status;
         }
-
+        public string modifiedBy { get; set; }
     }
 }

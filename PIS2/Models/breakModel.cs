@@ -14,6 +14,7 @@ namespace PIS2.Models
         public TimeSpan breakEnd { get; set; }
         public string breakName { get; set; }
         public mainStatus breakStatus { get; set; }
+        public string modifiedBy { get; set; }
         public breakModel() { }
 
     }

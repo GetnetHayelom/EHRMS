@@ -5,6 +5,6 @@ namespace PIS2.Models
     public class actionLog
     {
         public DateTime timeOfAction = DateTime.Now;
-        //public string user = User.Identity?.Name!;
+        //public string user = User.Identity.Name;
     }
 }

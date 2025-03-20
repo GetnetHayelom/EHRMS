@@ -21,8 +21,8 @@ namespace PIS2.Models
 
         public virtual ICollection<educationLevelModel>? EducationLevels {get; set; }
         public virtual ICollection<jobPlacementModel>? JobPlacements { get; set; }
+        public string modifiedBy { get; set; }
 
-     
         public jobModel() { }
     }
     public class jobGradeModel{
@@ -34,6 +34,8 @@ namespace PIS2.Models
         public double jobGradeMaxSalary { get; set; }
         public mainStatus jobGradeStatus { get; set; }
         public virtual ICollection<jobModel>? Jobs { get; set; }
+        public string modifiedBy { get; set; }
+
         public jobGradeModel()
         {
         }
