@@ -2,31 +2,31 @@
 @model PIS2.Pages.Loyalty.IndexModel
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Loyalty";
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
 
-<h1>Index</h1>
+<h1>Loyalty</h1>
 
 <p>
-    <a asp-page="Create">Create New</a>
+    <a asp-page="Create">Add New Loyalty</a>
 </p>
 <table class="table" id="dataTable">
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.loyaltyModel[0].loyaltyName)
+                Loyalty Name
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.loyaltyModel[0].loyaltyAmount)
+                Loyalty Amount
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.loyaltyModel[0].loyaltyCounter)
+                Loyalty Counter
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.loyaltyModel[0].loyaltyStatus)
+                Loyalty Status
             </th>
-            <th></th>
+            <th>Action</th>
         </tr>
     </thead>
     <tbody>

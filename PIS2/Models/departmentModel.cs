@@ -20,6 +20,7 @@ namespace PIS2.Models
         public virtual employmentModel? employmentModel { get; set; }
         public ICollection<jobPlacementModel>? JobPlacements { get; set; } = null!;
         public virtual ICollection<jobRequirementModel>? JobRequirements { get; set; } = null!;
+        public virtual ICollection<overtimeRecordModel>? OvertimeRecords { get; set; } = null!;
         public string modifiedBy { get; set; }
         public departmentModel() { }
     }

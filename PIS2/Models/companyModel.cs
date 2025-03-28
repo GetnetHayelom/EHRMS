@@ -9,7 +9,7 @@ namespace PIS2.Models
         [Required(ErrorMessage = "Company name can not be empty.")]
         public string companyName { get; set; }
         public string companyAlias { get; set; }
-        public int? employmentID { get; set; } //General Manager
+        public int? employmentID { get; set; } //Company Manager
         public virtual employmentModel? employmentModel { get; set; }
         public int? addressID { get; set; }
         public virtual addressModel? addressModel { get; set; } = null!;

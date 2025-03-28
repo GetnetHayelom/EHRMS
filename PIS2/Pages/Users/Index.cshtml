@@ -1,0 +1,61 @@
+﻿@page
+@model PIS2.Pages.Users.IndexModel
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-page="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.userModel[0].userName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.userModel[0].personModel)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.userModel[0].userStatus)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.userModel[0].modifiedBy)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.userModel[0].modifiedDate)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model.userModel) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.userName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.personModel.personID)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.userStatus)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.modifiedBy)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.modifiedDate)
+            </td>
+            <td>
+                <a asp-page="./Edit" asp-route-id="@item.userID">Edit</a> |
+                <a asp-page="./Details" asp-route-id="@item.userID">Details</a> |
+                <a asp-page="./Delete" asp-route-id="@item.userID">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

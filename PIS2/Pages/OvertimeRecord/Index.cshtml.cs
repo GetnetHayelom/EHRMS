@@ -19,13 +19,21 @@ namespace PIS2.Pages.OvertimeRecord
         }
 
         public IList<overtimeRecordModel> overtimeRecordModel { get;set; } = default!;
-
-        public async Task OnGetAsync()
+        public int TotalPages { get; set; }
+        public int CurrentPage { get; set; } = 1;
+        public int PageSize { get; set; } = 100;
+        public async Task OnGetAsync(int id=1)
         {
+            CurrentPage = id > 0 ? id : 1;
+            var OTR = await _context.OvertimeRecords.CountAsync();
+
+            TotalPages = (int)Math.Ceiling(OTR / (double)PageSize);
             overtimeRecordModel = await _context.OvertimeRecords
                 .Include(o => o.employmentModel)
                 .Include(o => o.overtimeModel)
-                .Include(o => o.OvertimeHistories).ToListAsync();
+                .Include(o => o.OvertimeHistories)
+                .Skip((CurrentPage - 1) * PageSize)
+                .Take(PageSize).ToListAsync();
         }
     }
 }

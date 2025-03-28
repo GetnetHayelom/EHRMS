@@ -122,7 +122,7 @@ namespace PIS2.Models
             //number of days that are extra after allocating the total day per year
             int spareDays = 0;
             //the last amount incremented, initialised to the base rate
-            double lastAnnualLeaveIncrement = leaves.OrderBy(l => l.leaveReaquestDate).LastOrDefault(l => l.leaveTypeModel.leaveTypeImpact == leaveTypeImpact.Positive).leaveDays; 
+            double lastAnnualLeaveIncrement = leaves.OrderBy(l => l.leaveReaquestDate).LastOrDefault(l => l.leaveTypeModel.leaveTypeImpact == leaveTypeImpact.Positive)?.leaveDays ?? 0; 
             //daily accrual rate by deviding last annual increment rate to the number of working days
             double dailyAccrualRate =lastAnnualLeaveIncrement / workingDayPerYear;
             //total amount of leave until the given end time
@@ -202,7 +202,7 @@ namespace PIS2.Models
 
                 dateCounter = dateCounter.AddYears(1);
                 startingLeavePerYear += (accruedLeaves - usedLeaves);
-                lastIncrement = accrued.OrderByDescending(l => l.leaveReaquestDate).FirstOrDefault().leaveDays;
+                lastIncrement = accrued.OrderByDescending(l => l.leaveReaquestDate).FirstOrDefault()?.leaveDays ?? 0;
                 balance = totalAccruedLeaves - totalUsedLeaves;
             }
             if (balance < lastIncrement)

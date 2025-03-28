@@ -17,6 +17,7 @@ namespace PIS2.Models
         [Required]
         public mainStatus subAccountStatus { get; set; }
         public ICollection<departmentModel>? Departments { get; set; } = null!;
+        public ICollection<workSiteModel>? WorkSites { get; set; } = null!;
         public subAccountModel() { }
         public subAccountModel(int accountID, string subAccountName, string subAccountDescription, mainStatus status) {
             this.accountID = accountID;

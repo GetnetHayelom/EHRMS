@@ -31,6 +31,7 @@ namespace PIS2.Pages.Employment
                 .Include(e=>e.personModel)
                 .Include(e=>e.employmentTypeModel)
                 .Include(e =>e.JobPlacements).ThenInclude(jp => jp.jobModel)
+                .Include(e => e.JobPlacements).ThenInclude(jp => jp.workSiteModel)
                 .Include(e =>e.JobPlacements).ThenInclude(jp => jp.departmentModel).FirstOrDefaultAsync(m => m.employmentID == id);
             if (employmentmodel == null)
             {

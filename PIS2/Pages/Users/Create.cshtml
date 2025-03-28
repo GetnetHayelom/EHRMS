@@ -1,0 +1,49 @@
+﻿@page
+@model PIS2.Pages.Users.CreateModel
+
+@{
+    ViewData["Title"] = "Create";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<h1>Create</h1>
+
+<h4>userModel</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="userModel.personID" class="control-label"></label>
+                <select asp-for="userModel.personID" class="form-control select2" asp-items="ViewBag.personID">
+                    <option value="">-- Select a Person --</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <span class="text-danger">*</span>
+                <label asp-for="userModel.userName" class="control-label"></label>
+                <input asp-for="userModel.userName" class="form-control" />
+                <span asp-validation-for="userModel.userName" class="text-danger"></span>
+            </div>
+            
+            <div class="form-group">
+                <label asp-for="userModel.userStatus" class="control-label"></label>
+                <select asp-for="userModel.userStatus" class="form-control" asp-items="Html.GetEnumSelectList<Models.mainStatus>()"></select>
+                <span asp-validation-for="userModel.userStatus" class="text-danger"></span>
+            </div>
+            
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-page="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

@@ -2,49 +2,81 @@
 @model PIS2.Pages.OvertimeRecord.DetailsModel
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Overtime Record Details";
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
 
-<h1>Details</h1>
+<h1>Overtime Record</h1>
 
 <div>
-    <h4>overtimeRecordModel</h4>
+    <h4>Overtime Record Details</h4>
     <hr />
     <dl class="row">
         <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.overtimeRecordModel.employmentModel)
+            Employee ID:
         </dt>
         <dd class="col-sm-10">
             @Html.DisplayFor(model => model.overtimeRecordModel.employmentModel.givenID)
         </dd>
         <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.overtimeRecordModel.overtimeModel)
+            Employee Name:
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.overtimeRecordModel.employmentModel.personModel.personFullName)
+        </dd>
+        <dt class="col-sm-2">
+            Type of Overtime:
         </dt>
         <dd class="col-sm-10">
             @Html.DisplayFor(model => model.overtimeRecordModel.overtimeModel.overtimeID)
         </dd>
         <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.overtimeRecordModel.overtimeRecordDate)
+            Date:
         </dt>
         <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.overtimeRecordModel.overtimeRecordDate)
+            @Model.overtimeRecordModel.overtimeRecordDate.ToString("dd MMM, yyyy")
         </dd>
         <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.overtimeRecordModel.overtimeRecordStartTime)
+            Start Time:
         </dt>
         <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.overtimeRecordModel.overtimeRecordStartTime)
+            @Model.overtimeRecordModel.overtimeRecordStartTime
         </dd>
         <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.overtimeRecordModel.overtimeRecordEndTime)
+            End Time:
         </dt>
         <dd class="col-sm-10">
             @Html.DisplayFor(model => model.overtimeRecordModel.overtimeRecordEndTime)
         </dd>
+        <dt class="col-sm-2">
+            Status:
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.overtimeRecordModel.overtimeRecordStatus)
+        </dd>
     </dl>
 </div>
+<table class="table table-striped table-hover">
+    <thead class="bg-info text-white">
+        <tr>
+            <th>Date</th>
+            <th>Status</th>
+            <th>Modified By</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach(var item in Model.OvertimeHistories)
+        {
+            <tr>
+                <td>@item.modifiedDate.ToString("dd/MM/yyyy")</td>
+                <td>@item.overtimeHistoryAction</td>
+                <td>@item.modifiedBy</td>
+            </tr>
+        }
+    </tbody>
+</table>
 <div>
     <a asp-page="./Edit" asp-route-id="@Model.overtimeRecordModel.overtimeRecordID">Edit</a> |
     <a asp-page="./Index">Back to List</a>
 </div>
+@await Html.PartialAsync("print")

@@ -22,17 +22,25 @@ namespace PIS2.Models
         [Required]
         public mainStatus employmentStatus { get; set; } = mainStatus.Active;
         public string? employmentReference { get; set; }
-        public int? workingHoursPerWeek  { get; set; }
+        public int? workingHoursPerWeek { get; set; }
         public double employmentCarriedOverLeave { get; set; } = 0;
         [Required]
         public int employmentTypeID { get; set; }
         public virtual employmentTypeModel? employmentTypeModel { get; set; }
+        public int? employmentMethodID { get; set; }
+        public virtual employmentMethodModel? employmentMethodModel { get; set; }
+        public int? employmentRequestID { get; set; }
+        public virtual employmentRequestModel? employmentRequestModel { get; set; }
         public virtual ICollection<overtimeRecordModel>? OvertimeRecords { get; set; }
         public virtual ICollection<jobPlacementModel>? JobPlacements { get; set; }
         public virtual ICollection<leaveModel>? Leaves { get; set; }
         public virtual ICollection<allowanceAssignmentModel>? AllowanceAssignments { get; set; }
         public virtual ICollection<employmentHistoryModel>? EmploymentHistories { get; set; }
         public virtual ICollection<loyaltyHistoryModel>? LoyaltyHistories { get; set; }
+        public virtual ICollection<workSiteModel>? WorkSites { get; set; }
+        public virtual ICollection<employmentRequestModel>? EmploymentRequests { get; set; }
+        public virtual contractModel? contractModel { get; set; }
+        public virtual terminationModel? TerminationModel { get; set; }
         //public virtual departmentModel? departmentModel { get; set; }
         //public virtual companyModel? companyModel { get; set; }
         public string modifiedBy { get; set; }
@@ -43,7 +51,7 @@ namespace PIS2.Models
             personModel person = _context.Persons.FirstOrDefault(r => r.personID == personID);
             employmentTypeModel employmentType = _context.EmploymentTypes.FirstOrDefault(e => e.employmentTypeID == employmentTypeID);
             // Explicitly load the related model
-            if(person == null)
+            if (person == null)
             {
                 yield return new ValidationResult("Person Not Found.");
             }
@@ -54,7 +62,7 @@ namespace PIS2.Models
             else if (person.personDoB > employmentDate)
             {
                 yield return new ValidationResult("Date of birth can not be latest than employment date");
-            }            
+            }
             else if (person.personsAge < employmentType.employmentMinAge)
             {
                 yield return new ValidationResult("Employee is under age for selected employment type");
@@ -63,7 +71,7 @@ namespace PIS2.Models
             {
                 yield return new ValidationResult("Employee is under age for selected employment type");
             }
-        
+
         }
 
     }
@@ -79,7 +87,6 @@ namespace PIS2.Models
         public virtual employmentTypeModel? employmentTypeModel { get; set; }
         public mainStatus employmentStatus { get; set; } = mainStatus.Active;
         public string? employmentHistoryRemark { get; set; }
-        public string employmentHistoryUser {  get; set; }
         public string modifiedBy { get; set; }
         public void validateAge()
         {
@@ -90,12 +97,77 @@ namespace PIS2.Models
                 throw new InvalidOperationException($"Age must be between {employmentTypeModel.employmentMinAge} and {employmentTypeModel.employmentMaxAge}!");
             }
         }
-        
+
         public employmentHistoryModel()
         {
 
         }
     }
-}
+    public class employmentMethodModel //indicates how the employment is made, exam, transfer, by letter
+    {
+        [Key]
+        public int employmentMethodID { get; set; }
+        public string employmentMethodName { get; set; }
+        public string employmentMethodDescription { get; set; }
+        public mainStatus employmentMethodStatus { get; set; } = mainStatus.Active;
+        public virtual ICollection<employmentModel>? Employments { get; set; }
+        public virtual ICollection<employmentMethodHistoryModel>? EmploymentMethodHistories { get; set; }
+        public DateTime modifiedDate { get; set; }
 
+        public string modifiedBy { get; set; }
+        public employmentMethodModel(){}
+    }
+    public class employmentMethodHistoryModel 
+    {
+        [Key]
+        public int employmentMethodHistoryID { get; set; }
+        public int employmentMethodID { get; set; }
+        public virtual employmentMethodModel employmentMethodModel { get; set; }
+        public string employmentMethodName { get; set; }
+        public string employmentMethodDescription { get; set; }
+        public mainStatus employmentMethodStatus { get; set; } = mainStatus.Active;
+        public DateTime modifiedDate { get; set; }
+        public string modifiedBy { get; set; }
+        public employmentMethodHistoryModel(){}
+    }
+    public class employmentRequestModel //request made to hr to employ new employees only managers can request
+    {
+        [Key]
+        public int employmentRequestID { get; set; }
+        public int jobID { get; set; }
+        public virtual jobModel jobModel { get; set; }
+        public DateTime employmentRequestDate { get; set; } = DateTime.Now;
+        public int employmentTypeID { get; set; }
+        public employmentTypeModel employmentTypeModel { get; set; }
+        public int requiredNo { get; set; }
+        public employmentRequestStatus requestStatus { get; set; }
+        public string modifiedBy { get; set; }
+        public virtual ICollection<employmentRequestHistoryModel> EmploymentRequestHistories { get; set; }
+        public virtual ICollection<employmentModel>? Employments { get; set; }
+        public employmentRequestModel() { }
+    }
+    public class employmentRequestHistoryModel
+    {
+
+        [Key]
+        public int employmentRequestHistoryID { get; set; }
+        public int employmentRequestID { get; set; }
+        public virtual employmentRequestModel? employmentRequestModel { get; set; }
+        public int jobID { get; set; }
+        public virtual jobModel? jobModel { get; set; }
+        public DateTime modifiedDate { get; set; } = DateTime.Now;
+        public int employmentType { get; set; }
+        public employmentTypeModel? employmentTypeModel { get; set; }
+        public employmentRequestStatus requestStatus { get; set; }
+        public string modifiedBy { get; set; }
+        public employmentRequestHistoryModel() { }
+    }
+    public enum employmentRequestStatus
+    {
+        Pending,
+        Approved,
+        Inprogress,
+        Completed
+    }
+}
 
