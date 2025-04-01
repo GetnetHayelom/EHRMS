@@ -55,10 +55,17 @@ namespace PIS2.Pages.Employment
             Console.WriteLine("the Date is " + dateStart);
             // Start with the full list of employees
             var employmentModel = _context.Employments
-                .Include(e => e.personModel)
-                .Include(e => e.employmentTypeModel)
-                .Include(e => e.JobPlacements.OrderByDescending(jp => jp.jobPlacementDate).Take(1)).ThenInclude(jp => jp.departmentModel)
-                .Include(e => e.JobPlacements.OrderByDescending(jp => jp.jobPlacementDate).Take(1)).ThenInclude(jp => jp.jobModel)
+                .Select(e => new
+                {
+                    Employee = e,
+                    lastJob = e.JobPlacements.OrderByDescending(j => j.jobPlacementDate).First(),
+                    Department = e.JobPlacements.OrderByDescending(j => j.jobPlacementDate).First().departmentModel,
+                    Company = e.JobPlacements.OrderByDescending(j => j.jobPlacementDate).First().departmentModel.companyModel,
+                    jobTitle = e.JobPlacements.OrderByDescending(j => j.jobPlacementDate).First().jobModel,
+                    WorkSite = e.JobPlacements.OrderByDescending(j => j.jobPlacementDate).First().workSiteModel,
+                    person = e.personModel,
+                    empType = e.employmentTypeModel,
+                })
                 .AsQueryable(); // Using IQueryable to build a dynamic query
             var departments = _context.Departments.OrderBy(d=>d.departmentName).AsQueryable();
             // Apply filters based on the provided query parameters
@@ -66,13 +73,7 @@ namespace PIS2.Pages.Employment
             // Filter by company (if provided)
             if (company.HasValue && company != null)
             {
-                employmentModel = employmentModel
-                   .Where(e => e.JobPlacements != null && e.JobPlacements
-                   .Any(jp => jp.departmentModel.companyID == company));
-                departments = departments.Where(d => d.companyID == company);
-                if (departments.Any(d => d.departmentID ==department)) {
-                    department = null;
-                }
+                employmentModel = employmentModel.Where(e => e.Company.companyID == company);
 
             }
             else
@@ -82,71 +83,67 @@ namespace PIS2.Pages.Employment
             // Filter by Department (if provided)
             if (department.HasValue && department !=null)
             {
-                employmentModel = employmentModel
-                    .Where(e => e.JobPlacements != null && e.JobPlacements
-                    .Any(jp => jp.departmentModel.departmentID == department));
+              
+                employmentModel = employmentModel.Where(e => e.Department.departmentID == department);
             }
 
             // Filter by Status (if provided)
             if (empStatus.HasValue)
             {
-                //if (Enum.TryParse(empStatus, out mainStatus statusEnum))
-                //{
-                    employmentModel = employmentModel.Where(e => e.employmentStatus == (mainStatus) empStatus);
-                //}
+               
+                    employmentModel = employmentModel.Where(e => e.Employee.employmentStatus == (mainStatus) empStatus);
+               
             }
 
             // Filter by Job Title (if provided)
             if (jobTitle.HasValue)
             {
-                employmentModel = employmentModel
-                    .Where(e => e.JobPlacements != null && e.JobPlacements
-                    .Any(jp => jp.jobModel.jobID==jobTitle));
+               
+                employmentModel = employmentModel.Where(e => e.lastJob.jobID == jobTitle);
             }
             // Filter by type (if provided)
             if (empType.HasValue && empType != null)
             {
-                employmentModel = employmentModel
-                    .Where(e => e.employmentTypeID == empType);
+               
+                employmentModel = employmentModel.Where(e => e.Employee.employmentTypeID == empType);
             }
             
             
             // Filter by workloc (if provided)
             if (workLoc.HasValue && workLoc != null)
             {
-                employmentModel = employmentModel
-                   .Where(e => e.JobPlacements != null && e.JobPlacements
-                   .Any(jp => jp.workSiteID == workLoc));
+               
+                employmentModel = employmentModel.Where(e => e.lastJob.workSiteID == workLoc);
             }
             // Filter by Start TIme (if provided)
             if (dateStart.HasValue && dateStart != null)
             {
                 employmentModel = employmentModel
-                    .Where(e => e.employmentDate >= dateStart);
+                    .Where(e => e.Employee.employmentDate >= dateStart);
             }
             // Filter by end TIme (if provided)
             if (dateEnd.HasValue && dateEnd != null)
             {
                 employmentModel = employmentModel
-                    .Where(e => e.employmentDate <= dateEnd);
+                    .Where(e => e.Employee.employmentDate <= dateEnd);
             }
 
             // Execute the query and get the filtered results
-            var filteredEmployees = employmentModel.OrderBy(e => e.givenID).ToList();
+            var filteredEmployees = employmentModel.OrderBy(e => e.Employee.givenID).ToList();
 
             // Generate the table HTML
             var tableHtml = string.Join("", filteredEmployees.Select(e =>
             {
-                var firstJobPlacement = e.JobPlacements.FirstOrDefault();
-                return $"<tr><td>{e.givenID}</td>" +
-                        $"<td>{e.personModel.personFullName}</td>" +
-                        $"<td>{e.employmentDate.ToShortDateString()}</td>" +
-                        $"<td>{e.employmentStatus}</td>" +
-                        $"<td>{e.employmentTypeModel.employmentTypeName}</td>" +
-                        $"<td>{firstJobPlacement?.jobModel?.jobTitle ?? "N/A"}</td>" +
-                        $"<td>{firstJobPlacement?.departmentModel?.departmentName ?? "N/A"}</td>" +
-                        $"<td><a href='/Employment/Edit?id={e.employmentID}'>Edit</a> |" +
-                        $"<a href='/Employment/Details?id={e.employmentID}'>Details</a></td></tr>";
+               
+                return $"<tr><td>{e.Employee.givenID}</td>" +
+                        $"<td>{e.person.personFullName}</td>" +
+                        $"<td>{e.Employee.employmentDate.ToShortDateString()}</td>" +
+                        $"<td>{e.Employee.employmentStatus}</td>" +
+                        $"<td>{e.empType.employmentTypeName}</td>" +
+                        $"<td>{e?.jobTitle?.jobTitle ?? "N/A"}</td>" +
+                        $"<td>{e.Department?.departmentName ?? "N/A"}</td>" +
+                        $"<td><a href='/Employment/Edit?id={e.Employee.employmentID}'>Edit</a> |" +
+                        $"<a href='/Employment/Details?id={e.Employee.employmentID}'>Details</a></td></tr>";
             }));
 
             var selectedDeparts = departments.ToList();

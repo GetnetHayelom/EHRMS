@@ -470,6 +470,7 @@ namespace PIS2.Models
                 entity.Property(e => e.leaveStatus).HasColumnName("leaveStatus");
                 entity.Property(e => e.leaveTypeID).HasColumnName("leaveTypeID");
                 entity.Property(e => e.oldBatchNbr).HasColumnName("oldBatchNbr");
+                entity.Property(e => e.ratePerHour).HasColumnName("ratePerHour");
                 entity.Property(e => e.modifiedBy).HasColumnName("modifiedBy");
 
                 entity.HasOne(d => d.employmentModel).WithMany(p => p.Leaves).HasForeignKey(d => d.employmentID);

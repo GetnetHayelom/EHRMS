@@ -1,4 +1,6 @@
-﻿namespace PIS2.Views
+﻿using PIS2.Models;
+
+namespace PIS2.Views
 {
     public class views
     {
@@ -21,10 +23,34 @@
     }
     public class CompanySummary
     {
+      public int CompanyID { get; set; }
         public string CompanyName { get; set; }
         public string Manager { get; set; }
         public int Departments { get; set; }
         public int Employees { get; set; }
+        public int xEmployees { get; set; }
         public decimal Salary { get; set; }
+        public leaveDetail Leaves { get; set; }
+    }
+    public class DepartmentSummary
+    {
+        public int DepartmentID { get; set; }
+        public string DepartmentName { get; set; }
+        public int CompanyID { get; set; }
+        public string CompanyName { get; set; }
+        public string Manager { get; set; }
+        public int Employees { get; set; }
+        public decimal Salary { get; set; }
+        public leaveDetail Leaves { get; set; }
+    }
+    public class EmployeeView
+    {
+        public int EmployeeID { get; set; }
+        public string FullName { get; set; }
+        public jobPlacementModel Job { get; set; }
+        public departmentModel DepartmentModel { get; set; }
+        public companyModel Company { get; set; }
+        public workSiteModel WorkSite { get; set; }
+        public mainStatus EmploymentStatus { get; set; }
     }
 }

@@ -28,7 +28,7 @@
             <div class="p-2 border borber-1 rounded-2 border-primary col-3 m-2">
                 <div class="w-100">
                     <div class="d-flex">
-                        <h4 class="flex-grow-1 border border-success border-2 rounded-start text-success p-1">Active Companies</h4>
+                        <h5 class="flex-grow-1 border border-success border-2 rounded-start text-success p-1">Active Companies</h5>
                         <h2 class="bg-success text-white rounded-end p-1">@Model.ActiveCompanies</h2>
                     </div>
                     <div class="d-flex">
@@ -45,7 +45,7 @@
                 <div class="w-100">
             
                     <div class="d-flex">
-                        <h4 class="flex-grow-1 border border-success border-2 rounded-start text-success p-1">Active Departments</h4>
+                        <h5 class="flex-grow-1 border border-success border-2 rounded-start text-success p-1">Active Departments</h5>
                         <h2 class="bg-success text-white rounded-end p-1">@Model.ActiveDepartments</h2>
                     </div>
                     <div class="d-flex">
@@ -60,9 +60,8 @@
             </div>
             <div class="p-2 border borber-1 rounded-2 border-primary col-3 m-2">
                 <div class="w-100">
-            
                     <div class="d-flex">
-                        <h4 class="flex-grow-1 border border-success border-2 rounded-start text-success p-1">Active Employees</h4>
+                        <h5 class="flex-grow-1 border border-success border-2 rounded-start text-success p-1">Active Employees</h5>
                         <h2 class="bg-success text-white rounded-end p-1">@Model.ActiveEmployments</h2>
                     </div>
                     <div class="d-flex">
@@ -80,7 +79,7 @@
                     @foreach (var item in Model.EmploymentTypes)
                     {
                         <div class="d-flex">
-                            <h4 class="flex-grow-1 border border-success border-2 rounded-start text-success p-1">@item.zName</h4>
+                            <h5 class="flex-grow-1 border border-success border-2 rounded-start text-success p-1">@item.zName</h5>
                             <h2 class="bg-success text-white rounded-end p-1">@item.zCount</h2>
                         </div>
                 
@@ -92,7 +91,28 @@
                 </div>
             </div>
         </div>
-       
+       <!--Payables summary-->
+        
+        <h3>Current Payable</h3><hr />
+       <div class="d-flex flex-wrap justify-content-between p-2">
+            <div class="">
+                <p class="small mb-1">Salary</p>
+                <h5 class="fw-bold">$@Math.Round((Model.CompanySummaries.Sum(c => c.Salary)), 2).ToString("N0")</h5>
+            </div>
+            <div>
+                <p class="small mb-1">Overtime</p>
+                <h5 class="fw-bold">$@Math.Round((Model.CompanySummaries.Sum(c => c.Salary)), 2).ToString("N0")</h5>  
+            </div>
+            <div>
+                <p class="small mb-1">Acc. Leaves</p>
+                <h5 class="fw-bold">$@Math.Round((Model.CompanySummaries.Sum(c => c.Leaves.leaveCost)), 2).ToString("N0")</h5>
+            </div>
+            <div>
+                <p class="small mb-1">Allowance</p>
+                <h5 class="fw-bold">$@Math.Round((Model.CompanySummaries.Sum(c => c.Salary)), 2).ToString("N0")</h5>
+            </div>
+       </div>
+       <hr />
         <!-- Charts Container1-->
         <div class="row d-flex  justify-content-center">
             <!-- Education Levels -->
@@ -117,33 +137,43 @@
         </div>
         <div class="container py-5">
             <h2 class="text-center mb-4">
-                <b>Companies Summary</b>
+                <b asp-page="/Company/Index" asp-area="Management" role="button">Companies Summary</b>
             </h2>
             <div class="row g-4">
                 @foreach (var item in Model.CompanySummaries)
                 {
-
-                    <div class="col-md-3 col-lg-3" asp-page="/Company/Index" asp-area="Management" role="button">
+                    
+                    <div class="col-md-3 col-lg-3">
                         <div class="card border borber-1 rounded-2 border-primary h-100">
                             <div class="card-body p-4">
                                 <div class="d-flex justify-content-between align-items-start">
-                                    <div>
+                                    <a asp-page="Companyp" asp-route-id="@item.CompanyID" asp-area="Management" role="button" class="btn">
                                         <h5 class="card-title fw-bold">@item.CompanyName</h5>
                                         <h6 class="card-subtitle mb-3 opacity-75">Manager: @(item.Manager ?? "N\\A")</h6>
-                                    </div>
+                                    </a>
 
                                 </div>
-                                <div class="d-flex justify-content-between border-top border-opacity-25 pt-3">
+                                <div class="d-flex justify-content-between border-top border-opacity-25 pt-3 text-info">
                                     <div>
                                         <p class="small mb-1">Employees</p>
-                                        <h3 class="fw-bold">@item.Employees</h3>
+                                        <h3 class="fw-bold text-info">@item.Employees.ToString("N0")</h3>
                                     </div>
                                     <div>
                                         <p class="small mb-1">Departments</p>
                                         <h3 class="fw-bold">@item.Departments</h3>
                                     </div>
                                 </div>
-                                <div class="mt-4">
+                                <div class="d-flex justify-content-between border-top border-opacity-25 pt-3">
+                                    <div class="table-warning">
+                                        <p class="small mb-1">Acc. Leaves</p>
+                                        <h5 class="fw-bold">@Math.Round(item.Leaves.AllowedLeave, 2).ToString("N0")</h5>
+                                    </div>
+                                    <div class="text-danger">
+                                        <p class="small mb-1">Leave Cost</p>
+                                        <h5 class="fw-bold ">$@Math.Round(item.Leaves.leaveCost, 2).ToString("N0")</h5>
+                                    </div>
+                                </div>
+                                <div class="mt-4 text-success">
                                     <h4 class="display-8 fw-bold text-end">$@(item.Salary.ToString("N0"))</h4>
                                     <p class="small text-end mb-0">Total Monthly Payroll</p>
                                 </div>

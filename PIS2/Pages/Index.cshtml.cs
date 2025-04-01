@@ -199,6 +199,8 @@ namespace PIS2.Pages
             Employments = await _context.Employments.ToListAsync();
             return Page();
         }
+
+        //Leave Request Save
        
         [BindProperty]
         public int employmentID { get; set; }
@@ -208,12 +210,22 @@ namespace PIS2.Pages
         public int personID { get; set; }
         public async Task<IActionResult> OnPostCreateLeave()
         {
-            
+            if(employmentID == 0 || _context.Employments.FirstOrDefault(e => e.employmentID == employmentID) == null)
+            {
+                TempData["SuccessMessage"] = "Employment not found or provided";
+                return Page();
+            }
+            if (_context.Employments.FirstOrDefault(e => e.employmentID == employmentID)?.employmentStatus == mainStatus.Inactive)
+            {
+                TempData["SuccessMessage"] = "Could not save leave reaquest. Employment status must me active.";
+                return Page();
+            }
             ModelState.Remove(nameof(searchID));
             ModelState.Remove(nameof(searchName));
             ModelState.Clear();
             Leave.employmentID = employmentID;
             Leave.leaveStatus = leaveStatus.Hold;
+            Leave.ratePerHour = _context.JobPlacements.FirstOrDefault(jp => jp.jobPlacementStatus == mainStatus.Active && jp.employmentID == employmentID)?.getJobRate() ?? 0;
             //TempData["LeaveID"] = null;
             //if (!TryValidateModel(Leave, nameof(Leave)))
             if(!ModelState.IsValid)

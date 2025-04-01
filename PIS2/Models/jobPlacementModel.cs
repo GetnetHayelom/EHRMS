@@ -24,5 +24,12 @@ namespace PIS2.Models
         public string jobPlacementReason { get; set; }
         public string modifiedBy { get; set; }
         public jobPlacementModel() { }
+        public double getJobRate()
+        {
+            double hourlyRate = 0;
+            hourlyRate =(double) jobPlacementSalary / 208;
+
+            return hourlyRate;
+        }
     }
 }

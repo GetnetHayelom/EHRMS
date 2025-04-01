@@ -1,0 +1,482 @@
+﻿@page
+@model PIS2.Pages.Management.Companyp
+@{
+    ViewData["Title"] = "Welcome";
+    var successMessage = TempData["SuccessMessage"] as string;
+}
+<div id="companyName">
+    <h2 class="text-center mb-4">
+        <b>@Model.CompanySummary.CompanyName</b>
+    </h2>
+</div>
+<div class="d-flex flex-column justify-content-around">
+    <!-- Summary Points -->
+    <div class="row d-flex flex-inline justify-content-center">
+        <!--DEPARTMENTS -->
+        <div class="p-2 border borber-1 rounded-2 border-primary col-3 m-2">
+            <div class="w-100">
+                <div class="d-flex">
+                    <h5 class="flex-grow-1 border border-success border-2 rounded-start text-success p-1">Active Departments</h5>
+                    <h2 class="bg-success text-white rounded-end p-1">@Model.Departments.Where(d=> d.departmentStatus == PIS2.Models.mainStatus.Active).Count()</h2>
+                </div>
+                @if (Model.Departments.Where(d => d.departmentStatus == PIS2.Models.mainStatus.Inactive).Count() > 0)
+                {
+                    <div class="d-flex">
+                    <h6 class="flex-grow-1 border border-danger border-2 rounded-start text-danger p-1">Old Departments</h6>
+                    <h4 class="bg-danger text-white rounded-end p-1">@Model.Departments.Where(d => d.departmentStatus == PIS2.Models.mainStatus.Inactive).Count()</h4>
+                    </div>
+                    <div class="d-flex">
+                        <h6 class="flex-grow-1 border border-info border-2 rounded-start text-info p-1">All Departments</h6>
+                        <h4 class="bg-info text-white rounded-end p-1">@Model.Departments.Count()</h4>
+                    </div>
+                }
+            </div>
+        </div>
+        <!--EMPLOYMENTS-->
+        <div class="p-2 border borber-1 rounded-2 border-primary col-3 m-2">
+            <div class="w-100">
+                <div class="d-flex">
+                    <h5 class="flex-grow-1 border border-success border-2 rounded-start text-success p-1">Active Employees</h5>
+                    <h2 class="bg-success text-white rounded-end p-1">@Model.CompanySummary.Employees</h2>
+                </div>
+
+                <div class="d-flex">
+                    <h6 class="flex-grow-1 border border-danger border-2 rounded-start text-danger p-1">Former Employees</h6>
+                    <h4 class="bg-danger text-white rounded-end p-1">@Model.CompanySummary.xEmployees</h4>
+                </div>
+                <div class="d-flex">
+                    <h6 class="flex-grow-1 border border-info border-2 rounded-start text-info p-1">Total Number of Employee</h6>
+                    <h4 class="bg-info text-white rounded-end p-1">@Model.Employments.Count()</h4>
+                </div>
+            </div>
+        </div>
+        <div class="p-2 border borber-1 rounded-2 border-primary col-2 m-2">
+            <div class="w-100">
+                @foreach (var item in Model.EmploymentTypes)
+                {
+                    <div class="d-flex">
+                        <h5 class="flex-grow-1 border border-success border-2 rounded-start text-success p-1">@item.zName</h5>
+                        <h2 class="bg-success text-white rounded-end p-1">@item.zCount</h2>
+                    </div>
+
+                }
+                <div class="d-flex">
+                    <h6 class="flex-grow-1 border border-info border-2 rounded-start text-info p-1">Employees On Leave</h6>
+                    <h4 class="bg-info text-white rounded-end p-1">@Model.leaveEmployments</h4>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--Payables summary-->
+
+    <h3>Current Payable</h3><hr />
+    <div class="d-flex flex-wrap justify-content-between p-2">
+        <div class="">
+            <p class="small mb-1">Salary</p>
+            <h5 class="fw-bold">$@Math.Round((Model.CompanySummary.Salary), 2).ToString("N0")</h5>
+        </div>
+        <div>
+            <p class="small mb-1">Overtime</p>
+            <h5 class="fw-bold">$@Math.Round((Model.CompanySummary.Salary), 2).ToString("N0")</h5>
+        </div>
+        <div>
+            <p class="small mb-1">Acc. Leaves</p>
+            <h5 class="fw-bold">$@Math.Round((Model.leaveCost), 2).ToString("N0")</h5>
+        </div>
+        <div>
+            
+            <p class="small mb-1">Allowance</p>
+            <h5 class="fw-bold">$@Math.Round((Model.CompanySummary.Salary), 2).ToString("N0")</h5>
+        </div>
+    </div>
+    <hr/>
+    <!-- Charts Container1-->
+    <div class="row d-flex  justify-content-center">
+        <!-- Education Levels -->
+        <div class="col-3 p-2 border borber-1 rounded-2 border-primary m-2">
+            <canvas id="educationLevelPieChart" width="400" height="400">
+            </canvas>
+        </div>
+        <!-- Work Location -->
+        <div class="col-3 p-2 border borber-1 rounded-2 border-primary m-2">
+            <canvas id="workLocChart" width="400" height="400">
+            </canvas>
+        </div>
+        <!-- Termination Reason -->
+        <div class="col-3 p-2 border borber-1 rounded-2 border-primary m-2">
+            <canvas id="terminationChart" width="400" height="400">
+            </canvas>
+        </div>
+    </div>
+
+    <!--Charts Container2 -->
+    <div class="row d-flex  justify-content-center">
+        <!-- Employment Trends -->
+        <div class="col-11 p-2 border borber-1 rounded-2 border-primary m-2">
+            <canvas id="employmentHireChart" class="w-100">
+            </canvas>
+        </div>
+    </div>
+    <div class="container py-5">
+        <h2 class="text-center mb-4">
+
+            <b>Departments</b>
+        <hr /></h2>
+        <div class="row g-4">
+            @foreach (var item in Model.DepartmentSummaries)
+            {
+                <div class="col-md-3 col-lg-3">
+                    <div class="card border borber-1 rounded-2 border-primary h-100">
+                        <div class="card-body p-4">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <h5 class="card-title fw-bold">@item.DepartmentName</h5>
+                                    <h6 class="card-subtitle mb-3 opacity-75">Manager: @(item.Manager ?? "N\\A")</h6>
+                                </div>
+
+                            </div>
+                            <div class="d-flex justify-content-between border-top border-opacity-25 pt-3">
+                                <div>
+                                    <p class="small mb-1">Employees</p>
+                                    <h3 class="fw-bold text-info">@item.Employees.ToString("N0")</h3>
+                                </div>
+                                <div>
+                                    <p class="small mb-1">Shortage</p>
+                                    <h3 class="fw-bold text-info">@item.Employees.ToString("N0")</h3>
+                                </div>
+                                
+                            </div>
+                            <div class="d-flex justify-content-between border-top border-opacity-25 pt-3">
+                                <div>
+                                    <p class="small mb-1">Acc. Leaves</p>
+                                    <h5 class="fw-bold text-warning">@Math.Round(item.Leaves.AllowedLeave, 2).ToString("N0")</h5>
+                                </div>
+                                <div>
+                                    <p class="small mb-1">Leave Cost</p>
+                                    <h5 class="fw-bold text-danger">$@Math.Round(item.Leaves.leaveCost, 2).ToString("N0")</h5>
+                                </div>
+                            </div>
+                            <div class="mt-4">
+                                <h4 class="text-success display-8 fw-bold text-end">$@(item.Salary.ToString("N0"))</h4>
+                                <p class="small text-end mb-0">Total Monthly Payroll</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+</div>
+@await Html.PartialAsync("print")
+<script>
+    var educationLevelData = @Html.Raw(Json.Serialize(Model.EduLevelSummary));
+    var Total = @Model.EduLevelSummary.Select(el => el.zCount).Sum();
+    var educationLevelLabels = educationLevelData.map(function (item) {
+        return Math.round((item.zCount / Total) * 100) + '% ' + item.zName;
+    });
+    var educationLevelCategories = educationLevelData.map(item => item.educationLevelCategories);
+    var educationLevelCounts = educationLevelData.map(function (item) {
+        return item.zCount;
+    });
+
+    var ctx = document.getElementById('educationLevelPieChart').getContext('2d');
+    var educationLevelChart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: educationLevelLabels,
+            datasets: [{
+                data: educationLevelCounts,
+                backgroundColor: [
+                    '#FF6B6B', '#FF8E72', '#FFB74D', '#FFD54F', '#DCE775',
+                    '#A3E635', '#4CAF50', '#81C784', '#64B5F6', '#2196F3',
+                    '#1565C0', '#9575CD', '#BA68C8', '#F06292', '#EC407A'
+                ],
+                borderColor: '#fff',
+                borderWidth: 2,
+                hoverOffset: 15,
+                hoverBorderColor: '#333'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            cutout: '65%', // This makes it a doughnut instead of pie
+            plugins: {
+                legend: {
+                    position: 'right',
+                    labels: {
+                        padding: 10,
+                        usePointStyle: true,
+                        pointStyle: 'circle',
+                        font: {
+                            size: 12,
+                            family: "'Helvetica Neue', 'Helvetica', 'Arial', sans-serif"
+                        },
+                        generateLabels: function (chart) {
+                            const data = chart.data;
+                            if (data.labels.length && data.datasets.length) {
+                                return data.labels.map(function (label, i) {
+                                    const meta = chart.getDatasetMeta(0);
+                                    const style = meta.controller.getStyle(i);
+
+                                    return {
+                                        text: label,
+                                        fillStyle: style.backgroundColor,
+                                        strokeStyle: style.borderColor,
+                                        lineWidth: style.borderWidth,
+                                        hidden: !chart.getDataVisibility(i),
+                                        index: i
+                                    };
+                                });
+                            }
+                            return [];
+                        }
+                    },
+                    onClick: function (e, legendItem, legend) {
+                        const index = legendItem.index;
+                        const chart = legend.chart;
+                        chart.toggleDataVisibility(index);
+                        chart.update();
+                    }
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function (context) {
+                            const label = context.label || '';
+                            const value = context.raw || 0;
+                            const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                            const percentage = Math.round((value / total) * 100);
+
+                            return `${label}: ${value} people (${percentage}%)`;
+                        }
+                    },
+                    displayColors: true,
+                    usePointStyle: true,
+                    bodyFont: {
+                        size: 14
+                    },
+                    padding: 12
+                },
+                title: {
+                    display: true,
+                    text: "Education Level Distribution",
+                    font: {
+                        size: 18,
+                        weight: "bold",
+                        family: "'Helvetica Neue', 'Helvetica', 'Arial', sans-serif"
+                    },
+                    color: "#333",
+                    padding: {
+                        top: 10,
+                        bottom: 30
+                    },
+                    align: 'center'
+                }
+            },
+            animation: {
+                animateScale: true,
+                animateRotate: true
+            }
+        }
+    });
+</script>
+<script>
+    var ctx = document.getElementById("employmentHireChart").getContext("2d");
+    // Get the serialized data from the server
+    var hireData = @Html.Raw(Json.Serialize(Model.EmploymentHireRate));
+    var terminationData = @Html.Raw(Json.Serialize(Model.TerminationRate));
+    var manPowerRate = @Html.Raw(Json.Serialize(Model.ActiveEmployeeRate));
+    // Extract years and counts
+    //const years = hireData.map(item => item.zYear);
+    //const counts = hireData.map(item => item.zCount);
+
+    // const tyears = terminationData.map(item => item.zYear);
+    //const tcounts = terminationData.map(item => item.zCount);
+    // Extract all unique years from both datasets
+    const allYears = [...new Set([...hireData.map(item => item.zYear), ...terminationData.map(item => item.zYear)])].sort();
+
+    // Map hire counts to years, filling missing values with 0
+    const counts = allYears.map(year => {
+        const found = hireData.find(item => item.zYear === year);
+        return found ? found.zCount : 0;
+    });
+
+    // Map termination counts to years, filling missing values with 0
+    const tcounts = allYears.map(year => {
+        const found = terminationData.find(item => item.zYear === year);
+        return found ? found.zCount : 0;
+    });
+    //Man Power Map
+    const manPower = manPowerRate.map(item => item.zCount);
+
+
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: allYears,
+            datasets: [{
+                label: 'Hires',
+                data: counts,
+                backgroundColor: 'rgba(63, 81, 181, 0.2)',
+                borderColor: 'rgba(63, 81, 181, 1)',
+                borderWidth: 3,
+                tension: 0.2,
+                pointBackgroundColor: 'rgba(63, 81, 181, 1)',
+                pointRadius: 4,
+                pointHoverRadius: 6,
+                fill: true,
+                yAxisID: 'y'
+            },
+            {
+                label: 'Terminations',
+                data: tcounts,
+                backgroundColor: 'rgba(229, 57, 53, 0.2)',
+                borderColor: 'rgba(229, 57, 53, 1)',
+                borderWidth: 3,
+                tension: 0.2,
+                pointBackgroundColor: 'rgba(63, 81, 181, 1)',
+                pointRadius: 4,
+                pointHoverRadius: 6,
+                fill: true,
+                yAxisID: 'y'
+            },
+            {
+                label: 'Active Man-power',
+                data: manPower,
+                backgroundColor: 'rgba(10, 250, 53, 0.2)',
+                borderColor: 'rgba(10, 250, 53, 1)',
+                borderWidth: 3,
+                tension: 0.2,
+                pointBackgroundColor: 'rgba(63, 81, 181, 1)',
+                pointRadius: 4,
+                pointHoverRadius: 6,
+                fill: true,
+                yAxisID: 'y'
+            }
+            ]
+        },
+
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                title: {
+                    display: true,
+                    text: 'Employment Trends',
+                    font: {
+                        size: 18,
+                        weight: 'bold'
+                    },
+                    padding: {
+                        top: 10,
+                        bottom: 20
+                    }
+                },
+                legend: {
+                    position: 'top',
+                    labels: {
+                        boxWidth: 12,
+                        padding: 20,
+                        font: {
+                            size: 12
+                        }
+                    }
+                },
+                tooltip: {
+                    mode: 'index',
+                    intersect: false,
+                    callbacks: {
+                        title: function (context) {
+                            return 'Year: ' + context[0].label;
+                        },
+                        label: function (context) {
+                            return context.dataset.label + context.parsed.y.toLocaleString();
+                        }
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Year',
+                        font: {
+                            weight: 'bold'
+                        }
+                    },
+                    grid: {
+                        display: false
+                    }
+                },
+                y: {
+                    title: {
+                        display: true,
+                        text: 'Amount',
+                        font: {
+                            weight: 'bold'
+                        }
+                    },
+                    min: Math.max(0, Math.min(...counts) - Math.max(...counts) * 0.1),
+                    ticks: {
+                        callback: function (value) {
+                            return value.toLocaleString();
+                        }
+                    }
+                }
+            },
+            interaction: {
+                intersect: false,
+                mode: 'nearest'
+            }
+        }
+    });
+</script>
+<script>
+    var ctx = document.getElementById("workLocChart").getContext("2d");
+    var workSiteEmployees = @Html.Raw(Json.Serialize(Model.WorkSiteEmployees));
+    const worksite = workSiteEmployees.map(item => item.zName);
+    const employees = workSiteEmployees.map(item => item.zCount);
+
+    new Chart(ctx, {
+        type: 'pie',
+        data: {
+            labels: worksite,
+            datasets: [{
+                data: employees,
+                backgroundColor: [
+                    '#3f51b5', '#2196f3', '#00bcd4', '#009688',
+                    '#4caf50', '#8bc34a', '#cddc39', '#ffc107'
+                ],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                title: {
+                    display: true,
+                    text: 'Employment Distribution by Work Location',
+                    font: {
+                        size: 18,
+                        weight: 'bold'
+                    },
+                    padding: {
+                        top: 10,
+                        bottom: 20
+                    }
+                },
+                legend: { position: 'right' },
+                tooltip: {
+                    callbacks: {
+                        label: function (context) {
+                            const total = context.dataset.data.reduce((a, b) => a + b);
+                            const percentage = Math.round((context.raw / total) * 100);
+                            return `${context.label}: ${context.raw} (${percentage}%)`;
+                        }
+                    }
+                }
+            }
+        }
+    });
+</script>

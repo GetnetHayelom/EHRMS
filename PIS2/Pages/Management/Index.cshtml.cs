@@ -1,6 +1,8 @@
 using System;
+using System.CodeDom;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -13,10 +15,11 @@ namespace PIS2.Pages.Management
     public class IndexModel : PageModel
     {
         private readonly PIS2.Models.PISContext _context;
-
-        public IndexModel(PIS2.Models.PISContext context)
+        private readonly PIS2.Models.Core _core;
+        public IndexModel(PISContext ctx, Core methods)
         {
-            _context = context;
+            _context = ctx;
+            _core = methods;
         }
         public IList<companyModel> Companies { get; set; }
         public IList<departmentModel> Departments { get; set; }
@@ -41,6 +44,7 @@ namespace PIS2.Pages.Management
         public List<NameAndCount> WorkSiteEmployees { get; set; }
         public List<NameAndCount> EduLevelSummary { get; set; }
         public List<CompanySummary> CompanySummaries { get; set; }
+        public List<leaveDetail> LeaveSummary { get; set; }
         public async Task OnGetAsync()
         {
             //check if user is employee
@@ -60,7 +64,8 @@ namespace PIS2.Pages.Management
             OldCompanies = _context.Companies.Where(c => c.companyStatus == mainStatus.Inactive).Count();
             ActiveDepartments= _context.Departments.Where(c => c.departmentStatus == mainStatus.Active).Count();
             OldDepartments = _context.Departments.Where(c => c.departmentStatus == mainStatus.Inactive).Count();
-
+            LeaveSummary = new List<leaveDetail>();
+            
 
             // Education Level Data
             EducationLevels = _context.PersonEducationLevels
@@ -123,6 +128,7 @@ namespace PIS2.Pages.Management
                  join t in _context.Terminations on e.employmentID equals t.employmentID into termGroup
                  from t in termGroup.DefaultIfEmpty()
                  where t == null || t.terminationDate.Year > y // Exclude employees terminated in or before the given year
+                                                               
                  group e by y into grouped
                  orderby grouped.Key
                  select new YearAndCount
@@ -164,15 +170,21 @@ namespace PIS2.Pages.Management
                                 join p in _context.Persons on e.personID equals p.personID into personGroup
                                 from p in personGroup.DefaultIfEmpty()
                                 where js.jobPlacementStatus == mainStatus.Active
-                                group js by cmp.companyName into grouped
+                                group js by new { cmp.companyName, cmp.companyID } into grouped
                                 select new CompanySummary
                                 {
-                                    CompanyName = grouped.Key,
+                                    
+                                    CompanyName = grouped.Key.companyName,
+                                    CompanyID = grouped.Key.companyID,
                                     Employees = grouped.Select(x => x.employmentID).Distinct().Count(),
                                     Departments = grouped.Select(x => x.departmentID).Distinct().Count(),
-                                    Salary = grouped.Sum(x => x.jobPlacementSalary)
+                                    Salary = grouped.Sum(x => x.jobPlacementSalary) 
                                 }).OrderByDescending(cs => cs.Salary).ToList();
-//
+            foreach(var c in CompanySummaries)
+            {
+                //c.Leaves = _core.getAllLeaveSummary("Comp", c.CompanyID);
+                c.Leaves = new leaveDetail();
+            }
 
         }
 

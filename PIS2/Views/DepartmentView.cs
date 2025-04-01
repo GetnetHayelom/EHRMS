@@ -34,6 +34,7 @@ namespace PIS2.Views
 
         public List<leaveModel> leaves { get; set; }
         public List<overtimeRecordModel> overtimeRecords { get; set; }
+        public leaveDetail leaveSummary { get; set; }
         public DepartmentView(int id)
         {
 

@@ -101,7 +101,7 @@
                             <td>@item.modifiedDate.ToString("MMM dd, yyyy")</td>
                             <td>@item.employmentTypeModel.employmentTypeName</td>
 
-                            <td>@Html.DisplayFor(item => item.employmentModel.employmentStatus)</td>
+                            <td>@item.employmentStatus</td>
 
                             <td>@item.employmentHistoryRemark</td>
 
@@ -120,6 +120,7 @@
                         <th>Date</th>
                         <th>Job Title</th>
                         <th>Department</th>
+                        <th>Company</th>
                         <th>Work Location</th>
                         <th>Status</th>
                     </tr>
@@ -131,6 +132,7 @@
                             <td>@item.jobPlacementDate.ToString("MMM dd, yyyy")</td>
                             <td>@item.jobModel.jobTitle</td>
                             <td>@item.departmentModel.departmentName</td>
+                            <td>@item.departmentModel.companyModel.companyName</td>
                             <td>@item.workSiteModel.workSiteName</td>
                             <td>@item.jobPlacementStatus</td>
                         </tr>

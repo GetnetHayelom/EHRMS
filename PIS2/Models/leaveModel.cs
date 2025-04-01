@@ -21,6 +21,7 @@ namespace PIS2.Models
         public double leaveDays { get; set; }     
         public int leaveTypeID { get; set; }
         public int? oldBatchNbr { get; set; }
+        public double ratePerHour { get; set; }
         public virtual leaveTypeModel? leaveTypeModel { get; set; }
         public leaveStatus leaveStatus { get; set; } = leaveStatus.Hold;
         public virtual ICollection<leaveHistoryModel>? LeaveHistories { get; set; }

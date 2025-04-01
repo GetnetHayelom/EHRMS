@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Identity.Client;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace PIS2.Models
@@ -17,98 +18,96 @@ namespace PIS2.Models
         //working days in a year based on company policy
         const int workingDayPerYear = 312;
         const double weeksInAMonth = 4.33;
+        const int daysPerMonth = 26;
+        const int workHoursPerDay = 8;
 
         //calculate leave balance in a given time interval
-        public leaveDetail leaveSummary(employmentModel employee)
+        public leaveDetail leaveSummary(int empID)
         {
-            List<employmentHistoryModel> employmentHistories = new List<employmentHistoryModel>();
-            List<employmentTypeModel> empType=new List<employmentTypeModel>();
-
-            DateTime startDate = employee.employmentDate;
-            DateTime endDate;
-
-            employmentHistories = _context.EmploymentHistories.Include(e => e.employmentTypeModel)
-                .Where(e => e.employmentID == employee.employmentID).ToList();
-            //check employment status and employment type
-            startDate = employmentHistories.Where(eh => eh.employmentTypeModel.isLeaveCount == true).FirstOrDefault().modifiedDate;
-            endDate = employmentHistories.Where(eh => eh.employmentTypeModel.isLeaveCount == true).LastOrDefault().modifiedDate;
-                        
-            if (startDate == endDate)
-            { 
-                endDate = DateTime.Now;
-            }
-                
-            List<leaveModel>? Leaves = _context.Leaves.Where(l => l.employmentID==employee.employmentID).ToList();
-            double baseLeave = employee.EmploymentHistories.LastOrDefault().employmentTypeModel.employmentBaseLeave;
-            double annualAccrualRate = employee.EmploymentHistories.LastOrDefault().employmentTypeModel.annualAccrualRate;
+            DateTime startDate = GetLeaveStart(empID);
+            DateTime endDate = GetLeaveEnd(empID);
+            List<leaveModel> leaves = new List<leaveModel>();
+            leaves = _context.Leaves.Where(l => l.employmentID == empID).Include(l => l.leaveTypeModel).ToList();
+            double usedLeave = leaves.Where(l => l.leaveTypeModel.leaveTypeImpact == leaveTypeImpact.Negative).Sum(l => l.leaveDays);
+            double accruedLeave = leaves.Where(l => l.leaveTypeModel.leaveTypeImpact == leaveTypeImpact.Positive).Sum(l => l.leaveDays);
             //total number of days between given date
             int days = (endDate - startDate).Days;
-            //initialize elapsed year to 0
-            int years = 0;
+            //initialize elapsed year
+            int years = endDate.Year - startDate.Year;
             //number of days that are extra after allocating the total day per year
             int spareDays = 0;
             //the last amount incremented, initialised to the base rate
-            double lastAnnualLeaveIncrement = baseLeave;
+            //get the id of 'New Year Balance' Leave Type and use it for selecting parameter
+            double lastAnnualLeaveIncrement = leaves.OrderBy(l => l.leaveReaquestDate)
+                .LastOrDefault(l => l.leaveTypeID == 63 && l.leaveStartDate <= DateTime.Now && l.leaveEndDate >= DateTime.Now)?.leaveDays ?? 0;
             //daily accrual rate by deviding last annual increment rate to the number of working days
-            double dailyAccrualRate = 0;
+            double dailyAccrualRate = DateTime.IsLeapYear(endDate.Year) ? lastAnnualLeaveIncrement / 366 : lastAnnualLeaveIncrement / 365;
             //total amount of leave until the given end time
             double totalLeave = 0;
+
+
             //amount of leave that can be utilised
             double allowedLeave = 0;
+            spareDays = Enumerable.Range(0, ((endDate - (startDate).AddYears(years - 1))).Days + 1)
+        .Select(offset => startDate.AddDays(offset))
+        .Count(date => date.DayOfWeek != DayOfWeek.Sunday);
 
-            //set the given time interval into years and spare days 
-            if (days > 365)
-            {
-                years= (endDate - startDate).Days / 365;
-                spareDays = (endDate - startDate).Days % 365;
-                lastAnnualLeaveIncrement = baseLeave + years;
-                dailyAccrualRate = lastAnnualLeaveIncrement / workingDayPerYear;
-                totalLeave = ((lastAnnualLeaveIncrement - baseLeave + 1)/2) * (baseLeave + lastAnnualLeaveIncrement);
-                allowedLeave = (totalLeave - lastAnnualLeaveIncrement) + (spareDays * (spareDays + dailyAccrualRate) / 2);
-            }
-            else
-            {
-                years= 1;
-                spareDays = days;
-                lastAnnualLeaveIncrement = baseLeave;
-                totalLeave = lastAnnualLeaveIncrement;
-                allowedLeave = spareDays * (spareDays + dailyAccrualRate) / 2;
-            }
- 
-            List<leavePerYear> leavesPerYear = new List<leavePerYear>();
-            leavePerYear leavePerYear = new leavePerYear();
-            List<leaveModel> usedLeaves = new List<leaveModel>();
-            double startingLeavePerYear = 0;
-            double remainingLeavePerYear = 0;
-            DateTime dateCounter = startDate;
-            double accrualCounter = baseLeave;
-            for (int i = 0; i < years; i++)
-            {
-                usedLeaves = Leaves.Where(l => l.leaveStartDate >= dateCounter && l.leaveEndDate <= dateCounter.AddYears(1) && l.leaveStatus == leaveStatus.Posted && l.leaveTypeModel.leaveTypeImpact == leaveTypeImpact.Negative).ToList();
-                startingLeavePerYear += accrualCounter;
-                leavePerYear = new leavePerYear();
-                leavePerYear.startDate = dateCounter;
-                leavePerYear.endDate = dateCounter.AddYears(1);
-                leavePerYear.accruedLeaveAmount = accrualCounter;      
-                leavePerYear.usedLeaveAmount = usedLeaves.Sum(l => l.leaveDays);
-                leavesPerYear.Add(leavePerYear);
-                dateCounter = dateCounter.AddYears(1);
-                accrualCounter++;
-            }
-            
-           
-            leaveDetail leaveSummary = new leaveDetail(totalLeave, allowedLeave, lastAnnualLeaveIncrement, startDate, endDate, leavesPerYear);
-            Console.WriteLine($"Error before leavesummary");
-            if (leaveSummary == null) throw new InvalidOperationException("No leave summary.");
+            totalLeave = accruedLeave - usedLeave;
+            allowedLeave = totalLeave - (lastAnnualLeaveIncrement - (spareDays * dailyAccrualRate));
+            var job = _context.JobPlacements?.Include(j => j.departmentModel).SingleOrDefault(j => j.employmentID == empID && j.jobPlacementStatus == mainStatus.Active)?? new jobPlacementModel();
+            var dep = job.departmentModel;
+            double leaveCost = (double) (job.jobPlacementSalary / 26)*(allowedLeave);
+            leaveDetail leaveSummary = new leaveDetail(totalLeave, allowedLeave, lastAnnualLeaveIncrement, startDate, endDate,leaveCost, dep);
             return leaveSummary;
+        }
+        public leaveDetail getAllLeaveSummary(string selectBy, int ID)
+        {
+            List<leaveDetail> leaveDetails = new List<leaveDetail>();
+            var leaveDetail= new leaveDetail();
+            var leaveSum = new leaveDetail();
+            var emp = _context.Employments.Include(e => e.JobPlacements.Where(j => j.jobPlacementStatus == mainStatus.Active)).ThenInclude(j => j.departmentModel).ThenInclude(d => d.companyModel)
+                .Where(e =>e.employmentStatus == mainStatus.Active).ToList();
+
+            switch (selectBy) {
+
+                case "Comp":
+                    var comEmp = emp.Where(e => e.JobPlacements != null
+                          && e.JobPlacements.Any()
+                          && e.JobPlacements.First().departmentModel?.companyModel?.companyID == ID).Select(e => e.employmentID).ToList();
+                    foreach (var e in comEmp)
+                    {
+                        leaveDetail = leaveSummary(e);
+                        leaveDetails.Add(leaveDetail);
+                    }
+                    break;
+                case "Dep":
+                    var depEmp = emp.Where(e => e.JobPlacements != null
+                        && e.JobPlacements.Any()
+                        && e.JobPlacements.First().departmentModel?.departmentID == ID).Select(e => e.employmentID).ToList();
+                    foreach (var e in depEmp)
+                    {
+                        leaveDetail = leaveSummary(e);
+                        leaveDetails.Add(leaveDetail);
+                    }
+                    break;
+                    default:
+                    foreach (var e in emp)
+                    {
+                        leaveDetail = leaveSummary(e.employmentID);
+                        leaveDetails.Add(leaveDetail);
+                    }
+                    break;
+            }
+
+            leaveSum.AllowedLeave = leaveDetails.Sum(ld=>ld.AllowedLeave);
+            leaveSum.leaveCost = leaveDetails.Sum(ld => ld.leaveCost);
+            leaveSum.LastAccrualIncrement = leaveDetails.Sum(ld => ld.LastAccrualIncrement);
+
+            return leaveSum;
         }
         public leaveDetail GetLeaveSummary(int empID)
         {
-            //List<employmentHistoryModel>? EmpHist = new List<employmentHistoryModel>();
-            //EmpHist = GetEmpHist(empID);
-            //if (EmpHist == null) throw new InvalidOperationException("No employment history found.Cant get base leave.");
-            //double baseLeave = EmpHist.LastOrDefault().employmentTypeModel.employmentBaseLeave;
-            //double annualAccrualRate = EmpHist.LastOrDefault().employmentTypeModel.annualAccrualRate;
+            
             DateTime startDate = GetLeaveStart(empID);
             DateTime endDate = GetLeaveEnd(empID);
             List<leaveModel> leaves = new List<leaveModel>();
@@ -117,16 +116,20 @@ namespace PIS2.Models
             double accruedLeave = leaves.Where(l => l.leaveTypeModel.leaveTypeImpact == leaveTypeImpact.Positive).Sum(l => l.leaveDays);
             //total number of days between given date
             int days = (endDate - startDate).Days;
-            //initialize elapsed year to 0
+            //initialize elapsed year
             int years = endDate.Year - startDate.Year;
             //number of days that are extra after allocating the total day per year
             int spareDays = 0;
             //the last amount incremented, initialised to the base rate
-            double lastAnnualLeaveIncrement = leaves.OrderBy(l => l.leaveReaquestDate).LastOrDefault(l => l.leaveTypeModel.leaveTypeImpact == leaveTypeImpact.Positive)?.leaveDays ?? 0; 
+            //get the id of 'New Year Balance' Leave Type and use it for selecting parameter
+            double lastAnnualLeaveIncrement = leaves.OrderBy(l => l.leaveReaquestDate)
+                .LastOrDefault(l => l.leaveTypeID == 63 && l.leaveStartDate <= DateTime.Now && l.leaveEndDate >= DateTime.Now)?.leaveDays ?? 0; 
             //daily accrual rate by deviding last annual increment rate to the number of working days
-            double dailyAccrualRate =lastAnnualLeaveIncrement / workingDayPerYear;
+            double dailyAccrualRate = DateTime.IsLeapYear(endDate.Year)? lastAnnualLeaveIncrement / 366 : lastAnnualLeaveIncrement / 365;
             //total amount of leave until the given end time
             double totalLeave = 0;
+
+
             //amount of leave that can be utilised
             double allowedLeave = 0;
                spareDays = Enumerable.Range(0, ((endDate - (startDate).AddYears(years-1))).Days + 1)
@@ -143,6 +146,8 @@ namespace PIS2.Models
       
         public List<leavePerYear> LeavesPerYear(int empID)
         {
+            //get employee hourly rate
+            double hRate = (double) _context.JobPlacements.OrderByDescending(js => js.jobPlacementDate).First(js => js.employmentID == empID).jobPlacementSalary/26;
             //Returns all leaves of the employee
             List<leaveModel> Leaves = GetLeaves(empID) ?? new List<leaveModel>();
             List<leaveModel> accrued = GetAccruedLeaves(empID)?? new List<leaveModel>();
@@ -150,10 +155,16 @@ namespace PIS2.Models
             DateTime startDate = GetLeaveStart(empID);
             DateTime endDate = GetLeaveEnd(empID);
             int years = endDate.Year - startDate.Year;
+            
+            if (startDate.AddYears(years) < endDate)
+            {
+                years++;
+            }
             List<leavePerYear> leavesPerYear = new List<leavePerYear>();
             leavePerYear leavePerYear = new leavePerYear();
 
-            double lastIncrement =accrued.IsNullOrEmpty()? 0 : accrued.OrderByDescending(l=>l.leaveReaquestDate).FirstOrDefault().leaveDays;
+            double lastIncrement =accrued.IsNullOrEmpty()? 0 : accrued.OrderBy(l => l.leaveReaquestDate)
+                .LastOrDefault(l => l.leaveTypeID == 63 && l.leaveStartDate <= endDate && l.leaveEndDate >= endDate)?.leaveDays ?? 0;
             double totalUsedLeaves = used.Sum(l => l.leaveDays);
             double totalAccruedLeaves = accrued.Sum(l => l.leaveDays);
             double balance = totalAccruedLeaves - totalUsedLeaves;
@@ -198,6 +209,9 @@ namespace PIS2.Models
                 leavePerYear.usedLeaveAmount = usedLeaves;
                 leavePerYear.rollOverLeave = rollOverLeave;
                 
+                    leavePerYear.remainingLeaveCost = Math.Round((rollOverLeave*hRate),2);//rollOverLeave != 0? Math.Round(hRate*(startingLeavePerYear + accruedLeaves-usedLeaves),2):0;
+
+
                             leavesPerYear.Add(leavePerYear);
 
                 dateCounter = dateCounter.AddYears(1);
@@ -208,10 +222,12 @@ namespace PIS2.Models
             if (balance < lastIncrement)
             {
                 leavesPerYear.Last().rollOverLeave = balance;
+                leavesPerYear.Last().remainingLeaveCost =Math.Round((balance*hRate),2);
             }
             else
             {
                 leavesPerYear.Last().rollOverLeave = lastIncrement;
+                leavesPerYear.Last().remainingLeaveCost = Math.Round((lastIncrement * hRate),2);
             }
             return leavesPerYear;
         }
@@ -296,9 +312,7 @@ namespace PIS2.Models
             employmentModel employment = new employmentModel();
             employment = _context.Employments.Where(e => e.employmentID == empID).First();
             DateTime leaveCountStartDate= employment.employmentDate;
-            //List<employmentHistoryModel> histories=GetEmpHist(empID).ToList();
-            //if (histories == null) throw new InvalidOperationException("No employment history found. Cant get start date.");
-            //leaveCountStartDate = histories.OrderBy(h =>h.employmentHistoryDate).FirstOrDefault(e => e.employmentTypeModel.isLeaveCount == true).employmentHistoryDate;
+            
             return leaveCountStartDate;
         }
         private DateTime GetLeaveEnd(int empID)
@@ -308,7 +322,8 @@ namespace PIS2.Models
             DateTime leaveCountEndDate;// = DateTime.Now;
            if(employment.employmentStatus == mainStatus.Inactive)
             {
-                leaveCountEndDate = GetEmpHist(empID).Last().modifiedDate;
+                leaveCountEndDate = _context.Terminations.First(t => t.employmentID == empID)?.terminationDate?? DateTime.Now;
+                //leaveCountEndDate = GetEmpHist(empID).OrderByDescending(eh=> eh.modifiedDate).First().modifiedDate;
             }
             else
             {
