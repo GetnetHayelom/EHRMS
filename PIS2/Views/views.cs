@@ -40,17 +40,18 @@ namespace PIS2.Views
         public string CompanyName { get; set; }
         public string Manager { get; set; }
         public int Employees { get; set; }
+        public int xEmployees { get; set; }
         public decimal Salary { get; set; }
         public leaveDetail Leaves { get; set; }
     }
     public class EmployeeView
     {
-        public int EmployeeID { get; set; }
-        public string FullName { get; set; }
+        public employmentModel Employment{ get; set; }
+        public personModel Person { get; set; }
         public jobPlacementModel Job { get; set; }
         public departmentModel DepartmentModel { get; set; }
         public companyModel Company { get; set; }
         public workSiteModel WorkSite { get; set; }
-        public mainStatus EmploymentStatus { get; set; }
+        public addressModel Address { get; set; }
     }
 }

@@ -111,6 +111,10 @@
                 <p class="small mb-1">Allowance</p>
                 <h5 class="fw-bold">$@Math.Round((Model.CompanySummaries.Sum(c => c.Salary)), 2).ToString("N0")</h5>
             </div>
+            <div>
+                <p class="small mb-1">Total</p>
+                <h4 class="fw-bold">$@Math.Round((Model.CompanySummaries.Sum(c => c.Salary)), 2).ToString("N0")</h4>
+            </div>
 
        </div>
        <hr />
