@@ -9,8 +9,8 @@
     <b class="d-none d-print-block">Management Report</b>
 </h1>
 
-<div class="d-flex">
-    <div class="col-2 bg-dark text-white d-print-none">
+<div class="d-flex w-100">
+    <div class="col-2 bg-dark text-white d-none d-print-none">
         <div>
         <img />
         </div>
@@ -22,7 +22,7 @@
             <a role="button" class="text-white nav-link p-3" asp-page="/Worksite/Index" asp-asp-area="Management">Work Loactions</a>
         </div>
     </div>
-    <div class="d-flex flex-column justify-content-around">
+    <div class="col d-flex flex-column">
     <!-- Summary Points -->
         <div class="row d-flex flex-inline justify-content-center">
             <div class="p-2 border borber-1 rounded-2 border-primary col-3 m-2">
@@ -91,10 +91,10 @@
                 </div>
             </div>
         </div>
-       <!--Payables summary-->
-        
-        <h3>Current Payable</h3><hr />
-       <div class="d-flex flex-wrap justify-content-between p-2">
+        <!--Payables summary-->
+       <h3 class="p-2">Current Payable</h3><hr />
+       <div class="d-flex justify-content-between p-2">
+       
             <div class="">
                 <p class="small mb-1">Salary</p>
                 <h5 class="fw-bold">$@Math.Round((Model.CompanySummaries.Sum(c => c.Salary)), 2).ToString("N0")</h5>
@@ -111,34 +111,46 @@
                 <p class="small mb-1">Allowance</p>
                 <h5 class="fw-bold">$@Math.Round((Model.CompanySummaries.Sum(c => c.Salary)), 2).ToString("N0")</h5>
             </div>
+
        </div>
        <hr />
         <!-- Charts Container1-->
-        <div class="row d-flex  justify-content-center">
-            <!-- Education Levels -->
-            <div class="col-6 p-2 border borber-1 rounded-2 border-primary m-2">
-                <canvas id="educationLevelPieChart" width="400" height="400">
-                </canvas>
-            </div>
-            <!-- Work Location -->
-            <div class="col-5 p-2 border borber-1 rounded-2 border-primary m-2">
-                <canvas id="workLocChart" width="400" height="400">
-                </canvas>
+        <div class="container">
+            <h3>Metrics</h3>
+            <div class="row">
+                <!-- Education Levels -->
+                <div class="col p-2 border-start border-end border-1 border-dark">
+                    <canvas id="educationLevelPieChart" height="400">
+                    </canvas>
+                </div>
+                <!-- Work Location -->
+                    <div class="col p-2 border-end border-1 border-dark">
+                    <canvas id="workLocChart" height="400">
+                    </canvas>
+                </div>
+                <!-- Job Category -->
+                    <div class="col p-2 border-end borber-1 border-dark">
+                    <canvas id="jobCategoryChart"  height="400">
+                    </canvas>
+                </div>
+     
             </div>
         </div>
+        <!-- Charts Container1-->
 
         <!--Charts Container2 -->
         <div class="row d-flex  justify-content-center">
             <!-- Employment Trends --> 
-            <div class="col-11 p-2 border borber-1 rounded-2 border-primary m-2">
+            <div class="p-2 m-2">
                 <canvas id="employmentHireChart" class="w-100">
                 </canvas>
             </div>
         </div>
+        <!--COMPANY CARDS-->
         <div class="container py-5">
-            <h2 class="text-center mb-4">
-                <b asp-page="/Company/Index" asp-area="Management" role="button">Companies Summary</b>
-            </h2>
+            <a class="text-center mb-4">
+                <h2><b asp-page="./Company/Index" asp-area="Management" role="button">Companies</b></h2>
+            </a>
             <div class="row g-4">
                 @foreach (var item in Model.CompanySummaries)
                 {
@@ -147,7 +159,7 @@
                         <div class="card border borber-1 rounded-2 border-primary h-100">
                             <div class="card-body p-4">
                                 <div class="d-flex justify-content-between align-items-start">
-                                    <a asp-page="Companyp" asp-route-id="@item.CompanyID" asp-area="Management" role="button" class="btn">
+                                    <a asp-page="Companyp" asp-route-id="@item.CompanyID" asp-area="Management" role="button" class="btn align-items-start">
                                         <h5 class="card-title fw-bold">@item.CompanyName</h5>
                                         <h6 class="card-subtitle mb-3 opacity-75">Manager: @(item.Manager ?? "N\\A")</h6>
                                     </a>
@@ -164,7 +176,7 @@
                                     </div>
                                 </div>
                                 <div class="d-flex justify-content-between border-top border-opacity-25 pt-3">
-                                    <div class="table-warning">
+                                    <div class="text-warning ">
                                         <p class="small mb-1">Acc. Leaves</p>
                                         <h5 class="fw-bold">@Math.Round(item.Leaves.AllowedLeave, 2).ToString("N0")</h5>
                                     </div>
@@ -197,7 +209,7 @@
             </tr>}
         </tbody>
     </table>
-
+<!--EDUCATION LEVEL CHART SCRIPT-->
 <script>
     var educationLevelData = @Html.Raw(Json.Serialize(Model.EduLevelSummary));
     var Total = @Model.EduLevelSummary.Select(el => el.zCount).Sum();
@@ -230,10 +242,10 @@
         options: {
             responsive: true,
             maintainAspectRatio: false,
-            cutout: '65%', // This makes it a doughnut instead of pie
+            cutout: '50%', // This makes it a doughnut instead of pie
             plugins: {
                 legend: {
-                    position: 'right',
+                    position: 'bottom',
                     labels: {
                         padding: 10,
                         usePointStyle: true,
@@ -289,13 +301,13 @@
                 },
                 title: {
                     display: true,
-                    text: "Education Level Distribution",
+                    text: "Education Level",
                     font: {
                         size: 18,
                         weight: "bold",
                         family: "'Helvetica Neue', 'Helvetica', 'Arial', sans-serif"
                     },
-                    color: "#333",
+                    
                     padding: {
                         top: 10,
                         bottom: 30
@@ -310,19 +322,14 @@
         }
     });
 </script>
+<!--EMPLOYMENT RATES SCRIPT-->
 <script>
     var ctx = document.getElementById("employmentHireChart").getContext("2d");
     // Get the serialized data from the server
     var hireData = @Html.Raw(Json.Serialize(Model.EmploymentHireRate));
     var terminationData = @Html.Raw(Json.Serialize(Model.TerminationRate));
     var manPowerRate = @Html.Raw(Json.Serialize(Model.ActiveEmployeeRate));
-    // Extract years and counts
-    //const years = hireData.map(item => item.zYear);
-    //const counts = hireData.map(item => item.zCount);
-
-   // const tyears = terminationData.map(item => item.zYear);
-    //const tcounts = terminationData.map(item => item.zCount);
-    // Extract all unique years from both datasets
+    
     const allYears = [...new Set([...hireData.map(item => item.zYear), ...terminationData.map(item => item.zYear)])].sort();
 
     // Map hire counts to years, filling missing values with 0
@@ -461,9 +468,10 @@
             }
         });
 </script>
+<!--PAYABLE PIE CHART SCRIPT-->
 <script>
-    var ctx = document.getElementById("workLocChart").getContext("2d");
-    var workSiteEmployees = @Html.Raw(Json.Serialize(Model.WorkSiteEmployees));
+    var ctx = document.getElementById("non").getContext("2d");
+    var workSiteEmployees = @Html.Raw(Json.Serialize(Model.JobCategorySummary));
     const worksite = workSiteEmployees.map(item => item.zName);
     const employees = workSiteEmployees.map(item => item.zCount);
 
@@ -495,7 +503,7 @@
                         bottom: 20
                     }
                 },
-                legend: { position: 'right' },
+                legend: { position: 'bottom' },
                 tooltip: {
                     callbacks: {
                         label: function (context) {
@@ -505,6 +513,337 @@
                         }
                     }
                 }
+            }
+        }
+    });
+</script>
+<!--JOB CATEGORY CHART SCRIPT-->
+<script>
+    var jobCategoryData = @Html.Raw(Json.Serialize(Model.JobCategorySummary));
+    var Total = @Model.JobCategorySummary.Select(el => el.zCount).Sum();
+    var jobCategoryLabels = jobCategoryData.map(function (item) {
+        return Math.round((item.zCount / Total) * 100) + '% ' + item.zName;
+    });
+    
+    var jobCategoryCounts = jobCategoryData.map(function (item) {
+        return item.zCount;
+    });
+
+    var ctx = document.getElementById('jobCategoryChart').getContext('2d');
+    var jobCategoryChart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: jobCategoryLabels,
+            datasets: [{
+                data: jobCategoryCounts,
+                backgroundColor: [
+                    '#FF6B6B', '#FF8E72', '#FFB74D', '#FFD54F', '#DCE775',
+                    '#A3E635', '#4CAF50', '#81C784', '#64B5F6', '#2196F3',
+                    '#1565C0', '#9575CD', '#BA68C8', '#F06292', '#EC407A'
+                ],
+                borderColor: '#fff',
+                borderWidth: 2,
+                hoverOffset: 15,
+                hoverBorderColor: '#333'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            cutout: '50%', // This makes it a doughnut instead of pie
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        padding: 10,
+                        usePointStyle: true,
+                        pointStyle: 'circle',
+                        font: {
+                            size: 12,
+                            family: "'Helvetica Neue', 'Helvetica', 'Arial', sans-serif"
+                        },
+                        generateLabels: function (chart) {
+                            const data = chart.data;
+                            if (data.labels.length && data.datasets.length) {
+                                return data.labels.map(function (label, i) {
+                                    const meta = chart.getDatasetMeta(0);
+                                    const style = meta.controller.getStyle(i);
+
+                                    return {
+                                        text: label,
+                                        fillStyle: style.backgroundColor,
+                                        strokeStyle: style.borderColor,
+                                        lineWidth: style.borderWidth,
+                                        hidden: !chart.getDataVisibility(i),
+                                        index: i
+                                    };
+                                });
+                            }
+                            return [];
+                        }
+                    },
+                    onClick: function (e, legendItem, legend) {
+                        const index = legendItem.index;
+                        const chart = legend.chart;
+                        chart.toggleDataVisibility(index);
+                        chart.update();
+                    }
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function (context) {
+                            const label = context.label || '';
+                            const value = context.raw || 0;
+                            const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                            const percentage = Math.round((value / total) * 100);
+
+                            return `${label}: ${value} people (${percentage}%)`;
+                        }
+                    },
+                    displayColors: true,
+                    usePointStyle: true,
+                    bodyFont: {
+                        size: 14
+                    },
+                    padding: 12
+                },
+                title: {
+                    display: true,
+                    text: "Job Category",
+                    font: {
+                        size: 18,
+                        weight: "bold",
+                        family: "'Helvetica Neue', 'Helvetica', 'Arial', sans-serif"
+                    },
+                   
+                    padding: {
+                        top: 10,
+                        bottom: 30
+                    },
+                    align: 'center'
+                }
+            },
+            animation: {
+                animateScale: true,
+                animateRotate: true
+            }
+        }
+    });
+</script>
+<!--WORKLOC CHART -->
+<script>
+    var jobCategoryData = @Html.Raw(Json.Serialize(Model.WorkSiteEmployees));
+    var Total = @Model.WorkSiteEmployees.Select(el => el.zCount).Sum();
+    var jobCategoryLabels = jobCategoryData.map(function (item) {
+        return Math.round(((item.zCount / Total) * 100)*100)/100 + '% ' + item.zName;
+    });
+
+    var jobCategoryCounts = jobCategoryData.map(function (item) {
+        return item.zCount;
+    });
+
+    var ctx = document.getElementById('workLocChart').getContext('2d');
+    var jobCategoryChart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: jobCategoryLabels,
+            datasets: [{
+                data: jobCategoryCounts,
+                backgroundColor: [
+                    '#FF6B6B', '#FF8E72', '#FFB74D', '#FFD54F', '#DCE775',
+                    '#A3E635', '#4CAF50', '#81C784', '#64B5F6', '#2196F3',
+                    '#1565C0', '#9575CD', '#BA68C8', '#F06292', '#EC407A'
+                ],
+                borderColor: '#fff',
+                borderWidth: 2,
+                hoverOffset: 15,
+                hoverBorderColor: '#333'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            cutout: '50%', // This makes it a doughnut instead of pie
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        padding: 10,
+                        usePointStyle: true,
+                        pointStyle: 'circle',
+                        font: {
+                            size: 12,
+                            family: "'Helvetica Neue', 'Helvetica', 'Arial', sans-serif"
+                        },
+                        generateLabels: function (chart) {
+                            const data = chart.data;
+                            if (data.labels.length && data.datasets.length) {
+                                return data.labels.map(function (label, i) {
+                                    const meta = chart.getDatasetMeta(0);
+                                    const style = meta.controller.getStyle(i);
+
+                                    return {
+                                        text: label,
+                                        fillStyle: style.backgroundColor,
+                                        strokeStyle: style.borderColor,
+                                        lineWidth: style.borderWidth,
+                                        hidden: !chart.getDataVisibility(i),
+                                        index: i
+                                    };
+                                });
+                            }
+                            return [];
+                        }
+                    },
+                    onClick: function (e, legendItem, legend) {
+                        const index = legendItem.index;
+                        const chart = legend.chart;
+                        chart.toggleDataVisibility(index);
+                        chart.update();
+                    }
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function (context) {
+                            const label = context.label || '';
+                            const value = context.raw || 0;
+                            const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                            const percentage = Math.round((value / total) * 100);
+
+                            return `${label}: ${value} people (${percentage}%)`;
+                        }
+                    },
+                    displayColors: true,
+                    usePointStyle: true,
+                    bodyFont: {
+                        size: 14
+                    },
+                    padding: 12
+                },
+                title: {
+                    display: true,
+                    text: "Work Loaction",
+                    font: {
+                        size: 18,
+                        weight: "bold",
+                        family: "'Helvetica Neue', 'Helvetica', 'Arial', sans-serif"
+                    },
+                  
+                    padding: {
+                        top: 10,
+                        bottom: 30
+                    },
+                    align: 'center'
+                }
+            },
+            animation: {
+                animateScale: true,
+                animateRotate: true
+            }
+        }
+    });
+</script>
+<!--JOB CLASS CHART -->
+<script>
+    var jobClassData = @Html.Raw(Json.Serialize(Model.WorkSiteEmployees));
+    var Total = @Model.WorkSiteEmployees.Select(el => el.zCount).Sum();
+
+    var jobClassLabels = jobClassData.map(function (item) {
+        return item.zName;
+    });
+
+    var jobClassCounts = jobClassData.map(function (item) {
+        return item.zCount;
+    });
+
+    var ctx = document.getElementById('none').getContext('2d');
+    var jobCategoryChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: jobClassLabels,
+            datasets: [{
+                label: 'Number of Employees',
+                data: jobClassCounts,
+                backgroundColor: [
+                    '#FF6B6B', '#FF8E72', '#FFB74D', '#FFD54F', '#DCE775',
+                    '#A3E635', '#4CAF50', '#81C784', '#64B5F6', '#2196F3',
+                    '#1565C0', '#9575CD', '#BA68C8', '#F06292', '#EC407A'
+                ],
+                borderColor: '#fff',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        precision: 0,
+                        font: {
+                            size: 14
+                        }
+                    },
+                    title: {
+                        display: true,
+                        text: 'Number of Employees',
+                        font: {
+                            size: 16,
+                            weight: 'bold'
+                        }
+                    }
+                },
+                x: {
+                    ticks: {
+                        font: {
+                            size: 12
+                        },
+                        autoSkip: false,
+                        maxRotation: 45,
+                        minRotation: 45
+                    },
+                    title: {
+                        display: true,
+                        text: 'Job Classes',
+                        font: {
+                            size: 16,
+                            weight: 'bold'
+                        }
+                    }
+                }
+            },
+            plugins: {
+                legend: {
+                    display: false // Hide legend since we only have one dataset
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function (context) {
+                            const value = context.raw || 0;
+                            const percentage = Math.round((value / Total) * 100);
+                            return `${value} people (${percentage}%)`;
+                        }
+                    },
+                    displayColors: false
+                },
+                title: {
+                    display: true,
+                    text: 'Job Classes Distribution',
+                    font: {
+                        size: 18,
+                        weight: 'bold'
+                    },
+                    padding: {
+                        top: 10,
+                        bottom: 20
+                    },
+                    align: 'center'
+                }
+            },
+            animation: {
+                duration: 1000,
+                easing: 'easeOutBounce'
             }
         }
     });

@@ -43,6 +43,8 @@ namespace PIS2.Pages.Management
         public List<YearAndCount> ActiveEmployeeRate { get; set; }
         public List<NameAndCount> WorkSiteEmployees { get; set; }
         public List<NameAndCount> EduLevelSummary { get; set; }
+        public List<NameAndCount> JobCategorySummary { get; set; }
+        public List<NameAndCount> JobClassSummary { get; set; }
         public List<CompanySummary> CompanySummaries { get; set; }
         public List<leaveDetail> LeaveSummary { get; set; }
         public async Task OnGetAsync()
@@ -117,6 +119,24 @@ namespace PIS2.Pages.Management
             })
             .OrderBy(g => g.zYear)
             .ToList();
+
+            //jobcategory Summary
+            JobCategorySummary = _context.JobPlacements.Include(j => j.jobModel).ThenInclude(j => j.jobCategoryModel).Where(j => j.jobPlacementStatus == mainStatus.Active)
+                .GroupBy(j => j.jobModel.jobCategoryModel.jobCategoryName)
+                .Select(g => new NameAndCount
+                {
+                    zName = g.Key,
+                    zCount = g.Count()
+                }).OrderByDescending(g =>g.zCount).ToList();
+
+            //jobclass Summary
+            JobClassSummary = _context.JobPlacements.Include(j => j.jobModel).ThenInclude(j => j.jobClassModel)
+                .GroupBy(j => j.jobModel.jobClassModel.JobClassName)
+                .Select(g => new NameAndCount
+                {
+                    zName = g.Key,
+                    zCount = g.Count()
+                }).ToList();
             //Number of Active Employment per Year
             ActiveEmployeeRate =
             (from y in (
@@ -136,18 +156,25 @@ namespace PIS2.Pages.Management
                      zYear = grouped.Key,
                      zCount = grouped.Count()
                  }).ToList();
-           
+
             //WorkSite Employee Distribution
-            WorkSiteEmployees = (from jp in _context.JobPlacements
-                                  join ws in _context.WorkSites on jp.workSiteID equals ws.workSiteID into wsGroup
-                                  from ws in wsGroup.DefaultIfEmpty() // Left join
-                                  where jp.jobPlacementStatus == mainStatus.Active
-                                  group jp by ws.workSiteName into grouped
-                                  select new NameAndCount
-                                  {
-                                      zName = grouped.Key,
-                                      zCount = grouped.Count()
-                                  }).OrderByDescending(wl =>wl.zCount).ToList();
+            WorkSiteEmployees = _context.JobPlacements.Where(jp => jp.jobPlacementStatus == mainStatus.Active).Include(jp => jp.workSiteModel)
+                .GroupBy(w => new { w.workSiteID, w.workSiteModel.workSiteName })
+                .Select(we => new NameAndCount
+                {
+                    zName = we.Key.workSiteName,
+                    zCount = we.Count()
+                }).OrderByDescending(g => g.zCount).ToList().Where(g => g.zCount>0).ToList();
+            //WorkSiteEmployees = (from jp in _context.JobPlacements
+            //                      join ws in _context.WorkSites on jp.workSiteID equals ws.workSiteID into wsGroup
+            //                      from ws in wsGroup.DefaultIfEmpty() // Left join
+            //                      where jp.jobPlacementStatus == mainStatus.Active
+            //                      group jp by ws.workSiteName into grouped
+            //                     select new NameAndCount
+            //                      {
+            //                          zName = grouped.Key,
+            //                          zCount = grouped.Count()
+            //                      }).ToList().Where(we => we.zCount > 0).OrderByDescending(wl =>wl.zCount).ToList();
 
             //edu level summary
             EduLevelSummary = (from pel in _context.PersonEducationLevels
@@ -185,6 +212,7 @@ namespace PIS2.Pages.Management
                 //c.Leaves = _core.getAllLeaveSummary("Comp", c.CompanyID);
                 c.Leaves = new leaveDetail();
             }
+            
 
         }
 
