@@ -40,6 +40,8 @@ namespace PIS2.Pages
         public List<jobPlacementModel>? JobPlacements { get; set; } = default!;
         public List<overtimeRecordModel>? Overtimes { get; set; }=default!;
         public leaveDetail? LeaveDetail { get; set; } = new leaveDetail();
+        public List<leaveTypeModel> AllowedLeaveTypes { get; set; } = new List<leaveTypeModel>();
+        public userModel UserM { get; set; } = default;
         public Core methods { get; set; } = default!;
         public IndexModel(PISContext ctx, Core methods)
         {
@@ -53,6 +55,7 @@ namespace PIS2.Pages
             //Person = new personModel();
             People = await _context.Persons.ToListAsync();
             Employments = await _context.Employments.ToListAsync();
+            
 
             if (!searchID.IsNullOrEmpty() || !searchName.IsNullOrEmpty())
             {
@@ -87,11 +90,31 @@ namespace PIS2.Pages
 
                 }
             }
-           
-            ViewData["employmentID"] = new SelectList(_context.Employments, "employmentID", "givenID");
-            ViewData["leaveTypeID"] = new SelectList(_context.LeaveTypes, "leaveTypeID", "leaveTypeName");
-            ViewData["overtimeID"] = new SelectList(_context.Overtimes, "overtimeID", "overtimeName");
+            else
+            {
+                Person = _context.Users.Where(u => u.userName.ToLower() == User.Identity.Name!.ToLower()).Select(u => u.personModel)?.First()?? new personModel();
+                //UserM = _context.Users.Where(u => u.userName.ToLower() == User.Identity.Name!.ToLower()).First();
+                PersonEmployments = _context.Employments.OrderBy(e => e.employmentDate).Include(e => e.Leaves)
+                        .Include(e => e.JobPlacements).ThenInclude(j => j.jobModel)
+                        .Include(e => e.JobPlacements).ThenInclude(j => j.departmentModel)
+                        .Include(e => e.EmploymentHistories).Where(e => e.personID == Person.personID).ToList();
+                if (PersonEmployments != null && PersonEmployments.Any())
+                {
+                    Employment = PersonEmployments.OrderBy(e => e.employmentDate).LastOrDefault();
+                    
+                    if (Employment != null)
+                    {
+                        Leaves = Employment.Leaves.ToList();
 
+                        LeaveDetail = _core.GetLeaveSummary(Employment.employmentID);
+                        Overtimes = await _context.OvertimeRecords.Include(ot => ot.overtimeModel)
+                            .Include(ot => ot.OvertimeHistories).Where(l => l.employmentID == Employment.employmentID).ToListAsync();
+
+                    }
+
+                }
+            }
+            SetOptions();
         }
         [BindProperty]
         public string searchID { get; set; } = default!;
@@ -143,9 +166,7 @@ namespace PIS2.Pages
 
 
                 }
-                ViewData["employmentID"] = new SelectList(_context.Employments, "employmentID", "givenID");
-                ViewData["leaveTypeID"] = new SelectList(_context.LeaveTypes, "leaveTypeID", "leaveTypeName");
-                ViewData["overtimeID"] = new SelectList(_context.Overtimes, "overtimeID", "overtimeName");
+                SetOptions();
             }
             People = await _context.Persons.ToListAsync();
             Employments = await _context.Employments.ToListAsync();
@@ -191,9 +212,7 @@ namespace PIS2.Pages
 
 
                 }
-                ViewData["employmentID"] = new SelectList(_context.Employments, "employmentID", "givenID");
-                ViewData["leaveTypeID"] = new SelectList(_context.LeaveTypes, "leaveTypeID", "leaveTypeName");
-                ViewData["overtimeID"] = new SelectList(_context.Overtimes, "overtimeID", "overtimeName");
+                SetOptions();
             }
             People = await _context.Persons.ToListAsync();
             Employments = await _context.Employments.ToListAsync();
@@ -223,6 +242,7 @@ namespace PIS2.Pages
             ModelState.Remove(nameof(searchID));
             ModelState.Remove(nameof(searchName));
             ModelState.Clear();
+            Leave.modifiedBy = User.Identity?.Name!;
             Leave.employmentID = employmentID;
             Leave.leaveStatus = leaveStatus.Hold;
             Leave.ratePerHour = _context.JobPlacements.FirstOrDefault(jp => jp.jobPlacementStatus == mainStatus.Active && jp.employmentID == employmentID)?.getJobRate() ?? 0;
@@ -281,9 +301,7 @@ namespace PIS2.Pages
                 TempData["PersonID"] = personID;
                 //searchID = Employment.givenID;
             }           
-            ViewData["employmentID"] = new SelectList(_context.Employments, "employmentID", "givenID");
-            ViewData["leaveTypeID"] = new SelectList(_context.LeaveTypes, "leaveTypeID", "leaveTypeName");
-            ViewData["overtimeID"] = new SelectList(_context.Overtimes, "overtimeID", "overtimeName");
+            SetOptions();
 
             // Pass the Leave ID and keep the form open
             TempData["KeepLeaveRequest"] = true;
@@ -320,17 +338,16 @@ namespace PIS2.Pages
             }
             else
             {
+                overtimeRecordModel.modifiedBy = User.Identity?.Name!;
                 _context.OvertimeRecords.Add(overtimeRecordModel);
                 await _context.SaveChangesAsync();
                 TempData["SuccessMessage"] = $"Overtime Saved with ID {overtimeRecordModel.overtimeRecordID}";
                 TempData["OvertimeID"] = overtimeRecordModel.overtimeRecordID;
                 TempData["PersonID"] = personID;
             }
-            
 
-            ViewData["employmentID"] = new SelectList(_context.Employments, "employmentID", "givenID");
-            ViewData["leaveTypeID"] = new SelectList(_context.LeaveTypes, "leaveTypeID", "leaveTypeName");
-            ViewData["overtimeID"] = new SelectList(_context.Overtimes, "overtimeID", "overtimeName");
+
+            SetOptions();
 
             // Pass the Leave ID and keep the form open
             TempData["keepOvertime"] = true;
@@ -345,6 +362,27 @@ namespace PIS2.Pages
             Overtimes = await _context.OvertimeRecords.Include(ot => ot.overtimeModel)
                                 .Include(ot => ot.OvertimeHistories).Where(l => l.employmentID == Employment.employmentID).ToListAsync();
             return Page();
+        }
+        public void SetOptions()
+        {
+            var leaveTypes = new List<leaveTypeModel>();
+            if (User.IsInRole("MIE\\PMS_CLINIC"))
+            {
+                leaveTypes = _context.LeaveTypes.Where(lt => lt.leaveAvailability == "Clinic" || lt.leaveAvailability == "Everyone").ToList();
+            }
+            else if (User.IsInRole("MIE\\PMS_HRCLERK"))
+            {
+                leaveTypes = _context.LeaveTypes.Where(lt => lt.leaveAvailability == "HR" || lt.leaveAvailability == "Everyone").ToList();
+            }
+            else
+            {
+                leaveTypes = _context.LeaveTypes.Where(lt => lt.leaveAvailability == "Everyone").ToList();
+            }
+            leaveTypes = leaveTypes.Where(lt => lt.leaveTypeStatus == mainStatus.Active).ToList();
+            AllowedLeaveTypes = leaveTypes;
+            ViewData["employmentID"] = new SelectList(_context.Employments, "employmentID", "givenID");
+            ViewData["leaveTypeID"] = new SelectList(AllowedLeaveTypes, "leaveTypeID", "leaveTypeName");
+            ViewData["overtimeID"] = new SelectList(_context.Overtimes, "overtimeID", "overtimeName");
         }
         public async Task<IActionResult> GetEmploymentHistory(int personID)
                 {

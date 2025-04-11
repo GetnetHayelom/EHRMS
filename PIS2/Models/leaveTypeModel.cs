@@ -12,6 +12,7 @@ namespace PIS2.Models
         public mainStatus leaveTypeStatus { get; set; }
         public virtual ICollection<leaveModel>? Leaves { get; set; }
         public string modifiedBy { get; set; }
+        public string leaveAvailability { get; set; }
         public leaveTypeModel() { }
     }
 }

@@ -23,6 +23,11 @@ namespace PIS2.Models
         }
 
     }
+    public class ExprienceView
+    {
+        public personModel Person { get; set; }
+        public List<employmentModel> Employment { get; set; }
+        public List<jobPlacementModel> JobPlacement { get; set; }
 
-
+    }
 }

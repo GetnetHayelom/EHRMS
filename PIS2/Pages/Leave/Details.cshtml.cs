@@ -19,6 +19,8 @@ namespace PIS2.Pages.Leave
         }
 
         public leaveModel leaveModel { get; set; } = default!;
+        public jobPlacementModel Job { get; set; } = default!;
+        public bool isSelf { get; set; } = false;
 
         public async Task<IActionResult> OnGetAsync(int? id)
         {
@@ -28,6 +30,7 @@ namespace PIS2.Pages.Leave
             }
 
             var leavemodel = await _context.Leaves.Include(l => l.employmentModel).ThenInclude(e => e.personModel)
+                .Include(l => l.leaveTypeModel)
                 .Include(l => l.LeaveHistories)
                 .FirstOrDefaultAsync(m => m.leaveID == id);
             if (leavemodel == null)
@@ -37,6 +40,13 @@ namespace PIS2.Pages.Leave
             else
             {
                 leaveModel = leavemodel;
+                Job = _context.JobPlacements.Include(j => j.shiftModel)
+                    .Include(j => j.departmentModel).ThenInclude(d => d.companyModel)
+                    .Include(j=> j.workSiteModel).OrderByDescending(j => j.jobPlacementDate).First(j => j.employmentID == leaveModel.employmentID);
+                if(_context.Users.First(u => u.userName == User.Identity.Name).personID == leaveModel.employmentModel.personID)
+                {
+                    isSelf = true;
+                }
             }
             return Page();
         }

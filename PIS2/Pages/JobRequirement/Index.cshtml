@@ -1,0 +1,67 @@
+﻿@page
+@model PIS2.Pages.JobRequirement.IndexModel
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-page="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.jobRequirementModel[0].DepartmentModel)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.jobRequirementModel[0].JobModel)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.jobRequirementModel[0].requiredNumber)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.jobRequirementModel[0].jobRequirementStatus)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.jobRequirementModel[0].modifiedBy)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.jobRequirementModel[0].modifiedDate)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model.jobRequirementModel) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.DepartmentModel.departmentName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.JobModel.jobID)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.requiredNumber)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.jobRequirementStatus)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.modifiedBy)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.modifiedDate)
+            </td>
+            <td>
+                <a asp-page="./Edit" asp-route-id="@item.jobRequirementID">Edit</a> |
+                <a asp-page="./Details" asp-route-id="@item.jobRequirementID">Details</a> |
+                <a asp-page="./Delete" asp-route-id="@item.jobRequirementID">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

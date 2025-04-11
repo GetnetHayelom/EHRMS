@@ -49,7 +49,7 @@
                         @if (User.IsInRole("mie\\PMS_HRMANAGER"))
                         {
                             <li class="nav-item dropdown">
-                                <a class="nav-link text-white dropdown-toggle" asp-area="" role="button" data-bs-toggle="dropdown">Primary Setup</a>
+                                <a class="nav-link text-white dropdown-toggle" asp-area="" role="button" data-bs-toggle="dropdown">System Setup</a>
                                 <div class="dropdown-menu bg-secondary" aria-labelledby="navbarDropdownMenuLink">
                                     <a class="dropdown-item text-white" asp-page="/Address/Index">Addresses</a>
                                     <a class="dropdown-item" asp-page="/EducationLevel/Index">Education Levels</a>
@@ -72,22 +72,20 @@
                                     <a class="dropdown-item" asp-page ="/SubAccount/Index">Sub-Accounts</a>
                                     <a class="dropdown-item" asp-page ="/Company/Index">Companies</a>
                                     <a class="dropdown-item" asp-page ="/Department/Index">Departments</a>
+                                    <a class="dropdown-item" asp-page="/JobRequirement/Index">Structure</a>
 
                                 </div>
                             </li>
                             <li class="nav-item dropdown">
                                 <a class="nav-link text-white dropdown-toggle" asp-area="" role="button" data-bs-toggle="dropdown">HR Setup</a>
                                 <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                                    <a class="dropdown-item" asp-page="/JobCategory/Index">Job Categories</a>
-                                    <a class="dropdown-item" asp-page="/JobClass/Index">Job Classes</a>
-                                    <a class="dropdown-item" asp-page="/JobGrade/Index">Job Grades</a>
                                     <a class="dropdown-item" asp-page="/Job/Index">Jobs</a>
                                     <a class="dropdown-item" asp-page="/EmploymentType/Index">Employment Types</a>
                                     <a class="dropdown-item" asp-page="/Overtime/Index">Overtime Setup</a>
-                                    <a class="dropdown-item" asp-page="/Shift/Index">Shifts</a>
                                     <a class="dropdown-item" asp-page="/Break/Index">Breaks</a>
                                     <a class="dropdown-item" asp-page="/LeaveType/Index">Leave Setup</a>
                                     <a class="dropdown-item" asp-page="/Allowance/Index">Allowance Setup</a>
+                                    <a class="dropdown-item" asp-page="/EmploymentMethod/Index">Allowance Setup</a>
                                 </div>
                             </li>
                         }
@@ -110,7 +108,7 @@
                             <li class="nav-item dropdown">
                             <a class="nav-link text-white dropdown-toggle" role = "button" data-bs-toggle = "dropdown">System Adminstration</a>
                             <div class="dropdown-menu">
-                                <a class="dropdown-item" asp-page="">Users</a>
+                                <a class="dropdown-item" asp-page="/Users/Index">Users</a>
                                 <a class="dropdown-item" asp-page="">Backup</a>
                                 <a class="dropdown-item" asp-page="">Restore</a>
                                 <a class="dropdown-item" asp-page="">Backup</a>

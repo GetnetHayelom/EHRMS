@@ -23,105 +23,138 @@
         </div>
     </div>
     <div class="col d-flex flex-column">
+    <hr />
     <!-- Summary Points -->
-        <div class="row d-flex flex-inline justify-content-center">
-            <div class="p-2 border borber-1 rounded-2 border-primary col-3 m-2">
-                <div class="w-100">
+        <div class="d-flex">
+            <div class="p-2 flex-grow-1 m-2">
+
+                <div class="w-100 shadow">
+                    <h3 class="bg-dark text-white p-2"><b>Companies\Industies</b></h3>
                     <div class="d-flex">
-                        <h5 class="flex-grow-1 border border-success border-2 rounded-start text-success p-1">Active Companies</h5>
+                        <h5 class="flex-grow-1 border border-success border-1 text-success p-1">Active Companies</h5>
                         <h2 class="bg-success text-white rounded-end p-1">@Model.ActiveCompanies</h2>
                     </div>
                     <div class="d-flex">
-                        <h6 class="flex-grow-1 border border-danger border-2 rounded-start text-danger p-1">Old Companies</h6>
+                        <h6 class="flex-grow-1 border border-danger border-1 text-danger p-1">Old Companies</h6>
                         <h4 class="bg-danger text-white rounded-end p-1">@Model.OldCompanies</h4>
                     </div>
                     <div class="d-flex">
-                        <h6 class="flex-grow-1 border border-info border-2 rounded-start text-info p-1">All Companies</h6>
+                        <h6 class="flex-grow-1 border border-info border-1 text-info p-1">Companies Upto Now</h6>
                         <h4 class="bg-info text-white rounded-end p-1">@Model.Companies.Count()</h4>
                     </div>
                 </div>
             </div>
-            <div class="p-2 border borber-1 rounded-2 border-primary col-3 m-2">
+            <div class="p-2 flex-grow-1 m-2 shadow">
                 <div class="w-100">
-            
+                    <h3 class="bg-dark text-white p-2"><b>Departments</b></h3>
                     <div class="d-flex">
-                        <h5 class="flex-grow-1 border border-success border-2 rounded-start text-success p-1">Active Departments</h5>
+                        <h5 class="flex-grow-1 border border-success border-1 text-success p-1">Active Departments</h5>
                         <h2 class="bg-success text-white rounded-end p-1">@Model.ActiveDepartments</h2>
                     </div>
                     <div class="d-flex">
-                        <h6 class="flex-grow-1 border border-danger border-2 rounded-start text-danger p-1">Old Departments</h6>
+                        <h6 class="flex-grow-1 border border-danger border-1 text-danger p-1">Old Departments</h6>
                         <h4 class="bg-danger text-white rounded-end p-1">@Model.OldDepartments</h4>
                     </div>
                     <div class="d-flex">
-                        <h6 class="flex-grow-1 border border-info border-2 rounded-start text-info p-1">All Departments</h6>
+                        <h6 class="flex-grow-1 border border-info border-1 text-info p-1">Departments Upto Now</h6>
                         <h4 class="bg-info text-white rounded-end p-1">@Model.Departments.Count()</h4>
                     </div>
                 </div>
             </div>
-            <div class="p-2 border borber-1 rounded-2 border-primary col-3 m-2">
+            <div class="p-2 flex-grow-1 m-2 shadow">
                 <div class="w-100">
+                    <h3 class="bg-dark text-white p-2"><b>Employment</b></h3>
                     <div class="d-flex">
-                        <h5 class="flex-grow-1 border border-success border-2 rounded-start text-success p-1">Active Employees</h5>
+                        <h5 class="flex-grow-1 border border-success border-1 text-success p-1">Active Employees</h5>
                         <h2 class="bg-success text-white rounded-end p-1">@Model.ActiveEmployments</h2>
                     </div>
                     <div class="d-flex">
-                        <h6 class="flex-grow-1 border border-danger border-2 rounded-start text-danger p-1">Former Employees</h6>
+                        <h6 class="flex-grow-1 border border-warning border-1 text-warning p-1">Employees On Leave</h6>
+                        <h4 class="bg-warning text-white rounded-end p-1">@Model.leaveEmployments</h4>
+                    </div>
+                    <div class="d-flex">
+                        <h6 class="flex-grow-1 border border-danger border-1 text-danger p-1">Former Employees</h6>
                         <h4 class="bg-danger text-white rounded-end p-1">@Model.exEmployments</h4>
                     </div>
                     <div class="d-flex">
-                        <h6 class="flex-grow-1 border border-info border-2 rounded-start text-info p-1">Total Number of Employee</h6>
+                        <h6 class="flex-grow-1 border border-info border-1 text-info p-1">Employments Upto Now</h6>
                         <h4 class="bg-info text-white rounded-end p-1">@Model.Employments.Count()</h4>
                     </div>
                 </div>
             </div>
-            <div class="p-2 border borber-1 rounded-2 border-primary col-2 m-2">
+            <div class="p-2 flex-grow-1 m-2 shadow">
                 <div class="w-100">
+                    <h3 class="bg-dark text-white p-2"><b>Employment Types</b></h3>
                     @foreach (var item in Model.EmploymentTypes)
                     {
                         <div class="d-flex">
-                            <h5 class="flex-grow-1 border border-success border-2 rounded-start text-success p-1">@item.zName</h5>
+                            <h5 class="flex-grow-1 border border-success border-1 text-success p-1">@item.zName</h5>
                             <h2 class="bg-success text-white rounded-end p-1">@item.zCount</h2>
                         </div>
                 
                     }
-                    <div class="d-flex">
-                        <h6 class="flex-grow-1 border border-info border-2 rounded-start text-info p-1">Employees On Leave</h6>
-                        <h4 class="bg-info text-white rounded-end p-1">@Model.leaveEmployments</h4>
-                    </div>
+                    
                 </div>
             </div>
         </div>
-        <!--Payables summary-->
-       <h3 class="p-2">Current Payable</h3><hr />
-       <div class="d-flex justify-content-between p-2">
-       
-            <div class="">
-                <p class="small mb-1">Salary</p>
-                <h5 class="fw-bold">$@Math.Round((Model.CompanySummaries.Sum(c => c.Salary)), 2).ToString("N0")</h5>
-            </div>
-            <div>
-                <p class="small mb-1">Overtime</p>
-                <h5 class="fw-bold">$@Math.Round((Model.CompanySummaries.Sum(c => c.Salary)), 2).ToString("N0")</h5>  
-            </div>
-            <div>
-                <p class="small mb-1">Acc. Leaves</p>
-                <h5 class="fw-bold">$@Math.Round((Model.CompanySummaries.Sum(c => c.Leaves.leaveCost)), 2).ToString("N0")</h5>
-            </div>
-            <div>
-                <p class="small mb-1">Allowance</p>
-                <h5 class="fw-bold">$@Math.Round((Model.CompanySummaries.Sum(c => c.Salary)), 2).ToString("N0")</h5>
-            </div>
-            <div>
-                <p class="small mb-1">Total</p>
-                <h4 class="fw-bold">$@Math.Round((Model.CompanySummaries.Sum(c => c.Salary)), 2).ToString("N0")</h4>
-            </div>
+        <hr />
+        <div class="d-flex">
+            <!--Payables summary-->
+            <div class="d-flex flex-column flex-grow-1 col-3 p-2 m-2">
+                <h3 class="p-2 bg-dark text-white">Current Payable</h3><hr />
+                <div class="">
+                    <p class="small mb-1">Salary</p>
+                    <h5 class="fw-bold">$@Math.Round((Model.CompanySummaries.Sum(c => c.Salary)), 2).ToString("N0")</h5>
+                </div>
+                <div>
+                    <p class="small mb-1">Overtime</p>
+                    <h5 class="fw-bold">$@Math.Round((Model.CompanySummaries.Sum(c => c.Salary)), 2).ToString("N0")</h5>  
+                </div>
+                <div>
+                    <p class="small mb-1">Acc. Leaves</p>
+                    <h5 class="fw-bold">$@Math.Round((Model.CompanySummaries.Sum(c => c.Leaves.leaveCost)), 2).ToString("N0")</h5>
+                </div>
+                <div>
+                    <p class="small mb-1">Allowance</p>
+                    <h5 class="fw-bold">$@Math.Round((Model.CompanySummaries.Sum(c => c.Salary)), 2).ToString("N0")</h5>
+                </div>
+                <div>
+                    <p class="small mb-1">Total</p>
+                    <h4 class="fw-bold">$@Math.Round((Model.CompanySummaries.Sum(c => c.Salary)), 2).ToString("N0")</h4>
+                </div>
 
-       </div>
+           </div>
+            <!--Payables summary-->
+            <div class="d-flex flex-column flex-grow-1 col-3 p-2 m-2">
+                <h3 class="p-2 bg-dark text-white">Current Payable</h3><hr />
+                <div class="">
+                    <p class="small mb-1">Salary</p>
+                    <h5 class="fw-bold">$@Math.Round((Model.CompanySummaries.Sum(c => c.Salary)), 2).ToString("N0")</h5>
+                </div>
+                <div>
+                    <p class="small mb-1">Overtime</p>
+                    <h5 class="fw-bold">$@Math.Round((Model.CompanySummaries.Sum(c => c.Salary)), 2).ToString("N0")</h5>
+                </div>
+                <div>
+                    <p class="small mb-1">Acc. Leaves</p>
+                    <h5 class="fw-bold">$@Math.Round((Model.CompanySummaries.Sum(c => c.Leaves.leaveCost)), 2).ToString("N0")</h5>
+                </div>
+                <div>
+                    <p class="small mb-1">Allowance</p>
+                    <h5 class="fw-bold">$@Math.Round((Model.CompanySummaries.Sum(c => c.Salary)), 2).ToString("N0")</h5>
+                </div>
+                <div>
+                    <p class="small mb-1">Total</p>
+                    <h4 class="fw-bold">$@Math.Round((Model.CompanySummaries.Sum(c => c.Salary)), 2).ToString("N0")</h4>
+                </div>
+
+            </div>
+        </div>
        <hr />
         <!-- Charts Container1-->
         <div class="container">
-            <h3>Metrics</h3>
-            <div class="row">
+            <h3 class="bg-dark text-white p-2">Metrics</h3>
+            <div class="row p-2">
                 <!-- Education Levels -->
                 <div class="col p-2 border-start border-end border-1 border-dark">
                     <canvas id="educationLevelPieChart" height="400">
@@ -137,11 +170,10 @@
                     <canvas id="jobCategoryChart"  height="400">
                     </canvas>
                 </div>
-     
             </div>
         </div>
         <!-- Charts Container1-->
-
+        <hr />
         <!--Charts Container2 -->
         <div class="row d-flex  justify-content-center">
             <!-- Employment Trends --> 
@@ -152,27 +184,27 @@
         </div>
         <!--COMPANY CARDS-->
         <div class="container py-5">
-            <a class="text-center mb-4">
-                <h2><b asp-page="./Company/Index" asp-area="Management" role="button">Companies</b></h2>
+            <a class="text-center mb-4 text-decoration-none">
+                <h2 class="bg-dark text-white p-2"><b asp-page="./Company/Index" asp-area="Management" role="button">Companies</b></h2>
             </a>
             <div class="row g-4">
                 @foreach (var item in Model.CompanySummaries)
                 {
                     
-                    <div class="col-md-3 col-lg-3">
-                        <div class="card border borber-1 rounded-2 border-primary h-100">
+                    <div class="col-md-3 col-lg-3 ">
+                        <div class="card h-100 shadow">
                             <div class="card-body p-4">
                                 <div class="d-flex justify-content-between align-items-start">
-                                    <a asp-page="Companyp" asp-route-id="@item.CompanyID" asp-area="Management" role="button" class="btn align-items-start">
-                                        <h5 class="card-title fw-bold">@item.CompanyName</h5>
-                                        <h6 class="card-subtitle mb-3 opacity-75">Manager: @(item.Manager ?? "N\\A")</h6>
+                                    <a asp-page="Companyp" asp-route-id="@item.CompanyID" asp-area="Management" role="button" class="text-decoration-none">
+                                        <h5 class="card-title fw-bold text-dark">@item.CompanyName</h5>
+                                        <h6 class="card-subtitle mb-3 opacity-75 text-dark">Manager: @(item.Manager ?? "N\\A")</h6>
                                     </a>
 
                                 </div>
-                                <div class="d-flex justify-content-between border-top border-opacity-25 pt-3 text-info">
+                                <div class="d-flex justify-content-between border-top border-opacity-25 pt-3 text-primary">
                                     <div>
                                         <p class="small mb-1">Employees</p>
-                                        <h3 class="fw-bold text-info">@item.Employees.ToString("N0")</h3>
+                                        <h3 class="fw-bold">@item.Employees.ToString("N0")</h3>
                                     </div>
                                     <div>
                                         <p class="small mb-1">Departments</p>

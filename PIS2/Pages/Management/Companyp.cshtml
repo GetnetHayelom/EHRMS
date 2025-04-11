@@ -11,103 +11,142 @@
 </div>
 <div class="d-flex flex-column justify-content-around">
     <!-- Summary Points -->
-    <div class="row d-flex flex-inline justify-content-center">
+    <div class="d-flex">
         <!--DEPARTMENTS -->
-        <div class="p-2 border borber-1 rounded-2 border-primary col-3 m-2">
+        <div class="p-2 flex-grow-1 m-2 shadow">
+            <h3 class="bg-dark text-white p-2"><b>Departments</b></h3>
             <div class="w-100">
                 <div class="d-flex">
-                    <h5 class="flex-grow-1 border border-success border-2 rounded-start text-success p-1">Active Departments</h5>
+                    <h5 class="flex-grow-1 border border-success border-1 text-success p-1">Active Departments</h5>
                     <h2 class="bg-success text-white rounded-end p-1">@Model.Departments.Where(d=> d.departmentStatus == PIS2.Models.mainStatus.Active).Count()</h2>
                 </div>
                 @if (Model.Departments.Where(d => d.departmentStatus == PIS2.Models.mainStatus.Inactive).Count() > 0)
                 {
                     <div class="d-flex">
-                    <h6 class="flex-grow-1 border border-danger border-2 rounded-start text-danger p-1">Old Departments</h6>
-                    <h4 class="bg-danger text-white rounded-end p-1">@Model.Departments.Where(d => d.departmentStatus == PIS2.Models.mainStatus.Inactive).Count()</h4>
+                        <h6 class="flex-grow-1 border border-danger border-1 text-danger p-1">Old Departments</h6>
+                        <h4 class="bg-danger text-white rounded-end p-1">@Model.Departments.Where(d => d.departmentStatus == PIS2.Models.mainStatus.Inactive).Count()</h4>
                     </div>
                     <div class="d-flex">
-                        <h6 class="flex-grow-1 border border-info border-2 rounded-start text-info p-1">All Departments</h6>
+                        <h6 class="flex-grow-1 border border-info border-1 text-info p-1">All Departments</h6>
                         <h4 class="bg-info text-white rounded-end p-1">@Model.Departments.Count()</h4>
                     </div>
+                }
+                else
+                {
+                    <h3 class="bg-info text-black-white p-2">No Previous Departments</h3>
                 }
             </div>
         </div>
         <!--EMPLOYMENTS-->
-        <div class="p-2 border borber-1 rounded-2 border-primary col-3 m-2">
+        <div class="p-2 flex-grow-1 m-2 shadow">
             <div class="w-100">
+                <h3 class="bg-dark text-white p-2"><b>Employment</b></h3>
                 <div class="d-flex">
-                    <h5 class="flex-grow-1 border border-success border-2 rounded-start text-success p-1">Active Employees</h5>
+                    <h5 class="flex-grow-1 border border-success border-1 text-success p-1">Active Employees</h5>
                     <h2 class="bg-success text-white rounded-end p-1">@Model.CompanySummary.Employees</h2>
                 </div>
-
                 <div class="d-flex">
-                    <h6 class="flex-grow-1 border border-danger border-2 rounded-start text-danger p-1">Former Employees</h6>
+                    <h6 class="flex-grow-1 border border-info border-1 text-warning p-1">Employees On Leave</h6>
+                    <h4 class="bg-warning text-white rounded-end p-1">@Model.leaveEmployments</h4>
+                </div>
+                <div class="d-flex">
+                    <h6 class="flex-grow-1 border border-danger border-1 text-danger p-1">Former Employees</h6>
                     <h4 class="bg-danger text-white rounded-end p-1">@Model.CompanySummary.xEmployees</h4>
                 </div>
                 <div class="d-flex">
-                    <h6 class="flex-grow-1 border border-info border-2 rounded-start text-info p-1">Total Number of Employee</h6>
+                    <h6 class="flex-grow-1 border border-info border-1 text-info p-1">Total Number of Employee</h6>
                     <h4 class="bg-info text-white rounded-end p-1">@Model.Employments.Count()</h4>
                 </div>
             </div>
         </div>
-        <div class="p-2 border borber-1 rounded-2 border-primary col-2 m-2">
+        <!--EMPLOYMENT TYPE-->
+        <div class="p-2 flex-grow-1 m-2 shadow">
             <div class="w-100">
+                <h3 class="bg-dark text-white p-2"><b>Employment Types</b></h3>
                 @foreach (var item in Model.EmploymentTypes)
                 {
                     <div class="d-flex">
-                        <h5 class="flex-grow-1 border border-success border-2 rounded-start text-success p-1">@item.zName</h5>
+                        <h5 class="flex-grow-1 border border-success border-1 text-success p-1">@item.zName</h5>
                         <h2 class="bg-success text-white rounded-end p-1">@item.zCount</h2>
                     </div>
 
                 }
-                <div class="d-flex">
-                    <h6 class="flex-grow-1 border border-info border-2 rounded-start text-info p-1">Employees On Leave</h6>
-                    <h4 class="bg-info text-white rounded-end p-1">@Model.leaveEmployments</h4>
-                </div>
+               
+            </div>
+        </div>
+    </div>
+    
+    <div class="d-flex">
+        <!--Payables summary-->
+        <div class="d-flex flex-column flex-grow-1 p-2 m-2 shadow">
+            <h3 class="bg-dark text-white p-2">Current Payable</h3><hr />
+            <div class="">
+                <p class="small mb-1">Salary</p>
+                <h5 class="fw-bold">$@Math.Round((Model.CompanySummary.Salary), 2).ToString("N0")</h5>
+            </div>
+            <div>
+                <p class="small mb-1">Overtime</p>
+                <h5 class="fw-bold">$@Math.Round((Model.CompanySummary.Salary), 2).ToString("N0")</h5>
+            </div>
+            <div>
+                <p class="small mb-1">Acc. Leaves</p>
+                <h5 class="fw-bold">$@Math.Round((Model.leaveCost), 2).ToString("N0")</h5>
+            </div>
+            <div>
+            
+                <p class="small mb-1">Allowance</p>
+                <h5 class="fw-bold">$@Math.Round((Model.CompanySummary.Salary), 2).ToString("N0")</h5>
+            </div>
+            <div>
+                <p class="small mb-1">Total</p>
+                <h4 class="fw-bold">$@Math.Round((Model.CompanySummary.Salary), 2).ToString("N0")</h4>
             </div>
         </div>
     </div>
     <!--Payables summary-->
+    <div class="d-flex">
+        <div class="d-flex flex-column flex-grow-1 p-2 m-2 shadow">
+            <h3 class="bg-dark text-white p-2">Current Payable</h3><hr />
+            <div class="">
+                <p class="small mb-1">Salary</p>
+                <h5 class="fw-bold">$@Math.Round((Model.CompanySummary.Salary), 2).ToString("N0")</h5>
+            </div>
+            <div>
+                <p class="small mb-1">Overtime</p>
+                <h5 class="fw-bold">$@Math.Round((Model.CompanySummary.Salary), 2).ToString("N0")</h5>
+            </div>
+            <div>
+                <p class="small mb-1">Acc. Leaves</p>
+                <h5 class="fw-bold">$@Math.Round((Model.leaveCost), 2).ToString("N0")</h5>
+            </div>
+            <div>
 
-    <h3>Current Payable</h3><hr />
-    <div class="d-flex flex-wrap justify-content-between p-2">
-        <div class="">
-            <p class="small mb-1">Salary</p>
-            <h5 class="fw-bold">$@Math.Round((Model.CompanySummary.Salary), 2).ToString("N0")</h5>
-        </div>
-        <div>
-            <p class="small mb-1">Overtime</p>
-            <h5 class="fw-bold">$@Math.Round((Model.CompanySummary.Salary), 2).ToString("N0")</h5>
-        </div>
-        <div>
-            <p class="small mb-1">Acc. Leaves</p>
-            <h5 class="fw-bold">$@Math.Round((Model.leaveCost), 2).ToString("N0")</h5>
-        </div>
-        <div>
-            
-            <p class="small mb-1">Allowance</p>
-            <h5 class="fw-bold">$@Math.Round((Model.CompanySummary.Salary), 2).ToString("N0")</h5>
-        </div>
-        <div>
-            <p class="small mb-1">Total</p>
-            <h4 class="fw-bold">$@Math.Round((Model.CompanySummary.Salary), 2).ToString("N0")</h4>
+                <p class="small mb-1">Allowance</p>
+                <h5 class="fw-bold">$@Math.Round((Model.CompanySummary.Salary), 2).ToString("N0")</h5>
+            </div>
+            <div>
+                <p class="small mb-1">Total</p>
+                <h4 class="fw-bold">$@Math.Round((Model.CompanySummary.Salary), 2).ToString("N0")</h4>
+            </div>
         </div>
     </div>
     <hr/>
     <!-- Charts Container1-->
-    <div class="row d-flex  justify-content-center">
+    <h3 class="bg-dark text-white p-2">Metrics</h3>
+    <div class="d-flex">
+        
         <!-- Education Levels -->
-        <div class="col-3 p-2 border borber-1 rounded-2 border-primary m-2">
+        <div class="flex-grow-1 p-2 border borber-start-1 border-dark m-2">
             <canvas id="educationLevelPieChart" width="400" height="400">
             </canvas>
         </div>
         <!-- Work Location -->
-        <div class="col-3 p-2 border borber-1 rounded-2 border-primary m-2">
+        <div class="flex-grow-1 p-2 border borber-start-1  border-dark m-2">
             <canvas id="workLocChart" width="400" height="400">
             </canvas>
         </div>
         <!-- Termination Reason -->
-        <div class="col-3 p-2 border borber-1 rounded-2 border-primary m-2">
+        <div class="flex-grow-1 p-2 border borber-start-1 border-dark m-2">
             <canvas id="terminationChart" width="400" height="400">
             </canvas>
         </div>
@@ -123,14 +162,14 @@
     </div>
     <div class="container py-5">
         <h2 class="text-center mb-4">
-
             <b>Departments</b>
         <hr /></h2>
         <div class="row g-4">
             @foreach (var item in Model.DepartmentSummaries)
             {
+                <a asp-page="/Department/Details" asp-route-id="@item.DepartmentID" class="text-decoration-none text-dark">
                 <div class="col-md-3 col-lg-3">
-                    <div class="card border borber-1 rounded-2 border-primary h-100">
+                    <div class="card border borber-1 rounded-2 border-primary h-100 shadow">
                         <div class="card-body p-4">
                             <div class="d-flex justify-content-between align-items-start">
                                 <div>
@@ -167,6 +206,7 @@
                         </div>
                     </div>
                 </div>
+                </a>
             }
         </div>
     </div>

@@ -1,0 +1,61 @@
+﻿@page
+@model PIS2.Pages.JobRequirement.CreateModel
+
+@{
+    ViewData["Title"] = "Create";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<h1>Create</h1>
+
+<h4>jobRequirementModel</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <span class="text-danger">*</span>
+                <label asp-for="jobRequirementModel.departmentID" class="control-label"></label>
+                <select asp-for="jobRequirementModel.departmentID" class ="form-control" asp-items="ViewBag.departmentID"></select>
+            </div>
+            <div class="form-group">
+                <span class="text-danger">*</span>
+                <label asp-for="jobRequirementModel.jobID" class="control-label"></label>
+                <select asp-for="jobRequirementModel.jobID" class ="form-control" asp-items="ViewBag.jobID"></select>
+            </div>
+            <div class="form-group">
+                <span class="text-danger">*</span>
+                <label asp-for="jobRequirementModel.requiredNumber" class="control-label"></label>
+                <input asp-for="jobRequirementModel.requiredNumber" class="form-control" />
+                <span asp-validation-for="jobRequirementModel.requiredNumber" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="jobRequirementModel.jobRequirementStatus" class="control-label"></label>
+                <select asp-for="jobRequirementModel.jobRequirementStatus" class="form-control"></select>
+                <span asp-validation-for="jobRequirementModel.jobRequirementStatus" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="jobRequirementModel.modifiedBy" class="control-label"></label>
+                <input asp-for="jobRequirementModel.modifiedBy" class="form-control" />
+                <span asp-validation-for="jobRequirementModel.modifiedBy" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="jobRequirementModel.modifiedDate" class="control-label"></label>
+                <input asp-for="jobRequirementModel.modifiedDate" class="form-control" />
+                <span asp-validation-for="jobRequirementModel.modifiedDate" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-page="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

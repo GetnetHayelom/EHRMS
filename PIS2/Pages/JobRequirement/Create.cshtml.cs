@@ -2,16 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using PIS2.Models;
 
-
-
-
-namespace PIS2.Pages.Users
+namespace PIS2.Pages.JobRequirement
 {
     public class CreateModel : PageModel
     {
@@ -24,25 +20,23 @@ namespace PIS2.Pages.Users
 
         public IActionResult OnGet()
         {
-        ViewData["personID"] = new SelectList(_context.Persons.OrderBy(p => p.personFirstName).ThenBy(p => p.personFatherName), "personID", "personFullName");
-
+        ViewData["departmentID"] = new SelectList(_context.Departments, "departmentID", "departmentName");
+        ViewData["jobID"] = new SelectList(_context.Jobs, "jobID", "jobID");
             return Page();
         }
 
         [BindProperty]
-        public userModel userModel { get; set; } = default!;
+        public jobRequirementModel jobRequirementModel { get; set; } = default!;
 
         // For more information, see https://aka.ms/RazorPagesCRUD.
         public async Task<IActionResult> OnPostAsync()
         {
-            ModelState.Clear();
-            userModel.modifiedBy = User.Identity.Name!;
             if (!ModelState.IsValid)
             {
                 return Page();
             }
-            
-            _context.Users.Add(userModel);
+
+            _context.JobRequirements.Add(jobRequirementModel);
             await _context.SaveChangesAsync();
 
             return RedirectToPage("./Index");

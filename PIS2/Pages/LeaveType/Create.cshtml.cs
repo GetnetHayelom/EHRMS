@@ -29,11 +29,13 @@ namespace PIS2.Pages.LeaveType
         // For more information, see https://aka.ms/RazorPagesCRUD.
         public async Task<IActionResult> OnPostAsync()
         {
+            ModelState.Clear();
+            leaveTypeModel.modifiedBy = User.Identity.Name;
             if (!ModelState.IsValid)
             {
                 return Page();
             }
-
+            leaveTypeModel.modifiedBy = User.Identity.Name!;
             _context.LeaveTypes.Add(leaveTypeModel);
             await _context.SaveChangesAsync();
 

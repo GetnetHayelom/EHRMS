@@ -71,7 +71,7 @@ namespace PIS2.Models
             switch (selectBy) {
 
                 case "Comp":
-                    var comEmp = emp.Where(e => e.JobPlacements != null
+                    var comEmp = emp.Where(e => e.JobPlacements != null && e.employmentStatus == mainStatus.Active
                           && e.JobPlacements.Any()
                           && e.JobPlacements.First().departmentModel?.companyModel?.companyID == ID).Select(e => e.employmentID).ToList();
                     foreach (var e in comEmp)
@@ -81,7 +81,7 @@ namespace PIS2.Models
                     }
                     break;
                 case "Dep":
-                    var depEmp = emp.Where(e => e.JobPlacements != null
+                    var depEmp = emp.Where(e => e.JobPlacements != null && e.employmentStatus == mainStatus.Active
                         && e.JobPlacements.Any()
                         && e.JobPlacements.First().departmentModel?.departmentID == ID).Select(e => e.employmentID).ToList();
                     foreach (var e in depEmp)
@@ -184,7 +184,6 @@ namespace PIS2.Models
                 {
                     if (balance > lastIncrement)
                     {
-                        
                         rollOverLeave = balance - lastIncrement;
                         if (rollOverLeave > accruedLeaves)
                         {
@@ -348,6 +347,19 @@ namespace PIS2.Models
         {
             List<leaveModel> accruedLeaves = GetLeaves(empID).Where(l => l.leaveTypeModel.leaveTypeImpact == leaveTypeImpact.Positive).ToList(); ;
             return accruedLeaves;
+        }
+        public Tuple<int, int> GetYearsAndMonths(DateTime startDate, DateTime endDate)
+        {
+            int years = endDate.Year - startDate.Year;
+            int months = endDate.Month - startDate.Month;
+
+            if (months < 0)
+            {
+                years--;
+                months += 12;
+            }
+
+            return Tuple.Create(years, months);
         }
         public Core() { }
 

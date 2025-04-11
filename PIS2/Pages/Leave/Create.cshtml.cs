@@ -5,41 +5,204 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using PIS2.Models;
+using static System.Formats.Asn1.AsnWriter;
 
 namespace PIS2.Pages.Leave
 {
     public class CreateModel : PageModel
     {
         private readonly PIS2.Models.PISContext _context;
-
-        public CreateModel(PIS2.Models.PISContext context)
+        private readonly Core _core;
+        public CreateModel(PISContext ctx, Core methods)
         {
-            _context = context;
+            _context = ctx;
+            _core = methods;
         }
-
-        public IActionResult OnGet()
+        [BindProperty(SupportsGet = true)]
+        public employmentModel Employment { get; set; } = new employmentModel();
+        [BindProperty(SupportsGet = true)]
+        public string givenID { get; set; }
+        public int EmployeeID { get; set; }
+        public List<leaveTypeModel> AllowedLeaveTypes { get; set; }
+        public personModel Person { get; set; } = new personModel();
+        public leaveDetail LeaveDetail { get; set; } =new leaveDetail();
+        public List<leaveModel> Leaves { get; set; }
+        public IActionResult OnGet(int id)
         {
-        ViewData["employmentID"] = new SelectList(_context.Employments, "employmentID", "givenID");
-        ViewData["leaveTypeID"] = new SelectList(_context.LeaveTypes, "leaveTypeID", "leaveTypeName");
+            if (id==0)
+            {
+                id = _context.Users.Include(u => u.personModel)
+                    .ThenInclude(p => p.Employments).First(u => u.userName == User.Identity.Name)
+                    .personModel.Employments.FirstOrDefault(e => e.employmentStatus == mainStatus.Active).employmentID;
+                Employment = _context.Employments.FirstOrDefault(e => e.employmentID == id) ?? new employmentModel();
+                EmployeeID = id;
+                if (id == 0)
+                {
+                    Console.WriteLine("ID is still 0");
+                    return NotFound();
+                }
+                    
+            }
+            else
+            {
+                Employment = _context.Employments.FirstOrDefault(e => e.employmentID == id) ?? new employmentModel();
+                if (Employment.employmentID == 0)
+                {
+                    return NotFound();
+                }
+            }
+            if (!string.IsNullOrEmpty(givenID))
+            {
+                Employment = _context.Employments.FirstOrDefault(e => e.givenID == givenID) ?? new employmentModel();
+                Console.WriteLine("This is right here");
+                if (Employment != null)
+                {
+                    
+                    id = Employment.employmentID;
+                    EmployeeID = id;
+                    Console.WriteLine("ID is set from givenID" + id);
+                    // Redirect to the Details page with employmentID
+                    return RedirectToPage("Create", new { id = Employment.employmentID });
+                }               
+            }
+            
+
+            var leaveTypes = new List<leaveTypeModel>();
+            
+            if (User.IsInRole("MIE\\PMS_CLINIC"))
+            {
+                leaveTypes = _context.LeaveTypes.Where(lt => lt.leaveAvailability == "Clinic" || lt.leaveAvailability == "Everyone").ToList();
+            }
+            else if (User.IsInRole("MIE\\PMS_HRCLERK"))
+            {
+                leaveTypes = _context.LeaveTypes.Where(lt => lt.leaveAvailability == "HR" || lt.leaveAvailability == "Everyone").ToList();
+            }
+            else
+            {
+                leaveTypes = _context.LeaveTypes.Where(lt => lt.leaveAvailability == "Everyone").ToList();
+            }
+            leaveTypes = leaveTypes.Where(lt => lt.leaveTypeStatus == mainStatus.Active).ToList();
+            AllowedLeaveTypes = leaveTypes;
+            ViewData["leaveTypeID"] = new SelectList(AllowedLeaveTypes, "leaveTypeID", "leaveTypeName");
+            ViewData["employmentID"] = new SelectList(_context.Employments.Include(e => e.personModel).Where(e => e.employmentStatus == mainStatus.Active), "employmentID", "givenID");
+
+            EmployeeID = Employment.employmentID;
+            TempData["MyNumber"] = EmployeeID;
+
+            LeaveDetail = _core.GetLeaveSummary(id);
+            Leaves =_context.Leaves.OrderByDescending(l => l.leaveReaquestDate).Where(e => e.employmentID == EmployeeID).ToList();
+            Person = _context.Persons.FirstOrDefault(e => e.personID == Employment.personID)?? new personModel();
+            ViewData["employmentID"] = new SelectList(_context.Employments, "employmentID", "givenID", id);
+            Console.WriteLine("Employee ID is " + EmployeeID);
             return Page();
         }
-
+        
         [BindProperty]
-        public leaveModel leaveModel { get; set; } = default!;
+        public leaveModel Leave { get; set; } = default!;
 
         // For more information, see https://aka.ms/RazorPagesCRUD.
         public async Task<IActionResult> OnPostAsync()
         {
+            ModelState.Clear();
+           
+            Leave.employmentID = Convert.ToInt32(TempData["MyNumber"]);  Console.WriteLine("This is right here" + Leave.employmentID);
+            Leave.modifiedBy = User.Identity?.Name!;
+            Leave.leaveStatus = leaveStatus.Hold;
+            Leave.ratePerHour = _context.JobPlacements.FirstOrDefault(jp => jp.jobPlacementStatus == mainStatus.Active && jp.employmentID == Employment.employmentID)?.getJobRate() ?? 0;
+            Employment = _context.Employments.FirstOrDefault(e => e.employmentID == Leave.employmentID)?? new employmentModel();
             if (!ModelState.IsValid)
             {
                 return Page();
             }
 
-            _context.Leaves.Add(leaveModel);
+            _context.Leaves.Add(Leave);
             await _context.SaveChangesAsync();
 
-            return RedirectToPage("./Index");
+            //return RedirectToPage("./Index");
+            return RedirectToPage("Details", new { id = Leave.leaveID });
+        }
+        public async Task<IActionResult> OnPostCreateLeave()
+        {
+            if (Employment.employmentID == 0 || _context.Employments.FirstOrDefault(e => e.employmentID == Employment.employmentID) == null)
+            {
+                TempData["SuccessMessage"] = "Employment not found or provided";
+                return Page();
+            }
+            if (_context.Employments.FirstOrDefault(e => e.employmentID == Employment.employmentID)?.employmentStatus == mainStatus.Inactive)
+            {
+                TempData["SuccessMessage"] = "Could not save leave reaquest. Employment status must me active.";
+                return Page();
+            }
+            ModelState.Clear();
+            Leave.modifiedBy = User.Identity?.Name!;
+            Leave.employmentID = Employment.employmentID;
+            Leave.leaveStatus = leaveStatus.Hold;
+            Leave.ratePerHour = _context.JobPlacements.FirstOrDefault(jp => jp.jobPlacementStatus == mainStatus.Active && jp.employmentID == Employment.employmentID)?.getJobRate() ?? 0;
+            //TempData["LeaveID"] = null;
+            //if (!TryValidateModel(Leave, nameof(Leave)))
+            if (!ModelState.IsValid)
+            {
+                // Log or display errors for debugging
+                foreach (var error in ModelState)
+                {
+                    Console.WriteLine($"{error.Key}: {string.Join(", ", error.Value.Errors.Select(e => e.ErrorMessage))}");
+                }
+                // Optionally pass errors to the view for display
+                TempData["SuccessMessage"] = "Leave is not valid.";
+            }
+            else
+            {
+                try
+                {
+                    if (TempData["LeaveID"] == null)
+                    {
+                        //add leave to database
+                        _context.Leaves.Add(Leave);
+                        await _context.SaveChangesAsync();
+                        TempData["SuccessMessage"] = $"Leave Saved with ID {Leave.leaveID}";
+                        TempData["LeaveID"] = Leave.leaveID;
+                    }
+
+                }
+                catch (DbUpdateException ex)
+                {
+                    // Check if the exception is an inner SqlException
+                    if (ex.InnerException is SqlException sqlEx)
+                    {
+                        // access the message from SQL Server
+                        string sqlErrorMessage = sqlEx.Message;
+                        if (sqlEx.Number == 2627 || sqlEx.Number == 2601)
+                        {
+                            ModelState.AddModelError(string.Empty, "Error: Duplicate Record!");
+                        }
+                        else if (sqlEx.Number == 547)
+                        {
+                            ModelState.AddModelError(string.Empty, "Error: Constraint Violation!");
+                        }
+                        else
+                        { // SQL error message to ModelState
+                            ModelState.AddModelError(string.Empty, "Database error: " + sqlErrorMessage);
+                        }
+
+                    }
+                    else
+                    {
+                        // Handle other types of exceptions
+                        ModelState.AddModelError(string.Empty, "An unexpected error occurred.");
+                    }
+                }
+                
+                //searchID = Employment.givenID;
+            }
+            
+
+            // Pass the Leave ID and keep the form open
+            TempData["KeepLeaveRequest"] = true;
+            
+            return Page();
         }
     }
 }

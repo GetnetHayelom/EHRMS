@@ -6,15 +6,41 @@
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
 
-<h1>Department</h1>
+<h1><b>@Model.departmentModel.departmentName</b> (@Model.departmentModel.departmentShort)</h1>
+@if (Model.departmentModel.departmentStatus == Models.mainStatus.Active)
+{
+    <div>
+        <div class="d-flex justify-content-between border-top border-bottom borber-1 border-primary m-2 p-2">
+            <button type="button" class="flex-grow-1 btn btn-primary m-2 p-2 position-relative" data-bs-toggle="modal" data-bs-target="#LeaveModal">
+                Leaves
+                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                    @Model.leaveModel.Count()
+                    <span class="visually-hidden">Pending Leaves</span>
+                </span>
+            </button>
 
-<div>
-    <h4>Department Details</h4>
-    <hr />
-    <dl class="d-flex justify-content-between">
+            <button class="flex-grow-1 btn btn-primary m-2 p-2  position-relative">
+            Overtime
+                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                    @Model.leaveModel.Count()
+                    <span class="visually-hidden">Pending Leaves</span>
+                </span>
+            </button>
+            <button class="flex-grow-1 btn btn-primary m-2 p-2">Shift</button>
+            <button class="flex-grow-1 btn btn-primary m-2 p-2">Work Location</button>
+            <button class="btn flex-grow-1  btn-primary m-2 p-2">Evaluation</button>
+            <button class="flex-grow-1 btn btn-danger m-2 p-2">Penality</button>
+            <button class="flex-grow-1 btn btn-warning m-2 p-2">Employment Request</button>
+        </div>
+     </div>
+}
+ <div class="d-flex">
+ <!--DEPARTMENT DETAILS-->
+    <dl class="d-flex flex-column flex-grow-1 m-2">
+        <h3 class="bg-dark text-white p-2"><b>Department Details</b></h3>
         <div class="flex-grow-0 m-1 ">
             <dt class="">
-                Department Alias:
+                Department Code:
             </dt>
             <dd class="">
                 @Html.DisplayFor(model => model.departmentModel.departmentShort)
@@ -28,7 +54,7 @@
                 @Html.DisplayFor(model => model.departmentModel.departmentName)
             </dd>
         </div>
-        <div class="m-1">
+        <div class="m-1 @((Model.departmentModel.departmentStatus == Models.mainStatus.Active)? "text-success" : "text-danger")">
             <dt class="">
                 Status:
             </dt>
@@ -61,75 +87,74 @@
             </dd>
         </div>
     </dl>
-    <hr />
-</div>
-<div>
-    <!-- Summary Points -->
-    <div class="row d-flex flex-inline justify-content-center">
-        
-        <!--EMPLOYMENTS-->
-        <div class="p-2 border borber-1 rounded-2 border-primary col-3 m-2">
-            <div class="w-100">
-                <div class="d-flex">
-                    <h5 class="flex-grow-1 border border-success border-2 rounded-start text-success p-1">Active Employees</h5>
-                    <h2 class="bg-success text-white rounded-end p-1">@Model.DepartmentSummary.Employees</h2>
-                </div>
-
-                <div class="d-flex">
-                    <h6 class="flex-grow-1 border border-danger border-2 rounded-start text-danger p-1">Former Employees</h6>
-                    <h4 class="bg-danger text-white rounded-end p-1">@Model.DepartmentSummary.xEmployees</h4>
-                </div>
-                <div class="d-flex">
-                    <h6 class="flex-grow-1 border border-info border-2 rounded-start text-info p-1">Total Number of Employee</h6>
-                    <h4 class="bg-info text-white rounded-end p-1">@Model.Employments.Count()</h4>
-                </div>
-            </div>
-        </div>
-        <div class="p-2 border borber-1 rounded-2 border-primary col-2 m-2">
-            <div class="w-100">
-                @foreach (var item in Model.EmploymentTypes)
-                {
-                    <div class="d-flex">
-                        <h5 class="flex-grow-1 border border-success border-2 rounded-start text-success p-1">@item.zName</h5>
-                        <h2 class="bg-success text-white rounded-end p-1">@item.zCount</h2>
-                    </div>
-
-                }
-                <div class="d-flex">
-                    <h6 class="flex-grow-1 border border-info border-2 rounded-start text-info p-1">Employees On Leave</h6>
-                    <h4 class="bg-info text-white rounded-end p-1">@Model.leaveEmployments</h4>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!--Payables summary-->
-
-    <h3>Current Payable</h3><hr />
-    <div class="d-flex flex-wrap justify-content-between p-2">
+   
+    <!--Payables summary-->  
+    <div class="d-flex flex-column flex-grow-1 col-3 p-2">
+        <h3 class="bg-dark text-white p-2"><b>Current Payable</b></h3>
         <div class="">
             <p class="small mb-1">Salary</p>
-            <h5 class="fw-bold">$@Math.Round((Model.DepartmentSummary.Salary), 2).ToString("N0")</h5>
+            <h5 class="fw-bold">$@Math.Round((Model.EmploymentView.Sum(e => e.Job.jobPlacementSalary)), 2).ToString("N0")</h5>
         </div>
         <div>
             <p class="small mb-1">Overtime</p>
-            <h5 class="fw-bold">$@Math.Round((Model.DepartmentSummary.Salary), 2).ToString("N0")</h5>
+            <h5 class="fw-bold">$@Math.Round((Model.DepartmentSummary.Overtime), 2).ToString("N0")</h5>
         </div>
         <div>
             <p class="small mb-1">Acc. Leaves</p>
             <h5 class="fw-bold">$@Math.Round((Model.leaveCost), 2).ToString("N0")</h5>
         </div>
         <div>
-
             <p class="small mb-1">Allowance</p>
-            <h5 class="fw-bold">$@Math.Round((Model.DepartmentSummary.Salary), 2).ToString("N0")</h5>
+            <h5 class="fw-bold">$@Math.Round((Model.DepartmentSummary.Allowance), 2).ToString("N0")</h5>
         </div>
         <div>
             <p class="small mb-1">Total</p>
-            <h4 class="fw-bold">$@Math.Round((Model.DepartmentSummary.Salary), 2).ToString("N0")</h4>
+            <h4 class="fw-bold"><u>$@Math.Round((Model.DepartmentSummary.Total), 2).ToString("N0")</u></h4>
         </div>
     </div>
-    <hr />
-</div>
+    
+    <!-- Summary Points -->
+    @if(Model.departmentModel.departmentStatus == Models.mainStatus.Active)
+    {
+        <!--EMPLOYMENTS-->
+        <div class="d-flex flex-column flex-grow-1 p-2">
+
+            <div class="w-100">
+                <h3 class="bg-dark text-white p-2"><b>Employment Summary</b></h3>
+                <div class="d-flex">
+                    <h5 class="flex-grow-1 border border-success border-1 text-success p-2">Active Employees</h5>
+                    <h2 class="bg-success text-white rounded-end p-1">@Model.DepartmentSummary.Employees</h2>
+                </div>
+                <div class="d-flex">
+                    <h5 class="flex-grow-1 border border-info border-1 text-info p-1">Required Number of Employee</h5>
+                    <h2 class="bg-info text-white rounded-end p-1">@Model.Employments.Count()</h2>
+                </div>
+                <div class="d-flex">
+                    <h5 class="flex-grow-1 border border-danger border-1 text-danger p-1">Former Employees</h5>
+                    <h2 class="bg-danger text-white rounded-end p-1">@Model.DepartmentSummary.xEmployees</h2>
+                </div>
+                <div class="w-100">
+                    @foreach (var item in Model.EmploymentTypes)
+                    {
+                        <div class="d-flex">
+                            <h5 class="flex-grow-1 border border-success border-1 text-success p-1">@item.zName</h5>
+                            <h2 class="bg-success text-white rounded-end p-1">@item.zCount</h2>
+                        </div>
+
+                    }
+                    <div class="d-flex">
+                        <h5 class="flex-grow-1 border border-warning border-1 text-warning p-1">Employees On Leave</h5>
+                        <h2 class="bg-warning text-white rounded-end p-1">@Model.leaveEmployments</h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="d-flex flex-column flex-grow-1 p-2">
+                
+        </div>
+    }
+ </div>
+   <!--ACTIVE EMPLOYEES-->
 <div class="">
     <h3><b>Active Employees</b></h3>
     <table class="table table-striped table-hover">
@@ -141,37 +166,208 @@
                 <th> Salary</th>
                 <th> Allowed Leave</th>
                 <th> Shift</th>
-                <th> Actions</th>
+                <th> Work Location</th>
             </tr>
         </thead>
         <tbody>
-            @foreach(var item in Model.EmploymentView)
+            @foreach(var item in Model.EmploymentView
+            .Where(e => e.Job.jobPlacementStatus == Models.mainStatus.Active && e.Job.departmentID == Model.departmentModel.departmentID))
             {
+                
                 <tr>
-                    <td>
-                        @item.Employment.givenID
+                    <td><a asp-page="/Employment/Details" asp-route-id="@item.Employment.employmentID" class="text-decoration-none text-dark">
+                        @item.Employment.givenID</a>
                     </td>
-                    <td>
-                        @item.Person.personFullName
+                    <td><a asp-page="/Employment/Details" asp-route-id="@item.Employment.employmentID" class="text-decoration-none text-dark">
+                        @item.Person.personFullName</a>
                     </td>
                     <td>
                         @item.Job.jobModel.jobTitle
                     </td>
                     <td>
-                        @item.Job.jobPlacementSalary
+                        $@Math.Round(item.Job.jobPlacementSalary, 2)
                     </td>
                     <td>
-                        
+                        @Math.Round(item.Leave.AllowedLeave, 2)
                     </td>
                     <td>
-                       
+                        @item.Shift.shiftName
+                    </td>
+                    <td>
+                        @item.WorkSite.workSiteName
                     </td>
                 </tr>
+               
             }
         </tbody>
     </table>
 </div>
+    
 <div>
     <a asp-page="./Edit" asp-route-id="@Model.departmentModel.departmentID">Edit</a> |
     <a asp-page="./Index">Back to List</a>
 </div>
+<!--LEAVE MANAGE-->
+<!-- Modal -->
+<div class="modal fade" id="LeaveModal" tabindex="-1" aria-labelledby="LeaveModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            @Html.AntiForgeryToken()
+            <div class="modal-header">
+                <h5 class="modal-title" id="LeaveModalLabel">Active Leaves</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <table class="table table-striped table-hover">
+                    <thead class="bg-dark text-white">
+                        <tr>
+                            <th>Leave No</th>
+                            <th>
+                                Employee ID
+                            </th>
+                            <th>
+                                Date
+                            </th>
+                            <th>
+                                From
+                            </th>
+                            <th>
+                                To
+                            </th>
+                            <th>
+                                Days
+                            </th>
+                            <th>
+                                Type
+                            </th>
+                            <th>
+                                Status
+                            </th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.leaveModel)
+                        {
+                            <tr>
+
+                                <td><a asp-page="/Leave/Details" asp-route-id="@item.leaveID">@item.leaveID</a></td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.employmentModel.givenID)
+                                </td>
+                                <td>
+                                    @item.leaveReaquestDate.ToString("MMM dd, yyyy")
+                                </td>
+                                <td>
+                                    @item.leaveStartDate.ToString("MMM dd, yyyy")
+                                </td>
+                                <td>
+                                    @item.leaveEndDate.ToString("MMM dd, yyyy")
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.leaveDays)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.leaveTypeModel.leaveTypeName)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.leaveStatus)
+                                </td>
+                                <td class="d-flex justify-content-between flex-grow-1">
+                                    @if (item.leaveStatus == Models.leaveStatus.Posted)
+                                    {
+                                        <p>Leave is approved; No further action.</p>
+                                    }
+                                    else
+                                    {
+                                        <div class="btn-group w-100" role="group">
+                                            <input type="radio" class="btn-check approval-radio"
+                                                   name="approvalStatus_@item.leaveID"
+                                                   id="approve_@item.leaveID"
+                                                   value="approve"
+                                                   data-leave-id="@item.leaveID">
+                                            <label class="btn btn-outline-success" for="approve_@item.leaveID">
+                                                <i class="fas fa-check-circle me-2"></i> Approve
+                                            </label>
+
+                                            <input type="radio" class="btn-check approval-radio"
+                                                   name="approvalStatus_@item.leaveID"
+                                                   id="reject_@item.leaveID"
+                                                   value="reject"
+                                                   data-leave-id="@item.leaveID">
+                                            <label class="btn btn-outline-danger" for="reject_@item.leaveID">
+                                                <i class="fas fa-times-circle me-2"></i> Decline
+                                            </label>
+                                        </div>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" id="saveDecisionsBtn" class="btn btn-primary">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    document.getElementById('saveDecisionsBtn').addEventListener('click', function () {
+        // Collect all decisions
+        const decisions = [];
+        const radioButtons = document.querySelectorAll('.approval-radio:checked');
+
+        radioButtons.forEach(radio => {
+            decisions.push({
+                leaveId: parseInt(radio.getAttribute('data-leave-id')),
+                action: radio.value === 'approve' ? 'Approve' : 'Reject'
+            });
+        });
+
+        if (decisions.length === 0) {
+            alert('Please make at least one decision');
+            return;
+        }
+
+        // Show loading state
+        const saveBtn = this;
+        saveBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Saving...';
+        saveBtn.disabled = true;
+
+        // AJAX call
+        fetch('?handler=Approve', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+            },
+            body: JSON.stringify({
+                leaveId: decisions.map(d => d.leaveId),
+                action: decisions.map(d => d.action)
+            })
+        })
+            .then(response => {
+                if (!response.ok) throw new Error('Network error');
+                return response.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    // Close modal and refresh page
+                    $('#approvalModal').modal('hide');
+                    window.location.reload();
+                } else {
+                    alert('Error: ' + (data.message || 'Unknown error'));
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Failed to save decisions');
+            })
+            .finally(() => {
+                saveBtn.innerHTML = '<i class="fas fa-save me-2"></i> Save Changes';
+                saveBtn.disabled = false;
+            });
+    });
+    </script>

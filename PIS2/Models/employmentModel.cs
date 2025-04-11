@@ -31,6 +31,7 @@ namespace PIS2.Models
         public virtual employmentMethodModel? employmentMethodModel { get; set; }
         public int? employmentRequestID { get; set; }
         public virtual employmentRequestModel? employmentRequestModel { get; set; }
+        public string employmentPosition { get; set; }
         public virtual ICollection<overtimeRecordModel>? OvertimeRecords { get; set; }
         public virtual ICollection<jobPlacementModel>? JobPlacements { get; set; }
         public virtual ICollection<leaveModel>? Leaves { get; set; }
@@ -85,6 +86,7 @@ namespace PIS2.Models
         public DateTime modifiedDate { get; set; } = DateTime.Now;
         public int employmentTypeID { get; set; }
         public virtual employmentTypeModel? employmentTypeModel { get; set; }
+        public string employmentPosition { get; set; }
         public mainStatus employmentStatus { get; set; } = mainStatus.Active;
         public string? employmentHistoryRemark { get; set; }
         public string modifiedBy { get; set; }

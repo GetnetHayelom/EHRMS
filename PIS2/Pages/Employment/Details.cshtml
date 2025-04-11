@@ -7,109 +7,247 @@
 }
 
 <h1>Employments</h1>
-<div class="d-flex flex-wrap" id="employmentDetail">
-    <div class="">
-        <h4>Employment Details</h4>
+@if (Model.IsUserSelf)
+{
+    <!--top buttons -->
+    <div class="m-3 d-flex justify-content-lg-between bg-primary text-white d-print-none">
+        @if (Model.employmentModel.employmentStatus == Models.mainStatus.Active)
+        {
+            <!--Leave Request button-->
+            <a role="button" class="text-white nav-link flex-grow-1" id="leaveRequest" data-bs-toggle="collapse" data-bs-target="#leaveRequestView" onclick="closeOtherCollapses('#collapseOne')">Leave Request</a>
 
-        <hr />
-        <dl class="d-flex flex-wrap gap-3 d-print-flex">
-            <div class ="d-flex">
-            <dt class="me-1">
-                Employee ID:
-            </dt>
-            <dd>
-                @Html.DisplayFor(model => model.employmentModel.givenID)
-            </dd>
-            </div>
-            <div class="d-flex">
-                <dt class="me-1">
-                Full Name:
-            </dt>
-            <dd>
-                @Html.DisplayFor(model => model.employmentModel.personModel.personFullName)
-                </dd>
-            </div>
-            <div class="d-flex">
-                <dt class="me-1">
-                Hire Date:
-            </dt>
-            <dd>
-                @Model.employmentModel.employmentDate.ToString("MMM dd, yyy")
-            </dd>
-            </div>
-            <div class="d-flex">
-                <dt class="me-1">
-                Employment Type:
-            </dt>
-            <dd>
-                @Html.DisplayFor(model => model.employmentModel.employmentTypeModel.employmentTypeName)
-                </dd>
-            </div>
-            <div class="d-flex">
-                <dt class="me-1">
-                Status:
-            </dt>
-            <dd >
-                @Html.DisplayFor(model => model.employmentModel.employmentStatus)
-                </dd>
-            </div>
-            
-            @if (Model.employmentModel.employmentStatus == Models.mainStatus.Inactive)
-                {
-                    <div class="d-flex">
-                    <dt class="me-1">
-                    Termination Date:
-                </dt>
-                <dd >
-                    @Html.DisplayFor(model => model.employmentModel.employmentTerminationDate)
-                </dd></div>
-            }
-            
-            <div class="d-flex">
-                <dt class="me-1">
-                Reference:
-            </dt>
-            <dd>
-                @Html.DisplayFor(model => model.employmentModel.employmentReference)
-            </dd>
-            </div>
-            <div class="d-flex">
-                <dt class="me-1">
-                Working Hours Per Week:
-            </dt>
-            <dd>
-                @Html.DisplayFor(model => model.employmentModel.workingHoursPerWeek)
-            </dd>
-            </div>
-        </dl>
+            <!--Ovetime Button-->
+            <a role="button" class="text-white nav-link flex-grow-1" id="Overtime" data-bs-toggle="collapse" data-bs-target="#overtimeView" onclick="closeOtherCollapses('#collapseOne')">Overtime</a>
+
+        }
+
+        <!--leave report-->
+        @if (Model.employmentModel.Leaves != null && Model.employmentModel.Leaves.Any())
+        {
+            <a role="button" class="text-white nav-link flex-grow-1" id="leaveHistory" data-bs-toggle="collapse" data-bs-target="#leaveHistoryView" onclick="closeOtherCollapses('#collapseOne')">Leave History</a>
+            <a role="button" class="text-white nav-link flex-grow-1" id="leaveAggrigate" data-bs-toggle="collapse" data-bs-target="#leaveAggrigate" onclick="closeOtherCollapses('#collapseOne')">Leave Summary</a>
+            <a role="button" class="text-white nav-link flex-grow-1" id="overtimeHistory" data-bs-toggle="collapse" data-bs-target="#overtimeHistoryView" onclick="closeOtherCollapses('#collapseOne')">Overtime History</a>
+
+        }
+
     </div>
-    <div class="w-100">
-        <h4>Employment History</h4>
-        <table class="table table-striped table-hover">
-        <thead>
-            <tr class="bg-dark text-white">
+}
+<div class="d-flex flex-column" id="employmentDetail">
+    <div class="">
+        <form method="get" class="d-print-none">
+            <div class="d-flex justify-content-between">
+                <h4>Employment Details</h4>
+                <div class="d-flex">
+                    <input asp-for="employmentModel.givenID" id="givenID" class="form-control me-2" placeholder="Enter Given ID" name="givenID"/>
+                    <button type="submit" class="btn btn-primary" id="goButton">Go</button>
+                </div>
+            </div>
+        </form>
+    </div>
+    <hr />
+    <div class="">
+        <h5>Personal Information</h5>
+        <hr />
+        <div class="d-flex flex-wrap">
+            <dl class="d-flex flex-column gap-3 d-print-flex flex-grow-1">
+                <div class="d-flex me-3">
+                    <dt class="me-1">
+                        Full Name:
+                    </dt>
+                    <dd>
+                        @Html.DisplayFor(model => model.employmentModel.personModel.personFullName)
+                    </dd>
+                </div>
+                <div class="d-flex me-3">
+                    <dt class="me-1">
+                        Phone Number:
+                    </dt>
+                    <dd>
+                        @Html.DisplayFor(model => model.employmentModel.personModel.personPhoneNumber)
+                    </dd>
+                </div>
+                <div class="d-flex me-3">
+                    <dt class="me-1">
+                        Email:
+                    </dt>
+                    <dd>
+                        @Html.DisplayFor(model => model.employmentModel.personModel.personEmailAddress)
+                    </dd>
+                </div>
+                <div class="d-flex me-3">
+                    <dt class="me-1">
+                        Date Of Birth:
+                    </dt>
+                    <dd>
+                        @Model.employmentModel.personModel.personDoB.ToString("MMM dd, yyyy")
+                    </dd>
+                </div>
+                <div class="d-flex me-3">
+                    <dt class="me-1">
+                        Address:
+                    </dt>
+                    <dd>
+                        @Html.DisplayFor(model => model.employmentModel.personModel.addressModel.addressFormatted)
+                    </dd>
+                </div>
+            
+            </dl>
+
+            @if (Model.employmentModel.personModel.PersonEducationLevels.Any() || Model.employmentModel.personModel.PersonEducationLevels != null)
+            {
+                <div class="flex-grow-1">
+                <table class="table table-striped table-hover flex-grow-1">
+                <thead class="bg-dark text-white">
+                    <tr>
+                        <th>Name</th>
+                        <th>Grade</th>
+                        <th>Category</th>
+                        <th>GPA</th>
+                        <th>Institution</th>
                         <th>Date</th>
-                        <th>Type</th>
-                        <th>Status</th>
-                        <th>Remark</th>
-                        <th>User</th>
-            </tr></thead>
-            <tbody>
-                    @foreach(var item in Model.employmentModel.EmploymentHistories)
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.employmentModel.personModel.PersonEducationLevels)
                     {
                         <tr>
-                            <td>@item.modifiedDate.ToString("MMM dd, yyyy")</td>
-                            <td>@item.employmentTypeModel.employmentTypeName</td>
-
-                            <td>@item.employmentStatus</td>
-
-                            <td>@item.employmentHistoryRemark</td>
-
-                            <td>@item.modifiedBy</td>
+                            <td>@item.educationLevelModel.educationLevelName</td>
+                            <td>@item.educationLevelModel.educationLevelGrade</td>
+                            <td>@item.educationLevelModel.educationLevelCategory</td>
+                            <td>@item.educationLevelMark</td>
+                            <td>@item.educationLevelInstitutionName</td>
+                            <td>@item.educationLevelDate.ToString("MMM dd, yyyy")</td>
                         </tr>
                     }
                 </tbody>
-                </table>
+            </table>
+            </div>
+            }
+        </div>
+    </div>
+    <div class="">
+    <hr />
+        <h5>Employment Information</h5>
+        <hr />
+        <dl class="d-flex flex-wrap flex-grow-1 gap-3 d-print-flex">
+            
+            <div class="d-flex me-3">
+                <dt class="me-1">
+                    Employee ID:
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => model.employmentModel.givenID)
+                </dd>
+            </div>
+
+            <div class="d-flex me-3">
+                <dt class="me-1">
+                    Hire Date:
+                </dt>
+                <dd>
+                    @Model.employmentModel.employmentDate.ToString("MMM dd, yyy")
+                </dd>
+            </div>
+            <div class="d-flex me-3">
+                <dt class="me-1">
+                    Employment Type:
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => model.employmentModel.employmentTypeModel.employmentTypeName)
+                </dd>
+            </div>
+            <div class="d-flex me-3">
+                <dt class="me-1">
+                    Employment Position:
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => model.employmentModel.employmentPosition)
+                </dd>
+            </div>
+            <div class="d-flex me-3">
+                <dt class="me-1">
+                    Status:
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => model.employmentModel.employmentStatus)
+                </dd>
+            </div>
+            <div class="d-flex me-3">
+                <dt class="me-1">
+                    Reference:
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => model.employmentModel.employmentReference)
+                </dd>
+            </div>
+            <div class="d-flex me-3">
+                <dt class="me-1">
+                    Exprience:
+                </dt>
+                <dd>
+                    @Model.Exprience
+                </dd>
+            </div>
+            <div class="d-flex me-3">
+                <dt class="me-1">
+                    Age:
+                </dt>
+                <dd>
+                    @Model.Age
+                </dd>
+            </div>
+
+            @if (Model.employmentModel.employmentStatus == Models.mainStatus.Inactive)
+            {
+                <div class="d-flex me-3">
+                    <dt class="me-1">
+                        Termination Date:
+                    </dt>
+                    <dd>
+                        @Model.employmentModel.TerminationModel.terminationDate.ToString("MMM dd, yyyy")
+                    </dd>
+                </div>
+                <div class="d-flex me-3">
+                    <dt class="me-1">
+                        Termination Reason;
+                    </dt>
+                    <dd>
+                        @Model.employmentModel.TerminationModel.terminationReason
+                    </dd>
+                </div>
+            }
+        </dl>
+    </div>
+    <div class="w-100">
+    <hr />
+        <h4>Employment History</h4>
+        <table class="table table-striped table-hover">
+            <thead>
+                <tr class="bg-dark text-white">
+                            <th>Date</th>
+                            <th>Type</th>
+                            <th>Position</th>
+                            <th>Status</th>
+                            <th>Remark</th>
+                            <th>User</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach(var item in Model.employmentModel.EmploymentHistories)
+                {
+                    <tr>
+                        <td>@item.modifiedDate.ToString("MMM dd, yyyy")</td>
+                        <td>@item.employmentTypeModel.employmentTypeName</td>
+                        <td>@item.employmentPosition</td>
+                        <td>@item.employmentStatus</td>
+                        
+                        <td>@item.employmentHistoryRemark</td>
+
+                        <td>@item.modifiedBy</td>
+                    </tr>
+                }
+                </tbody>
+            </table>
 
         @if (Model.employmentModel.JobPlacements != null && Model.employmentModel.JobPlacements.Any())
         {
@@ -119,6 +257,8 @@
                     <tr class="bg-info text-white">
                         <th>Date</th>
                         <th>Job Title</th>
+                        <th>Grade</th>
+                        <th>Step</th>
                         <th>Department</th>
                         <th>Company</th>
                         <th>Work Location</th>
@@ -131,6 +271,8 @@
                         <tr>
                             <td>@item.jobPlacementDate.ToString("MMM dd, yyyy")</td>
                             <td>@item.jobModel.jobTitle</td>
+                            <td>@item.jobModel.jobGradeModel.jobGradeName</td>
+                            <td>@item.jobPlacementStep</td>
                             <td>@item.departmentModel.departmentName</td>
                             <td>@item.departmentModel.companyModel.companyName</td>
                             <td>@item.workSiteModel.workSiteName</td>

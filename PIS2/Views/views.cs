@@ -43,6 +43,9 @@ namespace PIS2.Views
         public int xEmployees { get; set; }
         public decimal Salary { get; set; }
         public leaveDetail Leaves { get; set; }
+        public double Overtime { get; set; }
+        public double Allowance { get; set; }
+        public double Total { get; set; }
     }
     public class EmployeeView
     {
@@ -53,5 +56,7 @@ namespace PIS2.Views
         public companyModel Company { get; set; }
         public workSiteModel WorkSite { get; set; }
         public addressModel Address { get; set; }
+        public shiftModel Shift { get; set; }
+        public leaveDetail Leave { get; set; }
     }
 }

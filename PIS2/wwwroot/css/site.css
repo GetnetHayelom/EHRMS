@@ -24,9 +24,10 @@ body {
         background-color: black;
         color:white;
     }
-    .print-full-width{
-        width:100%;
-        max-width:100%;
+    .print-full-width {
+        width: 100% !important; /* Ensure it takes the full width */
+        max-width: 100% !important;
+        flex: 0 0 100% !important; /* Force it to take the full width */
     }
     table, thead, tbody, th,td{
         width:auto;

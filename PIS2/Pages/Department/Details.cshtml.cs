@@ -35,7 +35,11 @@ namespace PIS2.Pages.Department
         public List<jobPlacementModel> Jobs { get; set; }
         public List<employmentModel> Employments { get; set; }
         public List<EmployeeView> EmploymentView { get; set; }
+        public IList<leaveModel> leaveModel { get; set; } = default!;
+        public string ModifiedBy { get; set; }
+
         public async Task<IActionResult> OnGetAsync(int? id)
+
         {
             if (id == null)
             {
@@ -58,13 +62,18 @@ namespace PIS2.Pages.Department
                 EmploymentView = _context.Employments
                     .Include(e => e.personModel).ThenInclude(p => p.addressModel)
                     .Include(e => e.JobPlacements).ThenInclude(jp => jp.jobModel)
+                    .Include(e => e.JobPlacements).ThenInclude(jp => jp.workSiteModel)
+                    .Include(e => e.JobPlacements).ThenInclude(jp => jp.shiftModel)
                     .Where(e => Employments.Select(e => e.employmentID).Contains(e.employmentID) && e.employmentStatus == mainStatus.Active)
                     .ToList().Select(ev => new EmployeeView
                     {
                         Employment =ev,
                         Job = ev.JobPlacements.OrderByDescending(j => j.jobPlacementDate).First(),
-                        Person = ev.personModel
-                    }).ToList();
+                        Person = ev.personModel,
+                        WorkSite = ev.JobPlacements.OrderByDescending(j => j.jobPlacementDate).First().workSiteModel,
+                        Shift = ev.JobPlacements.OrderByDescending(j => j.jobPlacementDate).First().shiftModel,
+                        Leave = _core.leaveSummary(ev.employmentID)
+                    }).OrderBy(ev => ev.Person.personFirstName).ThenBy(ev => ev.Person.personFatherName).ThenBy(ev => ev.Person.personLastName).ToList();
 
 
                 DepartmentSummary = new DepartmentSummary();
@@ -83,7 +92,7 @@ namespace PIS2.Pages.Department
 
                 allowedLeave = DepartmentSummary.Leaves.AllowedLeave;
                 leaveCost = DepartmentSummary.Leaves.leaveCost;
-
+                DepartmentSummary.Total = leaveCost + (double) EmploymentView.Where(ev => ev.Job.jobPlacementStatus == mainStatus.Active).Sum(ev => ev.Job.jobPlacementSalary); ;
                 
                 // Education Level Data
                 
@@ -115,8 +124,40 @@ namespace PIS2.Pages.Department
                     .Where(l => l.leaveStartDate <= DateTime.Now && l.leaveEndDate >= DateTime.Now && l.leaveTypeModel.leaveTypeImpact == leaveTypeImpact.Negative
                     && l.employmentModel.employmentStatus == mainStatus.Active && l.leaveStatus == leaveStatus.Posted
                     && l.leaveTypeID != 64 && Employments.Select(ae => ae.employmentID).Contains(l.employmentID)).Count();
+
+                leaveModel = await _context.Leaves.Where(l => l.leaveStatus == leaveStatus.Hold && Employments.Select(e => e.employmentID).Contains(l.employmentID))
+                .Include(l => l.employmentModel)
+                .Include(l => l.leaveTypeModel).ToListAsync();
             }
             return Page();
         }
+        [HttpPost]
+        public async Task<JsonResult> OnPostApprove(List<int> leaveId, List<string> action)
+        {
+            
+            try
+            {
+                for (int i = 0; i < leaveId.Count; i++)
+                {
+                    var leave = await _context.Leaves.FindAsync(leaveId[i]);
+                    if (leave != null)
+                    {
+                        leave.modifiedBy = User.Identity.Name!;
+                        Console.WriteLine("Error is not hear");
+                        leave.leaveStatus = action[i] == "Approve"
+                            ? Models.leaveStatus.Approved
+                            : Models.leaveStatus.Declined;
+                    }
+                }
+
+                await _context.SaveChangesAsync();
+                return new JsonResult(new { success = true });
+            }
+            catch (Exception ex)
+            {
+                return new JsonResult(new { success = false, message = ex.Message });
+            }
+        }
+
     }
 }

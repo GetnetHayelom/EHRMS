@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using PIS2.Models;
 
-namespace PIS2.Pages.LeaveType
+namespace PIS2.Pages.JobRequirement
 {
     public class EditModel : PageModel
     {
@@ -20,7 +20,7 @@ namespace PIS2.Pages.LeaveType
         }
 
         [BindProperty]
-        public leaveTypeModel leaveTypeModel { get; set; } = default!;
+        public jobRequirementModel jobRequirementModel { get; set; } = default!;
 
         public async Task<IActionResult> OnGetAsync(int? id)
         {
@@ -29,12 +29,14 @@ namespace PIS2.Pages.LeaveType
                 return NotFound();
             }
 
-            var leavetypemodel =  await _context.LeaveTypes.FirstOrDefaultAsync(m => m.leaveTypeID == id);
-            if (leavetypemodel == null)
+            var jobrequirementmodel =  await _context.JobRequirements.FirstOrDefaultAsync(m => m.jobRequirementID == id);
+            if (jobrequirementmodel == null)
             {
                 return NotFound();
             }
-            leaveTypeModel = leavetypemodel;
+            jobRequirementModel = jobrequirementmodel;
+           ViewData["departmentID"] = new SelectList(_context.Departments, "departmentID", "departmentName");
+           ViewData["jobID"] = new SelectList(_context.Jobs, "jobID", "jobID");
             return Page();
         }
 
@@ -42,26 +44,12 @@ namespace PIS2.Pages.LeaveType
         // For more information, see https://aka.ms/RazorPagesCRUD.
         public async Task<IActionResult> OnPostAsync()
         {
-            //ModelState.Remove(nameof(leaveTypeModel.modifiedBy));
-            ModelState.Clear();
-            leaveTypeModel.modifiedBy = User.Identity.Name;
-
             if (!ModelState.IsValid)
             {
-               
-                foreach (var modelState in ModelState.Values)
-                {
-                    foreach (var error in modelState.Errors)
-                    {
-                        Console.WriteLine("Validation Error: " + error.ErrorMessage);
-                    }
-                }
                 return Page();
             }
-             
-                
-            
-            _context.Attach(leaveTypeModel).State = EntityState.Modified;
+
+            _context.Attach(jobRequirementModel).State = EntityState.Modified;
 
             try
             {
@@ -69,7 +57,7 @@ namespace PIS2.Pages.LeaveType
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!leaveTypeModelExists(leaveTypeModel.leaveTypeID))
+                if (!jobRequirementModelExists(jobRequirementModel.jobRequirementID))
                 {
                     return NotFound();
                 }
@@ -82,9 +70,9 @@ namespace PIS2.Pages.LeaveType
             return RedirectToPage("./Index");
         }
 
-        private bool leaveTypeModelExists(int id)
+        private bool jobRequirementModelExists(int id)
         {
-            return _context.LeaveTypes.Any(e => e.leaveTypeID == id);
+            return _context.JobRequirements.Any(e => e.jobRequirementID == id);
         }
     }
 }

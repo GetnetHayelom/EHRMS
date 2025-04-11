@@ -25,6 +25,16 @@
                 <span asp-validation-for="leaveTypeModel.leaveTypeImpact" class="text-danger"></span>
             </div>
             <div class="form-group">
+                <label asp-for="leaveTypeModel.leaveAvailability" class="control-label">Status</label>
+                <select asp-for="leaveTypeModel.leaveAvailability" class="form-control">
+                    <option value="Everyone">Everyone</option>
+                    <option value="HR">HR</option>
+                    <option value="Clinic">Clinic</option>
+                    <option value="Management">Management</option>
+                </select>
+                <span asp-validation-for="leaveTypeModel.leaveAvailability" class="text-danger"></span>
+            </div>
+            <div class="form-group">
                 <label asp-for="leaveTypeModel.leaveTypeStatus" class="control-label">Status</label>
                 <select asp-for="leaveTypeModel.leaveTypeStatus" class="form-control" asp-items="Html.GetEnumSelectList<Models.mainStatus>()"></select>
                 <span asp-validation-for="leaveTypeModel.leaveTypeStatus" class="text-danger"></span>

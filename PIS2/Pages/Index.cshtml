@@ -15,6 +15,7 @@
         @successMessage
     </div>
 }
+
 <div class="row mt-1 d-flex justify-content-center">
     <!--Person Section-->
     <div class="col-md-3 d-print-none">
@@ -24,27 +25,27 @@
             <label for="employeeID">Look up by Empolyee ID:</label>
             <form method="post" asp-page-handler="SearchID" class="d-flex">
      
-                    <input id="givenID" name="searchID" type="text" class="form-control mb-1" asp-for="@Model.Employment.givenID" list="givenIDList">
-                    <datalist id="givenIDList">
-                        @foreach (var item in Model.Employments)
-                        {
-                            <option value="@item.givenID"></option>
-                        }
-                    </datalist>
-                    <button type="submit" class="btn btn-success mb-1">View</button>
+                <input id="givenID" name="searchID" type="text" class="form-control mb-1" asp-for="@Model.Employment.givenID" list="givenIDList">
+                <datalist id="givenIDList">
+                    @foreach (var item in Model.Employments)
+                    {
+                        <option value="@item.givenID"></option>
+                    }
+                </datalist>
+                <button type="submit" class="btn btn-success mb-1">View</button>
                 
             </form>
             <!--form for searching using name-->
             <label for="employeeName">Look up by Name:</label>
             <form method="post" asp-page-handler="SearchName" class="d-flex">
                 <input id="employeeName" name="searchName" type="text" class="form-control mb-1" asp-for="@Model.Person.personFullName" list="namesList">
-                    <datalist id="namesList">
-                        @foreach (var item in Model.People)
-                        {
-                            <option value="@item.personFullName">@item.personFullName</option>
-                        }
-                    </datalist>
-                    <button type="submit" class="btn btn-success mb-1">View</button>
+                <datalist id="namesList">
+                    @foreach (var item in Model.People)
+                    {
+                        <option value="@item.personFullName">@item.personFullName</option>
+                    }
+                </datalist>
+                <button type="submit" class="btn btn-success mb-1">View</button>
                
             </form>
         </div>
@@ -52,17 +53,22 @@
         @if (Model.Person != null)
         {
             <!--row for person remaining Details -->
-            <div class="row mt-2 border-primary rounded mb-1 bg-danger text-white">
-
-                <h4>Peresonal Information</h4>
-                <hr />
-                @if (Model.PersonEmployments != null && Model.PersonEmployments.Count > 0)
-                {
-                    <div class="col-md-12 mb-1 d-flex justify-content-center">
-                        <button type="button" class="btn btn-primary btn-block  w-100 btn-lg" id="adjustment" data-bs-toggle="collapse" data-bs-target="#employmentHistoryView" onclick="closeOtherCollapses('#employmentHistoryView')">Employment History</button>
+            <div class="d-flex flex-column mt-2 border-primary rounded mb-1 bg-danger text-white p-2">
+                <div class="d-flex flex-column justify-content-center">
+                    <h4>Personal Information</h4>
+                    <hr />
+                    @if (Model.PersonEmployments != null && Model.PersonEmployments.Count > 0)
+                    {
+                        <div class="col-md-12 mb-1 d-flex justify-content-center">
+                            <button type="button" class="btn btn-primary btn-block  w-100 btn-lg" id="adjustment" data-bs-toggle="collapse" data-bs-target="#employmentHistoryView" onclick="closeOtherCollapses('#employmentHistoryView')">Employment History</button>
+                        </div>
+                    }
+                    <div class="col-8">
+                        <img src="~/assets/blank_profile.jpg" class="rounded-circle" style="width: 100px; height: 100px; object-fit: cover;" />
                     </div>
-                }
-                <img src ="~/assets/blank_profile.jpg" class-="rounded-circle" width="100" height="100"/>
+                    
+
+                </div>
                 <dl class="row">
 
                     <dt class="col-sm-5">
@@ -141,11 +147,9 @@
                 @if(Model.Employment.employmentStatus == Models.mainStatus.Active)
                 {
                     <!--Leave Request button-->
-                <a role="button" class="text-white nav-link flex-grow-1" id="leaveRequest" data-bs-toggle="collapse" data-bs-target="#leaveRequestView" onclick="closeOtherCollapses('#collapseOne')">Leave Request</a>
-                          
+                    <a role="button" class="text-white nav-link flex-grow-1" asp-page="/Leave/Create">Leave Request</a>        
                 <!--Ovetime Button-->
-                <a role="button" class="text-white nav-link flex-grow-1" id="Overtime" data-bs-toggle="collapse" data-bs-target="#overtimeView" onclick="closeOtherCollapses('#collapseOne')">Overtime</a>
-               
+                    <a role="button" class="text-white nav-link flex-grow-1" asp-page="/OvertimeRecord/Create">Overtime Record</a>
                 }
                 
                 <!--leave report-->
@@ -153,8 +157,7 @@
                 {                  
                     <a role="button" class="text-white nav-link flex-grow-1" id="leaveHistory" data-bs-toggle="collapse" data-bs-target="#leaveHistoryView" onclick="closeOtherCollapses('#collapseOne')">Leave History</a>                
                     <a role="button" class="text-white nav-link flex-grow-1" id="leaveAggrigate" data-bs-toggle="collapse" data-bs-target="#leaveAggrigate" onclick="closeOtherCollapses('#collapseOne')">Leave Summary</a>
-                    <a role="button" class="text-white nav-link flex-grow-1" id="overtimeHistory" data-bs-toggle="collapse" data-bs-target="#overtimeHistoryView" onclick="closeOtherCollapses('#collapseOne')">Overtime History</a>
-                    
+                    <a role="button" class="text-white nav-link flex-grow-1" id="overtimeHistory" data-bs-toggle="collapse" data-bs-target="#overtimeHistoryView" onclick="closeOtherCollapses('#collapseOne')">Overtime History</a>   
                 }
                 
             </div>
@@ -222,100 +225,11 @@
                         
                         </tbody>
                     </table>
-                        /*<button class="btn-primary d-print-none" onclick="printDiv('leaveAggrigate')">Print Summary</button>*/
                         @await Html.PartialAsync("print")
                 }else{
                     <div class="alert"><p>No leave record found.</p></div>
                     }
                 </div>
-            <!--Leave request-->
-            <div class="col-md-8 collapse border-primary rounded @(TempData["KeepLeaveRequest"] != null ? "show" : "")" id="leaveRequestView">
-                @if (Model.Employment == null)
-                {
-                    <p>@Model.Person.personFullName is not an emplyee.</p>
-                }
-                else
-                {
-                    <div class="bg-success text-white rounded-2 d-flex flex-wrap justify-content-between">
-                    
-                    <div class="col-md-6">
-                        <h3>Leave Request Form</h3>
-                    </div>
-                        <div class="col-md-2 d-flex flex-column justify-content-center align-items-center border-start">
-                            <h6>Allowed Leave:</h6>
-                            <h2><u>@Model.LeaveDetail.AllowedLeave.ToString("0.0")</u></h2>
-                        </div>
-                            <div class="col-md-2 d-flex flex-column justify-content-center align-items-center border-start">
-                            <h6>Total Leave<u></u></h6>
-                            <h2>@Model.LeaveDetail.TotalLeave</h2>
-                        </div>
-                            <div class="col-md-2 d-flex flex-column justify-content-center align-items-center border-start">
-                            <h6 class="align-items-center">Last Increment: <u></u></h6>
-                            <h2>@Model.LeaveDetail.LastAccrualIncrement</h2>
-                        </div>
-                    </div>
-                    <div class="modal-body">
-                        <form method="post" asp-page-handler="CreateLeave">
-                            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                                <h6>Employee Name: <b><u>@Model.Person.personFullName</u></b> </h6>
-                                <h6>Employee ID: <b><u> @Model.Employment.givenID</u></b> </h6>
-                            <div class="form-group d-flex">
-                                <input type="hidden" asp-for="personID" Value = "@Model.Person.personID"/>
-                                <input type="hidden" asp-for="employmentID" class="form-control" value="@Model.Employment.employmentID"/>
-                                <span asp-validation-for="employmentID" class="text-danger"></span>
-                            </div>
-                            <div class="d-flex flex-wrap justify-content-between">
-                           
-                                <div class="form-group m-1 col-md-5">
-                                    <label asp-for="Leave.leaveStartDate" class="control-label me-2">Start Date:</label>
-                                    <input asp-for="Leave.leaveStartDate" class="form-control flex-grow-1 col-md-6" type="date" />
-                                    <span asp-validation-for="Leave.leaveStartDate" class="text-danger"></span>
-                                </div>
-                                    <div class="form-group m-1 col-md-5">
-                                    <label asp-for="Leave.leaveEndDate" class="control-label">End Date:</label>
-                                    <input asp-for="Leave.leaveEndDate" class="form-control col-md-6" type="date" />
-                                    <span asp-validation-for="Leave.leaveEndDate" class="text-danger"></span>
-                                </div>
-                                    <div class="form-group m-1 col-md-5">
-                                    <label asp-for="Leave.leaveDays"class="control-label">Number of Days:</label>
-                                        <input asp-for="Leave.leaveDays" class="form-control col-md-6" type="number" step="0.5" />
-                                    <span asp-validation-for="Leave.leaveDays" class="text-danger"></span>
-                                </div>
-                                    <div class="form-group m-1 col-md-5">
-                                    <label asp-for="Leave.leaveTypeID" class="control-label">Leave Type:</label>
-                                    <select asp-for="Leave.leaveTypeID" class="form-control" asp-items="ViewBag.leaveTypeID"></select>
-                                    <span asp-validation-for="Leave.leaveTypeID" class="text-danger"></span>
-                                </div>
-                                
-                            </div>
-                            @await Html.PartialAsync("signature")
-                            
-                            <!-- Display Leave ID and Print Button on Success -->
-                            @if (TempData["LeaveID"] != null)
-                            {
-                                
-                                        <p>Voucher ID:<u><b>@TempData["LeaveID"]</b></u></p>
-                                    <hr />
-
-                                    <div class="mt-3 d-flex flex-wrap justify-content-end d-print-none">
-                                        <button type="button" class="btn btn-primary btn-md btn-block w-50 m-1" onclick="printDiv('leaveRequestView')">Print Leave Voucher</button>
-                                        <button typr="button" class="btn btn-primary btn-md btn-block w-50 m-1">Request New Leave</button>
-                                    </div>
-
-                                }
-                                else
-                                {
-                                    <div class="modal-footer d-print-none">
-                                <button type="submit" class="btn btn-success">Save</button>
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                            </div>
-                                }
-
-                            
-                        </form>
-                        </div>
-                }                      
-            </div>
             <!--Overtime-->
             <div class="col-md-8 collapse border-primary rounded @(TempData["KeepOvertime"] != null ? "show" : "")" id="overtimeView">
                 <div class="modal-header">
@@ -470,7 +384,7 @@
 
                     @if (Model.Employment == null)
                     {
-                        <p>@Model.Person.personFullName is not an emplyee.</p>
+                        <p>@Model.Person.personFullName is not an active employee.</p>
                     }
                     else{
                         <div class="modal-header">
@@ -488,7 +402,9 @@
                                 <table class="table table-striped table-hover">
                                     <thead>
                                         <tr class="bg-dark text-white">
-
+                                            <th>
+                                                Voucher Number
+                                            </th>
                                             <th>
                                                 Request Date
                                             </th>
@@ -515,7 +431,11 @@
                                         @foreach (var item in Model.Leaves)
                                         {
                                             <tr>
-
+                                                <td>
+                                                    <a asp-page="/Leave/Details" asp-route-id="@item.leaveID" class="text-decoration-none text-dark">
+                                                        @item.leaveID
+                                                    </a>
+                                                </td>
                                                 <td>
                                                     @item.leaveReaquestDate.ToString("MMM dd, yyyy")
                                                 </td>
@@ -677,200 +597,15 @@
                         
             </div>
         </div>
-    </div>
+        </div>
     }
     
 </div>
 
 
-<!--main body row, encloses person details and leave report -->
-@if (Model.Person != null && Model.PersonEmployments != null && Model.Employment != null)
-{
-    <!--leave request view -->
-    <div class="modal" tabindex="-1" role="dialog" id="leaveRequestModal">
-        <div class="modal-dialog modal-lg" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5>Leave Request Form</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true"></span>
-                </button>
-            </div>
-            <div class="modal-body">
-            @if(Model.Employment ==null){
-                <p>@Model.Person.personFullName is not an emplyee.</p>
-            }else{
-                <form method="post" asp-page-handler="CreateLeave" >
-                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                    <p>Requesting leave for @Model.Person.personFullName with employee Id of @Model.Employment.givenID</p>
-                    <div class="form-group">
-                       <label asp-for="Leave.employmentID" class="control-label"></label>
-                       <input type="hidden" asp-for="Leave.employmentID" class="form-control" value="Employment.employmentID"/>
-                    </div>
-                    <div class="form-group">
-                        <label asp-for="Leave.leaveReaquestDate" class="control-label"></label>
-                        <input asp-for="Leave.leaveReaquestDate" class="form-control" type="date" />
-                        <span asp-validation-for="Leave.leaveReaquestDate" class="text-danger"></span>
-                    </div>
-                    <div class="form-group">
-                        <label asp-for="Leave.leaveStartDate" class="control-label"></label>
-                        <input asp-for="Leave.leaveStartDate" class="form-control" type="date" />
-                        <span asp-validation-for="Leave.leaveStartDate" class="text-danger"></span>
-                    </div>
-                    <div class="form-group">
-                        <label asp-for="Leave.leaveEndDate" class="control-label"></label>
-                        <input asp-for="Leave.leaveEndDate" class="form-control" type="date" />
-                        <span asp-validation-for="Leave.leaveEndDate" class="text-danger"></span>
-                    </div>
-                    <div class="form-group">
-                        <label asp-for="Leave.leaveDays" class="control-label"></label>
-                        <input asp-for="Leave.leaveDays" class="form-control" />
-                        <span asp-validation-for="Leave.leaveDays" class="text-danger"></span>
-                    </div>
-                    <div class="form-group">
-                        <label asp-for="Leave.leaveTypeID" class="control-label"></label>
-                        <select asp-for="Leave.leaveTypeID" class="form-control" asp-items="ViewBag.leaveTypeID"></select>
-                    </div>
-                    <div class="form-group">
-                        <label asp-for="Leave.leaveStatus" class="control-label"></label>
-                        <select asp-for="Leave.leaveStatus" class="form-control" asp-items="Html.GetEnumSelectList<Models.leaveStatus>()"></select>
-                        <span asp-validation-for="Leave.leaveStatus" class="text-danger"></span>
-                    </div>
-                    <div class="form-group">
-                       
-                    </div>
-                    <div class="modal-footer">
-                        <input type="submit" value="Create" class="btn btn-success d-print-none" />
-                        <button type="button" class="btn btn-secondary d-print-none">Close</button>
-                    </div>
-                </form>
-            }
-                
-            </div>
-            
-        </div>
-    </div>
-    </div>
 
-<!--leave adjustment modal-->
-<div class="modal" tabindex="-1" role="dialog" id="adjustmentModal">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5>Adjustment Form</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true"></span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <form id="adjustmentForm" action="submit.php" method="post">
-                    <div class="form-group">
-                        <label for="batchNumber">Adjustment Number:</label>
-                        <input type="text" class="form-control" id="batchNumber" name="batchNumber">
-                    </div>
-                    <div class="form-group">
-                        <label for="startTime">Start Time:</label>
-                        <input type="date" class="form-control" id="startTime" name="startTime">
-                    </div>
-
-                    <div class="form-group">
-                        <label for="endTime">End Time:</label>
-                        <input type="date" class="form-control" id="endTime" name="endTime">
-                    </div>
-
-                    <div class="form-group">
-                        <label for="numberOfDays">Number of Days:</label>
-                        <input type="number" class="form-control" id="numberOfDays" name="numberOfDays" min="1">
-                    </div>
-                    <div class="form-group">
-                        <label for="adjustmentReason">Reason:</label>
-                        <select class="form-control">
-                            <option>Data entry error</option>
-                            <option>Request Reviewed</option>
-                            <option>Paid</option>
-                            <option>Expired</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="adjustmentNote">Note:</label>
-                        <textarea id="adjutmentNote" class="form-control"></textarea>
-                    </div>
-                    
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-primary">Save</button>
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-
-
-    <!-- Display Leave ID and Print Button on Success -->
-    @if (TempData["LeaveID"] != null)
-    {
-        <!--Print leave reaquest Modal -->
-        <div class="modal" tabindex="-1" role="dialog" id="printLeaveModal">
-            <!-- aria-labelledby="printModalLabel" aria-hidden="true">-->
-            <div class="modal-dialog modal-lg">
-                <div class="modal-content" id="modalContent">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="printModalLabel">Leave Request Print Preview</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <div class="row">
-                            <div class="col-md-2">
-                                <img src="~/assets/mie_logo.gif" class="img-fluid" />
-                                <p style="white-space:nowrap">Form No. WF/HRM/11</p>
-                            </div>
-                            <div class="col-md-8">
-                                <div class="row">
-                                    <h4 class="text-center" style="white-space:nowrap"><b>???? ???????? ??????? ?.??.??.????</b></h4>
-                            
-                                    <h4 class="text-center" style="white-space:nowrap"><b>Mesfin Industrial Engineering PLc.</b></h4>
-                            
-                                    <h5 class="text-center" style="white-space:nowrap">Leave Application Form</h5>
-                                </div>
-       
-                            </div>
-                            <div class="col-md-2">
-                                <div class="row">
-                                    <img src="~/assets/mmec_logo.jpg" class="img-fluid" />
-                                    <p style="white-space:nowrap">Date: <u>@DateTime.Now.ToString("MMM dd, yyyy")</u></p>
-                                    <p style="white-space:nowrap">Voucher No: <b><u>@Model.Leave.leaveID</u></b></p>
-                                </div>
-                                
-                            </div>
-                        </div>
-                        <hr>
-                       
-                        <div>
-                            <p><strong>Name:</strong> @Model.Person.personFullName</p>
-                            
-                            <p><strong>Employment ID:</strong> @Model.Employment.givenID</p>
-                            <p><strong>Leave Request Date:</strong> @Model.Leave.leaveReaquestDate.ToString("MMM-dd-yyyy")</p>
-                            <p><strong>Leave Start Date:</strong> @Model.Leave.leaveStartDate.ToString("MMM-dd-yyyy")</p>
-                            <p><strong>Leave End Date:</strong> @Model.Leave.leaveEndDate.ToString("MMM-dd-yyyy")</p>
-                            <p><strong>Number of Days:</strong> @Model.Leave.leaveDays</p>
-                            <p><strong>Leave Type:</strong> @Model.Leave.leaveTypeModel.leaveTypeName</p>
-                        </div>
-                        <footer>
-                            <hr>
-                            <p class="text-center">Prepared by @User.Identity?.Name!</p>
-                        </footer>
-                    </div>
-                    <div class="modal-footer">
-                        <button class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        <button class="btn btn-primary print-button" onclick="printContent()">Print</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-    }
+   
+   
 }
 
 <!--Toggle Collapse-->

@@ -24,6 +24,7 @@ namespace PIS2.Models
         public double ratePerHour { get; set; }
         public virtual leaveTypeModel? leaveTypeModel { get; set; }
         public leaveStatus leaveStatus { get; set; } = leaveStatus.Hold;
+        
         public virtual ICollection<leaveHistoryModel>? LeaveHistories { get; set; }
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {

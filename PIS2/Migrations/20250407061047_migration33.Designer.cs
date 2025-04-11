@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PIS2.Models;
 
@@ -11,9 +12,11 @@ using PIS2.Models;
 namespace PIS2.Migrations
 {
     [DbContext(typeof(PISContext))]
-    partial class PISContextModelSnapshot : ModelSnapshot
+    [Migration("20250407061047_migration33")]
+    partial class migration33
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -575,11 +578,6 @@ namespace PIS2.Migrations
                     b.Property<int>("employmentID")
                         .HasColumnType("int")
                         .HasColumnName("employmentID");
-
-                    b.Property<string>("employmentPosition")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("employmentPosition");
 
                     b.Property<int>("employmentStatus")
                         .HasColumnType("int");
@@ -1235,11 +1233,6 @@ namespace PIS2.Migrations
                         .HasColumnType("int")
                         .HasColumnName("jobPlacementStatus");
 
-                    b.Property<string>("jobPlacementStep")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("jobPlacementStep");
-
                     b.Property<string>("modifiedBy")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)")
@@ -1402,6 +1395,11 @@ namespace PIS2.Migrations
                         .HasColumnType("int")
                         .HasColumnName("employmentID");
 
+                    b.Property<string>("leaveAvailability")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("leaveAvailability");
+
                     b.Property<double>("leaveDays")
                         .HasColumnType("float")
                         .HasColumnName("leaveDays");
@@ -1466,11 +1464,6 @@ namespace PIS2.Migrations
                         .HasColumnName("leaveTypeID");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("leaveTypeID"));
-
-                    b.Property<string>("leaveAvailability")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("leaveAvailability");
 
                     b.Property<int>("leaveTypeImpact")
                         .HasColumnType("int")

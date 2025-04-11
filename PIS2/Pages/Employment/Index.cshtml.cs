@@ -135,8 +135,8 @@ namespace PIS2.Pages.Employment
             var tableHtml = string.Join("", filteredEmployees.Select(e =>
             {
                
-                return $"<tr><td>{e.Employee.givenID}</td>" +
-                        $"<td>{e.person.personFullName}</td>" +
+                return $"<tr><td><a href='/Employment/Details?id={e.Employee.employmentID}' class='text-decoration-none text-dark'>{e.Employee.givenID}</a></td>" +
+                        $"<td><a href='/Employment/Details?id={e.Employee.employmentID}' class='text-decoration-none text-dark'>{e.person.personFullName}</a></td>" +
                         $"<td>{e.Employee.employmentDate.ToShortDateString()}</td>" +
                         $"<td>{e.Employee.employmentStatus}</td>" +
                         $"<td>{e.empType.employmentTypeName}</td>" +

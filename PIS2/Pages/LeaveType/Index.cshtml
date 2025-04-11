@@ -22,19 +22,25 @@
                 Leave Type Impact
             </th>
             <th>
+                Availability
+            </th>
+            <th>
                 Status
             </th>
             <th>Actions</th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model.leaveTypeModel) {
+    @foreach (var item in Model.leaveTypeModel) {
         <tr>
             <td>
                 @Html.DisplayFor(modelItem => item.leaveTypeName)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.leaveTypeImpact)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.leaveAvailability)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.leaveTypeStatus)
@@ -45,6 +51,6 @@
                 <a asp-page="./Delete" asp-route-id="@item.leaveTypeID">Delete</a>
             </td>
         </tr>
-}
+    }
     </tbody>
 </table>

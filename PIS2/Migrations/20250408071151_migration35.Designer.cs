@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PIS2.Models;
 
@@ -11,9 +12,11 @@ using PIS2.Models;
 namespace PIS2.Migrations
 {
     [DbContext(typeof(PISContext))]
-    partial class PISContextModelSnapshot : ModelSnapshot
+    [Migration("20250408071151_migration35")]
+    partial class migration35
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -575,11 +578,6 @@ namespace PIS2.Migrations
                     b.Property<int>("employmentID")
                         .HasColumnType("int")
                         .HasColumnName("employmentID");
-
-                    b.Property<string>("employmentPosition")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("employmentPosition");
 
                     b.Property<int>("employmentStatus")
                         .HasColumnType("int");
