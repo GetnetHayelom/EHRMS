@@ -1,0 +1,128 @@
+﻿@page
+@model PIS2.Pages.OvertimeRecord.PersonOTRModel
+
+@{
+    ViewData["Title"] = "PersonOTR";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<h1>Active Overtime Requests By Employee</h1>
+
+<p class="d-flex">
+    <div class="col-md-5"><a asp-page="Create" class="btn btn-success me-4 d-print-none">Create New</a>
+    @await Html.PartialAsync("print")</div>
+    <div class="col-md-6">@await Html.PartialAsync("filter")</div>
+    
+</p>
+<div class="d-flex">
+    <dl class="d-flex">
+        <div class="d-flex me-4">
+            <dt class="me-2 fw-bold">Employee ID:</dt>
+            <dd onclick="location.href='@Url.Page("/Employment/Details", new { id = Model.overtimeRecordModel.First().employmentID })'" style="cursor:pointer;">
+                <u>@Model.overtimeRecordModel.First().employmentModel.givenID</u>
+            </dd>
+        </div>
+        <div class="d-flex me-4">
+            <dt class="me-2 fw-bold">Employee Name:</dt>
+            <dd onclick="location.href='@Url.Page("/Employment/Details", new { id = Model.overtimeRecordModel.First().employmentID })'" style="cursor:pointer;">
+                <u>@Model.overtimeRecordModel.First().employmentModel.personModel.personFullName</u>
+            </dd>
+        </div>
+        <div class="d-flex me-4">
+            <dt class="me-2 fw-bold">Department:</dt>
+            <dd><u>@Model.overtimeRecordModel.First().departmentModel.departmentName</u></dd>
+        </div>
+        <div class="d-flex me-4">
+            <dt class="me-2 fw-bold">Total Cost:</dt>
+            <dd><u>@Math.Round(Model.TotalOtCost,2).ToString("N2")<span class="small"> Br</span></u></dd>
+        </div>
+    </dl>
+</div>
+<table class="table">
+    <thead class="bg-dark text-white">
+        <tr>
+            <th>
+                Overtime Batch Number
+            </th>
+            
+            <th>
+                Overtime Type
+            </th>
+            <th>
+                Reason
+            </th>
+            <th>
+                Date of Overtime
+            </th>
+            <th>
+                Start Time
+            </th>
+            <th>
+                End Time
+            </th>
+            <th>
+                Status
+            </th>
+            <th>
+                Employee Rate
+            </th>
+            <th>
+                Overtime Rate
+            </th>
+            <th>
+                Time Elapsed
+            </th>
+            <th>
+                OT Cost
+            </th>
+            <th>
+                Modified By
+            </th>
+            
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model.overtimeRecordModel) {
+            <tr onclick="location.href='@Url.Page("Details", new { id = item.overtimeRecordID })'" style="cursor:pointer;">
+                <td>
+                    @Html.DisplayFor(modelItem => item.overtimeRecordID)
+                </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.overtimeModel.overtimeName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.overtimeRecordReason)
+            </td>
+            <td>
+                @item.overtimeRecordDate.ToString("dd MMM, yyyy")
+            </td>
+            <td>
+                    @item.overtimeRecordStartTime.ToString(@"hh\:mm")
+            </td>
+            <td>
+                    @item.overtimeRecordEndTime.ToString(@"hh\:mm")
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.overtimeRecordStatus)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.overtimeRecordEmploymentRate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.overtimeRate)
+            </td>
+            <td>
+                    @item.TimeElapsed.ToString(@"hh\:mm")
+            </td>
+                <td>
+                    @Math.Round(item.GetOtCost,2)
+                </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.modifiedBy)
+            </td>
+           
+            
+        </tr>
+}
+    </tbody>
+</table>

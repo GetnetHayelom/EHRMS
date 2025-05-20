@@ -46,7 +46,7 @@ namespace PIS2.Pages.Employment
                 .Include(e => e.JobPlacements.OrderByDescending(jp => jp.jobPlacementDate).Take(1)).ThenInclude(jp => jp.departmentModel)
                 .Include(e => e.JobPlacements.OrderByDescending(jp => jp.jobPlacementDate).Take(1)).ThenInclude(jp => jp.jobModel)
                 .ToListAsync();
-            StartDate = employmentModel.Min(e => e.employmentDate);
+            StartDate =employmentModel.IsNullOrEmpty()? DateTime.MinValue : employmentModel.Min(e => e.employmentDate);
             totalCount = employmentModel.Count;            
         }
      
@@ -134,8 +134,11 @@ namespace PIS2.Pages.Employment
             // Generate the table HTML
             var tableHtml = string.Join("", filteredEmployees.Select(e =>
             {
-               
-                return $"<tr><td><a href='/Employment/Details?id={e.Employee.employmentID}' class='text-decoration-none text-dark'>{e.Employee.givenID}</a></td>" +
+                var url = Url.Page("Details", new { id = e.Employee.employmentID });
+                
+
+                return  $"<tr onclick=\"location.href='{url}'\" style=\"cursor:pointer;\">" +
+                        $"<td><a href='/Employment/Details?id={e.Employee.employmentID}' class='text-decoration-none text-dark'>{e.Employee.givenID}</a></td>" +
                         $"<td><a href='/Employment/Details?id={e.Employee.employmentID}' class='text-decoration-none text-dark'>{e.person.personFullName}</a></td>" +
                         $"<td>{e.Employee.employmentDate.ToShortDateString()}</td>" +
                         $"<td>{e.Employee.employmentStatus}</td>" +

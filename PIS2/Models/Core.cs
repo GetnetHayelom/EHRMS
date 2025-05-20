@@ -2,6 +2,7 @@
 using Microsoft.Identity.Client;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
+using NuGet.Protocol.Plugins;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace PIS2.Models
@@ -107,7 +108,8 @@ namespace PIS2.Models
         }
         public leaveDetail GetLeaveSummary(int empID)
         {
-            
+            mainStatus empStatus = _context.Employments.Where(e => e.employmentID == empID).FirstOrDefault().employmentStatus;
+            double hRate = (double)_context.JobPlacements.OrderByDescending(js => js.jobPlacementDate).First(js => js.employmentID == empID).jobPlacementSalary / 26;
             DateTime startDate = GetLeaveStart(empID);
             DateTime endDate = GetLeaveEnd(empID);
             List<leaveModel> leaves = new List<leaveModel>();
@@ -123,24 +125,37 @@ namespace PIS2.Models
             //the last amount incremented, initialised to the base rate
             //get the id of 'New Year Balance' Leave Type and use it for selecting parameter
             double lastAnnualLeaveIncrement = leaves.OrderBy(l => l.leaveReaquestDate)
-                .LastOrDefault(l => l.leaveTypeID == 63 && l.leaveStartDate <= DateTime.Now && l.leaveEndDate >= DateTime.Now)?.leaveDays ?? 0; 
+                .LastOrDefault(l => l.leaveTypeID == 63)?.leaveDays ?? 0; 
             //daily accrual rate by deviding last annual increment rate to the number of working days
             double dailyAccrualRate = DateTime.IsLeapYear(endDate.Year)? lastAnnualLeaveIncrement / 366 : lastAnnualLeaveIncrement / 365;
             //total amount of leave until the given end time
             double totalLeave = 0;
 
-
+            DateTime lastDate = endDate > DateTime.Now ? DateTime.Now : endDate;
             //amount of leave that can be utilised
             double allowedLeave = 0;
-               spareDays = Enumerable.Range(0, ((endDate - (startDate).AddYears(years-1))).Days + 1)
-           .Select(offset => startDate.AddDays(offset))
-           .Count(date => date.DayOfWeek != DayOfWeek.Sunday);
-
-                totalLeave = accruedLeave - usedLeave;
-                allowedLeave = totalLeave - (lastAnnualLeaveIncrement - (spareDays * dailyAccrualRate));
             
+            if (endDate < startDate.AddYears(years))
+                years--;
 
-            leaveDetail leaveSummary = new leaveDetail(totalLeave, allowedLeave, lastAnnualLeaveIncrement, startDate, endDate, LeavesPerYear(empID));
+            DateTime partialYearStart = startDate.AddYears(years);
+
+            spareDays = Enumerable.Range(0, (endDate - partialYearStart).Days + 1)
+            .Select(offset => partialYearStart.AddDays(offset))
+            .Count();
+            var allocatedForGrant = lastAnnualLeaveIncrement - (spareDays * dailyAccrualRate);
+
+            totalLeave = accruedLeave - usedLeave;
+            if (empStatus == mainStatus.Inactive)
+            {
+                totalLeave -= allocatedForGrant;
+            }
+            allowedLeave = totalLeave - (lastAnnualLeaveIncrement - (spareDays * dailyAccrualRate));
+            allowedLeave = allowedLeave < 0 ? 0 : allowedLeave;
+
+            
+            leaveDetail leaveSummary = new leaveDetail(Math.Round(totalLeave,2), allowedLeave, lastAnnualLeaveIncrement, startDate, endDate, LeavesPerYear(empID));
+            leaveSummary.leaveCost = allowedLeave * hRate;
             return leaveSummary;
         }
       
@@ -180,25 +195,7 @@ namespace PIS2.Models
                 
                 usedLeaves = used.Where(l => l.leaveReaquestDate >= dateCounter && l.leaveReaquestDate < dateCounter.AddYears(1)).Sum(l =>l.leaveDays);
                 accruedLeaves = accrued.Where(l => (l.leaveReaquestDate >= dateCounter && l.leaveReaquestDate < dateCounter.AddYears(1))).Sum(l => l.leaveDays);
-                while (lastIncrement > accruedLeaves)
-                {
-                    if (balance > lastIncrement)
-                    {
-                        rollOverLeave = balance - lastIncrement;
-                        if (rollOverLeave > accruedLeaves)
-                        {
-                            rollOverLeave = accruedLeaves;
-                        }
-                    }
-                    else { rollOverLeave = 0;break; }
-                    balance = balance - lastIncrement;
-                    lastIncrement--;
-                }
-                //for (int j = 30; j > accruedLeaves; j--)
-                //{
-
-
-                //}
+               
 
                 leavePerYear = new leavePerYear();
                 leavePerYear.startingLeaveAmount = startingLeavePerYear;
@@ -208,26 +205,33 @@ namespace PIS2.Models
                 leavePerYear.usedLeaveAmount = usedLeaves;
                 leavePerYear.rollOverLeave = rollOverLeave;
                 
-                    leavePerYear.remainingLeaveCost = Math.Round((rollOverLeave*hRate),2);//rollOverLeave != 0? Math.Round(hRate*(startingLeavePerYear + accruedLeaves-usedLeaves),2):0;
 
-
-                            leavesPerYear.Add(leavePerYear);
+                if(dateCounter > new DateTime(2013,1,1)) { leavesPerYear.Add(leavePerYear);}
+                            
 
                 dateCounter = dateCounter.AddYears(1);
                 startingLeavePerYear += (accruedLeaves - usedLeaves);
                 lastIncrement = accrued.OrderByDescending(l => l.leaveReaquestDate).FirstOrDefault()?.leaveDays ?? 0;
                 balance = totalAccruedLeaves - totalUsedLeaves;
             }
-            if (balance < lastIncrement)
+            var carryOverTotal = balance;
+            for(int i=leavesPerYear.Count-1; i>=0; i--)
             {
-                leavesPerYear.Last().rollOverLeave = balance;
-                leavesPerYear.Last().remainingLeaveCost =Math.Round((balance*hRate),2);
+                if(carryOverTotal > leavesPerYear[i].accruedLeaveAmount)
+                {
+                    carryOverTotal -= leavesPerYear[i].accruedLeaveAmount;
+                    leavesPerYear[i].rollOverLeave = leavesPerYear[i].accruedLeaveAmount;
+                    leavesPerYear[i].remainingLeaveCost = Math.Round((leavesPerYear[i].rollOverLeave * hRate), 2);
+                }
+                else
+                {
+                    leavesPerYear[i].rollOverLeave = carryOverTotal;
+                    leavesPerYear[i].remainingLeaveCost = Math.Round((leavesPerYear[i].rollOverLeave * hRate), 2);
+                    break;
+                }
+                 
             }
-            else
-            {
-                leavesPerYear.Last().rollOverLeave = lastIncrement;
-                leavesPerYear.Last().remainingLeaveCost = Math.Round((lastIncrement * hRate),2);
-            }
+            
             return leavesPerYear;
         }
           public leaveDetail GetLeaveSummary2(int empID)

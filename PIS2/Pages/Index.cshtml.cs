@@ -41,7 +41,7 @@ namespace PIS2.Pages
         public List<overtimeRecordModel>? Overtimes { get; set; }=default!;
         public leaveDetail? LeaveDetail { get; set; } = new leaveDetail();
         public List<leaveTypeModel> AllowedLeaveTypes { get; set; } = new List<leaveTypeModel>();
-        public userModel UserM { get; set; } = default;
+        public bool isSelf { get; set; } = false;
         public Core methods { get; set; } = default!;
         public IndexModel(PISContext ctx, Core methods)
         {
@@ -65,7 +65,7 @@ namespace PIS2.Pages
                 if (Person != null)
                 {
                     //TempData["SuccessMessage"] = $"No person found with Name {searchName}";
-               
+                    isSelf = _context.Users.FirstOrDefault(u => u.userName == User.Identity.Name)?.personID == Person.personID ? true : false;
                     searchName = Person.personFullName;
                     PersonEmployments = await _context.Employments
                         .Include(e => e.Leaves)
@@ -78,7 +78,7 @@ namespace PIS2.Pages
                         Employment = PersonEmployments.OrderBy(e => e.employmentDate).LastOrDefault();
                         if (Employment != null)
                         {
-                            Leaves = Employment.Leaves.ToList();
+                            Leaves = Employment.Leaves.OrderByDescending(l => l.leaveReaquestDate).ToList();
                             JobPlacements = await _context.JobPlacements.Where(l => l.employmentID == Employment.employmentID).ToListAsync();
                             LeaveDetail = _core.GetLeaveSummary(Employment.employmentID);
                             Overtimes =await _context.OvertimeRecords.Include(ot=> ot.overtimeModel)
@@ -92,27 +92,33 @@ namespace PIS2.Pages
             }
             else
             {
-                Person = _context.Users.Where(u => u.userName.ToLower() == User.Identity.Name!.ToLower()).Select(u => u.personModel)?.First()?? new personModel();
-                //UserM = _context.Users.Where(u => u.userName.ToLower() == User.Identity.Name!.ToLower()).First();
-                PersonEmployments = _context.Employments.OrderBy(e => e.employmentDate).Include(e => e.Leaves)
-                        .Include(e => e.JobPlacements).ThenInclude(j => j.jobModel)
-                        .Include(e => e.JobPlacements).ThenInclude(j => j.departmentModel)
-                        .Include(e => e.EmploymentHistories).Where(e => e.personID == Person.personID).ToList();
-                if (PersonEmployments != null && PersonEmployments.Any())
+                var user = _context.Users.FirstOrDefault(u => u.userName.ToLower() == User.Identity.Name!.ToLower());
+                if(user != null)
                 {
-                    Employment = PersonEmployments.OrderBy(e => e.employmentDate).LastOrDefault();
-                    
-                    if (Employment != null)
+                    Person = _context.Users.Where(u => u.userName.ToLower() == User.Identity.Name!.ToLower()).Select(u => u.personModel)?.First()?? new personModel();
+                    isSelf = _context.Users.FirstOrDefault(u => u.userName.ToLower() == User.Identity.Name!.ToLower())?.personID == Person.personID ? true : false;
+                    PersonEmployments = _context.Employments.OrderBy(e => e.employmentDate).Include(e => e.Leaves)
+                            .Include(e => e.JobPlacements).ThenInclude(j => j.jobModel)
+                            .Include(e => e.JobPlacements).ThenInclude(j => j.departmentModel)
+                            .Include(e => e.EmploymentHistories).Where(e => e.personID == Person.personID).ToList();
+                    if (PersonEmployments != null && PersonEmployments.Any())
                     {
-                        Leaves = Employment.Leaves.ToList();
+                        Employment = PersonEmployments.OrderBy(e => e.employmentDate).LastOrDefault();
+                    
+                        if (Employment != null)
+                        {
+                            Leaves = Employment.Leaves.ToList();
 
-                        LeaveDetail = _core.GetLeaveSummary(Employment.employmentID);
-                        Overtimes = await _context.OvertimeRecords.Include(ot => ot.overtimeModel)
-                            .Include(ot => ot.OvertimeHistories).Where(l => l.employmentID == Employment.employmentID).ToListAsync();
+                            LeaveDetail = _core.GetLeaveSummary(Employment.employmentID);
+                            Overtimes = await _context.OvertimeRecords.Include(ot => ot.overtimeModel)
+                                .Include(ot => ot.OvertimeHistories).Where(l => l.employmentID == Employment.employmentID).ToListAsync();
+
+                        }
 
                     }
-
                 }
+                else { Person = new personModel(); }
+                
             }
             SetOptions();
         }
@@ -139,7 +145,7 @@ namespace PIS2.Pages
                 else
                 {
                     TempData["PersonID"] = Person.personID;
-                  
+                    isSelf = _context.Users.FirstOrDefault(u => u.userName == User.Identity.Name)?.personID == Person.personID ? true : false;
                     PersonEmployments = await _context.Employments
                         .Include(e => e.Leaves)
                         .Include(e => e.JobPlacements).ThenInclude(j => j.jobModel)
@@ -153,7 +159,7 @@ namespace PIS2.Pages
                             
                            // List<employmentHistoryModel> histories =_context.EmploymentHistories.Include(e => e.employmentTypeModel).Where(e => e.employmentID == Employment.employmentID).ToList();
 
-                            Leaves = Employment.Leaves.ToList();// _context.Leaves.Where(l => l.employmentID == Employment.employmentID).ToList();
+                            Leaves = Employment.Leaves.OrderByDescending(l=> l.leaveReaquestDate).ToList();// _context.Leaves.Where(l => l.employmentID == Employment.employmentID).ToList();
                             //JobPlacements = await _context.JobPlacements.OrderByDescending(jp => jp.jobPlacementDate).Where(l => l.employmentID == Employment.employmentID).ToListAsync();
                            
                             LeaveDetail = _core.GetLeaveSummary(Employment.employmentID);
@@ -190,7 +196,7 @@ namespace PIS2.Pages
                 else
                 {
                     TempData["PersonID"] = Person.personID;
-
+                    isSelf = _context.Users.FirstOrDefault(u => u.userName == User.Identity.Name)?.personID == Person.personID? true :false;
                     PersonEmployments = await _context.Employments
                         .Include(e => e.Leaves)
                         .Include(e => e.JobPlacements).ThenInclude(j => j.jobModel)
@@ -202,7 +208,7 @@ namespace PIS2.Pages
                         if (Employment != null)
                         {
                             JobPlacements = await _context.JobPlacements.Where(l => l.employmentID == Employment.employmentID).ToListAsync();
-                            Leaves = await _context.Leaves.Where(l => l.employmentID == Employment.employmentID).ToListAsync(); //Employment.Leaves.ToList();
+                            Leaves = await _context.Leaves.Where(l => l.employmentID == Employment.employmentID).OrderByDescending(l => l.leaveReaquestDate).ToListAsync(); //Employment.Leaves.ToList();
                             LeaveDetail = _core.GetLeaveSummary(Employment.employmentID);
                             Overtimes = await _context.OvertimeRecords.Include(ot => ot.overtimeModel)
                                 .Include(ot => ot.OvertimeHistories).Where(l => l.employmentID == Employment.employmentID).ToListAsync();

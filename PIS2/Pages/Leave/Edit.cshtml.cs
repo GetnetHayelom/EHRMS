@@ -21,22 +21,21 @@ namespace PIS2.Pages.Leave
 
         [BindProperty]
         public leaveModel leaveModel { get; set; } = default!;
-
+        public bool isSelf { get; set; } = false;
+        public bool isHold { get; set; } = false;
+        public List<leaveTypeModel> AllowedLeaveTypes { get; set; }
         public async Task<IActionResult> OnGetAsync(int? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
-
-            var leavemodel =  await _context.Leaves.FirstOrDefaultAsync(m => m.leaveID == id);
-            if (leavemodel == null)
+            LoadPageData(id);
+            if(leaveModel == null)
             {
                 return NotFound();
             }
-            leaveModel = leavemodel;
-           ViewData["employmentID"] = new SelectList(_context.Employments, "employmentID", "givenID");
-           ViewData["leaveTypeID"] = new SelectList(_context.LeaveTypes, "leaveTypeID", "leaveTypeName");
+            
             return Page();
         }
 
@@ -44,9 +43,11 @@ namespace PIS2.Pages.Leave
         // For more information, see https://aka.ms/RazorPagesCRUD.
         public async Task<IActionResult> OnPostAsync()
         {
+            
             if (!ModelState.IsValid)
             {
                 return Page();
+                
             }
 
             _context.Attach(leaveModel).State = EntityState.Modified;
@@ -54,6 +55,7 @@ namespace PIS2.Pages.Leave
             try
             {
                 await _context.SaveChangesAsync();
+                LoadPageData(leaveModel.leaveID);
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -66,13 +68,44 @@ namespace PIS2.Pages.Leave
                     throw;
                 }
             }
-
-            return RedirectToPage("./Index");
+            //return Page();
+            return RedirectToPage(new { id =leaveModel.leaveID});
         }
 
         private bool leaveModelExists(int id)
         {
             return _context.Leaves.Any(e => e.leaveID == id);
+        }
+        private void LoadPageData(int? id)
+        {
+            var leavemodel = _context.Leaves.Include(l => l.employmentModel).ThenInclude(e => e.personModel).FirstOrDefault(m => m.leaveID == id);
+            
+            leaveModel = leavemodel;
+            isHold = leaveModel.leaveStatus == leaveStatus.Hold ? true : false;
+
+            
+            var leaveTypes = new List<leaveTypeModel>();
+
+            if (User.IsInRole("MIE\\PMS_CLINIC"))
+            {
+                leaveTypes = _context.LeaveTypes.Where(lt => lt.leaveAvailability == "Clinic" || lt.leaveAvailability == "Everyone").ToList();
+            }
+            else if (User.IsInRole("MIE\\PMS_HRCLERK"))
+            {
+                leaveTypes = _context.LeaveTypes.Where(lt => lt.leaveAvailability == "HR" || lt.leaveAvailability == "Everyone").ToList();
+            }
+            else
+            {
+                leaveTypes = _context.LeaveTypes.Where(lt => lt.leaveAvailability == "Everyone").ToList();
+            }
+            leaveTypes = leaveTypes.Where(lt => lt.leaveTypeStatus == mainStatus.Active).ToList();
+            AllowedLeaveTypes = leaveTypes;
+            ViewData["leaveTypeID"] = new SelectList(AllowedLeaveTypes, "leaveTypeID", "leaveTypeName");
+
+            if (_context.Users.First(u => u.userName == User.Identity.Name).personID == _context.Employments.First(e => e.employmentID == leaveModel.employmentID).personID)
+            {
+                isSelf = true;
+            }
         }
     }
 }

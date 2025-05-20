@@ -11,49 +11,130 @@
 <h4>Edit Leave</h4>
 <hr />
 <div class="row">
-    <div class="col-md-4">
-        <form method="post">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="leaveModel.leaveID" />
-            <div class="form-group">
-                <label asp-for="leaveModel.employmentID" class="control-label">Employee ID</label>
-                <select asp-for="leaveModel.employmentID" class="form-control" asp-items="ViewBag.employmentID"></select>
-                <span asp-validation-for="leaveModel.employmentID" class="text-danger"></span>
+    <div class="d-flex">       
+        <dl class="col-md-6 col-sm-12">
+            <div class="d-flex mb-2">
+                <dt class="me-2">
+                    Voucher ID:
+                </dt>
+                <dd class="">
+                    <u>@Html.DisplayFor(model => model.leaveModel.leaveID)</u>
+                </dd>
             </div>
-            <div class="form-group">
-                <label asp-for="leaveModel.leaveReaquestDate" class="control-label">Request Date</label>
-                <input asp-for="leaveModel.leaveReaquestDate" class="form-control" type="date"/>
-                <span asp-validation-for="leaveModel.leaveReaquestDate" class="text-danger"></span>
+            <div class="d-flex mb-2">
+                <dt class="me-2">
+                    Employee ID:
+                </dt>
+                <dd class="">
+                    <u>@Html.DisplayFor(model => model.leaveModel.employmentModel.givenID)</u>
+                </dd>
             </div>
-            <div class="form-group">
-                <label asp-for="leaveModel.leaveStartDate" class="control-label">Leave Start Date</label>
-                <input asp-for="leaveModel.leaveStartDate" class="form-control" type="date"/>
-                <span asp-validation-for="leaveModel.leaveStartDate" class="text-danger"></span>
+            <div class="d-flex mb-2">
+                <dt class="me-2">
+                    Name:
+                </dt>
+                <dd class="">
+                    <u>@Html.DisplayFor(model => model.leaveModel.employmentModel.personModel.personFullName)</u>
+                </dd>
             </div>
-            <div class="form-group">
-                <label asp-for="leaveModel.leaveEndDate" class="control-label">Leave End Date</label>
-                <input asp-for="leaveModel.leaveEndDate" class="form-control" type="date"/>
-                <span asp-validation-for="leaveModel.leaveEndDate" class="text-danger"></span>
+                    
+            <div class="d-flex mb-2">
+                <dt class="me-2">
+                    Leave Type:
+                </dt>
+                <dd class="">
+                    <u>@Html.DisplayFor(model => model.leaveModel.leaveTypeModel.leaveTypeName)</u>
+                </dd>
             </div>
-            <div class="form-group">
-                <label asp-for="leaveModel.leaveDays" class="control-label">Leave Days</label>
-                <input asp-for="leaveModel.leaveDays" class="form-control" />
-                <span asp-validation-for="leaveModel.leaveDays" class="text-danger"></span>
+            <div class="d-flex mb-2">
+                <dt class="me-2">
+                    Request Date:
+                </dt>
+                <dd class="">
+                    <u> @Model.leaveModel.leaveReaquestDate.ToString("MMM dd, yyyy")</u>
+                </dd>
             </div>
-            <div class="form-group">
-                <label asp-for="leaveModel.leaveTypeID" class="control-label">Leave Type</label>
-                <select asp-for="leaveModel.leaveTypeID" class="form-control" asp-items="ViewBag.leaveTypeID"></select>
-                <span asp-validation-for="leaveModel.leaveTypeID" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="leaveModel.leaveStatus" class="control-label">Leave Status</label>
-                <select asp-for="leaveModel.leaveStatus" class="form-control" asp-items="Html.GetEnumSelectList<Models.leaveStatus>()"></select>
-                <span asp-validation-for="leaveModel.leaveStatus" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
-            </div>
-        </form>
+                   
+
+        </dl>
+
+        <div class="col-md-4">
+            <form method="post">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <input type="hidden" asp-for="leaveModel.leaveID" />
+                <input type="hidden" asp-for="leaveModel.modifiedBy" value="@User.Identity.Name" />
+                <input type="hidden" asp-for="leaveModel.employmentID" />
+                <input type="hidden" asp-for="leaveModel.leaveReaquestDate" />
+           
+                <div class="form-group">
+                    <label asp-for="leaveModel.leaveStartDate" class="control-label">Leave Start Date</label>
+                   @if(Model.isHold && Model.isSelf)
+                    {
+                    <input asp-for="leaveModel.leaveStartDate" class="form-control" type="date" />
+                    }
+                    else
+                    {
+
+                        <input asp-for="leaveModel.leaveStartDate" class="form-control" type="date" readonly />
+                    }
+                    <span asp-validation-for="leaveModel.leaveStartDate" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                        <label asp-for="leaveModel.leaveEndDate" class="control-label">Leave End Date</label>
+                    @if(Model.isHold && Model.isSelf)
+                    {
+                    
+                        <input asp-for="leaveModel.leaveEndDate" class="form-control" type="date"/>
+                    }
+                    else{
+                    
+                        <input asp-for="leaveModel.leaveEndDate" class="form-control" type="date" readonly/>
+                    }
+                    <span asp-validation-for="leaveModel.leaveEndDate" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="leaveModel.leaveDays" class="control-label">Leave Days</label>
+                        @if (Model.isHold && Model.isSelf)
+                    {
+                        <input asp-for="leaveModel.leaveDays" class="form-control" />
+                    }
+                    else
+                    {
+                        <input asp-for="leaveModel.leaveDays" class="form-control" readonly/>
+                    }
+                    <span asp-validation-for="leaveModel.leaveDays" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="leaveModel.leaveTypeID" class="control-label">Leave Type</label>
+                    @if (Model.isHold && Model.isSelf)
+                    {
+                        <select asp-for="leaveModel.leaveTypeID" class="form-control" asp-items="ViewBag.leaveTypeID"></select>
+                    }
+                    else{
+                        <select asp-for="leaveModel.leaveTypeID" class="form-control" asp-items="ViewBag.leaveTypeID" readonly></select>
+                    }
+                    <span asp-validation-for="leaveModel.leaveTypeID" class="text-danger"></span>
+                </div>
+            
+            
+                @if (User.IsInRole("MIE\\PMS_HRCLERK") && (Model.leaveModel.leaveStatus == Models.leaveStatus.Hold || Model.leaveModel.leaveStatus == Models.leaveStatus.Approved))
+                 {
+                    <div class="form-group">
+                        <label asp-for="leaveModel.leaveStatus" class="control-label">Leave Status</label>
+                        <select asp-for="leaveModel.leaveStatus" class="form-control" asp-items="Html.GetEnumSelectList<Models.leaveStatus>()"></select>
+                        <span asp-validation-for="leaveModel.leaveStatus" class="text-danger"></span>
+                    </div>
+                }
+                <div class="form-group d-flex justify-content-end">
+                    @if (Model.isHold && Model.isSelf)
+                        {
+                            <input type="submit" value="Save" class="btn btn-primary mt-3" />
+                        }
+                    <a asp-page="./Details" asp-route-id="@Model.leaveModel?.leaveID" class="btn btn-secondary mt-3 ms-2">Details</a>
+                </div>
+
+            </form>
+        </div>
     </div>
 </div>
 

@@ -139,7 +139,7 @@
             <tbody>
                 @foreach (var item in Model.leaveModel.LeaveHistories)
                 {
-                    <tr>
+                    <tr onclick="location.href='@Url.Page("/LeaveHistory/Index", new { id = item.leaveID })'" style="cursor:pointer;">
                         <td>@item.modifiedDate</td>
                         <td>@item.leaveHistoryAction</td>
                         <td>@item.modifiedBy</td>
@@ -215,6 +215,13 @@
     {
         <a asp-page="./Edit" asp-route-id="@Model.leaveModel.leaveID" role="button" class="btn btn-primary text-decoration-none me-3">Edit</a>
         <a asp-page="./Delete" asp-route-id="@Model.leaveModel.leaveID" role="button" class="btn btn-danger text-decoration-none me-3">Delete</a>
-    }    
+    }
+    @if (User.IsInRole("MIE\\PMS_HRCLERK") && (Model.leaveModel.leaveStatus == Models.leaveStatus.Hold || Model.leaveModel.leaveStatus == Models.leaveStatus.Approved))
+    {
+        <form method="post">
+            <input asp-for="leaveModel.leaveID" name="leaveId" type="hidden"></input>
+            <button type="submit" class="btn btn-success post-button me-3 d-print-none" data-id="Model.leaveID">Post</button>
+        </form>
+    }
     @await Html.PartialAsync("print")
 </div>

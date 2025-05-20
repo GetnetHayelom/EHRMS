@@ -12,35 +12,57 @@
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form method="post">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="overtimeRecordModel.employmentID" class="control-label"></label>
-                <select asp-for="overtimeRecordModel.employmentID" class ="form-control" asp-items="ViewBag.employmentID"></select>
-            </div>
-            <div class="form-group">
-                <label asp-for="overtimeRecordModel.overtimeID" class="control-label"></label>
-                <select asp-for="overtimeRecordModel.overtimeID" class ="form-control" asp-items="ViewBag.overtimeID"></select>
-            </div>
-            <div class="form-group">
-                <label asp-for="overtimeRecordModel.overtimeRecordDate" class="control-label"></label>
-                <input asp-for="overtimeRecordModel.overtimeRecordDate" class="form-control" type="date"/>
-                <span asp-validation-for="overtimeRecordModel.overtimeRecordDate" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="overtimeRecordModel.overtimeRecordStartTime" class="control-label"></label>
-                <input asp-for="overtimeRecordModel.overtimeRecordStartTime" class="form-control" type="time"/>
-                <span asp-validation-for="overtimeRecordModel.overtimeRecordStartTime" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="overtimeRecordModel.overtimeRecordEndTime" class="control-label"></label>
-                <input asp-for="overtimeRecordModel.overtimeRecordEndTime" class="form-control" type="time"/>
-                <span asp-validation-for="overtimeRecordModel.overtimeRecordEndTime" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
-        </form>
+        <div class="">
+            <form method="get" class="d-print-none">
+                <div class="d-flex flex-column">
+                    <h4>Overtime Detail</h4>
+                    <div class="d-flex">
+                        <input asp-for="Employment.givenID" id="givenID" class="form-control me-2" placeholder="Enter ID" name="givenID" />
+                        <button type="submit" class="btn btn-primary" id="goButton">Go</button>
+                    </div>
+                    <h6 class="mt-2 mb-2"><u>@Model.Person.personFullName</u></h6>
+                </div>
+            </form>
+        </div>
+        @if(Model.Employment.employmentStatus == Models.mainStatus.Active)
+        {
+            <form method="post">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+             
+                <div class="form-group mb-2">
+                    <label asp-for="overtimeRecordModel.overtimeRecordDate" class="control-label">Overtime Date</label>
+                    <input asp-for="overtimeRecordModel.overtimeRecordDate" class="form-control" type="date"/>
+                    <span asp-validation-for="overtimeRecordModel.overtimeRecordDate" class="text-danger"></span>
+                </div>
+                <div class="form-group mb-2">
+                    <label asp-for="overtimeRecordModel.overtimeRecordStartTime" class="control-label">Start Time</label>
+                    <input asp-for="overtimeRecordModel.overtimeRecordStartTime" class="form-control" type="time"/>
+                    <span asp-validation-for="overtimeRecordModel.overtimeRecordStartTime" class="text-danger"></span>
+                </div>
+                <div class="form-group mb-2">
+                    <label asp-for="overtimeRecordModel.overtimeRecordEndTime" class="control-label">End Time</label>
+                    <input asp-for="overtimeRecordModel.overtimeRecordEndTime" class="form-control" type="time"/>
+                    <span asp-validation-for="overtimeRecordModel.overtimeRecordEndTime" class="text-danger"></span>
+                </div>
+                <div class="form-group mb-2">
+                    <label asp-for="overtimeRecordModel.overtimeRecordReason" class="control-label">Reason</label>
+                    <input asp-for="overtimeRecordModel.overtimeRecordReason" class="form-control" type="text" />
+                    <span asp-validation-for="overtimeRecordModel.overtimeRecordReason" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <input type="submit" value="Create" class="btn btn-primary" />
+                </div>
+            </form>
+        }
+        else if (Model.Employment.employmentStatus == Models.mainStatus.Inactive)
+        {
+            <div class="bg-danger p-4 text-white"><h4>Employee is not Active</h4></div>
+        }
+        else if (Model.EmployeeID == 0)
+        {
+            <div class="bg-danger p-4 text-white"><h4>Employee is not Active</h4></div>
+        }
     </div>
 </div>
 

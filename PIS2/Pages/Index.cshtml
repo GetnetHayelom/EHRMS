@@ -74,7 +74,7 @@
                     <dt class="col-sm-5">
                         Full Name: 
                     </dt>
-                    <dd class="col-sm-7">
+                    <dd class="col-sm-7" onclick="location.href='@Url.Page("/Employment/Details", new { id = Model.Employment.employmentID })'" style="cursor:pointer;">
                         <u>@Html.DisplayFor(model => model.Person.personFullName)</u>
                     </dd>
                     <dt class="col-sm-5">
@@ -168,9 +168,9 @@
                 @if (1 == 1)
                 {
                         <div class="d-flex flex-wrap justify-content-between">
-                            <div class="col-md-6">
+                            <div class="col-md-4">
                                 <h1>Leave Summary</h1>
-                                <h6>Employee Name: <b><u>@Model.Person.personFullName</u></b> </h6>
+                                <h6 onclick="location.href='@Url.Page("/Employment/Details", new { id = Model.Employment.employmentID })'" style="cursor:pointer;">Employee Name: <b><u>@Model.Person.personFullName</u></b> </h6>
                                 <h6>Employee ID: <b><u> @Model.Employment.givenID</u></b> </h6>
                             </div>
                             <div class="col-md-2 d-flex flex-column justify-content-center align-items-center">
@@ -193,6 +193,10 @@
                                 <h6>Last Increment: <u></u></h6>
                                 <h2 class="text-success rounded-circle border-success">@Model.LeaveDetail.LastAccrualIncrement</h2>
                             </div>
+                            <div class="col-md-2 d-flex flex-column justify-content-center align-items-center">
+                                <h6>Leave Value: <u></u></h6>
+                                <h2 class="text-success rounded-circle border-success">@Model.LeaveDetail.leaveCost.ToString("N2")<span class="fs-6">Br</span></h2>
+                            </div>
                         </div>
                         
                     <table class="table table-striped table-hover">
@@ -202,9 +206,9 @@
                                 <th>Starting Balance</th>
                                 <th>Increments</th>
                                 <th>Used Leave</th>
-                                <th>Available Balance</th>
-                                <th>Current Year Balance</th>
-                                    <th>Cost</th>
+                                <th>Ending Balance</th>
+                                <th>Year Balance</th>
+                                <th>Cost</th>
                             
                             </tr>
 
@@ -219,7 +223,7 @@
                                     <td>@item.usedLeaveAmount</td>
                                     <td>@item.remainingLeaveAmount</td>
                                     <td>@item.rollOverLeave</td>
-                                    <td>@item.remainingLeaveCost</td>
+                                        <td>@item.remainingLeaveCost.ToString("N2")<span class="small">Br</span></td>
                                 </tr>
                             }
                         
@@ -303,7 +307,7 @@
                             <h3>Overtime History</h3>
                         </div>
                         <div class="modal-body">
-                            <h6>Employee Name: <b><u>@Model.Person.personFullName</u></b> </h6>
+                            <h6 onclick="location.href='@Url.Page("/Employment/Details", new { id = Model.Employment.employmentID })'" style="cursor:pointer;">Employee Name: <b><u>@Model.Person.personFullName</u></b> </h6>
                             <h6>Employee ID: <b><u> @Model.Employment.givenID</u></b> </h6>
                             @if (Model.Overtimes == null)
                             {
@@ -340,7 +344,7 @@
 
                                         @foreach (var item in Model.Overtimes)
                                         {
-                                            <tr>
+                                            <tr onclick="location.href='@Url.Page("/OvertimeRecord/Details", new { id = item.overtimeRecordID })'" style="cursor:pointer;">
 
                                                 <td>
                                                     @item.overtimeRecordDate.ToString("MMM dd, yyyy")
@@ -391,7 +395,7 @@
                             <h3>Leave History</h3>
                         </div>
                         <div class="modal-body">
-                            <h6>Employee Name: <b><u>@Model.Person.personFullName</u></b> </h6>
+                            <h6 onclick="location.href='@Url.Page("/Employment/Details", new { id = Model.Employment.employmentID })'" style="cursor:pointer;">Employee Name: <b><u>@Model.Person.personFullName</u></b> </h6>
                             <h6>Employee ID: <b><u> @Model.Employment.givenID</u></b> </h6>
                             @if (Model.Leaves == null)
                             {
@@ -430,7 +434,7 @@
 
                                         @foreach (var item in Model.Leaves)
                                         {
-                                            <tr>
+                                            <tr onclick="location.href='@Url.Page("/Leave/Details", new { id = item.leaveID })'" style="cursor:pointer;">
                                                 <td>
                                                     <a asp-page="/Leave/Details" asp-route-id="@item.leaveID" class="text-decoration-none text-dark">
                                                         @item.leaveID
@@ -606,7 +610,7 @@
 
    
    
-}
+
 
 <!--Toggle Collapse-->
 <script>

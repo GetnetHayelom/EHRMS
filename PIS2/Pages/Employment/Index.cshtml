@@ -14,11 +14,14 @@
     <div class="d-inline-flex">
         @await Html.PartialAsync("filter")
         @await Html.PartialAsync("print")
-
     </div>
 </div>
 
 <div class="row">
+    @if (Model.employmentModel!=null)
+    {
+        
+   
     <div class="col-3">
         <label for="filter-status">Filter Status:</label>
         <select class="form-select" aria-label="Default select example" id="filter-status" onchange="filterEmployees()" asp-items="Html.GetEnumSelectList<Models.mainStatus>()">
@@ -83,6 +86,7 @@
         <label for="dateEnd">Date of Employment Upto:</label>
         <input class="form-control" type="date" id="dateEnd" onchange="filterEmployees()" />
     </div>
+    }
 </div>
 
 <p id="countID"></p>
@@ -114,7 +118,7 @@
     </thead>
     <tbody id="table-body">
         @foreach (var item in Model.employmentModel) {
-            <tr>
+            <tr onclick="location.href='@Url.Page("Details", new { id = item.employmentID })'" style="cursor:pointer;")>
                 <td>
                     @Html.DisplayFor(modelItem => item.givenID)
                 </td>

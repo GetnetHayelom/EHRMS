@@ -7,17 +7,17 @@
 }
 
 <h1>Employments</h1>
-@if (Model.IsUserSelf)
+@if (Model.isSelf)
 {
     <!--top buttons -->
     <div class="m-3 d-flex justify-content-lg-between bg-primary text-white d-print-none">
         @if (Model.employmentModel.employmentStatus == Models.mainStatus.Active)
         {
             <!--Leave Request button-->
-            <a role="button" class="text-white nav-link flex-grow-1" id="leaveRequest" data-bs-toggle="collapse" data-bs-target="#leaveRequestView" onclick="closeOtherCollapses('#collapseOne')">Leave Request</a>
+            <a role="button" class="text-white nav-link flex-grow-1" asp-page="/Leave/Create">Leave Request</a>
 
             <!--Ovetime Button-->
-            <a role="button" class="text-white nav-link flex-grow-1" id="Overtime" data-bs-toggle="collapse" data-bs-target="#overtimeView" onclick="closeOtherCollapses('#collapseOne')">Overtime</a>
+            <a role="button" class="text-white nav-link flex-grow-1" asp-page="/OvertimeRecord/Create">Overtime Record</a>
 
         }
 
@@ -29,6 +29,7 @@
             <a role="button" class="text-white nav-link flex-grow-1" id="overtimeHistory" data-bs-toggle="collapse" data-bs-target="#overtimeHistoryView" onclick="closeOtherCollapses('#collapseOne')">Overtime History</a>
 
         }
+        <a role="button" class="text-white nav-link flex-grow-1">Evaluation</a>
 
     </div>
 }

@@ -43,15 +43,7 @@
         {
             <form method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <!--<div class="form-group">
-                <label asp-for="Leave.employmentID" class="control-label">Employee ID</label>
-                <select asp-for="Leave.employmentID" class="form-control" asp-items="ViewBag.employmentID"></select>
-            </div>
-            <div class="form-group">
-                <label asp-for="Leave.employmentModel.personModel.personFullName" class="control-label">Full Name</label>
-                <input asp-for="Leave.employmentModel.personModel.personFullName" class="form-control" type="text" />
-                <span asp-validation-for="Leave.employmentModel.personModel.personFullName" class="text-danger"></span>
-            </div>-->
+
             <div class="d-flex justify-content-between">
                 <div class="form-group m-1">
                     <label asp-for="Leave.leaveStartDate" class="control-label me-2">Start Date:</label>
@@ -184,7 +176,7 @@
 
                                 @foreach (var item in Model.Leaves)
                                 {
-                                    <tr>
+                                    <tr onclick="location.href='@Url.Page("Details", new { id = item.leaveID })'" style="cursor:pointer;">
                                         <td>
                                             <a asp-page="/Leave/Details" asp-route-id="@item.leaveID" class="text-decoration-none text-dark">
                                                 @item.leaveID

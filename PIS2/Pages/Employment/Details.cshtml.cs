@@ -22,6 +22,7 @@ namespace PIS2.Pages.Employment
         public string givenID { get; set; }
         public string ErrorMessage { get; set; }
         public bool IsUserSelf { get; set; }
+        public bool isSelf =false;
         public employmentModel employmentModel { get; set; } = default!;
         public String Age { get; set; }
         public String Exprience { get; set; }
@@ -66,7 +67,14 @@ namespace PIS2.Pages.Employment
             {
                 employmentModel = employmentmodel;
             }
-            IsUserSelf = _context.Users.FirstOrDefault(u => u.userName.ToLower() == User.Identity.Name!.ToLower()).personID == employmentModel.personID ? true : false;
+            var currentUser = _context.Users.FirstOrDefault(u => u.userName == User.Identity.Name);
+
+            if (currentUser != null && currentUser.personID == employmentModel.personID)
+            {
+                isSelf = true;
+            }
+
+            //isSelf = _context.Users.FirstOrDefault(u => u.userName.ToLower() == User.Identity.Name!.ToLower()).personID == employmentModel.personID ? true : false;
             Age = _core.GetYearsAndMonths(employmentModel.personModel.personDoB, DateTime.Now).Item1 + " years " +
                 _core.GetYearsAndMonths(employmentModel.personModel.personDoB, DateTime.Now).Item2 + " months ";
             if (employmentmodel.employmentStatus == mainStatus.Active)

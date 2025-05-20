@@ -20,10 +20,10 @@ namespace PIS2.Pages.LeaveHistory
 
         public IList<leaveHistoryModel> leaveHistoryModel { get;set; } = default!;
 
-        public async Task OnGetAsync()
+        public async Task OnGetAsync(int? id)
         {
             leaveHistoryModel = await _context.LeaveHistories
-                .Include(l => l.leaveModel).ToListAsync();
+                .Include(l => l.leaveModel).Where(lh => lh.leaveID ==id).ToListAsync();
         }
     }
 }

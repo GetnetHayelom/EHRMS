@@ -20,6 +20,7 @@ namespace PIS2.Pages.OvertimeRecord
 
         public overtimeRecordModel overtimeRecordModel { get; set; } = default!;
         public List<overtimeHistoryModel> OvertimeHistories { get; set; } = default!;
+        public double otCost = 0;
 
         public async Task<IActionResult> OnGetAsync(int? id)
         {
@@ -30,8 +31,10 @@ namespace PIS2.Pages.OvertimeRecord
 
             var overtimerecordmodel = await _context.OvertimeRecords.Include(otr => otr.employmentModel).ThenInclude(e => e.personModel)
                 .Include(otr => otr.overtimeModel)
+                .Include(otr => otr.OvertimeHistories)
                 .FirstOrDefaultAsync(m => m.overtimeRecordID == id);
             OvertimeHistories = await _context.OvertimeHistories.Where(oh =>oh.overtimeRecordID == id).ToListAsync();
+            //otCost = overtimeRecordModel.GetOTCost();
             if (overtimerecordmodel == null)
             {
                 return NotFound();

@@ -41,28 +41,30 @@
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model.leaveModel) {
-        <tr>
+        @foreach (var item in Model.leaveModel) {
+            <tr>
            
-            <td><a asp-page="./Details" asp-route-id="@item.leaveID">@item.leaveID</a></td>
-            <td>
-                @Html.DisplayFor(modelItem => item.employmentModel.givenID)
-            </td>
-            <td>
-                @item.leaveReaquestDate.ToString("MMM dd, yyyy")
-            </td>
-            <td>
-                    @item.leaveStartDate.ToString("MMM dd, yyyy")
-            </td>
-            <td>
-                    @item.leaveEndDate.ToString("MMM dd, yyyy")
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.leaveDays)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.leaveTypeModel.leaveTypeName)
-            </td>
+                <td onclick="location.href='@Url.Page("Details", new { id = item.leaveID })'" style="cursor:pointer;">
+                    @item.leaveID
+                </td>
+                    <td onclick="location.href='@Url.Page("/Employment/Details", new { id = item.employmentID })'" style="cursor:pointer;">
+                    @Html.DisplayFor(modelItem => item.employmentModel.givenID)
+                </td>
+                <td>
+                    @item.leaveReaquestDate.ToString("MMM dd, yyyy")
+                </td>
+                <td>
+                        @item.leaveStartDate.ToString("MMM dd, yyyy")
+                </td>
+                <td>
+                        @item.leaveEndDate.ToString("MMM dd, yyyy")
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.leaveDays)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.leaveTypeModel.leaveTypeName)
+                </td>
             <td>
                 @Html.DisplayFor(modelItem => item.leaveStatus)
             </td>
