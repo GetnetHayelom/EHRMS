@@ -57,7 +57,7 @@ namespace PIS2.Pages.Leave
             if (!string.IsNullOrEmpty(givenID))
             {
                 Employment = _context.Employments.FirstOrDefault(e => e.givenID == givenID) ?? new employmentModel();
-                Console.WriteLine("This is right here");
+                Console.WriteLine("This is right here!!!!!!!!!!!");
                 if (Employment != null)
                 {
                     
@@ -91,12 +91,12 @@ namespace PIS2.Pages.Leave
 
             EmployeeID = Employment.employmentID;
             TempData["MyNumber"] = EmployeeID;
-
-            LeaveDetail = _core.GetLeaveSummary(id);
+            
+            LeaveDetail = _core.GetLeaveSummary(id) != null? _core.GetLeaveSummary(id): _core.GetLeaveSummary(EmployeeID);
             Leaves =_context.Leaves.OrderByDescending(l => l.leaveReaquestDate).Where(e => e.employmentID == EmployeeID).ToList();
             Person = _context.Persons.FirstOrDefault(e => e.personID == Employment.personID)?? new personModel();
             ViewData["employmentID"] = new SelectList(_context.Employments, "employmentID", "givenID", id);
-            Console.WriteLine("Employee ID is " + EmployeeID);
+            Console.WriteLine("################# Employee ID is " + EmployeeID);
             return Page();
         }
         
@@ -106,6 +106,7 @@ namespace PIS2.Pages.Leave
         // For more information, see https://aka.ms/RazorPagesCRUD.
         public async Task<IActionResult> OnPostAsync()
         {
+           
             ModelState.Clear();
            
             Leave.employmentID = Convert.ToInt32(TempData["MyNumber"]);  Console.WriteLine("This is right here" + Leave.employmentID);
@@ -124,85 +125,40 @@ namespace PIS2.Pages.Leave
             //return RedirectToPage("./Index");
             return RedirectToPage("Details", new { id = Leave.leaveID });
         }
-        public async Task<IActionResult> OnPostCreateLeave()
+        
+        public JsonResult OnPostCalculateWorkingDays(DateTime startDate, DateTime endDate)
         {
-            if (Employment.employmentID == 0 || _context.Employments.FirstOrDefault(e => e.employmentID == Employment.employmentID) == null)
-            {
-                TempData["SuccessMessage"] = "Employment not found or provided";
-                return Page();
-            }
-            if (_context.Employments.FirstOrDefault(e => e.employmentID == Employment.employmentID)?.employmentStatus == mainStatus.Inactive)
-            {
-                TempData["SuccessMessage"] = "Could not save leave reaquest. Employment status must me active.";
-                return Page();
-            }
-            ModelState.Clear();
-            Leave.modifiedBy = User.Identity?.Name!;
-            Leave.employmentID = Employment.employmentID;
-            Leave.leaveStatus = leaveStatus.Hold;
-            Leave.ratePerHour = _context.JobPlacements.FirstOrDefault(jp => jp.jobPlacementStatus == mainStatus.Active && jp.employmentID == Employment.employmentID)?.getJobRate() ?? 0;
-            //TempData["LeaveID"] = null;
-            //if (!TryValidateModel(Leave, nameof(Leave)))
-            if (!ModelState.IsValid)
-            {
-                // Log or display errors for debugging
-                foreach (var error in ModelState)
-                {
-                    Console.WriteLine($"{error.Key}: {string.Join(", ", error.Value.Errors.Select(e => e.ErrorMessage))}");
-                }
-                // Optionally pass errors to the view for display
-                TempData["SuccessMessage"] = "Leave is not valid.";
-            }
-            else
-            {
-                try
-                {
-                    if (TempData["LeaveID"] == null)
-                    {
-                        //add leave to database
-                        _context.Leaves.Add(Leave);
-                        await _context.SaveChangesAsync();
-                        TempData["SuccessMessage"] = $"Leave Saved with ID {Leave.leaveID}";
-                        TempData["LeaveID"] = Leave.leaveID;
-                    }
-
-                }
-                catch (DbUpdateException ex)
-                {
-                    // Check if the exception is an inner SqlException
-                    if (ex.InnerException is SqlException sqlEx)
-                    {
-                        // access the message from SQL Server
-                        string sqlErrorMessage = sqlEx.Message;
-                        if (sqlEx.Number == 2627 || sqlEx.Number == 2601)
-                        {
-                            ModelState.AddModelError(string.Empty, "Error: Duplicate Record!");
-                        }
-                        else if (sqlEx.Number == 547)
-                        {
-                            ModelState.AddModelError(string.Empty, "Error: Constraint Violation!");
-                        }
-                        else
-                        { // SQL error message to ModelState
-                            ModelState.AddModelError(string.Empty, "Database error: " + sqlErrorMessage);
-                        }
-
-                    }
-                    else
-                    {
-                        // Handle other types of exceptions
-                        ModelState.AddModelError(string.Empty, "An unexpected error occurred.");
-                    }
-                }
-                
-                //searchID = Employment.givenID;
-            }
+            
+            // Example: List of holidays – ideally from a database or config
+            var holidays = _context.Holidays.Where(h => h.holidayStatus == mainStatus.Active).ToList();
             
 
-            // Pass the Leave ID and keep the form open
-            TempData["KeepLeaveRequest"] = true;
-            
-            return Page();
+            double workingDays = 0;
+
+            for (var date = startDate.Date; date <= endDate.Date; date = date.AddDays(1))
+            {
+                if (IsHoliday(date))
+                    continue;
+
+                if (date.DayOfWeek == DayOfWeek.Sunday)
+                    continue;
+
+                if (date.DayOfWeek == DayOfWeek.Saturday)
+                    workingDays += 0.5;
+                else
+                    workingDays += 1;
+            }
+
+            return new JsonResult(workingDays);
         }
+        public bool IsHoliday(DateTime date)
+        {
+            List<holidayModel> holidays = _context.Holidays.Where(h => h.holidayStatus == mainStatus.Active).ToList();
+            return holidays.Any(h =>
+                date.Date >= h.holidayStart.Date &&
+                date.Date <= (h.holidayEnd == default ? h.holidayStart.Date : h.holidayEnd.Date)
+            );
+        }
+
     }
 }

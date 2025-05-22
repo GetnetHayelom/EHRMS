@@ -7,7 +7,7 @@
 }
 
 <div class="text-center d-print-none">
-    <h1 class="display-4">Welcome</h1>
+    <h1 class="display-4"><b>Welcome</b></h1>
 </div>
 @if (!string.IsNullOrEmpty(successMessage))
 {
@@ -19,13 +19,15 @@
 <div class="row mt-1 d-flex justify-content-center">
     <!--Person Section-->
     <div class="col-md-3 d-print-none">
-    <!--row for Search control-->
+        <h4 class="fw-bold">Look Up</h4>
+        <hr />
+
+        <!--row for Search control-->
         <div class="row mt-2">
             <!--form for searching using ID --> 
             <label for="employeeID">Look up by Empolyee ID:</label>
             <form method="post" asp-page-handler="SearchID" class="d-flex">
-     
-                <input id="givenID" name="searchID" type="text" class="form-control mb-1" asp-for="@Model.Employment.givenID" list="givenIDList">
+                <input id="givenID" name="searchID" type="text" class="form-control mb-1 me-2" asp-for="@Model.Employment.givenID" list="givenIDList">
                 <datalist id="givenIDList">
                     @foreach (var item in Model.Employments)
                     {
@@ -38,7 +40,7 @@
             <!--form for searching using name-->
             <label for="employeeName">Look up by Name:</label>
             <form method="post" asp-page-handler="SearchName" class="d-flex">
-                <input id="employeeName" name="searchName" type="text" class="form-control mb-1" asp-for="@Model.Person.personFullName" list="namesList">
+                <input id="employeeName" name="searchName" type="text" class="form-control mb-1 me-2" asp-for="@Model.Person.personFullName" list="namesList">
                 <datalist id="namesList">
                     @foreach (var item in Model.People)
                     {
@@ -53,81 +55,73 @@
         @if (Model.Person != null)
         {
             <!--row for person remaining Details -->
-            <div class="d-flex flex-column mt-2 border-primary rounded mb-1 bg-danger text-white p-2">
+            <div class="d-flex flex-column mt-2 border-primary border rounded mb-1 p-2">
                 <div class="d-flex flex-column justify-content-center">
-                    <h4>Personal Information</h4>
-                    <hr />
-                    @if (Model.PersonEmployments != null && Model.PersonEmployments.Count > 0)
-                    {
-                        <div class="col-md-12 mb-1 d-flex justify-content-center">
-                            <button type="button" class="btn btn-primary btn-block  w-100 btn-lg" id="adjustment" data-bs-toggle="collapse" data-bs-target="#employmentHistoryView" onclick="closeOtherCollapses('#employmentHistoryView')">Employment History</button>
-                        </div>
-                    }
-                    <div class="col-8">
+                    
+                    <div class="d-flex justify-content-center">
                         <img src="~/assets/blank_profile.jpg" class="rounded-circle" style="width: 100px; height: 100px; object-fit: cover;" />
                     </div>
                     
 
                 </div>
                 <dl class="row">
-
-                    <dt class="col-sm-5">
-                        Full Name: 
-                    </dt>
-                    <dd class="col-sm-7" onclick="location.href='@Url.Page("/Employment/Details", new { id = Model.Employment.employmentID })'" style="cursor:pointer;">
-                        <u>@Html.DisplayFor(model => model.Person.personFullName)</u>
-                    </dd>
-                    <dt class="col-sm-5">
-                        DoB:
-                    </dt>
-                    <dd class="col-sm-7">
-                        <u>@Model.Person.personDoB.ToString("MMM dd, yyyy")</u>
-                    </dd>
+                    <div class="row">
+                        <dt class="me-2">
+                            Full Name: 
+                        </dt>
+                        <dd class="" onclick="location.href='@Url.Page("/Employment/Details", new { id = Model.Employment.employmentID })'" style="cursor:pointer;">
+                            <u>@Html.DisplayFor(model => model.Person.personFullName)</u>
+                        </dd>
+                    </div>
+                    <div class="d-flex">
+                        <dt class="me-2">
+                            Gender:
+                        </dt>
+                        <dd class="">
+                            <u>@Html.DisplayFor(model => model.Person.personGender)</u>
+                        </dd>
+                    </div>
+                    <div class="d-flex">
+                        <dt class="me-2">
+                            Phone:
+                        </dt>
                     
-                    <dt class="col-sm-5">
-                        Gender:
-                    </dt>
-                    <dd class="col-sm-7">
-                        <u>@Html.DisplayFor(model => model.Person.personGender)</u>
-                    </dd>
-                    
-                    <dt class="col-sm-5">
-                        Id Type:
-                    </dt>
-                    <dd class="col-sm-7">
-                        <u>@Html.DisplayFor(model => model.Person.personIDType)</u>
-                    </dd>
-                    
-                    <dt class="col-sm-5">
-                        Id Number:
-                    </dt>
-                    <dd class="col-sm-7">
-                        <u>@Html.DisplayFor(model => model.Person.personIDNumber)</u>
-                    </dd>
-                    <dt class="col-sm-5">
-                        Phone:
-                    </dt>
-                    <dd class="col-sm-7">
-                        <u>@Html.DisplayFor(model => model.Person.personPhoneNumber)</u>
-                    </dd>
-                    <dt class="col-sm-5">
-                        Record Number:
-                    </dt>
-                    <dd class="col-sm-7">
-                        <u>@Html.DisplayFor(model => model.Person.personRecordNumber)</u>
-                    </dd>
-                    <dt class="col-sm-5">
-                        Address:
-                    </dt>
-                    <dd class="col-sm-7">
-                        <u>@Html.DisplayFor(model => model.Person.addressModel.addressFormatted)</u>
-                    </dd>
-                    <dt class="col-sm-5">
-                        Email:
-                    </dt>
-                    <dd class="col-sm-7">
-                        <u>@Html.DisplayFor(model => model.Person.personEmailAddress)</u>
-                    </dd>
+                        <dd class="">
+                            <u>@Html.DisplayFor(model => model.Person.personPhoneNumber)</u>
+                        </dd>
+                    </div>
+                    <div class="row">
+                        <dt class="me-2">
+                            Address:
+                        </dt>
+                        <dd class="">
+                            <u>@Html.DisplayFor(model => model.Person.addressModel.addressFormatted)</u>
+                        </dd>
+                    </div>
+                    <div class="row">
+                        <dt class="me-2">
+                            Email:
+                        </dt>
+                        <dd class="">
+                            <u>@Html.DisplayFor(model => model.Person.personEmailAddress)</u>
+                        </dd>
+                    </div>
+                    <div class="row">
+                        <dt class="me-2">
+                            Job Title:
+                        </dt>
+                        <dd class="">
+                            <u>@Html.DisplayFor(model => model.JobPlacement.jobModel.jobTitle)</u>
+                        </dd>
+                    </div>
+                    <div class="row">
+                        <dt class="me-2">
+                            Department:
+                        </dt>
+                        <dd class="">
+                            <u>@Html.DisplayFor(model => model.JobPlacement.departmentModel.departmentName)</u>
+                        </dd>
+                    </div>
                 </dl>
                 <hr/>
                
@@ -141,15 +135,15 @@
 <!-- right side column -->
     @if(Model.Person !=null && Model.PersonEmployments != null && Model.Employment != null)
     {
-        <div class="col-md-9">
+        <div class="col-md-9 d-print-flex print-full-width">
             <!--top buttons -->
             <div class="mt-1 d-flex justify-content-lg-between bg-primary text-white d-print-none">
                 @if(Model.Employment.employmentStatus == Models.mainStatus.Active)
                 {
                     <!--Leave Request button-->
-                    <a role="button" class="text-white nav-link flex-grow-1" asp-page="/Leave/Create">Leave Request</a>        
+                    <a role="button" class="text-white nav-link flex-grow-1" asp-page="/Leave/Create" asp-route-id="@Model.Employment.employmentID">Leave Request</a>        
                 <!--Ovetime Button-->
-                    <a role="button" class="text-white nav-link flex-grow-1" asp-page="/OvertimeRecord/Create">Overtime Record</a>
+                    <a role="button" class="text-white nav-link flex-grow-1" asp-page="/OvertimeRecord/Create" asp-route-id="@Model.Employment.employmentID">Overtime Record</a>
                 }
                 
                 <!--leave report-->
@@ -157,7 +151,8 @@
                 {                  
                     <a role="button" class="text-white nav-link flex-grow-1" id="leaveHistory" data-bs-toggle="collapse" data-bs-target="#leaveHistoryView" onclick="closeOtherCollapses('#collapseOne')">Leave History</a>                
                     <a role="button" class="text-white nav-link flex-grow-1" id="leaveAggrigate" data-bs-toggle="collapse" data-bs-target="#leaveAggrigate" onclick="closeOtherCollapses('#collapseOne')">Leave Summary</a>
-                    <a role="button" class="text-white nav-link flex-grow-1" id="overtimeHistory" data-bs-toggle="collapse" data-bs-target="#overtimeHistoryView" onclick="closeOtherCollapses('#collapseOne')">Overtime History</a>   
+                    <a role="button" class="text-white nav-link flex-grow-1" id="overtimeHistory" data-bs-toggle="collapse" data-bs-target="#overtimeHistoryView" onclick="closeOtherCollapses('#collapseOne')">Overtime History</a>
+                    <a role="button" class="text-white nav-link flex-grow-1" id="adjustment" data-bs-toggle="collapse" data-bs-target="#employmentHistoryView" onclick="closeOtherCollapses('#employmentHistoryView')">Employment History</a>
                 }
                 
             </div>
@@ -169,33 +164,33 @@
                 {
                         <div class="d-flex flex-wrap justify-content-between">
                             <div class="col-md-4">
-                                <h1>Leave Summary</h1>
-                                <h6 onclick="location.href='@Url.Page("/Employment/Details", new { id = Model.Employment.employmentID })'" style="cursor:pointer;">Employee Name: <b><u>@Model.Person.personFullName</u></b> </h6>
-                                <h6>Employee ID: <b><u> @Model.Employment.givenID</u></b> </h6>
+                                <h2 class="fw-bold">Leave Summary</h2>
+                                <h6 class="fw-bold" onclick="location.href='@Url.Page("/Employment/Details", new { id = Model.Employment.employmentID })'" style="cursor:pointer;">Employee Name: <u class="fw-normal">@Model.Person.personFullName</u></h6>
+                                <h6 class="fw-bold">Employee ID: <u class="fw-normal"> @Model.Employment.givenID</u></h6>
                             </div>
                             <div class="col-md-2 d-flex flex-column justify-content-center align-items-center">
-                                <h6>Allowed Leave:</h6>
+                                <h6 class="fw-bold">Allowed Leave:</h6>
                                 @if (Model.Employment.employmentStatus == Models.mainStatus.Active)
                                 {
-                                    <h2 class="text-success"><u>@Model.LeaveDetail.AllowedLeave.ToString("0.0")</u></h2>
+                                    <h2 class="text-success fw-bold"><u>@Model.LeaveDetail.AllowedLeave.ToString("0.0")</u></h2>
                                 }
                                 else
                                 {
-                                    <h2 class="text-danger"><u>@Model.LeaveDetail.AllowedLeave.ToString("0.0")</u></h2>
+                                    <h2 class="text-danger fw-bold"><u>@Model.LeaveDetail.AllowedLeave.ToString("0.0")</u></h2>
                                 }
 
                             </div>
                             <div class="col-md-2 d-flex flex-column justify-content-center align-items-center">
-                                <h6>Total Leave<u></u></h6>
-                                <h2 class="text-success">@Model.LeaveDetail.TotalLeave</h2>
+                                <h6 class="fw-bold">Total Leave<u></u></h6>
+                                <h2 class="text-success fw-bold">@Model.LeaveDetail.TotalLeave</h2>
                             </div>
                             <div class="col-md-2 d-flex flex-column justify-content-center align-items-center">
-                                <h6>Last Increment: <u></u></h6>
-                                <h2 class="text-success rounded-circle border-success">@Model.LeaveDetail.LastAccrualIncrement</h2>
+                                <h6 class="fw-bold">Last Increment: <u></u></h6>
+                                <h2 class="text-success fw-bold">@Model.LeaveDetail.LastAccrualIncrement</h2>
                             </div>
                             <div class="col-md-2 d-flex flex-column justify-content-center align-items-center">
-                                <h6>Leave Value: <u></u></h6>
-                                <h2 class="text-success rounded-circle border-success">@Model.LeaveDetail.leaveCost.ToString("N2")<span class="fs-6">Br</span></h2>
+                                <h6 class="fw-bold">Leave Value: <u></u></h6>
+                                <h2 class="text-success fw-bold">@Model.LeaveDetail.leaveCost.ToString("N2")<span class="fs-6">Br</span></h2>
                             </div>
                         </div>
                         
@@ -234,66 +229,7 @@
                     <div class="alert"><p>No leave record found.</p></div>
                     }
                 </div>
-            <!--Overtime-->
-            <div class="col-md-8 collapse border-primary rounded @(TempData["KeepOvertime"] != null ? "show" : "")" id="overtimeView">
-                <div class="modal-header">
-                    <h5>Overtime Record</h5>
-                </div>
-                <div class="modal-body">
-                <form method="post" asp-page-handler="CreateOvertimeRecord">
-                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                    <div class="form-group d-flex">
-                        <input type="hidden" asp-for="personID" Value="@Model.Person.personID" />
-                        <input type="hidden" asp-for="overtimeRecordModel.employmentID" class="form-control" value="@Model.Employment.employmentID" />
-                        <span asp-validation-for="employmentID" class="text-danger"></span>
-                    </div>
-                    <div class="form-group">
-                        <label asp-for="overtimeRecordModel.employmentID" class="control-label">Employee ID</label>
-                        <select asp-for="Employment.employmentID" class="form-control" asp-items="ViewBag.employmentID"></select>
-                    </div>
-                    <div class="form-group">
-                        <label asp-for="overtimeRecordModel.overtimeID" class="control-label">Overtime Type</label>
-                        <select asp-for="overtimeRecordModel.overtimeID" class="form-control" asp-items="ViewBag.overtimeID"></select>
-                    </div>
-                    <div class="form-group">
-                        <label asp-for="overtimeRecordModel.overtimeRecordDate" class="control-label">Date</label>
-                        <input asp-for="overtimeRecordModel.overtimeRecordDate" class="form-control" type="date"/>
-                        <span asp-validation-for="overtimeRecordModel.overtimeRecordDate" class="text-danger"></span>
-                    </div>
-                    <div class="form-group">
-                        <label asp-for="overtimeRecordModel.overtimeRecordStartTime" class="control-label">Start</label>
-                        <input asp-for="overtimeRecordModel.overtimeRecordStartTime" class="form-control" type="time" />
-                        <span asp-validation-for="overtimeRecordModel.overtimeRecordStartTime" class="text-danger"></span>
-                    </div>
-                    <div class="form-group">
-                        <label asp-for="overtimeRecordModel.overtimeRecordEndTime" class="control-label">End</label>
-                        <input asp-for="overtimeRecordModel.overtimeRecordEndTime" class="form-control" type="time" />
-                        <span asp-validation-for="overtimeRecordModel.overtimeRecordEndTime" class="text-danger"></span>
-                    </div>
-                    <div class="form-group">
-                        <label asp-for="overtimeRecordModel.overtimeRecordReason" class="control-label">Reason</label>
-                        <input asp-for="overtimeRecordModel.overtimeRecordReason" class="form-control" type="text" />
-                        <span asp-validation-for="overtimeRecordModel.overtimeRecordReason" class="text-danger"></span>
-                    </div>
-                    @await Html.PartialAsync("signature")
-                    <!-- Display Leave ID and Print Button on Success -->
-                    @if (TempData["OvertimeID"] != null)
-                    {
-                        <div class="mt-3">
-                            <p>Leave Voucher ID: @TempData["OvertimeID"]</p>
-                            <button type="button" class="btn btn-primary btn-lg btn-block w-100 d-print-none" onclick="printDiv('overtimeView')">Preview Overtime Voucher</button>
-                        </div>
-
-                    }
-
-                    <div class="modal-footer">
-                        <input type="submit" value="Save" class="btn btn-primary d-print-none" />
-                        <button type="button" class="btn btn-secondary d-print-none">Close</button>
-                    </div>
-                </form>
-                </div>
-                        
-        </div>
+      
             <!--Overtime History-->
             <div class="col-md-12 collapse border-primary rounded @(TempData["KeepOvetimeHistory"] != null ? "show" : "")" id="overtimeHistoryView">
 
@@ -304,11 +240,11 @@
                     else
                     {
                         <div class="modal-header">
-                            <h3>Overtime History</h3>
+                            <h3 class="fw-bold">Overtime History</h3>
                         </div>
                         <div class="modal-body">
-                            <h6 onclick="location.href='@Url.Page("/Employment/Details", new { id = Model.Employment.employmentID })'" style="cursor:pointer;">Employee Name: <b><u>@Model.Person.personFullName</u></b> </h6>
-                            <h6>Employee ID: <b><u> @Model.Employment.givenID</u></b> </h6>
+                            <h6 class="fw-bold" onclick="location.href='@Url.Page("/Employment/Details", new { id = Model.Employment.employmentID })'" style="cursor:pointer;">Employee Name: <u class="fw-normal">@Model.Person.personFullName</u> </h6>
+                            <h6 class="fw-bold">Employee ID: <u class="fw-normal"> @Model.Employment.givenID</u> </h6>
                             @if (Model.Overtimes == null)
                             {
                                 <p>No overtime history for the selected employment. @Model.Employment.givenID</p>
@@ -356,7 +292,7 @@
                                                     @item.overtimeRecordEndTime
                                                 </td>
                                                 <td>
-                                                    
+                                                   @item.TimeElapsed 
                                                 </td>
                                                 <td>
                                                     @Html.DisplayFor(modelItem => item.overtimeModel.overtimeName)
@@ -377,8 +313,7 @@
 
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-primary d-print-none" onclick="printDiv('overtimeHistoryView')">Print</button>
-                            <button type="button" class="btn btn-secondary d-print-none" data-bs-dismiss="modal">Close</button>
+                            @await Html.PartialAsync("print")
                         </div>
                     }
 
@@ -392,11 +327,11 @@
                     }
                     else{
                         <div class="modal-header">
-                            <h3>Leave History</h3>
+                            <h3 class="fw-bold">Leave History</h3>
                         </div>
                         <div class="modal-body">
-                            <h6 onclick="location.href='@Url.Page("/Employment/Details", new { id = Model.Employment.employmentID })'" style="cursor:pointer;">Employee Name: <b><u>@Model.Person.personFullName</u></b> </h6>
-                            <h6>Employee ID: <b><u> @Model.Employment.givenID</u></b> </h6>
+                            <h6 class="fw-bold" onclick="location.href='@Url.Page("/Employment/Details", new { id = Model.Employment.employmentID })'" style="cursor:pointer;">Employee Name: <u class="fw-normal">@Model.Person.personFullName</u> </h6>
+                            <h6 class="fw-bold">Employee ID: <u class="fw-normal"> @Model.Employment.givenID</u> </h6>
                             @if (Model.Leaves == null)
                             {
                                 <p>No leave history for the selected employment. @Model.Employment.givenID</p>
@@ -467,13 +402,10 @@
                                 </table>
                             }
 
-
-
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-primary d-print-none" onclick="printDiv('leaveHistoryView')">Print</button>
-                        <button type="button" class="btn btn-secondary d-print-none" data-bs-dismiss="modal">Close</button>
-                    </div>   
+                            @await Html.PartialAsync("print")
+                        </div>   
                     }
                         
              </div>
@@ -481,7 +413,7 @@
             <div class="col-md-12 collapse border-primary rounded @(TempData["KeepCollapseOpen"] != null ? "show" : "")" id="employmentHistoryView">
                     
                 <div class="modal-header">
-                    <h5>Employment History</h5>
+                        <h3 class="fw-bold">Employment History</h3>
                 </div>
                 <div class="modal-body">
                     @if (Model.PersonEmployments != null)
@@ -504,10 +436,7 @@
                                     <th>
                                         Employment Reference
                                     </th>
-                                    <th>
-                                        Working Hours Per Week
-                                    </th>
-                                    <th></th>
+                                    
                                 </tr>
                             </thead>
                             <tbody>
@@ -529,61 +458,58 @@
                                         <td>
                                             @Html.DisplayFor(modelItem => item.employmentReference)
                                         </td>
-                                        <td>
-                                            @Html.DisplayFor(modelItem => item.workingHoursPerWeek)
-                                        </td>
-                                        <td>
-                                        </td>
+                                        
                                     </tr>
-                                        <table class="table table-striped table-hover">
-                                            <thead>
-                                                <tr class="bg-dark text-white">
+
+                                    <table class="table table-striped table-hover">
+                                        <h4 class="fw-bold">Job Placements</h4>
+                                        <thead>
+                                            <tr class="bg-dark text-white">                                                    
+                                                <th>
+                                                    Department
+                                                </th>
+                                                <th>
+                                                    Job Title
+                                                </th>
                                                     
-                                                    <th>
-                                                        Department
-                                                    </th>
-                                                    <th>
-                                                        Job Title
-                                                    </th>
+                                                <th>
+                                                    Salary
+                                                </th>
+                                                <th>
+                                                    Date
+                                                </th>
+                                                <th>
+                                                    Status
+                                                </th>
                                                     
-                                                    <th>
-                                                        Salary
-                                                    </th>
-                                                    <th>
-                                                        Date
-                                                    </th>
-                                                    <th>
-                                                        Status
-                                                    </th>
-                                                    
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (var jp in item.JobPlacements.OrderBy(j => j.jobPlacementDate))
+                                            {
+                                                <tr>
+                                                        
+                                                    <td>
+                                                        @Html.DisplayFor(modelItem => jp.departmentModel.departmentName)
+                                                    </td>
+                                                    <td>
+                                                        @Html.DisplayFor(modelItem => jp.jobModel.jobTitle)
+                                                    </td>
+                                                        
+                                                    <td>
+                                                        @Html.DisplayFor(modelItem => jp.jobPlacementSalary)
+                                                    </td>
+                                                    <td>
+                                                        @jp.jobPlacementDate.ToString("MMM dd, yyyy")
+                                                    </td>
+                                                    <td>
+                                                        @Html.DisplayFor(modelItem => jp.jobPlacementStatus)
+                                                    </td>
+                                                        
                                                 </tr>
-                                            </thead>
-                                            <tbody>
-                                                @foreach (var jp in item.JobPlacements)
-                                                {
-                                                    <tr>
-                                                        
-                                                        <td>
-                                                            @Html.DisplayFor(modelItem => jp.departmentModel.departmentName)
-                                                        </td>
-                                                        <td>
-                                                            @Html.DisplayFor(modelItem => jp.jobModel.jobTitle)
-                                                        </td>
-                                                        
-                                                        <td>
-                                                            @Html.DisplayFor(modelItem => jp.jobPlacementSalary)
-                                                        </td>
-                                                        <td>
-                                                            @jp.jobPlacementDate.ToString("MMM dd, yyyy")
-                                                        </td>
-                                                        <td>
-                                                            @Html.DisplayFor(modelItem => jp.jobPlacementStatus)
-                                                        </td>
-                                                        
-                                                    </tr>
-                                                }
-                                            </tbody>
-                                        </table>
+                                            }
+                                        </tbody>
+                                    </table>
                                 }
                             </tbody>
                         </table>
@@ -595,8 +521,7 @@
 
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-primary">Print</button>
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="collapse">Close</button>
+                        @await Html.PartialAsync("print")
                 </div>
                         
             </div>

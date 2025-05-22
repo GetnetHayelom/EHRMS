@@ -6,103 +6,144 @@
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
 
-<h1>Overtime Record</h1>
-<div class="d-flex row">
-    <div class="print-full-width col-md-4">
-        <h4>Overtime Record Details</h4>
+<h1 class="fw-bold">Overtime Record</h1>
+<div class="d-flex print-flex-column">
+    <div class="col-md-6 print-full-width">
+        <h4 class="fw-bold"><u>Overtime Record Details</u></h4>
         <hr />
         <div class="d-flex">
             <h6 class="me-2"><b>Voucher ID:</b></h6>
             <h6><u>@Html.DisplayFor(model => model.overtimeRecordModel.overtimeRecordID)</u></h6>
         </div>
         
-        <dl class="row">
-            <dt class="col-md-4">
+        <dl class="col">
+            <div class="d-flex">
+                <dt class="me-2">
                 Employee ID:
-            </dt>
-            <dd class="col-md-8">
-                @Html.DisplayFor(model => model.overtimeRecordModel.employmentModel.givenID)
-            </dd>
-            <dt class="col-md-4">
-                Employee Name:
-            </dt>
-            <dd class="col-md-8">
-                @Html.DisplayFor(model => model.overtimeRecordModel.employmentModel.personModel.personFullName)
-            </dd>
-            <dt class="col-md-4">
-                Type of Overtime:
-            </dt>
-            <dd class="col-sm-8">
-                @Html.DisplayFor(model => model.overtimeRecordModel.overtimeModel.overtimeName)
-            </dd>
-            <dt class="col-sm-4">
-                Date:
-            </dt>
-            <dd class="col-sm-8">
-                @Model.overtimeRecordModel.overtimeRecordDate.ToString("dd MMM, yyyy")
-            </dd>
-            <dt class="col-sm-4">
-                Start Time:
-            </dt>
-            <dd class="col-sm-8">
-                @Model.overtimeRecordModel.overtimeRecordStartTime
-            </dd>
-            <dt class="col-sm-4">
-                End Time:
-            </dt>
-            <dd class="col-sm-8">
-                @Html.DisplayFor(model => model.overtimeRecordModel.overtimeRecordEndTime)
-            </dd>
-            <dt class="col-sm-4">
-                Status:
-            </dt>
-            <dd class="col-sm-8">
-                @Html.DisplayFor(model => model.overtimeRecordModel.overtimeRecordStatus)
-            </dd>
-            <dt class="col-sm-4">
-                Reason:
-            </dt>
-            <dd class="col-sm-8">
-                @Html.DisplayFor(model => model.overtimeRecordModel.overtimeRecordReason)
-            </dd>
-            <dt class="col-sm-4">
-                Cost:
-            </dt>
-            <dd class="col-sm-8">
-                @Model.overtimeRecordModel.GetOtCost
-            </dd>
+                </dt>
+                <dd class="me-4">
+                    <u>@Html.DisplayFor(model => model.overtimeRecordModel.employmentModel.givenID)</u>
+                </dd>
+            </div>
+            <div class="d-flex">    
+                <dt class="me-2">
+                    Employee Name:
+                </dt>
+                <dd class="me-4">
+                    <u>@Html.DisplayFor(model => model.overtimeRecordModel.employmentModel.personModel.personFullName)</u>
+                </dd>
+            </div>
+            <div class="d-flex">                    
+                <dt class="me-2">
+                    Type of Overtime:
+                </dt>
+                <dd class="me-4">
+                    <u>@Html.DisplayFor(model => model.overtimeRecordModel.overtimeModel.overtimeName)</u>
+                </dd>
+            </div>
+            <div class="d-flex">                
+                <dt class="me-2">
+                    Date:
+                </dt>
+                <dd class="me-4">
+                    <u>@Model.overtimeRecordModel.overtimeRecordDate.ToString("dd MMM, yyyy")</u>
+                </dd>
+            </div>
+            <div class="d-flex">                   
+                <dt class="me-2">
+                    Start Time:
+                </dt>
+                <dd class="me-4">
+                    <u>@Model.overtimeRecordModel.overtimeRecordStartTime</u>
+                </dd>
+            </div>
+            <div class="d-flex">               
+                <dt class="me-2">
+                    End Time:
+                </dt>
+                <dd class="me-4">
+                    <u>@Html.DisplayFor(model => model.overtimeRecordModel.overtimeRecordEndTime)</u>
+                </dd>
+            </div>
+            <div class="d-flex">                
+                <dt class="me-2">
+                    Status:
+                </dt>
+                <dd class="me-4">
+                    <u>@Html.DisplayFor(model => model.overtimeRecordModel.overtimeRecordStatus)</u>
+                </dd>
+            </div>
+            <div class="d-flex">                
+                <dt class="me-2">
+                    Reason:
+                </dt>
+                <dd class="me-4">
+                    <u>@Html.DisplayFor(model => model.overtimeRecordModel.overtimeRecordReason)</u>
+                </dd>
+            </div>
+            <div class="d-flex">                
+                <dt class="me-2">
+                    Cost:
+                </dt>
+                <dd class="me-4">
+                    <u>@Model.overtimeRecordModel.GetOtCost.ToString("N2") <span class="small"> Br</span></u>
+                </dd>
+            </div>
         </dl>
+        @if (Model.overtimeRecordModel.overtimeRecordStatus == Models.overtimeStatus.Hold)
+        {
+            @await Html.PartialAsync("signature");
+        }
     </div>
 
-    <div class="flex-grow-1 col-md-6">
-        <h4><u>Overtime Record History</u></h4>
+    <div class="col-md-6 print-full-width">     
+        <form method="get" class="d-print-none">
+            <div class="d-flex justify-content-between">
+                <h4 class="fw-bold"><u>Overtime Record History</u></h4>
+                <div class="d-flex">
+                    <input id="overtimeRecordID" class="form-control me-2" placeholder="Enter OT Batch Number" name="id" />
+                    <button type="submit" class="btn btn-primary" id="goButton">Go</button>
+                </div>
+            </div>
+        </form>
+        
         <hr />
-        <table class="table table-striped table-hover d-print-block print-full-width">
-        <thead class="bg-info text-white">
-            <tr>
-                <th>Date</th>
-                <th>Status</th>
-                <th>Modified By</th>
-               
-            </tr>
-        </thead>
-        <tbody>
-            @foreach(var item in Model.OvertimeHistories)
-            {
+       
+        @{
+            var tableClass = Model.overtimeRecordModel.overtimeRecordStatus == Models.overtimeStatus.Hold
+            ? "table table-striped table-hover d-print-none"
+            : "table table-striped table-hover print-full-width";
+        }
+        <table class="@tableClass">
+            <thead class="bg-info text-white">
                 <tr>
-                    <td>@item.modifiedDate.ToString("dd/MM/yyyy")</td>
-                    <td>@item.overtimeHistoryAction</td>
-                    <td>@item.modifiedBy</td>
-                    
+                    <th>Date</th>
+                    <th>Status</th>
+                    <th>Modified By</th>
+                    <th>Modified Date</th>
+               
                 </tr>
-            }
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                @foreach(var item in Model.OvertimeHistories)
+                {
+                    <tr>
+                        <td>@item.modifiedDate.ToString("dd/MM/yyyy")</td>
+                        <td>@item.overtimeHistoryAction</td>
+                        <td>@item.modifiedBy</td>
+                        <td>@item.modifiedDate</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
     </div>
 </div>
-<div>
-    <a class="btn btn-success me-2" asp-page="./Edit" asp-route-id="@Model.overtimeRecordModel.overtimeRecordID">Edit</a>
-    <a class="btn btn-grey me-2" asp-page="./Index">Back to List</a>
+<div class="d-flex justify-content-end">
+    @if(Model.overtimeRecordModel.overtimeRecordStatus == Models.overtimeStatus.Hold)
+    {
+        <a class="btn btn-success me-2 d-print-none" asp-page="./Edit" asp-route-id="@Model.overtimeRecordModel.overtimeRecordID">Edit</a>
+    }   
+    <a class="btn btn-secondary me-2 d-print-none" asp-page="./Index">Back to List</a>
     @await Html.PartialAsync("print")
 </div>
 

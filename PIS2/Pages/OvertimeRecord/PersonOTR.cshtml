@@ -4,33 +4,39 @@
 @{
     ViewData["Title"] = "PersonOTR";
     Layout = "~/Pages/Shared/_Layout.cshtml";
+    int num = 0;
 }
 
-<h1>Active Overtime Requests By Employee</h1>
+<h1 class="fw-bold">Overtime Request</h1>
 
 <p class="d-flex">
-    <div class="col-md-5"><a asp-page="Create" class="btn btn-success me-4 d-print-none">Create New</a>
-    @await Html.PartialAsync("print")</div>
-    <div class="col-md-6">@await Html.PartialAsync("filter")</div>
+    <div class="col-md-5">
+        <a asp-page="Create" class="btn btn-success me-2 mb-2 d-print-none">Create New</a>
+        @if (Model.overtimeRecordModel.Count > 10)
+        {
+            @await Html.PartialAsync("filter")
+        }
+        
+    </div>
     
 </p>
 <div class="d-flex">
     <dl class="d-flex">
         <div class="d-flex me-4">
             <dt class="me-2 fw-bold">Employee ID:</dt>
-            <dd onclick="location.href='@Url.Page("/Employment/Details", new { id = Model.overtimeRecordModel.First().employmentID })'" style="cursor:pointer;">
-                <u>@Model.overtimeRecordModel.First().employmentModel.givenID</u>
+            <dd onclick="location.href='@Url.Page("/Employment/Details", new { id = Model.employmentModel.employmentID })'" style="cursor:pointer;">
+                <u>@Model.employmentModel.givenID</u>
             </dd>
         </div>
         <div class="d-flex me-4">
             <dt class="me-2 fw-bold">Employee Name:</dt>
-            <dd onclick="location.href='@Url.Page("/Employment/Details", new { id = Model.overtimeRecordModel.First().employmentID })'" style="cursor:pointer;">
-                <u>@Model.overtimeRecordModel.First().employmentModel.personModel.personFullName</u>
+            <dd onclick="location.href='@Url.Page("/Employment/Details", new { id = Model.employmentModel.employmentID })'" style="cursor:pointer;">
+                <u>@Model.employmentModel.personModel.personFullName</u>
             </dd>
         </div>
         <div class="d-flex me-4">
             <dt class="me-2 fw-bold">Department:</dt>
-            <dd><u>@Model.overtimeRecordModel.First().departmentModel.departmentName</u></dd>
+            <dd></dd>
         </div>
         <div class="d-flex me-4">
             <dt class="me-2 fw-bold">Total Cost:</dt>
@@ -41,6 +47,9 @@
 <table class="table">
     <thead class="bg-dark text-white">
         <tr>
+            <th>
+                No
+            </th>
             <th>
                 Overtime Batch Number
             </th>
@@ -82,47 +91,51 @@
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model.overtimeRecordModel) {
+        @foreach (var item in Model.overtimeRecordModel) {
+            num++;
             <tr onclick="location.href='@Url.Page("Details", new { id = item.overtimeRecordID })'" style="cursor:pointer;">
+                <td>@num</td>
                 <td>
                     @Html.DisplayFor(modelItem => item.overtimeRecordID)
                 </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.overtimeModel.overtimeName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.overtimeRecordReason)
-            </td>
-            <td>
-                @item.overtimeRecordDate.ToString("dd MMM, yyyy")
-            </td>
-            <td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.overtimeModel.overtimeName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.overtimeRecordReason)
+                </td>
+                <td>
+                    @item.overtimeRecordDate.ToString("dd MMM, yyyy")
+                </td>
+                <td>
                     @item.overtimeRecordStartTime.ToString(@"hh\:mm")
-            </td>
-            <td>
+                </td>
+                <td>
                     @item.overtimeRecordEndTime.ToString(@"hh\:mm")
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.overtimeRecordStatus)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.overtimeRecordEmploymentRate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.overtimeRate)
-            </td>
-            <td>
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.overtimeRecordStatus)
+                </td>
+                <td>
+                    @Math.Round(item.overtimeRecordEmploymentRate,2)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.overtimeRate)
+                </td>
+                <td>
                     @item.TimeElapsed.ToString(@"hh\:mm")
-            </td>
+                </td>
                 <td>
                     @Math.Round(item.GetOtCost,2)
                 </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.modifiedBy)
-            </td>
-           
-            
-        </tr>
-}
+                <td>
+                    @Html.DisplayFor(modelItem => item.modifiedBy)
+                </td>
+                      
+            </tr>
+        }
     </tbody>
 </table>
+<div class="d-flex justify-content-end">@await Html.PartialAsync("print")</div>
+@await Html.PartialAsync("signature")
+

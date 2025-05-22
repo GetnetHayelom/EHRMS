@@ -6,19 +6,22 @@
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
 
-<h1>Leave Request</h1>
+<h1 class="fw-bold">Leave Request</h1>
 
 <div id="leaveDetail" class="d-flex d-print-flex">   
     <div class="flex-grow-1 print-full-width">
-        <div class="d-flex">
-            <h6 class="me-2"><b>Voucher ID:</b></h6>
-            <h6><u>@Html.DisplayFor(model => model.leaveModel.leaveID)</u></h6>   
-        </div>
+    <h3 class="fw-bold">Leave Detail</h3>
         <hr />
         <dl class=""> 
             <div class="d-flex justify-content-between  me-3">
                 <div class="flex-grow-1">
                     <div class="d-flex mb-2">
+                        <dt class="me-2">
+                            Voucher ID:
+                        </dt>
+                        <dd class="">
+                            <u>@Html.DisplayFor(model => model.leaveModel.leaveID)</u>
+                        </dd>
                         <dt class="me-2">
                             Employee ID:
                         </dt>
@@ -126,11 +129,19 @@
     </div>
     
     <div class="flex-grow-1 d-print-none">
-        <h4><u>Leave History</u></h4>
+        <form method="get" class="d-print-none">
+            <div class="d-flex justify-content-between">
+                <h4 class="fw-bold">Leave History</h4>
+                <div class="d-flex">
+                    <input id="overtimeRecordID" class="form-control me-2" placeholder="Enter Leave Batch Number" name="id" />
+                    <button type="submit" class="btn btn-primary" id="goButton">Go</button>
+                </div>
+            </div>
+        </form>
         <hr />
         <table class="table table-striped table-hover">
             <thead>
-                <tr class="bg-dark text-white print-dark">
+                <tr class="bg-info text-white print-dark">
                     <th>Date</th>
                     <th>Status</th>
                     <th>User</th>
@@ -160,7 +171,7 @@
             <th>Date</th>
         </tr>
     </thead>
-    <tbody>
+    <tbody class="print-full-width">
         <tr>
             <td>Requested By:</td>
             

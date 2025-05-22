@@ -26,6 +26,7 @@ namespace PIS2.Pages.Person
 
         [BindProperty]
         public personModel personModel { get; set; } = default!;
+        public addressModel addressModel { get; set; }  
 
         // For more information, see https://aka.ms/RazorPagesCRUD.
         public async Task<IActionResult> OnPostAsync()

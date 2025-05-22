@@ -4,9 +4,11 @@
 @{
     ViewData["Title"] = "New Leave";
     Layout = "~/Pages/Shared/_Layout.cshtml";
+    int num = 0;
+    int num2 = 0;
 }
 
-<h1>Leaves</h1>
+<h1 class="fw-bold">Leaves</h1>
 
 <hr />
 
@@ -15,7 +17,7 @@
         <div class="">
             <form method="get" class="d-print-none">
                 <div class="d-flex flex-column">
-                    <h4>Leave Request</h4>
+                    <h4 class="fw-bold">Leave Request</h4>
                     <div class="d-flex">
                         <input asp-for="Employment.givenID" id="givenID" class="form-control me-2" placeholder="Enter ID" name="givenID" />
                         <button type="submit" class="btn btn-primary" id="goButton">Go</button>
@@ -42,34 +44,35 @@
         @if(Model.Employment.employmentStatus == Models.mainStatus.Active)
         {
             <form method="post">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-
-            <div class="d-flex justify-content-between">
-                <div class="form-group m-1">
-                    <label asp-for="Leave.leaveStartDate" class="control-label me-2">Start Date:</label>
-                    <input asp-for="Leave.leaveStartDate" class="form-control" type="date" value="@DateTime.Today.ToString("yyyy-MM-dd")" />
-                    <span asp-validation-for="Leave.leaveStartDate" class="text-danger"></span>
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <input asp-for="Leave.employmentID" id="employmentID" class="form-control me-2" type="hidden" value="Employment.emoloymentID" />
+                <div class="d-flex justify-content-between">
+                    <div class="form-group m-1">
+                        <label asp-for="Leave.leaveStartDate" class="control-label me-2">Start Date:</label>
+                        <input asp-for="Leave.leaveStartDate" id="startDate" class="form-control" type="date" value="@DateTime.Today.ToString("yyyy-MM-dd")" />
+                        <span asp-validation-for="Leave.leaveStartDate" class="text-danger"></span>
+                    </div>
+                    <div class="form-group m-1">
+                        <label asp-for="Leave.leaveEndDate" class="control-label">End Date:</label>
+                        <input asp-for="Leave.leaveEndDate" id="endDate" class="form-control" type="date" value="@DateTime.Today.ToString("yyyy-MM-dd")" />
+                        <span asp-validation-for="Leave.leaveEndDate" class="text-danger"></span>
+                    </div>
                 </div>
-                <div class="form-group m-1">
-                    <label asp-for="Leave.leaveEndDate" class="control-label">End Date:</label>
-                    <input asp-for="Leave.leaveEndDate" class="form-control" type="date" value="@DateTime.Today.ToString("yyyy-MM-dd")" />
-                    <span asp-validation-for="Leave.leaveEndDate" class="text-danger"></span>
+                <div class="d-flex justify-content-between">
+                    <div class="form-group m-1 col-3">
+                        <label asp-for="Leave.leaveDays" class="control-label">No. of Days:</label>
+                        <input asp-for="Leave.leaveDays" class="form-control" type="number" step="0.5" id="leaveDays"/>
+                        <span asp-validation-for="Leave.leaveDays" class="text-danger"></span>
+                        <span id="maxLeaveDisplay" class="text-info"></span>
+                    </div>
+                    <div class="form-group m-1">
+                        <label asp-for="Leave.leaveTypeID" class="control-label">Leave Type</label>
+                        <select asp-for="Leave.leaveTypeID" class="form-control" asp-items="ViewBag.leaveTypeID" max="1"></select>
+                    </div>
                 </div>
-            </div>
-            <div class="d-flex justify-content-between">
-                <div class="form-group m-1 col-3">
-                    <label asp-for="Leave.leaveDays" class="control-label">No. of Days:</label>
-                    <input asp-for="Leave.leaveDays" class="form-control" type="number" step="0.5" />
-                    <span asp-validation-for="Leave.leaveDays" class="text-danger"></span>
+                <div class="modal-footer">
+                    <input type="submit" value="Save" class="btn btn-success d-print-none" />
                 </div>
-                <div class="form-group m-1">
-                    <label asp-for="Leave.leaveTypeID" class="control-label">Leave Type</label>
-                    <select asp-for="Leave.leaveTypeID" class="form-control" asp-items="ViewBag.leaveTypeID"></select>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <input type="submit" value="Save" class="btn btn-success d-print-none" />
-            </div>
             </form>
         }
         else if(Model.Employment.employmentStatus == Models.mainStatus.Inactive)
@@ -87,27 +90,31 @@
         <!--leave Aggrigate-->
         <div class="collapse show" id="leaveAggrigate" data-bs-parent="#collapseGroup">
              <div class=" d-flex justify-content-between">
-                <h5>Leave Summary</h5>
+                <h5 class="fw-bold">Leave Summary</h5>
                 <a role="button" class="btn btn-outline-info text-decoration-none nav-link mb-2" id="leaveHistory" data-bs-toggle="collapse" data-bs-target="#leaveHistoryView" aria-expanded="false">View History</a>
 
             </div>
-
+            @if (Model.LeaveDetail.AnnualLeaveHistory != null && Model.LeaveDetail.AnnualLeaveHistory.Any())
+            {
             <table class="table table-striped table-hover">
                 <thead>
                     <tr class="bg-dark text-white">
+                        <th>No</th>
                         <th>Year</th>
                         <th>Starting Balance</th>
                         <th>Increments</th>
                         <th>Used Leave</th>
                         <th>Available Balance</th>
-                        <th>Current Year Balance</th>
+                        <th>Year Balance</th>
                         <th>Cost</th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach (var item in Model.LeaveDetail.AnnualLeaveHistory)
                     {
+                        num++;
                         <tr>
+                            <td>@num</td>
                             <td class="text-nowrap">@item.startDate.ToString("MM/dd/yyyy") - @item.endDate.ToString("MM/dd/yyyy")</td>
                             <td>@item.startingLeaveAmount</td>
                             <td>@item.accruedLeaveAmount</td>
@@ -120,6 +127,7 @@
 
                 </tbody>
             </table>
+            }
         </div>
         <!--Leave History-->
         <div class="col-md-12 collapse border-primary rounded" id="leaveHistoryView" data-bs-parent="#collapseGroup">
@@ -131,7 +139,7 @@
             else
             {
                 <div class="d-flex justify-content-between">
-                    <h5>Leave Hitory</h5>
+                    <h5 class="fw-bold">Leave Hitory</h5>
                     <a role="button" class="btn btn-outline-info text-decoration-none nav-link mb-2" id="leaveSummary" data-bs-toggle="collapse" data-bs-target="#leaveAggrigate" aria-expanded="true">View Summary</a>
 
                 </div>
@@ -148,6 +156,9 @@
                         <table class="table table-striped table-hover" id="dataTable">
                             <thead>
                                 <tr class="bg-dark text-white">
+                                    <th>
+                                        No
+                                    </th>
                                     <th>
                                         Voucher Number
                                     </th>
@@ -176,20 +187,22 @@
 
                                 @foreach (var item in Model.Leaves)
                                 {
+                                    num2++;
                                     <tr onclick="location.href='@Url.Page("Details", new { id = item.leaveID })'" style="cursor:pointer;">
+                                        <td>@num2</td>
                                         <td>
                                             <a asp-page="/Leave/Details" asp-route-id="@item.leaveID" class="text-decoration-none text-dark">
                                                 @item.leaveID
                                             </a>
                                         </td>
                                         <td>
-                                            @item.leaveReaquestDate.ToString("MMM dd, yyyy")
+                                            @item.leaveReaquestDate.ToString("dd/MM/yyyy")
                                         </td>
                                         <td>
-                                            @item.leaveStartDate.ToString("MMM dd, yyyy")
+                                            @item.leaveStartDate.ToString("dd/MM/yyyy")
                                         </td>
                                         <td>
-                                            @item.leaveEndDate.ToString("MMM dd, yyyy")
+                                            @item.leaveEndDate.ToString("dd/MM/yyyy")
                                         </td>
                                         <td>
                                             @Html.DisplayFor(modelItem => item.leaveDays)
@@ -203,7 +216,6 @@
 
                                     </tr>
                                 }
-
 
                             </tbody>
                         </table>
@@ -223,3 +235,70 @@
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 }
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const startDate = document.getElementById("startDate");
+        const endDate = document.getElementById("endDate");
+        const display = document.getElementById("maxLeaveDisplay");
+        calculateWorkingDays();
+        startDate.addEventListener("change", function () {
+            // Set the min attribute of endDate to match selected startDate
+            endDate.min = startDate.value;
+
+            // Optional: auto-correct end date if it’s before the new start date
+            if (endDate.value < startDate.value) {
+                endDate.value = startDate.value;
+            }
+            calculateWorkingDays();
+        });
+        endDate.addEventListener("change", function () {
+            // Set the min attribute of endDate to match selected startDate
+            startDate.max = endDate.value;
+
+            // Optional: auto-correct end date if it’s before the new start date
+            if (endDate.value < startDate.value) {
+                startDate.value = endDate.value;
+            }
+            calculateWorkingDays();
+        });
+        function calculateWorkingDays() {
+            const start = startDate.value;
+            const end = endDate.value;
+
+            if (!start || !end || end < start) {
+                display.textContent = "";
+                return;
+            }
+
+            const formData = new URLSearchParams();
+            formData.append("startDate", start);
+            formData.append("endDate", end);
+
+            fetch("/Leave/Create?handler=CalculateWorkingDays", {
+                method: "POST",
+                headers: {
+                    "RequestVerificationToken": document.querySelector('input[name="__RequestVerificationToken"]').value
+                },
+                body: formData
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error("Server error");
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    display.textContent = `Maximum leave days: ${data}`;
+                    // Set max attribute on leaveDays input
+                    const leaveDaysInput = document.getElementById("leaveDays");
+                    leaveDaysInput.max = data;
+                })
+                .catch(error => {
+                    console.error("Error calculating leave days:", error);
+                    display.textContent = "Error calculating leave days";
+                });
+        }
+
+    });
+</script>
+

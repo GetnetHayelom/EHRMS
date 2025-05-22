@@ -21,10 +21,13 @@ namespace PIS2.Pages.OvertimeRecord
         public employmentModel Employment { get; set; }
         public int EmployeeID;
         public personModel Person { get; set; } = new personModel();
+        [BindProperty(SupportsGet = true)]
         public string givenID { get; set; }
         public string message { get; set; }
+        public List<overtimeRecordModel> OtRecords { get; set; }
         public IActionResult OnGet(int id)
         {
+
             if (id == 0)
             {
                 id = _context.Users.Include(u => u.personModel)
@@ -50,7 +53,7 @@ namespace PIS2.Pages.OvertimeRecord
             if (!string.IsNullOrEmpty(givenID))
             {
                 Employment = _context.Employments.FirstOrDefault(e => e.givenID == givenID) ?? new employmentModel();
-                Console.WriteLine("This is right here");
+                Console.WriteLine("This is right here!!!!!!!!!!!");
                 if (Employment != null)
                 {
 
@@ -62,11 +65,14 @@ namespace PIS2.Pages.OvertimeRecord
                 }
             }
 
+
             ViewData["employmentID"] = new SelectList(_context.Employments, "employmentID", "givenID");
             ViewData["overtimeID"] = new SelectList(_context.Overtimes, "overtimeID", "overtimeName");
             EmployeeID = Employment.employmentID;
             TempData["MyNumber"] = EmployeeID;
             Person = _context.Persons.FirstOrDefault(e => e.personID == Employment.personID) ?? new personModel();
+            OtRecords = _context.OvertimeRecords.Where(e => e.overtimeRecordStatus == overtimeStatus.Hold && e.employmentID == EmployeeID)
+                       .Include(otr => otr.overtimeModel).ToList();
             return Page();
         }
 
@@ -193,9 +199,10 @@ namespace PIS2.Pages.OvertimeRecord
                         overtimeRate = nightOt.overtimeRate,
                         overtimeRecordReason = overtimeRecordModel.overtimeRecordReason
                     });
+                    Console.WriteLine(records.Count + "####### OT From Normal To Night !!!!!!!!!!!!!!!!!!!!!!!!!!");
                 }
-                //OT from 
-                else if (otStart <= nightEnd && otEnd >= nightEnd)
+                //OT from night, after mid-night to day
+                else if (otStart < nightEnd && otEnd >= nightEnd)
                 {
                     records.Add(new overtimeRecordModel
                     {
@@ -225,6 +232,22 @@ namespace PIS2.Pages.OvertimeRecord
                         overtimeRecordReason = overtimeRecordModel.overtimeRecordReason
                     });
                 }
+                else
+                {
+                    records.Add(new overtimeRecordModel
+                    {
+                        employmentID = empID,
+                        modifiedBy = User.Identity?.Name!,
+                        overtimeRecordStatus = overtimeStatus.Hold,
+                        overtimeRecordEmploymentRate = job.getJobRate(),
+                        overtimeRecordDate = overtimeRecordModel.overtimeRecordDate,
+                        overtimeRecordStartTime = otStart,
+                        overtimeRecordEndTime = otEnd,
+                        overtimeID = normalOt.overtimeID,
+                        overtimeRate = normalOt.overtimeRate,
+                        overtimeRecordReason = overtimeRecordModel.overtimeRecordReason
+                    });
+                }
             }
             var savedIds = new List<int>();
             if (records.Count > 0)
@@ -235,6 +258,7 @@ namespace PIS2.Pages.OvertimeRecord
                 {
                     await _context.SaveChangesAsync();
                     savedIds.AddRange(records.Select(r => r.overtimeRecordID));
+                    return RedirectToPage("./PersonOTR", new { otrID = savedIds, empID = 0 });
 
                 }
                 catch (Exception ex)
@@ -246,10 +270,10 @@ namespace PIS2.Pages.OvertimeRecord
             else
             {
                 Console.WriteLine(records.Count + "It IS Motherfucking oties!!!!!!!!!!!!!!!!!!!!!!!!!!");
-
+                return Page();
             }
 
-            return RedirectToPage("./PersonOTR", new { otrID = savedIds, empID = 0});
+            
         }
 
         public void TrimOvertime(ref TimeSpan otStart, ref TimeSpan otEnd, TimeSpan shiftStart, TimeSpan shiftEnd)

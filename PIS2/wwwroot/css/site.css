@@ -32,6 +32,9 @@ body {
     table, thead, tbody, th,td{
         width:auto;
     }
+    .print-flex-column {
+        flex-direction:column;
+    }
 }
 table select{
     max-width:100px;
