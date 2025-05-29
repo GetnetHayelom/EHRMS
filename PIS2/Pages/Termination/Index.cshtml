@@ -1,0 +1,67 @@
+﻿@page
+@model PIS2.Pages.Termination.IndexModel
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-page="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.terminationModel[0].EmploymentModel)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.terminationModel[0].terminationDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.terminationModel[0].terminationReason)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.terminationModel[0].terminationRemark)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.terminationModel[0].terminationStatus)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.terminationModel[0].modifiedBy)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model.terminationModel) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.EmploymentModel.givenID)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.terminationDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.terminationReason)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.terminationRemark)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.terminationStatus)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.modifiedBy)
+            </td>
+            <td>
+                <a asp-page="./Edit" asp-route-id="@item.terminationID">Edit</a> |
+                <a asp-page="./Details" asp-route-id="@item.terminationID">Details</a> |
+                <a asp-page="./Delete" asp-route-id="@item.terminationID">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

@@ -1,0 +1,91 @@
+﻿@page
+@model PIS2.Pages.Absentism.IndexModel
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-page="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.leaveModel[0].employmentModel)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.leaveModel[0].leaveReaquestDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.leaveModel[0].leaveStartDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.leaveModel[0].leaveEndDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.leaveModel[0].leaveDays)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.leaveModel[0].oldBatchNbr)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.leaveModel[0].ratePerHour)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.leaveModel[0].leaveTypeModel)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.leaveModel[0].leaveStatus)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.leaveModel[0].modifiedBy)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model.leaveModel) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.employmentModel.givenID)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.leaveReaquestDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.leaveStartDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.leaveEndDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.leaveDays)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.oldBatchNbr)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ratePerHour)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.leaveTypeModel.leaveTypeID)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.leaveStatus)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.modifiedBy)
+            </td>
+            <td>
+                <a asp-page="./Edit" asp-route-id="@item.leaveID">Edit</a> |
+                <a asp-page="./Details" asp-route-id="@item.leaveID">Details</a> |
+                <a asp-page="./Delete" asp-route-id="@item.leaveID">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

@@ -17,10 +17,19 @@ namespace PIS2.Pages.Employment
         {
             _context = context;
         }
-
-        public IActionResult OnGet()
+        public personModel Person { get; set; }
+        public IActionResult OnGet(int? id)
         {
-            ViewData["personID"] = new SelectList(_context.Persons, "personID", "personFullName");
+            if(id >0)
+            {
+                Person = _context.Persons.FirstOrDefault(p => p.personID == id);
+                ViewData["personID"] = new SelectList(_context.Persons, "personID", "personFullName", id);
+            }
+            else
+            {
+                ViewData["personID"] = new SelectList(_context.Persons, "personID", "personFullName");
+            }
+            
             ViewData["employmentTypeID"] = new SelectList(_context.EmploymentTypes, "employmentTypeID", "employmentTypeName");
             return Page();
         }

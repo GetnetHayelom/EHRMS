@@ -21,6 +21,7 @@ namespace PIS2.Pages
         private readonly ILogger<IndexModel> _logger;
         private readonly PISContext _context;
         private readonly Core _core;
+        private readonly IWebHostEnvironment _environment;
         [BindProperty]
         public List<personModel>? People { get; set; } = default!;
        
@@ -46,10 +47,12 @@ namespace PIS2.Pages
         public List<leaveTypeModel> AllowedLeaveTypes { get; set; } = new List<leaveTypeModel>();
         public bool isSelf { get; set; } = false;
         public Core methods { get; set; } = default!;
-        public IndexModel(PISContext ctx, Core methods)
+        public bool PhotoExists { get; set; }
+        public IndexModel(PISContext ctx, Core methods, IWebHostEnvironment environment)
         {
             _context = ctx;
             _core = methods;
+            _environment = environment;
         }
         //public IList<personModel> Persons { get; set; }
         public async Task OnGetAsync()
@@ -67,6 +70,13 @@ namespace PIS2.Pages
                 Person = _context.Persons.Find(PersonID);
                 if (Person != null)
                 {
+                    //Check if photo is available
+                    var imagesFolder = Path.Combine(_environment.WebRootPath, "images");
+                    var fileName = $"{Person.personID}.jpg";
+                    var filePath = Path.Combine(imagesFolder, fileName);
+
+                    PhotoExists = System.IO.File.Exists(filePath);
+
                     //TempData["SuccessMessage"] = $"No person found with Name {searchName}";
                     isSelf = _context.Users.FirstOrDefault(u => u.userName == User.Identity.Name)?.personID == Person.personID ? true : false;
                     searchName = Person.personFullName;
@@ -206,6 +216,12 @@ namespace PIS2.Pages
                 }
                 else
                 {
+                    //Check if photo is available
+                    var imagesFolder = Path.Combine(_environment.WebRootPath, "images");
+                    var fileName = $"{Person.personID}.jpg";
+                    var filePath = Path.Combine(imagesFolder, fileName);
+
+                    PhotoExists = System.IO.File.Exists(filePath);
                     TempData["PersonID"] = Person.personID;
                     isSelf = _context.Users.FirstOrDefault(u => u.userName == User.Identity.Name)?.personID == Person.personID? true :false;
                     PersonEmployments = await _context.Employments

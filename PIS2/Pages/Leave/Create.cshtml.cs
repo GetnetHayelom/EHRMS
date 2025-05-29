@@ -74,15 +74,15 @@ namespace PIS2.Pages.Leave
             
             if (User.IsInRole("MIE\\PMS_CLINIC"))
             {
-                leaveTypes = _context.LeaveTypes.Where(lt => lt.leaveAvailability == "Clinic" || lt.leaveAvailability == "Everyone").ToList();
+                leaveTypes = _context.LeaveTypes.Where(lt => (lt.leaveAvailability == "Clinic" || lt.leaveAvailability == "Everyone") && lt.leaveTypeStatus == mainStatus.Active).ToList();
             }
             else if (User.IsInRole("MIE\\PMS_HRCLERK"))
             {
-                leaveTypes = _context.LeaveTypes.Where(lt => lt.leaveAvailability == "HR" || lt.leaveAvailability == "Everyone").ToList();
+                leaveTypes = _context.LeaveTypes.Where(lt => (lt.leaveAvailability == "HR" || lt.leaveAvailability == "Everyone") && lt.leaveTypeStatus == mainStatus.Active).ToList();
             }
             else
             {
-                leaveTypes = _context.LeaveTypes.Where(lt => lt.leaveAvailability == "Everyone").ToList();
+                leaveTypes = _context.LeaveTypes.Where(lt => lt.leaveAvailability == "Everyone" && lt.leaveTypeStatus == mainStatus.Active).ToList();
             }
             leaveTypes = leaveTypes.Where(lt => lt.leaveTypeStatus == mainStatus.Active).ToList();
             AllowedLeaveTypes = leaveTypes;

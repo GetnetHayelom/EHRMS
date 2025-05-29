@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Hosting;
 using PIS2.Models;
 
 namespace PIS2.Pages.Person
@@ -12,14 +13,18 @@ namespace PIS2.Pages.Person
     public class DetailsModel : PageModel
     {
         private readonly PIS2.Models.PISContext _context;
+        private readonly IWebHostEnvironment _environment;
 
-        public DetailsModel(PIS2.Models.PISContext context)
+        public DetailsModel(PIS2.Models.PISContext context, IWebHostEnvironment environment)
         {
             _context = context;
+            _environment= environment;
         }
 
         public personModel personModel { get; set; } = default!;
-
+        public bool isPersonActiveEmployee { get; set; } = false;
+        public bool PhotoExists { get; set; }
+        public List<employmentModel>? personEmployments { get; set; } = default!;
         public async Task<IActionResult> OnGetAsync(int? id)
         {
             if (id == null)
@@ -35,6 +40,14 @@ namespace PIS2.Pages.Person
             else
             {
                 personModel = personmodel;
+                personEmployments = _context.Employments.Where(e => e.personID == id).ToList();
+                isPersonActiveEmployee = _context.Employments.FirstAsync(e => e.personID == id && e.employmentStatus == mainStatus.Active) == null ? false : true;
+                //Check if photo is available
+                var imagesFolder = Path.Combine(_environment.WebRootPath, "images");
+                var fileName = $"{personModel.personID}.jpg";
+                var filePath = Path.Combine(imagesFolder, fileName);
+
+                PhotoExists = System.IO.File.Exists(filePath);
             }
             return Page();
         }

@@ -10,10 +10,18 @@ namespace PIS2.Models
         public DateTime terminationDate { get; set; }
         public string terminationReason { get; set; }
         public string? terminationRemark { get; set; }
+        public terminationStatus terminationStatus { get; set; }
         public string modifiedBy { get; set; }
         public terminationModel()
         {
 
         }
+    }
+    public enum terminationStatus
+    {
+        Hold,
+        Approved,
+        Posted,
+        Complete
     }
 }

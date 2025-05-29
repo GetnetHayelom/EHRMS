@@ -510,6 +510,7 @@ namespace PIS2.Models
                 entity.Property(e => e.leaveTypeStatus).HasColumnName("leaveTypeStatus");
                 entity.Property(e => e.modifiedBy).HasColumnName("modifiedBy");
                 entity.Property(e => e.leaveAvailability).HasColumnName("leaveAvailability");
+                entity.Property(e => e.leaveGroup).HasColumnName("leaveGroup");
 
                 entity.HasMany(p => p.Leaves).WithOne(e => e.leaveTypeModel).HasForeignKey(p => p.leaveTypeID).OnDelete(DeleteBehavior.Cascade);
                 entity.HasIndex(e => e.leaveTypeName).IsUnique();
@@ -703,6 +704,7 @@ namespace PIS2.Models
                 entity.Property(e => e.employmentID).HasColumnName("employmentID");
                 entity.Property(e => e.terminationReason).HasColumnName("terminationReason");
                 entity.Property(e => e.terminationRemark).HasColumnName("terminationRemark");
+                entity.Property(e => e.terminationStatus).HasColumnName("terminationStatus");
                 entity.Property(e => e.modifiedBy).HasColumnName("modifiedBy");
 
                 entity.HasOne(t => t.EmploymentModel).WithOne(e => e.TerminationModel).HasForeignKey<terminationModel>(d => d.employmentID).OnDelete(DeleteBehavior.Cascade);

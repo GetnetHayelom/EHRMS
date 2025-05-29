@@ -95,7 +95,7 @@ namespace PIS2.Pages.Person
                 Console.WriteLine("###Photo Null##########################");
                 return Page();
             }
-            return RedirectToPage("./Index");
+            return RedirectToPage("./Details", new {id = personModel.personID});
         }
         public async Task<int> GetOrCreateAddress(addressModel addressModel)
         {

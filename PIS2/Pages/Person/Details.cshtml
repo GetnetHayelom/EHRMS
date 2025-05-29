@@ -6,70 +6,120 @@
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
 
-<h1>Details</h1>
+<h1 class="fw-bold">Person View</h1>
 
 <div>
-    <h4>personModel</h4>
+    <div><h4 class="fw-bold">Person Details</h4></div>
+    
     <hr />
-    <dl class="row">
-        <dt class="col-sm-2">
-            Full Name:
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.personModel.personFullName)
-        </dd>
+    <div class="d-flex flex-column mt-2 mb-1 p-2">
+        <div class="d-flex">
+            <div class="d-flex flex-column justify-content-center align-items-center col-4 print-full-width">
+                @{
+                    var imagePath = $"~/images/{Model.personModel.personID}.jpg";
+                    if (!Model.PhotoExists)
+                    {
+                        imagePath = Model.personModel.personGender == Models.Gender.Female ? "~/images/female-default.png" : "~/images/male-default.png";
+                    }
+                }
+                <img src="@Url.Content(imagePath)" class="rounded-circle mb-4" style="width: 300px; height: 300px; object-fit: cover;" />
+                <h4 class="fw-bold"><u>@Model.personModel.personFullName</u></h4>
+            </div>
+            <div class="d-flex d-print-block col-8">
+                <div class="col-6 print-full-width">
+                    <h4 class="fw-bold"><u>Personal Info</u></h4>
+                    <dl>                   
+                        <div class="d-flex me-2">
+                            <dt class=" me-2">
+                                Date of Birth:
+                            </dt>
+                            <dd class="">
+                                <u>@Model.personModel.personDoB.ToString("MMM dd, yyyy")</u>
+                            </dd>
+                        </div>
+                        <div class="d-flex me-2">
+                            <dt class=" me-2">
+                                Gender:
+                            </dt>
+                            <dd class="">
+                                <u>@Html.DisplayFor(model => model.personModel.personGender)</u>
+                            </dd>
+                        </div>
+                        <div class="d-flex me-2">
+                            <dt class=" me-2">
+                                Provided ID:
+                            </dt>
+                            <dd class="">
+                                <u>@Html.DisplayFor(model => model.personModel.personIDType)</u>
+                            </dd>
+                        </div>
+                        <div class="d-flex me-2">
+                            <dt class=" me-2">
+                                ID Number:
+                            </dt>
+                            <dd class="">
+                                <u>@Html.DisplayFor(model => model.personModel.personIDNumber)</u>
+                            </dd>
+                        </div>
+                        <div class="d-flex me-2">
+                            <dt class=" me-2">
+                                Record Number:
+                            </dt>
+                            <dd class="">
+                                <u>@Html.DisplayFor(model => model.personModel.personRecordNumber)</u>
+                            </dd>
+                        </div>
+                
+                    </dl>
+                </div>
         
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.personModel.personDoB)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.personModel.personDoB)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.personModel.personGender)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.personModel.personGender)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.personModel.personIDType)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.personModel.personIDType)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.personModel.personIDNumber)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.personModel.personIDNumber)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.personModel.personPhoneNumber)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.personModel.personPhoneNumber)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.personModel.personRecordNumber)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.personModel.personRecordNumber)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.personModel.addressModel)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.personModel.addressModel.addressRegion)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.personModel.personEmailAddress)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.personModel.personEmailAddress)
-        </dd>
-    </dl>
+                <div class="col-6 print-full-width">
+                    <h4 class="fw-bold"><u>Contact & Address Info</u></h4>
+                    <dl>
+                        <div class="d-flex me-2">
+                            <dt class="">
+                                Phone Number:
+                            </dt>
+                            <dd class="">
+                                <u>@Html.DisplayFor(model => model.personModel.personPhoneNumber)</u>
+                            </dd>
+                        </div>
+                        <div class="d-flex me-2">
+                            <dt class=" me-2">
+                                Email:
+                            </dt>
+                            <dd class="">
+                                <u>@Html.DisplayFor(model => model.personModel.personEmailAddress)</u>
+                            </dd>
+                        </div>
+                        <div class="d-flex me-2">
+                            <dt class=" me-2">
+                                Address:
+                            </dt>
+                            <dd class="">
+                                <u>@Html.DisplayFor(model => model.personModel.addressModel.addressFormatted)</u>
+                            </dd>
+                        </div>
+                
+                    </dl>
+                </div>
+            </div>
+        </div>
+    </div>
+
 </div>
-<div>
-    <a asp-page="./Edit" asp-route-id="@Model.personModel.personID">Edit</a> |
-    <a asp-page="./Index">Back to List</a>
+    
+<div class="d-flex justify-content-end">
+    <a asp-page="./Edit" asp-route-id="@Model.personModel.personID" class="btn btn-success me-2 d-print-none">Edit</a>
+    <a asp-page="./Index" class="btn btn-secondary me-2 d-print-none">Back to List</a>
+    @if (Model.isPersonActiveEmployee)
+    {
+        <a asp-page="/Termination/Create" asp-route-item-id="@Model.personModel.personID" class="btn btn-danger me-2 d-print-none">Terminate Employment</a>
+        <a asp-page="/Employment/Details" asp-route-item-id="@Model.personModel.personID" class="btn btn-info me-2 d-print-none">Employment Info</a>
+    }
+    else
+    {
+        <a asp-page="/Employment/Create" asp-route-item-id="@Model.personModel.personID" class="btn btn-primary me-2 d-print-none">Add To employment</a>
+    }
+    @await Html.PartialAsync("print")
 </div>

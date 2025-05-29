@@ -1,0 +1,91 @@
+﻿@page
+@model PIS2.Pages.Absentism.CreateModel
+
+@{
+    ViewData["Title"] = "Create";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<h1 class="fw-bold">Absentism</h1>
+
+<h4 class="fw-bold">Add Absentism</h4>
+<hr />
+<div class="row">
+    <!--row for Search control-->
+    <div class="row mt-2">
+        <!--form for searching using ID -->
+        <label for="employeeID">Look up by Empolyee ID:</label>
+        <form method="post" asp-page-handler="SearchID" class="d-flex col-md-4">
+            <input id="givenID" name="searchID" type="text" class="form-control mb-1 me-2" asp-for="@Model.Employment.givenID" list="givenIDList">
+            <datalist id="givenIDList">
+                @if(Model.Employments != null)
+                {
+                     @foreach (var item in Model.Employments)
+                    {
+                        <option value="@item.givenID"></option>
+                    }
+                }
+               
+            </datalist>
+            <button type="submit" class="btn btn-success mb-1">View</button>
+
+        </form>
+        
+        <div>
+            <h2 class="fw-bold">@Model.Person.personFullName</h2>
+        </div>
+    </div>
+    <div class="col-md-4">
+        @if (Model.Employment.employmentID == 0)
+        {
+            <div class="bg-info p-4 text-white"><h4>Select Employee</h4></div>
+        }
+        else if(Model.Employment != null && Model.Employment.employmentStatus == Models.mainStatus.Active)
+        {
+            <form method="post">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                <div class="form-group">
+                    <span class="text-danger">*</span>
+                    <label asp-for="leaveModel.leaveStartDate" class="control-label">Start Date</label>
+                    <input asp-for="leaveModel.leaveStartDate" class="form-control" value ="@DateTime.Now.ToString("MMM dd, yyyy")"/>
+                    <span asp-validation-for="leaveModel.leaveStartDate" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <span class="text-danger">*</span>
+                    <label asp-for="leaveModel.leaveEndDate" class="control-label">End Date</label>
+                    <input asp-for="leaveModel.leaveEndDate" class="form-control" value="@DateTime.Now.ToString("MMM dd, yyyy")" />
+                    <span asp-validation-for="leaveModel.leaveEndDate" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="leaveModel.leaveTypeID" class="control-label">Reason</label>
+                    <select asp-for="leaveModel.leaveTypeID" class="form-control" asp-items="ViewBag.leaveTypeID"></select>
+                </div>
+                <div class="form-group mb-2">
+                    <span class="text-danger">*</span>
+                    <label asp-for="leaveModel.leaveDays" class="control-label">Days</label>
+                    <input asp-for="leaveModel.employmentID" class="form-control" />
+                    <span asp-validation-for="leaveModel.leaveDays" class="text-danger"></span>
+                </div>
+           
+
+                <div class="form-group d-flex justify-content-end">
+                    <input type="submit" value="Create" class="btn btn-primary" />
+                </div>
+            </form>
+        }
+        else
+        {
+            <div class="bg-danger p-4 text-white"><h4>@TempData</h4></div>
+        }
+
+    </div>
+</div>
+
+<div>
+    <a asp-page="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

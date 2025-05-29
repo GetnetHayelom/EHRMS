@@ -60,8 +60,8 @@
 
                     <div class="d-flex justify-content-center">
                         @{
-                            var imagePath = "~/images/" + Model.Person.personID + ".jpg";
-                            if (!Directory.Exists(imagePath))
+                            var imagePath = $"~/images/{Model.Person.personID}.jpg";
+                            if (!Model.PhotoExists)
                             {
                                 imagePath = Model.Person.personGender == Models.Gender.Female? "~/images/female-default.png" : "~/images/male-default.png";
                             }
@@ -143,6 +143,9 @@
                         </div>
                     }
                 </dl>
+                <a class="" onclick="location.href='@Url.Page("/Person/Details", new { id = Model.Person.personID })'" style="cursor:pointer;">
+                    <u>View Person Details</u>
+                </a>
                 <hr/>
                
             </div>
