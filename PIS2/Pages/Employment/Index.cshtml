@@ -196,7 +196,7 @@
             //.then(response => response.text())
             .then(response => response.json())
             .then(data => {
-                console.log("Received Data:", data); // Debug output             
+
                 document.getElementById('table-body').innerHTML = data.tableHtml;
 
                 updateRowCount("countID");

@@ -67,7 +67,7 @@
                     </div>
                     <div class="form-group m-1">
                         <label asp-for="Leave.leaveTypeID" class="control-label">Leave Type</label>
-                        <select asp-for="Leave.leaveTypeID" class="form-control" asp-items="ViewBag.leaveTypeID" max="1"></select>
+                        <select asp-for="Leave.leaveTypeID" class="form-control" asp-items="ViewBag.leaveTypeID"></select>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -288,14 +288,14 @@
                     return response.json();
                 })
                 .then(data => {
-                    display.textContent = `Maximum leave days: ${data}`;
+                    display.textContent = `Maximum working days: ${data}`;
                     // Set max attribute on leaveDays input
                     const leaveDaysInput = document.getElementById("leaveDays");
                     leaveDaysInput.max = data;
                 })
                 .catch(error => {
                     console.error("Error calculating leave days:", error);
-                    display.textContent = "Error calculating leave days";
+                    display.textContent = "Error calculating available days";
                 });
         }
 

@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Identity.Client;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
@@ -364,6 +365,48 @@ namespace PIS2.Models
             }
 
             return Tuple.Create(years, months);
+        }
+        public double WorkingDays(DateTime startDate, DateTime endDate)
+        {
+
+            // Example: List of holidays – ideally from a database or config
+            var holidays = _context.Holidays.Where(h => h.holidayStatus == mainStatus.Active).ToList();
+
+
+            double workingDays = 0;
+
+            for (var date = startDate.Date; date <= endDate.Date; date = date.AddDays(1))
+            {
+                if (IsHoliday(date))
+                    continue;
+
+                if (date.DayOfWeek == DayOfWeek.Sunday)
+                    continue;
+
+                if (date.DayOfWeek == DayOfWeek.Saturday)
+                    workingDays += 0.5;
+                else
+                    workingDays += 1;
+            }
+
+            return workingDays;
+        }
+        public bool IsHoliday(DateTime date)
+        {
+            List<holidayModel> holidays = _context.Holidays.Where(h => h.holidayStatus == mainStatus.Active).ToList();
+            return holidays.Any(h =>
+                date.Date >= h.holidayStart.Date &&
+                date.Date <= (h.holidayEnd == default ? h.holidayStart.Date : h.holidayEnd.Date)
+            );
+        }
+        public employmentModel empByID(string givenID)
+        {
+            employmentModel model = new employmentModel();
+            if (!string.IsNullOrEmpty(givenID))
+            {
+                model = _context.Employments.First(e => e.givenID == givenID);
+            }
+            return model;
         }
         public Core() { }
 

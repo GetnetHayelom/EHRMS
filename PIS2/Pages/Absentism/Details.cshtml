@@ -6,75 +6,138 @@
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
 
-<h1>Details</h1>
+<h1 class="fw-bold">Absentism</h1>
 
 <div>
-    <h4>leaveModel</h4>
-    <hr />
-    <dl class="row">
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.leaveModel.employmentModel)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.leaveModel.employmentModel.givenID)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.leaveModel.leaveReaquestDate)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.leaveModel.leaveReaquestDate)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.leaveModel.leaveStartDate)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.leaveModel.leaveStartDate)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.leaveModel.leaveEndDate)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.leaveModel.leaveEndDate)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.leaveModel.leaveDays)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.leaveModel.leaveDays)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.leaveModel.oldBatchNbr)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.leaveModel.oldBatchNbr)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.leaveModel.ratePerHour)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.leaveModel.ratePerHour)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.leaveModel.leaveTypeModel)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.leaveModel.leaveTypeModel.leaveTypeID)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.leaveModel.leaveStatus)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.leaveModel.leaveStatus)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.leaveModel.modifiedBy)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.leaveModel.modifiedBy)
-        </dd>
-    </dl>
+    <div class="flex-grow-1 print-full-width">
+        <h3 class="fw-bold">Absentism Detail</h3>
+        <hr />
+        <dl class="">
+            <div class="d-flex justify-content-between  me-3">
+                <div class="flex-grow-1">
+                    <div class="d-flex mb-2">
+                        <dt class="me-2">
+                            Voucher ID:
+                        </dt>
+                        <dd class="me-4">
+                            <u>@Html.DisplayFor(model => model.leaveModel.leaveID)</u>
+                        </dd>
+                        <dt class="me-2">
+                            Employee ID:
+                        </dt>
+                        <dd class="">
+                            <u>@Html.DisplayFor(model => model.leaveModel.employmentModel.givenID)</u>
+                        </dd>
+                    </div>
+                    <div class="d-flex mb-2">
+                        <dt class="me-2">
+                            Company:
+                        </dt>
+                        <dd class="">
+                            <u>@Html.DisplayFor(model => model.Job.departmentModel.companyModel.companyName)</u>
+                        </dd>
+                    </div>
+                    <div class="d-flex mb-2">
+                        <dt class="me-2">
+                            Work Location:
+                        </dt>
+                        <dd class="">
+                            <u>@Html.DisplayFor(model => model.Job.workSiteModel.workSiteName)</u>
+                        </dd>
+                    </div>
+                    <div class="d-flex mb-2">
+                        <dt class="me-2">
+                            Leave Type:
+                        </dt>
+                        <dd class="">
+                            <u>@Html.DisplayFor(model => model.leaveModel.leaveTypeModel.leaveTypeName)</u>
+                        </dd>
+                    </div>
+                    <div class="d-flex mb-2">
+                        <dt class="me-2">
+                            Start Date:
+                        </dt>
+                        <dd class="">
+                            <u> @Model.leaveModel.leaveStartDate.ToString("MMM dd, yyyy")</u>
+                        </dd>
+                    </div>
+                    <div class="d-flex mb-2">
+                        <dt class="me-2">
+                            Leave Days:
+                        </dt>
+                        <dd class="">
+                            <u>@Html.DisplayFor(model => model.leaveModel.leaveDays)</u>
+                        </dd>
+                    </div>
+                </div>
+                <div class="flex-grow-1">
+                    <div class="d-flex mb-2">
+                        <dt class="me-2">
+                            Name:
+                        </dt>
+                        <dd class="">
+                            <u>@Html.DisplayFor(model => model.leaveModel.employmentModel.personModel.personFullName)</u>
+                        </dd>
+                    </div>
+                    <div class="d-flex mb-2">
+                        <dt class="me-2">
+                            Department:
+                        </dt>
+                        <dd class="">
+                            <u>@Model.Job.departmentModel.departmentName</u>
+                        </dd>
+                    </div>
+                    <div class="d-flex mb-2">
+                        <dt class="me-2">
+                            Shift:
+                        </dt>
+                        <dd class="">
+                            <u>@Model.Job.shiftModel.shiftName</u>
+                        </dd>
+                    </div>
+                    <div class="d-flex mb-2">
+                        <dt class="me-2">
+                            Request Date:
+                        </dt>
+                        <dd class="">
+                            <u>@Model.leaveModel.leaveReaquestDate.ToString("MMM dd, yyyy")</u>
+                        </dd>
+                    </div>
+
+                    <div class="d-flex mb-2">
+                        <dt class="me-2">
+                            End Date:
+                        </dt>
+                        <dd class="">
+                            <u>@Model.leaveModel.leaveEndDate.ToString("MMM dd, yyyy")</u>
+                        </dd>
+                    </div>
+                    <div class="d-flex mb-2">
+                        <dt class="me-2">
+                            Status:
+                        </dt>
+                        <dd class="">
+                            <u>@Html.DisplayFor(model => model.leaveModel.leaveStatus)</u>
+                        </dd>
+                    </div>
+                </div>
+
+
+
+            </div>
+        </dl>
+    </div>
 </div>
-<div>
-    <a asp-page="./Edit" asp-route-id="@Model.leaveModel.leaveID">Edit</a> |
-    <a asp-page="./Index">Back to List</a>
+<div class="d-print-none d-flex justify-content-end">
+    
+    @if (User.IsInRole("MIE\\PMS_HRCLERK") && (Model.leaveModel.leaveStatus == Models.leaveStatus.Hold || Model.leaveModel.leaveStatus == Models.leaveStatus.Approved))
+    {
+        <a asp-page="./Edit" asp-route-id="@Model.leaveModel.leaveID" role="button" class="btn btn-primary text-decoration-none me-3">Edit</a>
+        <a asp-page="./Delete" asp-route-id="@Model.leaveModel.leaveID" role="button" class="btn btn-danger text-decoration-none me-3">Delete</a>
+        <form method="post">
+            <input asp-for="leaveModel.leaveID" name="leaveId" type="hidden"></input>
+            <button type="submit" class="btn btn-success post-button me-3 d-print-none" data-id="Model.leaveID">Post</button>
+        </form>
+    }
+    @await Html.PartialAsync("print")
 </div>

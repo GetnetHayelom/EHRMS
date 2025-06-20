@@ -4,88 +4,321 @@
 @{
     ViewData["Title"] = "Create";
     Layout = "~/Pages/Shared/_Layout.cshtml";
+    var successMessage = TempData["SuccessMessage"] as string;
 }
 
 <h1 class="fw-bold">Absentism</h1>
 
 <h4 class="fw-bold">Add Absentism</h4>
 <hr />
-<div class="row">
-    <!--row for Search control-->
-    <div class="row mt-2">
-        <!--form for searching using ID -->
-        <label for="employeeID">Look up by Empolyee ID:</label>
-        <form method="post" asp-page-handler="SearchID" class="d-flex col-md-4">
-            <input id="givenID" name="searchID" type="text" class="form-control mb-1 me-2" asp-for="@Model.Employment.givenID" list="givenIDList">
-            <datalist id="givenIDList">
-                @if(Model.Employments != null)
-                {
-                     @foreach (var item in Model.Employments)
-                    {
-                        <option value="@item.givenID"></option>
-                    }
-                }
+<div class="d-flex justify-content-between">
+    <div class="col-md-4 d-print-none">
+        <div class="row">
+            <!--row for Search control-->
+            <div class="row mt-2">
+                <!--form for searching using ID -->
+                <label for="employeeID" class="fw-bold">Look up by Empolyee ID: </label>
+                <form method="post" asp-page-handler="SearchID" class="d-flex col-md-8">
+                    <input id="givenID" name="searchID" type="text" class="form-control mb-1 me-2" asp-for="@Model.Employment.givenID" list="givenIDList">
+                    <datalist id="givenIDList">
+                        @if(Model.Employments != null)
+                        {
+                             @foreach (var item in Model.Employments)
+                            {
+                                <option value="@item.employmentID">@item.givenID</option>
+                            }
+                        }
                
-            </datalist>
-            <button type="submit" class="btn btn-success mb-1">View</button>
+                    </datalist>
+                    <button type="submit" class="btn btn-success mb-1">View</button>
 
-        </form>
+                </form>
+                @if(Model.Person != null)
+                {
+                    <div>
+                        <h2 class="fw-bold">@Model.Person.personFullName</h2>
+                    </div>
+                }
+                else
+                {
+                    <div class="alert alert-danger d-print-none" role="alert">
+                        @successMessage
+                    </div>
+                }
+
+            </div>
+            <div class="col-md-8">
+                @if (Model.Employment.employmentID == 0)
+                {
+                    <div class="bg-info p-4 text-white"><h4>Select Employee</h4></div>
+                }
+                else if(Model.Employment != null && Model.Employment.employmentStatus == Models.mainStatus.Inactive)
+                {
+                    <div class="bg-danger p-4 text-white"><h4>Employee Is Inactive</h4></div>
+                }
+                else if(Model.Employment != null && Model.Employment.employmentStatus == Models.mainStatus.Active)
+                {
+                    <form method="post" asp-page-handler="Create">
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                        @Html.AntiForgeryToken()
+                        <div class="d-none">
+                            <input asp-for="leaveModel.employmentID"  id="employmentID" type="text">
+                            <input asp-for="leaveModel.modifiedBy"  id="modifiedBy" type="text" value="@User.Identity.Name">
+                        </div>
+                        <div class="form-group m-1">
+                            <label asp-for="leaveModel.leaveStartDate" class="control-label me-2">Start Date:</label>
+                            <input asp-for="leaveModel.leaveStartDate" id="startDate" class="form-control" type="date" value="@DateTime.Today.ToString("yyyy-MM-dd")" onchange="calculateWorkingDays()"/>
+                            <span asp-validation-for="leaveModel.leaveStartDate" class="text-danger"></span>
+                        </div>
+                        <div class="form-group m-1">
+                            <label asp-for="leaveModel.leaveEndDate" class="control-label">End Date:</label>
+                            <input asp-for="leaveModel.leaveEndDate" id="endDate" class="form-control" type="date" value="@DateTime.Today.ToString("yyyy-MM-dd")" onchange="calculateWorkingDays()" />
+                            <span asp-validation-for="leaveModel.leaveEndDate" class="text-danger"></span>
+                        </div>
+                        <div class="form-group m-1">
+                            <label asp-for="leaveModel.leaveTypeID" class="control-label">Leave Type</label>
+                            <select asp-for="leaveModel.leaveTypeID" class="form-control" asp-items="ViewBag.leaveTypeID" id="leaveTypeSelect" onchange="calculateWorkingDays()">
+                            <option value="0">Select Reason</option>
+                            </select>
+                        </div>
+                        <div class="form-group mb-2">
+                            <span class="text-danger">*</span>
+                            <label asp-for="leaveModel.leaveDays" class="control-label">Days or Minutes for Late Comming</label>
+                            <input asp-for="leaveModel.leaveDays" class="form-control" id="leaveDays"/>
+                            <span asp-validation-for="leaveModel.leaveDays" class="text-danger"></span>
+                            <span id="maxLeaveDisplay" class="text-info"></span>
+                        </div>
+
+                        <div class="form-group d-flex justify-content-end">
+                            <input type="submit" value="Create" class="btn btn-primary" />
+                        </div>
+                    </form>
+                }
+                else
+                {
+                    <div class="bg-danger p-4 text-white"><h4>Employee Is Not Active</h4></div>
+                }
+
+            </div>
         
+        </div>
         <div>
-            <h2 class="fw-bold">@Model.Person.personFullName</h2>
+            <a asp-page="Index">Back to List</a>
         </div>
     </div>
-    <div class="col-md-4">
-        @if (Model.Employment.employmentID == 0)
+    
+    <div class="col-md-7 print-full-width">
+        @if(Model.Absentism != null && Model.Absentism.Any())
         {
-            <div class="bg-info p-4 text-white"><h4>Select Employee</h4></div>
-        }
-        else if(Model.Employment != null && Model.Employment.employmentStatus == Models.mainStatus.Active)
-        {
-            <form method="post">
-                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
-                <div class="form-group">
-                    <span class="text-danger">*</span>
-                    <label asp-for="leaveModel.leaveStartDate" class="control-label">Start Date</label>
-                    <input asp-for="leaveModel.leaveStartDate" class="form-control" value ="@DateTime.Now.ToString("MMM dd, yyyy")"/>
-                    <span asp-validation-for="leaveModel.leaveStartDate" class="text-danger"></span>
+            <h4 class="fw-bold">Absentism History</h4>
+            <div class="d-flex justify-content-around w-100 mb-2 d-none d-print-block">
+                <div class="d-flex">
+                    <div class="fw-bold">Name:</div>
+                    <div><u>@Model.Person.personFullName</u></div>
                 </div>
-                <div class="form-group">
-                    <span class="text-danger">*</span>
-                    <label asp-for="leaveModel.leaveEndDate" class="control-label">End Date</label>
-                    <input asp-for="leaveModel.leaveEndDate" class="form-control" value="@DateTime.Now.ToString("MMM dd, yyyy")" />
+                <div class="d-flex">
+                    <div class="fw-bold">EP:</div>
+                    <div><u>@Model.Employment.givenID</u></div>
+                </div>
+            </div>
+            <div class="d-flex justify-content-around">
+                <div class="form-group m-1">
+                    <label asp-for="minDate" class="control-label me-2">Start Date:</label>
+                    <input asp-for="minDate" id="startDate1" class="form-control" type="date" onchange="summary()" name="minDate"/>
+                    <span asp-validation-for="minDate" class="text-danger"></span>
+                </div>
+                <div class="form-group m-1">
+                    <label asp-for="leaveModel.leaveEndDate" class="control-label">End Date:</label>
+                    <input asp-for="leaveModel.leaveEndDate" id="endDate1" class="form-control" type="date" value="@DateTime.Today.ToString("yyyy-MM-dd")" onchange="summary()" />
                     <span asp-validation-for="leaveModel.leaveEndDate" class="text-danger"></span>
                 </div>
-                <div class="form-group">
-                    <label asp-for="leaveModel.leaveTypeID" class="control-label">Reason</label>
-                    <select asp-for="leaveModel.leaveTypeID" class="form-control" asp-items="ViewBag.leaveTypeID"></select>
+                <div class="form-group m-1">
+                    <label asp-for="leaveModel.leaveTypeID" class="control-label">Leave Type</label>
+                    <select asp-for="leaveModel.leaveTypeID" class="form-control" asp-items="ViewBag.leaveTypeID" id="leaveType" onchange="summary()">
+                        <option value="0">Select Reason</option>
+                    </select>
                 </div>
-                <div class="form-group mb-2">
-                    <span class="text-danger">*</span>
-                    <label asp-for="leaveModel.leaveDays" class="control-label">Days</label>
-                    <input asp-for="leaveModel.employmentID" class="form-control" />
-                    <span asp-validation-for="leaveModel.leaveDays" class="text-danger"></span>
+            </div>
+            <div class="d-flex" id="summary">
+                <div class="d-flex p-2 justify-content-around w-100">
+                    <div class="d-flex">
+                        <div class="fw-bold">Number of absentism records: </div>
+                        <div><u id="count">@Model.aCount</u></div>
+                    </div class="d-flex">
+                    <div class="d-flex">
+                        <div class="fw-bold">Sum of absentism in days: </div>
+                        <div><u id="sum">@Model.aSum</u></div>
+                    </div>
                 </div>
-           
-
-                <div class="form-group d-flex justify-content-end">
-                    <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+            <table class="table table-stripe table-hover">
+                <thead class="bg-info text-white">
+                    <tr>
+                        <th>Date From</th>
+                        <th>Date To</th>
+                        <th>Type</th>
+                        <th>Number of Days</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody id="table-body">
+                    @foreach(var item in Model.Absentism)
+                    {
+                        <tr onclick="location.href='@Url.Page("Details", new { id = item.leaveID })'" style="cursor:pointer;">
+                            <td>@item.leaveStartDate.ToString("MMM dd, yyyy")</td>
+                            <td>@item.leaveEndDate.ToString("MMM dd, yyyy")</td>
+                            <td>@item.leaveTypeModel.leaveTypeName</td>
+                            <td>@Math.Round(item.leaveDays, 5)</td>
+                            <td>@item.leaveStatus</td>
+                        </tr>
+                    }
+                </tbody>
+                
+                </table>
+                <div class="d-flex align-content-end">
+                    @await Html.PartialAsync("print")
                 </div>
-            </form>
         }
-        else
-        {
-            <div class="bg-danger p-4 text-white"><h4>@TempData</h4></div>
-        }
-
     </div>
+    
 </div>
-
-<div>
-    <a asp-page="Index">Back to List</a>
-</div>
-
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 }
+<script>
+    function removeMaxForLateComing() {
+         const leaveType = document.getElementById("leaveTypeSelect");
+        if (leaveType.value == 58) {                
+                leaveType.removeAttribute("max");
+                console.log("exit 58");
+                return;
+            }
+    }
+    document.addEventListener("DOMContentLoaded", function () {
+        const startDate = document.getElementById("startDate");
+        const endDate = document.getElementById("endDate");
+        const display = document.getElementById("maxLeaveDisplay");
+        const leaveType = document.getElementById("leaveType");
+        //calculateWorkingDays();
+        startDate.addEventListener("change", function () {
+            // Set the min attribute of endDate to match selected startDate
+            endDate.min = startDate.value;
+
+            // Optional: auto-correct end date if it’s before the new start date
+            if (endDate.value < startDate.value) {
+                endDate.value = startDate.value;
+            }
+            //calculateWorkingDays();
+        });
+        endDate.addEventListener("change", function () {
+            // Set the min attribute of endDate to match selected startDate
+            startDate.max = endDate.value;
+
+            // Optional: auto-correct end date if it’s before the new start date
+            if (endDate.value < startDate.value) {
+                startDate.value = endDate.value;
+            }
+            //calculateWorkingDays();
+        });
+        
+
+    });
+    function calculateWorkingDays() {
+        
+        const startDate = document.getElementById("startDate");
+        const endDate = document.getElementById("endDate");
+        const display = document.getElementById("maxLeaveDisplay");
+        const leaveType = document.getElementById("leaveTypeSelect");
+
+            console.log(leaveType.Value);
+            const start = startDate.value;
+            const end = endDate.value;
+            console.log("###############By leave type is-->" + leaveType.value);
+            if (!start || !end || end < start || leaveType.value == 58) {
+                display.textContent = "";
+                leaveType.removeAttribute("max");
+                return;
+            }
+
+            const formData = new URLSearchParams();
+            formData.append("startDate", start);
+            formData.append("endDate", end);
+
+            fetch("/Leave/Create?handler=CalculateWorkingDays", {
+                method: "POST",
+                headers: {
+                    "RequestVerificationToken": document.querySelector('input[name="__RequestVerificationToken"]').value
+                },
+                body: formData
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error("Server error");
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    
+                    display.textContent = `Maximum working days: ${data} ${leaveType.value}`;
+                    // Set max attribute on leaveDays input
+                    const leaveDaysInput = document.getElementById("leaveDays");
+                    leaveDaysInput.max = data;
+                    
+                    
+                })
+                .catch(error => {
+                    console.error("Error calculating leave days:", error);
+                    display.textContent = "Error calculating available days";
+                });
+        }
+    function summary() {
+        const startDate = document.getElementById("startDate1").value;
+        const endDate = document.getElementById("endDate1").value;
+        const absentType = document.getElementById("leaveType").value;
+        const empId = document.getElementById("givenID").value;
+
+        const display = document.getElementById("summary");
+
+
+        if (!startDate || !endDate) {
+            display.textContent = "Please fill all fields.";
+            return;
+        }
+        if (!absentType){
+            absentType = 0;
+        }
+        const formData = new URLSearchParams();
+        formData.append("start", startDate);
+        formData.append("end", endDate);
+        formData.append("type", absentType);
+        formData.append("empId", empId);
+
+
+        fetch("/Absentism/Create?handler=Summary", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded",
+                "RequestVerificationToken": document.querySelector('input[name="__RequestVerificationToken"]').value
+            },
+            body: formData
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error("Server error");
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log("Summary response:", data);
+            //display.textContent = `Total number of absentism records: ${data.countIs}, Total days: ${data.sumIs}`;
+            document.getElementById('table-body').innerHTML = data.tableHtml;
+            document.getElementById('count').textContent = data.countIs;
+            document.getElementById('sum').textContent = data.sumIs;
+        })
+        .catch(error => {
+            console.error("Error calculating leave days:", error);
+            display.textContent = "Error calculating available days";
+        });
+    }
+</script>

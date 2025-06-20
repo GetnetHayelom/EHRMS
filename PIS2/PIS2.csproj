@@ -24,6 +24,7 @@
   <ItemGroup>
     <Folder Include="Pages\EmployeeService\" />
     <Folder Include="Pages\EmploymentMethod\" />
+    <Folder Include="Pages\HRDash\" />
     <Folder Include="TempStore\" />
     <Folder Include="wwwroot\assets\" />
     <Folder Include="wwwroot\lib\select2\" />

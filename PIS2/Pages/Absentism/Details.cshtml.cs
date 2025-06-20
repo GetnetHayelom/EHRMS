@@ -19,6 +19,7 @@ namespace PIS2.Pages.Absentism
         }
 
         public leaveModel leaveModel { get; set; } = default!;
+        public jobPlacementModel Job { get; set; } = default!;
 
         public async Task<IActionResult> OnGetAsync(int? id)
         {
@@ -27,7 +28,10 @@ namespace PIS2.Pages.Absentism
                 return NotFound();
             }
 
-            var leavemodel = await _context.Leaves.FirstOrDefaultAsync(m => m.leaveID == id);
+            var leavemodel = await _context.Leaves.Include(l => l.employmentModel).ThenInclude(e => e.personModel)
+                .Include(l => l.leaveTypeModel)
+                .Include(l => l.LeaveHistories)
+                .FirstOrDefaultAsync(m => m.leaveID == id);
             if (leavemodel == null)
             {
                 return NotFound();
@@ -35,8 +39,39 @@ namespace PIS2.Pages.Absentism
             else
             {
                 leaveModel = leavemodel;
+                Job = _context.JobPlacements.Include(j => j.shiftModel)
+                    .Include(j => j.departmentModel).ThenInclude(d => d.companyModel)
+                    .Include(j => j.workSiteModel).OrderByDescending(j => j.jobPlacementDate).First(j => j.employmentID == leaveModel.employmentID);
+
+               
             }
             return Page();
+        }
+
+        // Post handler
+        [BindProperty]
+        public int leaveId { get; set; }
+        [HttpPost]
+        public async Task<IActionResult> OnPost(int leaveId)
+        {
+            Console.WriteLine($"Received ID: {leaveId}");
+            var leave = await _context.Leaves.FindAsync(leaveId);
+            if (leave == null)
+            {
+                return NotFound();
+            }
+
+            if (leave.leaveStatus == leaveStatus.Hold || leave.leaveStatus == leaveStatus.Approved)
+            {
+                // Update the leaveStatus
+                leave.leaveStatus = leaveStatus.Posted;
+                _context.Update(leave);
+                await _context.SaveChangesAsync();
+                return RedirectToPage(new { id = leaveId });
+            }
+
+            return Page();
+
         }
     }
 }

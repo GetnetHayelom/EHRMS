@@ -30,6 +30,7 @@ namespace PIS2.Pages.Leave
         public personModel Person { get; set; } = new personModel();
         public leaveDetail LeaveDetail { get; set; } =new leaveDetail();
         public List<leaveModel> Leaves { get; set; }
+        
         public IActionResult OnGet(int id)
         {
             if (id==0)
@@ -108,7 +109,11 @@ namespace PIS2.Pages.Leave
         {
            
             ModelState.Clear();
-           
+            double maxWorkingDays = _core.WorkingDays(Leave.leaveStartDate, Leave.leaveEndDate);
+            if (maxWorkingDays < (Leave.leaveEndDate - Leave.leaveStartDate).Days) {
+                ModelState.AddModelError("leaveModel.leaveDays", "Requested date must be less than or equal to maximum working days. " + maxWorkingDays);
+                return Page();
+            }
             Leave.employmentID = Convert.ToInt32(TempData["MyNumber"]);  Console.WriteLine("This is right here" + Leave.employmentID);
             Leave.modifiedBy = User.Identity?.Name!;
             Leave.leaveStatus = leaveStatus.Hold;
@@ -128,36 +133,7 @@ namespace PIS2.Pages.Leave
         
         public JsonResult OnPostCalculateWorkingDays(DateTime startDate, DateTime endDate)
         {
-            
-            // Example: List of holidays – ideally from a database or config
-            var holidays = _context.Holidays.Where(h => h.holidayStatus == mainStatus.Active).ToList();
-            
-
-            double workingDays = 0;
-
-            for (var date = startDate.Date; date <= endDate.Date; date = date.AddDays(1))
-            {
-                if (IsHoliday(date))
-                    continue;
-
-                if (date.DayOfWeek == DayOfWeek.Sunday)
-                    continue;
-
-                if (date.DayOfWeek == DayOfWeek.Saturday)
-                    workingDays += 0.5;
-                else
-                    workingDays += 1;
-            }
-
-            return new JsonResult(workingDays);
-        }
-        public bool IsHoliday(DateTime date)
-        {
-            List<holidayModel> holidays = _context.Holidays.Where(h => h.holidayStatus == mainStatus.Active).ToList();
-            return holidays.Any(h =>
-                date.Date >= h.holidayStart.Date &&
-                date.Date <= (h.holidayEnd == default ? h.holidayStart.Date : h.holidayEnd.Date)
-            );
+            return new JsonResult(_core.WorkingDays(startDate, endDate));
         }
 
     }
