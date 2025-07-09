@@ -6,12 +6,14 @@
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
 
-<h1>Job Placements</h1>
+<h1 class="fw-bold">Job Placements</h1>
 
 <p>
-    <a asp-page="Create">Add New Job Placement</a>
-    @await Html.PartialAsync("filter")
+    <a asp-page="Create" class="btn btn-primary">Add New Job Placement</a>
+    
+    
 </p>
+<hr />@await Html.PartialAsync("filter")
 <table class="table table-striped table-hover" id="dataTable">
     <thead>
         <tr class="bg-dark text-white">
@@ -36,39 +38,41 @@
             <th>
                 Status
             </th>
-            <th></th>
+            <th>Grade</th>
+            <th>Step</th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model.jobPlacementModel) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.employmentModel.givenID)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.departmentModel.departmentName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.jobModel.jobTitle)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.shiftModel.shiftName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.jobPlacementSalary)
-            </td>
-            <td>
-                @item.jobPlacementDate.ToString("MMM dd, yyyy")
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.jobPlacementStatus)
-            </td>
-            <td>
-                <a asp-page="./Edit" asp-route-id="@item.jobPlacementID">Edit</a> |
-                <a asp-page="./Details" asp-route-id="@item.jobPlacementID">Details</a> |
-                <a asp-page="./Delete" asp-route-id="@item.jobPlacementID">Delete</a>
-            </td>
-        </tr>
-}
+    @foreach (var item in Model.jobPlacementModel) {
+            <tr onclick="location.href='@Url.Page("Details", new {id=item.jobPlacementID})'" style="cursor:pointer">
+                <td>
+                    @Html.DisplayFor(modelItem => item.employmentModel.givenID)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.departmentModel.departmentName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.jobModel.jobTitle)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.shiftModel.shiftName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.jobPlacementSalary)
+                </td>
+                <td>
+                    @item.jobPlacementDate.ToString("MMM dd, yyyy")
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.jobPlacementStatus)
+                </td>
+                <td>
+                    @item.jobModel?.jobGradeModel?.jobGradeName
+                </td>
+                <td>
+                    @item.jobStepModel?.jobStepName
+                </td>
+            </tr>
+    }
     </tbody>
 </table>

@@ -14,7 +14,7 @@
     <div class="col-md-4">
         <form method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="experienceModel.experienceId" />
+            <input type="hidden" asp-for="experienceModel.experienceID" />
             <div class="form-group">
                 <label asp-for="experienceModel.personID" class="control-label"></label>
                 <input asp-for="experienceModel.personID" class="form-control" />
@@ -32,9 +32,9 @@
                 <span asp-validation-for="experienceModel.experienceEndDate" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="experienceModel.jobPlacementID" class="control-label"></label>
-                <input asp-for="experienceModel.jobPlacementID" class="form-control" />
-                <span asp-validation-for="experienceModel.jobPlacementID" class="text-danger"></span>
+                <label asp-for="experienceModel.jobTitle" class="control-label"></label>
+                <input asp-for="experienceModel.jobTitle" class="form-control" />
+                <span asp-validation-for="experienceModel.jobTitle" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />

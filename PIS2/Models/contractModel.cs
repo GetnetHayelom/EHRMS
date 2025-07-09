@@ -10,6 +10,7 @@ namespace PIS2.Models
         public virtual employmentModel? employmentModel { get; set; }
         public DateTime? startDate { get; set; }
         public DateTime? endDate { get; set; }
+        public string contractRemark { get; set; } = "";
         public DateTime modifiedDate { get; set; }
         public string modifiedBy { get; set; }
         public virtual ICollection<contractHistoryModel>? ContractHistories { get; set; }

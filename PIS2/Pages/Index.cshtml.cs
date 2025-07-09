@@ -82,7 +82,8 @@ namespace PIS2.Pages
                     searchName = Person.personFullName;
                     PersonEmployments = await _context.Employments
                         .Include(e => e.Leaves)
-                        .Include(e => e.JobPlacements).ThenInclude(j => j.jobModel)
+                        .Include(e => e.JobPlacements).ThenInclude(j => j.jobModel)                       
+                        .Include(e => e.JobPlacements).ThenInclude(j => j.jobStepModel).ThenInclude(js => js.jobGradeModel)
                         .Include(e => e.JobPlacements).ThenInclude(j => j.departmentModel).ThenInclude(d => d.companyModel)
                         .Include(e => e.EmploymentHistories)
                         .Include(e => e.OvertimeRecords).Where(e => e.personID == Person.personID).ToListAsync();
@@ -99,6 +100,7 @@ namespace PIS2.Pages
                             JobPlacement = _context.JobPlacements
                                 .Include(jp => jp.departmentModel)
                                 .Include(jp => jp.jobModel)
+                                .Include(j => j.jobStepModel).ThenInclude(js => js.jobGradeModel)
                                 .OrderBy(jp => jp.jobPlacementDate).LastOrDefault(jp => jp.employmentID == Employment.employmentID) ?? new jobPlacementModel();
                         }
 
@@ -117,6 +119,7 @@ namespace PIS2.Pages
                     PersonEmployments = _context.Employments.OrderBy(e => e.employmentDate).Include(e => e.Leaves)
                             .Include(e => e.JobPlacements).ThenInclude(j => j.jobModel)
                             .Include(e => e.JobPlacements).ThenInclude(j => j.departmentModel)
+                            .Include(e => e.JobPlacements).ThenInclude(j => j.jobStepModel).ThenInclude(js => js.jobGradeModel)
                             .Include(e => e.EmploymentHistories).Where(e => e.personID == Person.personID).ToList();
                     if (PersonEmployments != null && PersonEmployments.Any())
                     {
@@ -132,6 +135,7 @@ namespace PIS2.Pages
                             JobPlacement = _context.JobPlacements
                                 .Include(jp => jp.departmentModel)
                                 .Include(jp => jp.jobModel)
+                                .Include(j => j.jobStepModel).ThenInclude(js => js.jobGradeModel)
                                 .OrderBy(jp => jp.jobPlacementDate).LastOrDefault(jp => jp.employmentID == Employment.employmentID) ?? new jobPlacementModel();
 
                         }
@@ -171,6 +175,7 @@ namespace PIS2.Pages
                         .Include(e => e.Leaves)
                         .Include(e => e.JobPlacements).ThenInclude(j => j.jobModel)
                         .Include(e => e.JobPlacements).ThenInclude(j => j.departmentModel)
+                        .Include(e => e.JobPlacements).ThenInclude(j => j.jobStepModel).ThenInclude(js => js.jobGradeModel)
                         .Include(e => e.EmploymentHistories).Where(e => e.personID == Person.personID).ToListAsync(); 
                     if (PersonEmployments != null && PersonEmployments.Any())
                     {
@@ -185,6 +190,7 @@ namespace PIS2.Pages
                             JobPlacement = _context.JobPlacements
                                 .Include(jp => jp.departmentModel)
                                 .Include(jp => jp.jobModel)
+                                .Include(j => j.jobStepModel).ThenInclude(js => js.jobGradeModel)
                                 .OrderBy(jp => jp.jobPlacementDate).LastOrDefault(jp => jp.employmentID == Employment.employmentID) ?? new jobPlacementModel();
                         }
                         
@@ -228,6 +234,7 @@ namespace PIS2.Pages
                         .Include(e => e.Leaves)
                         .Include(e => e.JobPlacements).ThenInclude(j => j.jobModel)
                         .Include(e => e.JobPlacements).ThenInclude(j => j.departmentModel)
+                        .Include(e => e.JobPlacements).ThenInclude(j => j.jobStepModel).ThenInclude(js => js.jobGradeModel)
                         .Include(e => e.EmploymentHistories).Where(e => e.personID == Person.personID).ToListAsync();
                     if (PersonEmployments != null && PersonEmployments.Any())
                     {
@@ -243,6 +250,7 @@ namespace PIS2.Pages
                             JobPlacement = _context.JobPlacements
                                 .Include(jp => jp.departmentModel)
                                 .Include(jp => jp.jobModel)
+                                .Include(j => j.jobStepModel).ThenInclude(js => js.jobGradeModel)
                                 .OrderBy(jp => jp.jobPlacementDate).LastOrDefault(jp => jp.employmentID == Employment.employmentID) ?? new jobPlacementModel();
                         }
                         
@@ -304,52 +312,57 @@ namespace PIS2.Pages
 
                     return Page();
                 }
-        //public async Task<ActionResult<IEnumerable<leaveModel>>> GetLeaves()
-        //{
-        //    //Leaves = await _context.Leaves.FirstOrDefaultAsync(p => p.personID == Person.personID);
-        //    Leaves = await _context.Leaves.Where(p => p.employmentID == searchID).ToListAsync();
-        //    if(Leaves == null)
-        //    {
-        //        return NotFound();
-        //    }
-            
-        //    return Leaves;
-        //}
-        //public async void CalculateLeave(int id) 
-        //{
-        //    DateTime hireDate = await _context.Employments.Where(p => p.employmentID == id && p.employmentTypeID==100).OrderByDescending(p => p.employmentDate).Select(p => p.employmentDate).FirstOrDefaultAsync();
-        //    Double initialLeave = 20;            
-        //    Double usedLeave= await _context.Leaves.Where(p=>p.employmentID == id && p.leaveTypeID==100).SumAsync(p => p.leaveDays);
-        //    Double grossLeave=0;
-        //    Double leavePerDay=grossLeave/365;
-        //    Double leaveBalance;
-        //    while (hireDate < DateTime.Today)
-        //    {
-               
-        //        if (hireDate < DateTime.Today) {                    
-        //            grossLeave += initialLeave;
-        //            initialLeave++;
-        //        }
-        //        else
-        //        {
-        //            grossLeave += (DateTime.Today-hireDate).Days * (initialLeave/365);
-        //        }
-        //        hireDate = hireDate.AddYears(1);
-        //    }
-        //    leaveBalance = grossLeave - usedLeave;
-        //}
-        //public async void CalculatePerTerm(int id, DateTime start, DateTime end)
-        //{
-        //    DateTime hireDate = await _context.Employments.Where(p => p.employmentID == id && p.employmentTypeID == 100).OrderByDescending(p => p.employmentDate).Select(p => p.employmentDate).FirstOrDefaultAsync();
-        //    Double initialLeave = 20;
-        //    while (hireDate < start){
-        //        initialLeave++;
-        //        hireDate.AddYears (1);
-        //    }
-        //    Double usedLeave = await _context.Leaves.Where(p => p.employmentID == id 
-        //    && p.leaveTypeID == 100 
-        //    && p.leaveStartDate >= start
-        //    && p.leaveStartDate <= end).SumAsync(p => p.leaveDays);
-        //}
+        //handle service request
+
+        [BindProperty]
+        public serviceRequestModel requestModel { get; set; }
+        public class RequestDto
+        {
+            public string requestType { get; set; }
+        }
+        public async Task<IActionResult> OnPostHandleRequestAsync([FromBody] RequestDto request)
+        {
+            var currentUserName = User.Identity?.Name;
+            var requestType = request.requestType;
+            var employmentID = _context.Employments
+                .Where(e => e.personID == _context.Users
+                    .Where(u => u.userName == currentUserName)
+                    .Select(u => u.personID)
+                    .FirstOrDefault())
+                .Select(e => e.employmentID)
+                .FirstOrDefault();
+
+            if (employmentID == 0)
+            {
+                return new JsonResult(new { success = false, message = "Employment ID not found." });
+            }
+
+            requestModel = new serviceRequestModel
+            {
+                employmentID = employmentID,
+                serviceRequestDate = DateTime.Now,
+                serviceRequestStatus = ServiceRequestStatus.Hold,
+                modifiedBy = currentUserName
+            };
+
+            if (requestType == "Exprience")
+            {
+                requestModel.requestedService = ServiceRequestTypes.Exprience;
+            }
+            else if (requestType == "Termination")
+            {
+                requestModel.requestedService = ServiceRequestTypes.Termination;
+            }
+            else
+            {
+                return new JsonResult(new { success = false, message = "Invalid request type." });
+            }
+
+            _context.ServiceRequests.Add(requestModel);
+            await _context.SaveChangesAsync();
+
+            return new JsonResult(new { success = true });
+        }
+
     }
 }

@@ -17,8 +17,10 @@ namespace PIS2.Models
         public string educationLevelMark { get; set; }//CPA or GPA
         public string educationLevelInstitutionName { get; set; }
         public string? educationLevelNumber { get; set; }
+        public string? educationField { get; set; }
         //public ICollection<personModel> Persons { get; set; } = null!;
         public string modifiedBy { get; set; }
+        public DateTime modifiedDate { get; set; } = DateTime.Now;
         public personEducationLevelModel()
         {
 

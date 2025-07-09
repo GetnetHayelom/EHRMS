@@ -6,9 +6,9 @@
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
 
-<h1>Create</h1>
-
-<h4>allowanceAssignmentModel</h4>
+<h1 class="fw-bold">Allowance Assignment</h1>
+<hr />
+<h4 class="fw-bold">New Allowance Assignment</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
@@ -16,21 +16,31 @@
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
                 <span class="text-danger">*</span>
-                <label asp-for="allowanceAssignmentModel.allowanceID" class="control-label"></label>
+                <label asp-for="allowanceAssignmentModel.employmentID" class="control-label">Employment ID</label>
+                <select asp-for="allowanceAssignmentModel.employmentID" class="form-control" asp-items="ViewBag.employmentID"></select>
+            </div>
+            <div class="form-group">
+                <span class="text-danger">*</span>
+                <label asp-for="allowanceAssignmentModel.allowanceID" class="control-label">Allowance Name</label>
                 <select asp-for="allowanceAssignmentModel.allowanceID" class ="form-control" asp-items="ViewBag.allowanceID"></select>
             </div>
             <div class="form-group">
-                <label asp-for="allowanceAssignmentModel.allowanceAssignmentDate" class="control-label"></label>
-                <input asp-for="allowanceAssignmentModel.allowanceAssignmentDate" class="form-control" type="date"/>
+                <label asp-for="allowanceAssignmentModel.allowanceAssignmentDate" class="control-label">Allowance Start Date</label>
+                <input asp-for="allowanceAssignmentModel.allowanceAssignmentDate" class="form-control" type="date" value="@DateTime.Now.ToString("MMM dd, yyyy")"/>
                 <span asp-validation-for="allowanceAssignmentModel.allowanceAssignmentDate" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <span class="text-danger">*</span>
-                <label asp-for="allowanceAssignmentModel.employmentID" class="control-label"></label>
-                <select asp-for="allowanceAssignmentModel.employmentID" class ="form-control" asp-items="ViewBag.employmentID"></select>
+                <label asp-for="allowanceAssignmentModel.allowanceAssignmentAmount" class="control-label">Allowance Amount</label>
+                <input asp-for="allowanceAssignmentModel.allowanceAssignmentAmount" class="form-control"></input>
             </div>
             <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
+                <label asp-for="allowanceAssignmentModel.allowanceAssignmentEndDate" class="control-label">Allowance End Date</label>
+                <input asp-for="allowanceAssignmentModel.allowanceAssignmentEndDate" class="form-control" type="date" value="@DateTime.Now.ToString("MMM dd, yyyy")" />
+                <span asp-validation-for="allowanceAssignmentModel.allowanceAssignmentEndDate" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary m-2" />
             </div>
         </form>
     </div>

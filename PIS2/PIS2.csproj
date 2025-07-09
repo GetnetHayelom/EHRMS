@@ -5,9 +5,11 @@
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
   <ItemGroup>
+    <Content Remove="Pages\HRDash\Index.cshtml" />
     <Content Remove="wwwroot\js\print.js" />
   </ItemGroup>
   <ItemGroup>
+    <_ContentIncludedByDefault Remove="Pages\HRDash\Index.cshtml" />
     <_ContentIncludedByDefault Remove="wwwroot\js\print.js" />
   </ItemGroup>
   <ItemGroup>
@@ -24,12 +26,16 @@
   <ItemGroup>
     <Folder Include="Pages\EmployeeService\" />
     <Folder Include="Pages\EmploymentMethod\" />
-    <Folder Include="Pages\HRDash\" />
+    <Folder Include="Pages\NewFolder1\" />
     <Folder Include="TempStore\" />
     <Folder Include="wwwroot\assets\" />
     <Folder Include="wwwroot\lib\select2\" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Pages\HRDash\Index.cshtml" />
     <None Include="wwwroot\js\print.js" />
+  </ItemGroup>
+  <ItemGroup>
+    <UpToDateCheckInput Remove="Pages\HRDash\Index.cshtml" />
   </ItemGroup>
 </Project>

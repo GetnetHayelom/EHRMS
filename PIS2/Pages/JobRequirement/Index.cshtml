@@ -6,43 +6,43 @@
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
 
-<h1>Index</h1>
+<h1 class="fw-bold">Company Stracture</h1>
 
 <p>
-    <a asp-page="Create">Create New</a>
+    <a asp-page="Create" class="btn btn-primary">New Structure</a>
 </p>
-<table class="table">
-    <thead>
+<table class="table table-striped table-hover">
+    <thead class="bg-dark text-white">
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.jobRequirementModel[0].DepartmentModel)
+                Department
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.jobRequirementModel[0].JobModel)
+                Job Title
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.jobRequirementModel[0].requiredNumber)
+                Required Number
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.jobRequirementModel[0].jobRequirementStatus)
+                Status
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.jobRequirementModel[0].modifiedBy)
+                Modified By
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.jobRequirementModel[0].modifiedDate)
+                Modified Date
             </th>
-            <th></th>
+            
         </tr>
     </thead>
     <tbody>
 @foreach (var item in Model.jobRequirementModel) {
-        <tr>
+        <tr onclick="location.href='@Url.Page("Details", new{id=item.jobRequirementID})'" style="cursor:pointer;">
             <td>
                 @Html.DisplayFor(modelItem => item.DepartmentModel.departmentName)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.JobModel.jobID)
+                @Html.DisplayFor(modelItem => item.JobModel.jobTitle)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.requiredNumber)
@@ -56,11 +56,7 @@
             <td>
                 @Html.DisplayFor(modelItem => item.modifiedDate)
             </td>
-            <td>
-                <a asp-page="./Edit" asp-route-id="@item.jobRequirementID">Edit</a> |
-                <a asp-page="./Details" asp-route-id="@item.jobRequirementID">Details</a> |
-                <a asp-page="./Delete" asp-route-id="@item.jobRequirementID">Delete</a>
-            </td>
+            
         </tr>
 }
     </tbody>

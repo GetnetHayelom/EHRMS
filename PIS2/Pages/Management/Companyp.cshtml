@@ -5,9 +5,10 @@
     var successMessage = TempData["SuccessMessage"] as string;
 }
 <div id="companyName">
-    <h2 class="text-center mb-4">
+    <h2 class="fw-bold text-center mb-4">
         <b>@Model.CompanySummary.CompanyName</b>
     </h2>
+    <hr />
 </div>
 <div class="d-flex flex-column justify-content-around">
     <!-- Summary Points -->
@@ -76,57 +77,32 @@
         </div>
     </div>
     
-    <div class="d-flex">
-        <!--Payables summary-->
-        <div class="d-flex flex-column flex-grow-1 p-2 m-2 shadow">
-            <h3 class="bg-dark text-white p-2">Current Payable</h3><hr />
-            <div class="">
-                <p class="small mb-1">Salary</p>
-                <h5 class="fw-bold">$@Math.Round((Model.CompanySummary.Salary), 2).ToString("N0")</h5>
-            </div>
-            <div>
-                <p class="small mb-1">Overtime</p>
-                <h5 class="fw-bold">$@Math.Round((Model.CompanySummary.Salary), 2).ToString("N0")</h5>
-            </div>
-            <div>
-                <p class="small mb-1">Acc. Leaves</p>
-                <h5 class="fw-bold">$@Math.Round((Model.leaveCost), 2).ToString("N0")</h5>
-            </div>
-            <div>
-            
-                <p class="small mb-1">Allowance</p>
-                <h5 class="fw-bold">$@Math.Round((Model.CompanySummary.Salary), 2).ToString("N0")</h5>
-            </div>
-            <div>
-                <p class="small mb-1">Total</p>
-                <h4 class="fw-bold">$@Math.Round((Model.CompanySummary.Salary), 2).ToString("N0")</h4>
-            </div>
-        </div>
-    </div>
     <!--Payables summary-->
     <div class="d-flex">
         <div class="d-flex flex-column flex-grow-1 p-2 m-2 shadow">
             <h3 class="bg-dark text-white p-2">Current Payable</h3><hr />
-            <div class="">
-                <p class="small mb-1">Salary</p>
-                <h5 class="fw-bold">$@Math.Round((Model.CompanySummary.Salary), 2).ToString("N0")</h5>
-            </div>
-            <div>
-                <p class="small mb-1">Overtime</p>
-                <h5 class="fw-bold">$@Math.Round((Model.CompanySummary.Salary), 2).ToString("N0")</h5>
-            </div>
-            <div>
-                <p class="small mb-1">Acc. Leaves</p>
-                <h5 class="fw-bold">$@Math.Round((Model.leaveCost), 2).ToString("N0")</h5>
-            </div>
-            <div>
+            <div class="d-flex justify-content-around">
+                <div class="">
+                    <p class="small mb-1">Salary</p>
+                    <h5 class="fw-bold">$@Math.Round((Model.CompanySummary.Salary), 2).ToString("N0")</h5>
+                </div>
+                <div>
+                    <p class="small mb-1">Overtime</p>
+                    <h5 class="fw-bold">$@Math.Round((Model.CompanySummary.Salary), 2).ToString("N0")</h5>
+                </div>
+                <div>
+                    <p class="small mb-1">Acc. Leaves</p>
+                    <h5 class="fw-bold">$@Math.Round((Model.leaveCost), 2).ToString("N0")</h5>
+                </div>
+                <div>
 
-                <p class="small mb-1">Allowance</p>
-                <h5 class="fw-bold">$@Math.Round((Model.CompanySummary.Salary), 2).ToString("N0")</h5>
-            </div>
-            <div>
-                <p class="small mb-1">Total</p>
-                <h4 class="fw-bold">$@Math.Round((Model.CompanySummary.Salary), 2).ToString("N0")</h4>
+                    <p class="small mb-1">Allowance</p>
+                    <h5 class="fw-bold">$@Math.Round((Model.CompanySummary.Salary), 2).ToString("N0")</h5>
+                </div>
+                <div>
+                    <p class="small mb-1">Total</p>
+                    <h4 class="fw-bold">$@Math.Round((Model.CompanySummary.Salary), 2).ToString("N0")</h4>
+                </div>
             </div>
         </div>
     </div>
@@ -160,15 +136,17 @@
             </canvas>
         </div>
     </div>
+
+    <!--Departments-->
     <div class="container py-5">
         <h2 class="text-center mb-4">
             <b>Departments</b>
         <hr /></h2>
-        <div class="row g-4">
+        <div class="row g-4 d-flex">
             @foreach (var item in Model.DepartmentSummaries)
             {
-                <a asp-page="/Department/Details" asp-route-id="@item.DepartmentID" class="text-decoration-none text-dark">
-                <div class="col-md-3 col-lg-3">
+                
+                <div class="col-md-3 col-lg-3" onclick="location.href='@Url.Page("/Department/Details", new {id =@item.DepartmentID})'">
                     <div class="card border borber-1 rounded-2 border-primary h-100 shadow">
                         <div class="card-body p-4">
                             <div class="d-flex justify-content-between align-items-start">
@@ -206,12 +184,12 @@
                         </div>
                     </div>
                 </div>
-                </a>
+                
             }
         </div>
     </div>
 </div>
-</div>
+
 @await Html.PartialAsync("print")
 <script>
     var educationLevelData = @Html.Raw(Json.Serialize(Model.EduLevelSummary));

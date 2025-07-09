@@ -1,0 +1,77 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
+using PIS2.Models;
+
+namespace PIS2.Pages.ServiceRequest
+{
+    public class EditModel : PageModel
+    {
+        private readonly PIS2.Models.PISContext _context;
+
+        public EditModel(PIS2.Models.PISContext context)
+        {
+            _context = context;
+        }
+
+        [BindProperty]
+        public serviceRequestModel serviceRequestModel { get; set; } = default!;
+
+        public async Task<IActionResult> OnGetAsync(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var servicerequestmodel =  await _context.ServiceRequests.FirstOrDefaultAsync(m => m.serviceRequestID == id);
+            if (servicerequestmodel == null)
+            {
+                return NotFound();
+            }
+            serviceRequestModel = servicerequestmodel;
+           ViewData["employmentID"] = new SelectList(_context.Employments, "employmentID", "givenID");
+            return Page();
+        }
+
+        // To protect from overposting attacks, enable the specific properties you want to bind to.
+        // For more information, see https://aka.ms/RazorPagesCRUD.
+        public async Task<IActionResult> OnPostAsync()
+        {
+            if (!ModelState.IsValid)
+            {
+                return Page();
+            }
+
+            _context.Attach(serviceRequestModel).State = EntityState.Modified;
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!serviceRequestModelExists(serviceRequestModel.serviceRequestID))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+            return RedirectToPage("./Index");
+        }
+
+        private bool serviceRequestModelExists(int id)
+        {
+            return _context.ServiceRequests.Any(e => e.serviceRequestID == id);
+        }
+    }
+}

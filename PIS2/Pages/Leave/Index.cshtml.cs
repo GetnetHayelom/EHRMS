@@ -38,10 +38,10 @@ namespace PIS2.Pages.Leave
         public async Task OnGetAsync()
         {
             EmploymentTypes = await _context.EmploymentTypes.OrderBy(e => e.employmentTypeName).ToListAsync();
-            Departments = await _context.Departments.OrderBy(d => d.departmentName).ToListAsync();
-            WorkLocations = await _context.WorkSites.OrderBy(w => w.workSiteName).ToListAsync();
-            Companies = await _context.Companies.OrderBy(c => c.companyName).ToListAsync();
-            LeaveTypes = await _context.LeaveTypes.OrderBy(lt => lt.leaveTypeName).ToListAsync();
+            Departments = await _context.Departments.Where(d => d.departmentStatus == mainStatus.Active).OrderBy(d => d.departmentName).ToListAsync();
+            WorkLocations = await _context.WorkSites.Where(w => w.workSiteStatus==mainStatus.Active).OrderBy(w => w.workSiteName).ToListAsync();
+            Companies = await _context.Companies.Where(c =>c.companyStatus == mainStatus.Active).OrderBy(c => c.companyName).ToListAsync();
+            LeaveTypes = await _context.LeaveTypes.Where(l => l.leaveTypeStatus==mainStatus.Active).OrderBy(lt => lt.leaveTypeName).ToListAsync();
 
             leaveModel = await _context.Leaves
                 .Include(l => l.employmentModel).ThenInclude(e => e.personModel)

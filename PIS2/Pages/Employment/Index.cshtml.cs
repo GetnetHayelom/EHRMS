@@ -74,7 +74,7 @@ namespace PIS2.Pages.Employment
             if (company.HasValue && company != null)
             {
                 employmentModel = employmentModel.Where(e => e.Company.companyID == company);
-
+                departments = _context.Departments.Where(d => d.companyID == company.Value).OrderBy(d => d.departmentName).AsQueryable();
             }
             else
             {
@@ -82,9 +82,9 @@ namespace PIS2.Pages.Employment
             }
             // Filter by Department (if provided)
             if (department.HasValue && department !=null)
-            {
-              
+            { 
                 employmentModel = employmentModel.Where(e => e.Department.departmentID == department);
+                
             }
 
             // Filter by Status (if provided)
@@ -144,12 +144,11 @@ namespace PIS2.Pages.Employment
                         $"<td>{e.Employee.employmentStatus}</td>" +
                         $"<td>{e.empType.employmentTypeName}</td>" +
                         $"<td>{e?.jobTitle?.jobTitle ?? "N/A"}</td>" +
-                        $"<td>{e.Department?.departmentName ?? "N/A"}</td>" +
-                        $"<td><a href='/Employment/Edit?id={e.Employee.employmentID}'>Edit</a> |" +
-                        $"<a href='/Employment/Details?id={e.Employee.employmentID}'>Details</a></td></tr>";
+                        $"<td>{e.Department?.departmentName ?? "N/A"}</td>";
             }));
 
             var selectedDeparts = departments.ToList();
+            Departments = departments.ToList();
             var departs = selectedDeparts.Select(d => new
             {
                 id = d.departmentID,

@@ -6,9 +6,9 @@
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
 
-<h1>Create</h1>
+<h1 class="fw-bold">Company Structure</h1>
 
-<h4>jobRequirementModel</h4>
+<h4 class="fw-bold">Add Job Requirement</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
@@ -16,36 +16,36 @@
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
                 <span class="text-danger">*</span>
-                <label asp-for="jobRequirementModel.departmentID" class="control-label"></label>
+                <label asp-for="jobRequirementModel.departmentID" class="control-label">Department Name</label>
                 <select asp-for="jobRequirementModel.departmentID" class ="form-control" asp-items="ViewBag.departmentID"></select>
             </div>
             <div class="form-group">
                 <span class="text-danger">*</span>
-                <label asp-for="jobRequirementModel.jobID" class="control-label"></label>
+                <label asp-for="jobRequirementModel.jobID" class="control-label">Job Title</label>
                 <select asp-for="jobRequirementModel.jobID" class ="form-control" asp-items="ViewBag.jobID"></select>
             </div>
             <div class="form-group">
                 <span class="text-danger">*</span>
-                <label asp-for="jobRequirementModel.requiredNumber" class="control-label"></label>
+                <label asp-for="jobRequirementModel.requiredNumber" class="control-label">Required Number</label>
                 <input asp-for="jobRequirementModel.requiredNumber" class="form-control" />
                 <span asp-validation-for="jobRequirementModel.requiredNumber" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="jobRequirementModel.jobRequirementStatus" class="control-label"></label>
-                <select asp-for="jobRequirementModel.jobRequirementStatus" class="form-control"></select>
-                <span asp-validation-for="jobRequirementModel.jobRequirementStatus" class="text-danger"></span>
+                
+                <input asp-for="jobRequirementModel.jobRequirementStatus" class="form-control" type="hidden" value="@Models.mainStatus.Active"></input>
+                
             </div>
             <div class="form-group">
-                <label asp-for="jobRequirementModel.modifiedBy" class="control-label"></label>
-                <input asp-for="jobRequirementModel.modifiedBy" class="form-control" />
-                <span asp-validation-for="jobRequirementModel.modifiedBy" class="text-danger"></span>
+                
+                <input asp-for="jobRequirementModel.modifiedBy" class="form-control" type="hidden" value="@User.Identity.Name" />
+                
             </div>
             <div class="form-group">
-                <label asp-for="jobRequirementModel.modifiedDate" class="control-label"></label>
-                <input asp-for="jobRequirementModel.modifiedDate" class="form-control" />
-                <span asp-validation-for="jobRequirementModel.modifiedDate" class="text-danger"></span>
+                
+                <input asp-for="jobRequirementModel.modifiedDate" class="form-control" type="hidden" value="@DateTime.Now"/>
+                
             </div>
-            <div class="form-group">
+            <div class="form-group m-2">
                 <input type="submit" value="Create" class="btn btn-primary" />
             </div>
         </form>

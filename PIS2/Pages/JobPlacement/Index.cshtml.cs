@@ -25,7 +25,8 @@ namespace PIS2.Pages.JobPlacement
             jobPlacementModel = await _context.JobPlacements
                 .Include(j => j.departmentModel)
                 .Include(j => j.employmentModel)
-                .Include(j => j.jobModel)
+                .Include(j => j.jobModel).ThenInclude(j => j.jobGradeModel)
+                .Include(j => j.jobStepModel)
                 .Include(j => j.shiftModel).ToListAsync();
         }
     }

@@ -1,0 +1,85 @@
+﻿@page
+@model PIS2.Pages.Guaranty.CreateModel
+
+@{
+    ViewData["Title"] = "Guaranty";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+    var successMessage = TempData["SuccessMessage"] as string;
+}
+
+<h1 class="fw-bold">Guaranty</h1>
+
+<h4 class="fw-bold">Request Guaranty Service</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            @if (User.IsInRole("PMS_HRClerk"))
+            {
+                <div class="form-group">
+                    <label asp-for="givenID" class="control-label">Guarantor Employment ID</label>
+                    <input asp-for="givenID" class="form-control mb-2" name="givenID" placeholder="Enter Employee ID" />
+                </div>
+                @if (!string.IsNullOrEmpty(successMessage))
+                {
+                    <div class="alert alert-danger d-print-none" role="alert">
+                        @successMessage
+                    </div>
+                }
+            }
+            else
+            {
+                <input asp-for="givenID" class="form-control d-none" name="givenID" placeholder="Enter Employee ID" value=""/>
+                <input asp-for="guarantyModel.modifiedBy" class="form-control d-none" value="@User.Identity.Name" />
+            }
+            
+            <div class="form-group">
+                <label asp-for="guarantyModel.guarantyStartDate" class="control-label">Guaranty Start Date</label>
+                <input asp-for="guarantyModel.guarantyStartDate" class="form-control mb-2" type="date" value="@DateTime.Now.ToString("MMM dd, yyyy")" />
+                <span asp-validation-for="guarantyModel.guarantyStartDate" class="text-danger"></span>
+            </div>
+            @if (User.IsInRole("PMS_HRClerk"))
+            {
+                   <div class="form-group">
+                    <label asp-for="guarantyModel.guarantyEndDate" class="control-label">Guaranty End Date</label>
+                    <input asp-for="guarantyModel.guarantyEndDate" class="form-control mb-2" type="date" value="@DateTime.Today.ToString("MMM dd, yyyy")" />
+                    <span asp-validation-for="guarantyModel.guarantyEndDate" class="text-danger"></span>
+                </div>
+            
+                <div class="form-group">
+                    <label asp-for="guarantyModel.guarantyAmount" class="control-label">Guaranty Amount</label>
+                    <input asp-for="guarantyModel.guarantyAmount" class="form-control mb-2" />
+                    <span asp-validation-for="guarantyModel.guarantyAmount" class="text-danger"></span>
+                </div>
+            }
+            <div class="form-group">
+                <label asp-for="guarantyModel.guarantyType" class="control-label">Guaranty Type</label>
+                <select asp-for="guarantyModel.guarantyType" class="form-control mb-2" asp-items="Html.GetEnumSelectList<Models.GuarantyTypes>()"></select>
+                <span asp-validation-for="guarantyModel.guarantyType" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="guarantyModel.guarantyFor" class="control-label">Guarantee Name</label>
+                <input asp-for="guarantyModel.guarantyFor" class="form-control mb-2"/>
+                <span asp-validation-for="guarantyModel.guarantyFor" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="guarantyModel.guarantyBeneficiary" class="control-label">Beneficiary Name</label>
+                <input asp-for="guarantyModel.guarantyBeneficiary" class="form-control mb-2" />
+                <span asp-validation-for="guarantyModel.guarantyBeneficiary" class="text-danger"></span>
+            </div>
+            
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-page="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

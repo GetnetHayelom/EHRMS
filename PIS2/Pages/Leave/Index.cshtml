@@ -78,14 +78,14 @@
         <!--Unposted leaves-->
         <div class="col-md-3">
             <h4>Pending Requests:</h4>
-            <h2>@Model.CountUnposted</h2>
+            <h2>@Model.filteredCount</h2>
         </div>
 
     <!--Leaves amount-->
     <div class="col-md-3">
 
             <h4>Sum of Requested Days:</h4>
-            <h2>@Model.totalUnposted</h2>
+            <h2>@Math.Round(Model.totalUnposted, 2)</h2>
      
     </div>
     <!--Total Allowed Leaves-->

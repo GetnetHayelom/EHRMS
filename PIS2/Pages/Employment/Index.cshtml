@@ -6,10 +6,11 @@
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
 
-<h1>Employments</h1>
+<h1 class="fw-bold">Employments</h1>
+<hr />
 <div class="d-flex justify-content-between">
     <p>
-        <a asp-page="Create" class="d-print-none">Add New Employee</a>
+        <a asp-page="Create" class="d-print-none btn btn-primary">Add New Employee</a>
     </p>
     <div class="d-inline-flex">
         @await Html.PartialAsync("filter")
@@ -19,73 +20,72 @@
 
 <div class="row">
     @if (Model.employmentModel!=null)
-    {
-        
+    {          
    
-    <div class="col-3">
-        <label for="filter-status">Filter Status:</label>
-        <select class="form-select" aria-label="Default select example" id="filter-status" onchange="filterEmployees()" asp-items="Html.GetEnumSelectList<Models.mainStatus>()">
-            <option value="">All</option>
-        </select>
-    </div>
-    <div class="col-3">
-        <label for="filter-empType">Filter Employment Type:</label>
-        <select class="form-select" aria-label="Default select example" id="filter-empType" onchange="filterEmployees()">
-            <option value="">All</option>
-            @foreach (var empType in Model.EmploymentTypes)
-            {
-                <option value="@empType.employmentTypeID">@empType.employmentTypeName</option>
-            }
-        </select>
-    </div>
-    <div class="col-3">
-        <label for="filter-job">Filter Job:</label>
-        <select class="form-select" aria-label="Default select example" id="filter-job" onchange="filterEmployees()">
-            <option value="">All</option>
-            @foreach (var jobTitle in Model.JobTitles)
-            {
-                <option value="@jobTitle.jobID">@jobTitle.jobTitle</option>
-            }
-        </select>
-    </div>
-    <div class="col-3">
-        <label for="filter-department">Filter Department:</label>
-        <select class="form-select" aria-label="Default select example" id="filter-department" onchange="filterEmployees()">
-            <option value="">All</option>
-            @foreach (var department in Model.Departments)
-            {
-                <option value="@department.departmentID">@department.departmentName</option>
-            }
-        </select>
-    </div>
-    <div class="col-3">
-        <label for="filter-company">Filter Company:</label>
-        <select class="form-select" aria-label="Default select example" id="filter-company" onchange="filterEmployees()">
-            <option value="">All</option>
-            @foreach (var company in Model.Companies)
-            {
-                <option value="@company.companyID">@company.companyName</option>
-            }
-        </select>
-    </div>
-    <div class="col-3">
-        <label for="filter-workLoc">Filter Work Location:</label>
-        <select class="form-select" aria-label="Default select example" id="filter-workLoc" onchange="filterEmployees()">
-            <option value="">All</option>
-            @foreach (var workLocation in Model.WorkLocations)
-            {
-                <option value="@workLocation.workSiteID">@workLocation.workSiteName</option>
-            }
-        </select>
-    </div>
-    <div class="col-3">
-        <label for="dateStart">Date of Employment From:</label>
-        <input class="form-control" type="date" id="dateStart" onchange="filterEmployees()" />
-    </div>
-    <div class="col-3">
-        <label for="dateEnd">Date of Employment Upto:</label>
-        <input class="form-control" type="date" id="dateEnd" onchange="filterEmployees()" />
-    </div>
+        <div class="col-3">
+            <label for="filter-status">Filter Status:</label>
+            <select class="form-select" aria-label="Default select example" id="filter-status" onchange="filterEmployees()" asp-items="Html.GetEnumSelectList<Models.mainStatus>()">
+                <option value="">All</option>
+            </select>
+        </div>
+        <div class="col-3">
+            <label for="filter-empType">Filter Employment Type:</label>
+            <select class="form-select" aria-label="Default select example" id="filter-empType" onchange="filterEmployees()">
+                <option value="">All</option>
+                @foreach (var empType in Model.EmploymentTypes)
+                {
+                    <option value="@empType.employmentTypeID">@empType.employmentTypeName</option>
+                }
+            </select>
+        </div>
+        <div class="col-3">
+            <label for="filter-job">Filter Job:</label>
+            <select class="form-select" aria-label="Default select example" id="filter-job" onchange="filterEmployees()">
+                <option value="">All</option>
+                @foreach (var jobTitle in Model.JobTitles)
+                {
+                    <option value="@jobTitle.jobID">@jobTitle.jobTitle</option>
+                }
+            </select>
+        </div>
+        <div class="col-3">
+            <label for="filter-department">Filter Department:</label>
+            <select class="form-select" aria-label="Default select example" id="filter-department" onchange="filterEmployees()">
+                <option value="">All</option>
+                @foreach (var department in Model.Departments)
+                {
+                    <option value="@department.departmentID">@department.departmentName</option>
+                }
+            </select>
+        </div>
+        <div class="col-3">
+            <label for="filter-company">Filter Company:</label>
+            <select class="form-select" aria-label="Default select example" id="filter-company" onchange="filterEmployees()">
+                <option value="">All</option>
+                @foreach (var company in Model.Companies)
+                {
+                    <option value="@company.companyID">@company.companyName</option>
+                }
+            </select>
+        </div>
+        <div class="col-3">
+            <label for="filter-workLoc">Filter Work Location:</label>
+            <select class="form-select" aria-label="Default select example" id="filter-workLoc" onchange="filterEmployees()">
+                <option value="">All</option>
+                @foreach (var workLocation in Model.WorkLocations)
+                {
+                    <option value="@workLocation.workSiteID">@workLocation.workSiteName</option>
+                }
+            </select>
+        </div>
+        <div class="col-3">
+            <label for="dateStart">Date of Employment From:</label>
+            <input class="form-control" type="date" id="dateStart" onchange="filterEmployees()" />
+        </div>
+        <div class="col-3">
+            <label for="dateEnd">Date of Employment Upto:</label>
+            <input class="form-control" type="date" id="dateEnd" onchange="filterEmployees()" />
+        </div>
     }
 </div>
 
@@ -113,7 +113,7 @@
                 Job Title
             </th>
             <th>Department</th>
-            <th class="d-print-none">Actions</th>
+            
         </tr>
     </thead>
     <tbody id="table-body">
@@ -157,10 +157,7 @@
                             <p>N/A</p>
                         }
                 </td>
-                <td class="d-print-none">
-                    <a asp-page="./Edit" asp-route-id="@item.employmentID">Edit</a> |
-                    <a asp-page="./Details" asp-route-id="@item.employmentID">Details</a>
-                </td>
+                
             </tr>
         }
     </tbody>
@@ -198,7 +195,15 @@
             .then(data => {
 
                 document.getElementById('table-body').innerHTML = data.tableHtml;
-
+                const selector = document.getElementById('filter-department');
+                document.getElementById('filter-department').innerHTML =
+                    '<option value="">All</option>'
+                data.departs.forEach(function(item) {
+                    const option = document.createElement('option');
+                    option.value = item.id;
+                    option.textContent = item.name;
+                    selector.appendChild(option);
+                });
                 updateRowCount("countID");
             })
             .catch(error => console.error('Error:', error));

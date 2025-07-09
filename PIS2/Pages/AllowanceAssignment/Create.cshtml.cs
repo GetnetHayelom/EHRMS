@@ -20,8 +20,8 @@ namespace PIS2.Pages.AllowanceAssignment
 
         public IActionResult OnGet()
         {
-        ViewData["allowanceID"] = new SelectList(_context.Allowances, "allowanceID", "allowanceName");
-        ViewData["employmentID"] = new SelectList(_context.Employments, "employmentID", "givenID");
+        ViewData["allowanceID"] = new SelectList(_context.Allowances.Where(a => a.allowanceStatus == mainStatus.Active), "allowanceID", "allowanceName");
+        ViewData["employmentID"] = new SelectList(_context.Employments.Where(a => a.employmentStatus == mainStatus.Active).OrderBy(e => e.givenID), "employmentID", "givenID");
             return Page();
         }
 
@@ -31,8 +31,20 @@ namespace PIS2.Pages.AllowanceAssignment
         // For more information, see https://aka.ms/RazorPagesCRUD.
         public async Task<IActionResult> OnPostAsync()
         {
+            ModelState.Remove("allowanceAssignmentModel.modifiedBy");
+
+            allowanceAssignmentModel.modifiedBy = User.Identity.Name;
+            allowanceAssignmentModel.allowanceStatus = mainStatus.Suspended;
+
             if (!ModelState.IsValid)
             {
+                foreach (var kv in ModelState)
+                {
+                    foreach (var error in kv.Value.Errors)
+                    {
+                        Console.WriteLine($"{kv.Key} --> {error.ErrorMessage}");
+                    }
+                }
                 return Page();
             }
 

@@ -1,0 +1,50 @@
+﻿@page
+@model PIS2.Pages.JobStep.DetailsModel
+
+@{
+    ViewData["Title"] = "Details";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<h1>Details</h1>
+
+<div>
+    <h4>jobStepModel</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.jobStepModel.jobStepName)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.jobStepModel.jobStepName)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.jobStepModel.jobGradeModel)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.jobStepModel.jobGradeModel.jobGradeID)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.jobStepModel.jobStepSalary)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.jobStepModel.jobStepSalary)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.jobStepModel.jobStepStatus)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.jobStepModel.jobStepStatus)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.jobStepModel.modifiedBy)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.jobStepModel.modifiedBy)
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-page="./Edit" asp-route-id="@Model.jobStepModel.jobStepID">Edit</a> |
+    <a asp-page="./Index">Back to List</a>
+</div>

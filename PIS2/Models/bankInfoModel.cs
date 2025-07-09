@@ -15,7 +15,7 @@ namespace PIS2.Models
         [Required]
         public string bankAccountNumber { get; set; }
         public string? bankBranch { get; set; }
-        public mainStatus banikInfoStatus { get; set; }
+        public mainStatus bankInfoStatus { get; set; }
         public string modifiedBy { get; set; }
 
         public bankInfoModel() { }

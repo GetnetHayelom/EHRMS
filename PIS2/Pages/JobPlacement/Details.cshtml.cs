@@ -28,7 +28,13 @@ namespace PIS2.Pages.JobPlacement
                 return NotFound();
             }
 
-            var jobplacementmodel = await _context.JobPlacements.FirstOrDefaultAsync(m => m.jobPlacementID == id);
+            var jobplacementmodel = await _context.JobPlacements
+                .Include(j => j.jobModel).ThenInclude(j => j.jobGradeModel)
+                .Include(j => j.jobStepModel)
+                .Include(j => j.JobPlacementHistories)
+                .Include(j => j.departmentModel)
+                .Include(j => j.employmentModel)
+                .FirstOrDefaultAsync(m => m.jobPlacementID == id);
             if (jobplacementmodel == null)
             {
                 return NotFound();
@@ -38,10 +44,12 @@ namespace PIS2.Pages.JobPlacement
                 
                 jobPlacementModel = jobplacementmodel;
 
-                jobPlacementList = await _context.JobPlacements.Where(jp => jp.employmentID == jobPlacementModel.employmentID)
-                    .Include(jp=>jp.jobModel)
-                    .Include(jp => jp.departmentModel)
-                    .Include(jp => jp.shiftModel).ToListAsync();
+                //jobPlacementList = await _context.Where(jp => jp.employmentID == jobPlacementModel.employmentID)
+                //    .Include(jp=>jp.jobModel).ThenInclude(j => j.jobGradeModel)
+                //    .Include(jp=> jp.jobStepModel)
+                //    .Include(jp => jp.departmentModel)
+                //    .Include(j => j.employmentModel)
+                //    .Include(jp => jp.shiftModel).ToListAsync();
             }
             return Page();
         }

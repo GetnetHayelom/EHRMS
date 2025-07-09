@@ -6,33 +6,91 @@
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
 
-<h1>Details</h1>
-
+<h1 class="fw-bold">Allowance Assignments</h1>
+<hr />
 <div>
-    <h4>allowanceAssignmentModel</h4>
+    <h4 class="fw-bold">Allowance Assignment Details</h4>
     <hr />
-    <dl class="row">
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.allowanceAssignmentModel.allowanceModel)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.allowanceAssignmentModel.allowanceModel.allowanceName)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.allowanceAssignmentModel.allowanceAssignmentDate)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.allowanceAssignmentModel.allowanceAssignmentDate)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.allowanceAssignmentModel.employmentModel)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.allowanceAssignmentModel.employmentModel.givenID)
-        </dd>
-    </dl>
+    <div class="d-flex">
+        <div class="col-md-4">
+            <dl class="row">
+                <dt class="col-sm-4">
+                    Employment ID:
+                </dt>
+                <dd class="flex-grow-1">
+                    <u>@Html.DisplayFor(model => model.allowanceAssignmentModel.employmentModel.givenID)</u>
+                </dd>
+                <dt class="">
+                    Employment Name:
+                </dt>
+                <dd class="">
+                    <u> @Html.DisplayFor(model => model.allowanceAssignmentModel.employmentModel.personModel.personFullName)</u>
+                </dd>
+                <dt class="">
+                    Allowance Type:
+                </dt>
+                <dd class="">
+                    <u>@Html.DisplayFor(model => model.allowanceAssignmentModel.allowanceModel.allowanceName)</u>
+                </dd>
+                <dt class="">
+                    Allowance Amount:
+                </dt>
+                <dd class="">
+                    <u>@Html.DisplayFor(model => model.allowanceAssignmentModel.allowanceAssignmentAmount)</u>
+                </dd>
+                <dt class="">
+                    Allowance Date:
+                </dt>
+                <dd class="">
+                    <u>@Model.allowanceAssignmentModel.allowanceAssignmentDate</u>
+                </dd>
+                <dt class="">
+                    Allowance Duration:
+                </dt>
+                <dd class="">
+                    <u>@Html.DisplayFor(model => model.allowanceAssignmentModel.allowanceModel.allowanceDuration)</u>
+                </dd>
+                @if(Model.allowanceAssignmentModel.allowanceModel.allowanceDuration == Models.allowanceDuration.Limited)
+                {
+                    <dt class="">Allowance End Date</dt>
+                    <dd>
+                        <u>@Model.allowanceAssignmentModel.allowanceAssignmentEndDate</u>
+                    </dd>
+                }
+            </dl>
+            
+        </div>
+        <div class="flex-grow-1">
+            <h4 class="fw-bold">Allowance Assignment History</h4>
+            <table class="table table-striped table-hover">
+                <thead class="bg-info text-white">
+                    <tr>
+                        <td>Allowance Status</td>
+                        <td>Allowance Amount</td>
+                        <td>Modified Date</td>
+                        <td>Modified By</td>
+                        
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.allowanceAssignmentModel.AllowanceAssignmentHistories.Any())
+                    {
+                        foreach(var item in Model.allowanceAssignmentModel.AllowanceAssignmentHistories)
+                        {
+                            <tr>
+                                <td>@item.allowanceAssignmentHistoryStatus</td>
+                                <td>@item.allowanceAssignmentAmount</td>
+                                <td>@item.modifiedDate.ToString("MMM dd, yyyy")</td>
+                                <td>@item.modifiedBy</td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>
 <div>
     <a asp-page="./Edit" asp-route-id="@Model.allowanceAssignmentModel.allowanceAssignmentID">Edit</a> |
-    <a asp-page="./Index">Back to List</a>
+    <a asp-page="./Index" >Back to List</a>
 </div>

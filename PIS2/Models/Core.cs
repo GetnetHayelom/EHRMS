@@ -5,6 +5,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
 using NuGet.Protocol.Plugins;
 using static System.Runtime.InteropServices.JavaScript.JSType;
+using PIS2.Models;
 
 namespace PIS2.Models
 {
@@ -404,10 +405,11 @@ namespace PIS2.Models
             employmentModel model = new employmentModel();
             if (!string.IsNullOrEmpty(givenID))
             {
-                model = _context.Employments.First(e => e.givenID == givenID);
+                model = _context.Employments.FirstOrDefault(e => e.givenID == givenID);
             }
             return model;
         }
+ 
         public Core() { }
 
     }

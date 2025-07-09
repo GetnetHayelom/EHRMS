@@ -24,7 +24,8 @@ namespace PIS2.Pages.AllowanceAssignment
         {
             allowanceAssignmentModel = await _context.AllowanceAssignments
                 .Include(a => a.allowanceModel)
-                .Include(a => a.employmentModel).ToListAsync();
+                .Include(a => a.employmentModel).ThenInclude(e => e.personModel)
+                .ToListAsync();
         }
     }
 }

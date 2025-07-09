@@ -27,7 +27,12 @@ namespace PIS2.Pages.AllowanceAssignment
                 return NotFound();
             }
 
-            var allowanceassignmentmodel = await _context.AllowanceAssignments.FirstOrDefaultAsync(m => m.allowanceAssignmentID == id);
+            var allowanceassignmentmodel = await _context.AllowanceAssignments
+                .Include(a => a.employmentModel).ThenInclude(e => e.personModel)
+                .Include(a => a.allowanceModel)
+                .Include(a => a.AllowanceAssignmentHistories)
+                .FirstOrDefaultAsync(m => m.allowanceAssignmentID == id);
+
             if (allowanceassignmentmodel == null)
             {
                 return NotFound();

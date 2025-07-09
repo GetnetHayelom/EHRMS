@@ -54,6 +54,7 @@ namespace PIS2.Pages.Employment
                 .Include(e=>e.personModel).ThenInclude(p => p.PersonEducationLevels).ThenInclude(pe =>pe.educationLevelModel)
                 .Include(e=>e.employmentTypeModel)
                 .Include(e => e.Leaves)
+                .Include(e => e.JobPlacements).ThenInclude(j => j.jobStepModel)
                 .Include(e =>e.JobPlacements).ThenInclude(jp => jp.jobModel).ThenInclude(j => j.jobGradeModel)
                 .Include(e => e.JobPlacements).ThenInclude(jp => jp.jobModel).ThenInclude(j => j.jobCategoryModel)
                 .Include(e => e.JobPlacements).ThenInclude(jp => jp.jobModel).ThenInclude(j => j.jobClassModel)

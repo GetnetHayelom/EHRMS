@@ -1,0 +1,92 @@
+﻿@page
+@model PIS2.Pages.JopPlacementHistory.EditModel
+
+@{
+    ViewData["Title"] = "Edit";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<h1>Edit</h1>
+
+<h4>jobPlacementModel</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="jobPlacementModel.jobPlacementID" />
+            <div class="form-group">
+                <label asp-for="jobPlacementModel.employmentID" class="control-label"></label>
+                <select asp-for="jobPlacementModel.employmentID" class="form-control" asp-items="ViewBag.employmentID"></select>
+                <span asp-validation-for="jobPlacementModel.employmentID" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="jobPlacementModel.departmentID" class="control-label"></label>
+                <select asp-for="jobPlacementModel.departmentID" class="form-control" asp-items="ViewBag.departmentID"></select>
+                <span asp-validation-for="jobPlacementModel.departmentID" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="jobPlacementModel.jobID" class="control-label"></label>
+                <select asp-for="jobPlacementModel.jobID" class="form-control" asp-items="ViewBag.jobID"></select>
+                <span asp-validation-for="jobPlacementModel.jobID" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="jobPlacementModel.shiftID" class="control-label"></label>
+                <select asp-for="jobPlacementModel.shiftID" class="form-control" asp-items="ViewBag.shiftID"></select>
+                <span asp-validation-for="jobPlacementModel.shiftID" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="jobPlacementModel.workSiteID" class="control-label"></label>
+                <select asp-for="jobPlacementModel.workSiteID" class="form-control" asp-items="ViewBag.workSiteID"></select>
+                <span asp-validation-for="jobPlacementModel.workSiteID" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <span class="text-danger">*</span>
+                <label asp-for="jobPlacementModel.jobPlacementSalary" class="control-label"></label>
+                <input asp-for="jobPlacementModel.jobPlacementSalary" class="form-control" />
+                <span asp-validation-for="jobPlacementModel.jobPlacementSalary" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="jobPlacementModel.jobStepID" class="control-label"></label>
+                <input asp-for="jobPlacementModel.jobStepID" class="form-control" />
+                <span asp-validation-for="jobPlacementModel.jobStepID" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="jobPlacementModel.jobPlacementDate" class="control-label"></label>
+                <input asp-for="jobPlacementModel.jobPlacementDate" class="form-control" />
+                <span asp-validation-for="jobPlacementModel.jobPlacementDate" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="jobPlacementModel.jobPlacementStatus" class="control-label"></label>
+                <select asp-for="jobPlacementModel.jobPlacementStatus" class="form-control"></select>
+                <span asp-validation-for="jobPlacementModel.jobPlacementStatus" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="jobPlacementModel.jobPlacementReference" class="control-label"></label>
+                <input asp-for="jobPlacementModel.jobPlacementReference" class="form-control" />
+                <span asp-validation-for="jobPlacementModel.jobPlacementReference" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="jobPlacementModel.jobPlacementReason" class="control-label"></label>
+                <input asp-for="jobPlacementModel.jobPlacementReason" class="form-control" />
+                <span asp-validation-for="jobPlacementModel.jobPlacementReason" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="jobPlacementModel.modifiedBy" class="control-label"></label>
+                <input asp-for="jobPlacementModel.modifiedBy" class="form-control" />
+                <span asp-validation-for="jobPlacementModel.modifiedBy" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-page="./Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

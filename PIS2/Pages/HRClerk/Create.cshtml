@@ -1,0 +1,64 @@
+﻿@page
+@model PIS2.Pages.HRClerck.CreateModel
+
+@{
+    ViewData["Title"] = "Create";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<h1>Create</h1>
+
+<h4>personModel</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <h2 class="fw-bold">Pending Leaves</h2>
+    </div>
+    <div class="col-md-4">
+        <h2 class="fw-bold">Employee Services</h2>
+        <div class="row p-2">
+            <div class="d-flex">
+                <h4 class="fw-bold col-9 text-warning p-2">Exprience Requests</h4>
+                <h4 class="fw-bold col-3 text-white bg-warning p-2">45</h4>
+            </div>
+            <div class="d-flex">
+                <h4 class="fw-bold col-9 text-warning p-2">Guarantee Requests</h4>
+                <h4 class="fw-bold col-3 text-white bg-warning p-2">45</h4>
+            </div>
+            <div class="d-flex">
+                <h4 class="fw-bold col-9 text-warning p-2">Termination Requests</h4>
+                <h4 class="fw-bold col-3 text-white bg-warning p-2">45</h4>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <h2 class="fw-bold">Upcoming Actions</h2>
+        <div class="row p-2">
+            <div class="d-flex">
+                <h4 class="fw-bold col-9 text-warning p-2">Carrier</h4>
+                <h4 class="fw-bold col-3 text-white bg-warning p-2">45</h4>
+            </div>
+            <div class="d-flex">
+                <h4 class="fw-bold col-9 text-warning p-2">Step</h4>
+                <h4 class="fw-bold col-3 text-white bg-warning p-2">45</h4>
+            </div>
+            <div class="d-flex">
+                <h4 class="fw-bold col-9 text-warning p-2">Pension</h4>
+                <h4 class="fw-bold col-3 text-white bg-warning p-2">45</h4>
+            </div>           
+        </div>
+    </div>
+</div>
+<div class="d-flex justify-content-around">
+    <a href="/Person/Create" class="bg-primary bi bi-plus p-4 m-2 text-decoration-none fw-bold text-white">New Person</a>
+    <a href="/Employment/Create" class="bg-primary bi bi-plus p-4 m-2 text-decoration-none fw-bold text-white">New Employment</a>
+    <a href="/JobPlacement/Create" class="bg-primary bi bi-plus p-4 m-2 text-decoration-none fw-bold text-white">New Job Assignment</a>
+</div>
+
+<div>
+    <a asp-page="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

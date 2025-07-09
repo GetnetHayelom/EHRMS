@@ -33,9 +33,11 @@ namespace PIS2.Models
         public string jobGradeName { get; set; }
         public string? jobGradeDescription { get; set; }
         public double jobGradeBasicSalary { get; set; }
+        public double jobGradeMidSalary { get; set; }
         public double jobGradeMaxSalary { get; set; }
         public mainStatus jobGradeStatus { get; set; }
         public virtual ICollection<jobModel>? Jobs { get; set; }
+        public virtual ICollection<jobStepModel> JobSteps { get; set; }
         public string modifiedBy { get; set; }
 
         public jobGradeModel()

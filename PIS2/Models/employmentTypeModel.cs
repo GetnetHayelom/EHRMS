@@ -15,6 +15,7 @@ namespace PIS2.Models
         public bool isSeveranceAllowed { get; set; } = true;
         public bool isCarrierAllowed { get; set; } = true;
         public bool isStepAllowed { get; set; } = true;
+        public bool isPensionAllowed { get; set; } = true;
         public mainStatus employmentTypeStatus { get; set; }
         public double annualAccrualRate { get; set; } = 1;
         public double employmentBaseLeave { get; set; } = 20;

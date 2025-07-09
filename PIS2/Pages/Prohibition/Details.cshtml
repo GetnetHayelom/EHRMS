@@ -1,0 +1,68 @@
+﻿@page
+@model PIS2.Pages.Prohibition.DetailsModel
+
+@{
+    ViewData["Title"] = "Details";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<h1>Details</h1>
+
+<div>
+    <h4>prohibitionModel</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.prohibitionModel.employmentModel)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.prohibitionModel.employmentModel.givenID)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.prohibitionModel.prohibitionStart)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.prohibitionModel.prohibitionStart)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.prohibitionModel.prohibitionEnd)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.prohibitionModel.prohibitionEnd)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.prohibitionModel.prohibitionStatus)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.prohibitionModel.prohibitionStatus)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.prohibitionModel.prohibitionReason)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.prohibitionModel.prohibitionReason)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.prohibitionModel.prohibitionType)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.prohibitionModel.prohibitionType)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.prohibitionModel.prohibitionRemark)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.prohibitionModel.prohibitionRemark)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.prohibitionModel.modifiedBy)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.prohibitionModel.modifiedBy)
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-page="./Edit" asp-route-id="@Model.prohibitionModel.prohibitionID">Edit</a> |
+    <a asp-page="./Index">Back to List</a>
+</div>

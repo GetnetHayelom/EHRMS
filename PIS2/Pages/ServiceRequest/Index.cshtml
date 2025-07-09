@@ -1,0 +1,141 @@
+﻿@page
+@model PIS2.Pages.ServiceRequest.IndexModel
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<h1 class="fw-bold">Service Requests</h1>
+</hr>
+<p>
+    <a asp-page="Create" class="btn btn-primary text-decoration-none d-print-none">Create New</a>
+</p>
+<form method="POST" class="d-flex m-2">
+    <div class="me-2 col-2">
+        <label for="filter-status"><span class="d-print-none">Filter by </span> Status:</label>
+        <select class="form-select" aria-label="Default select example" id="filter-status" onchange="filter()" asp-items="Html.GetEnumSelectList<Models.leaveStatus>()">
+            <option value="">All</option>
+        </select>
+    </div>
+    <div class="me-2 col-2">
+        <label for="filter-department"><span class="d-print-none">Filter by </span>Department:</label>
+        <select class="form-select" aria-label="Default select example" id="filter-department" onchange="filter()">
+            <option value="">All</option>
+            @foreach (var department in Model.Departments)
+            {
+                <option value="@department.departmentID">@department.departmentName</option>
+            }
+        </select>
+    </div>
+    
+    <div class="me-2 col-2">
+        <label for="filter-company"><span class="d-print-none">Filter by </span> Company:</label>
+        <select class="form-select" aria-label="Default select example" id="filter-company" onchange="filter()">
+            <option value="">All</option>
+            @foreach (var company in Model.Companies)
+            {
+                <option value="@company.companyID">@company.companyName</option>
+            }
+        </select>
+    </div>
+    <div class="me-2 col-2">
+        <label for="filter-workLoc"><span class="d-print-none">Filter by </span> Work Location:</label>
+        <select class="form-select" aria-label="Default select example" id="filter-workLoc" onchange="filter()">
+            <option value="">All</option>
+            @foreach (var workLocation in Model.WorkLocations)
+            {
+                <option value="@workLocation.workSiteID">@workLocation.workSiteName</option>
+            }
+        </select>
+    </div>
+    <div class="me-2 col-2">
+        <label for="dateStart">Date From:</label>
+        <input class="form-control" type="date" id="dateStart" onchange="filter()" asp-for="StartDate" />
+    </div>
+    <div class="me-2 col-2">
+        <label for="dateEnd">Date Upto:</label>
+        <input class="form-control" type="date" id="dateEnd" onchange="filter()" asp-for="EndDate" />
+    </div>
+</form>
+<table class="table table-striped table-hover">
+    <thead class="bg-dark text-white">
+        <tr>
+            <th>
+                Employee ID
+            </th>
+            <th>
+                Requested Service
+            </th>           
+            <th>
+                Requested By
+            </th>
+            <th>
+                Requested Date
+            </th>
+            <th>
+                Request Status
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model.serviceRequestModel) {
+        <tr onclick="location.href='@Url.Page("Detail", new {id =item.serviceRequestID})'" style="cursor:pointer">
+            <td>
+                @Html.DisplayFor(modelItem => item.Employment.givenID)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.requestedService)
+            </td>
+            
+            <td>
+                @Html.DisplayFor(modelItem => item.modifiedBy)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.serviceRequestDate)
+            </td>
+            @{
+                string bg_color;
+                if (item.serviceRequestStatus == Models.ServiceRequestStatus.Hold)
+                {
+                    bg_color = "bg-warning text-black";
+                }
+                else if (item.serviceRequestStatus == Models.ServiceRequestStatus.Ready)
+                {
+                    bg_color = "bg-success text-white";
+                }
+                else if (item.serviceRequestStatus == Models.ServiceRequestStatus.Posted)
+                {
+                    bg_color = "bg-primary text-white";
+                }
+                else
+                {
+                    bg_color = "bg-grey text-black";
+                }
+            }
+            <td class="@bg_color">
+                @Html.DisplayFor(modelItem => item.serviceRequestStatus)
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
+<div class="d-flex justify-content-end">@await Html.PartialAsync("print")</div>
+<script>
+    function filter() {
+        const status = document.getElementById("filter-status").value;
+        const department = document.getElementById("filter-department").value;
+        const company = document.getElementById("filter-company").value;
+        const workLoc = document.getElementById("filter-workLoc").value;
+        const startDate = document.getElementById("dateStart").value;
+        const endDate = document.getElementById("dateEnd").value;
+
+        const query = new URLSearchParams({
+            status, department, company, workLoc, startDate, endDate
+        });
+
+        // Reload the page with the filters
+        window.location.href = `/ServiceRequest/Index?${query.toString()}`;
+    }
+
+</script>

@@ -1,0 +1,57 @@
+﻿@page
+@model PIS2.Pages.HRDash.EditModel
+
+@{
+    ViewData["Title"] = "Edit";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<h1>Edit</h1>
+
+<h4>accountModel</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="accountModel.accountID" />
+            <div class="form-group">
+                <span class="text-danger">*</span>
+                <label asp-for="accountModel.accountNumber" class="control-label"></label>
+                <input asp-for="accountModel.accountNumber" class="form-control" />
+                <span asp-validation-for="accountModel.accountNumber" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="accountModel.accountName" class="control-label"></label>
+                <input asp-for="accountModel.accountName" class="form-control" />
+                <span asp-validation-for="accountModel.accountName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="accountModel.accountDescription" class="control-label"></label>
+                <input asp-for="accountModel.accountDescription" class="form-control" />
+                <span asp-validation-for="accountModel.accountDescription" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="accountModel.accountStatus" class="control-label"></label>
+                <select asp-for="accountModel.accountStatus" class="form-control"></select>
+                <span asp-validation-for="accountModel.accountStatus" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="accountModel.modifiedBy" class="control-label"></label>
+                <input asp-for="accountModel.modifiedBy" class="form-control" />
+                <span asp-validation-for="accountModel.modifiedBy" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-page="./Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

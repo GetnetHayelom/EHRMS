@@ -8,6 +8,7 @@ namespace PIS2.Models
         public int accountID { get; set; }
         [Required]
         public string accountNumber {  get; set; }
+        
         public string accountName { get; set; }
         public string? accountDescription { get; set; }
         public mainStatus accountStatus { get; set; }

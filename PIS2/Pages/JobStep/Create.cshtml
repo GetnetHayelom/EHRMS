@@ -1,0 +1,54 @@
+﻿@page
+@model PIS2.Pages.JobStep.CreateModel
+
+@{
+    ViewData["Title"] = "Create";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<h1 class="fw-bold">Job Steps</h1>
+
+<h4 class="fw-bold">New Job Step</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="jobStepModel.jobStepName" class="control-label">Job Step Name</label>
+                <input asp-for="jobStepModel.jobStepName" class="form-control" />
+                <span asp-validation-for="jobStepModel.jobStepName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="jobStepModel.jobGradeID" class="control-label">Job Step Grade</label>
+                <select asp-for="jobStepModel.jobGradeID" class ="form-control" asp-items="ViewBag.jobGradeID"></select>
+            </div>
+            <div class="form-group">
+                <label asp-for="jobStepModel.jobStepSalary" class="control-label">Salary</label>
+                <input asp-for="jobStepModel.jobStepSalary" class="form-control" />
+                <span asp-validation-for="jobStepModel.jobStepSalary" class="text-danger"></span>
+            </div>
+            <div class="form-group d-none">
+                <label asp-for="jobStepModel.jobStepStatus" class="control-label">Status</label>
+                <select asp-for="jobStepModel.jobStepStatus" class="form-control" value="@Models.mainStatus.Suspended"></select>
+                <span asp-validation-for="jobStepModel.jobStepStatus" class="text-danger"></span>
+            </div>
+            <div class="form-group d-none">
+                <label asp-for="jobStepModel.modifiedBy" class="control-label"></label>
+                <input asp-for="jobStepModel.modifiedBy" class="form-control" value="@User.Identity.Name" />
+                <span asp-validation-for="jobStepModel.modifiedBy" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary m-2" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-page="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

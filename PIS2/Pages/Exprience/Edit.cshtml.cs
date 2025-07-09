@@ -29,7 +29,7 @@ namespace PIS2.Pages.Exprience
                 return NotFound();
             }
 
-            var experiencemodel =  await _context.Expriences.FirstOrDefaultAsync(m => m.experienceId == id);
+            var experiencemodel =  await _context.Expriences.FirstOrDefaultAsync(m => m.experienceID == id);
             if (experiencemodel == null)
             {
                 return NotFound();
@@ -55,7 +55,7 @@ namespace PIS2.Pages.Exprience
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!experienceModelExists(experienceModel.experienceId))
+                if (!experienceModelExists(experienceModel.experienceID))
                 {
                     return NotFound();
                 }
@@ -70,7 +70,7 @@ namespace PIS2.Pages.Exprience
 
         private bool experienceModelExists(int id)
         {
-            return _context.Expriences.Any(e => e.experienceId == id);
+            return _context.Expriences.Any(e => e.experienceID == id);
         }
     }
 }

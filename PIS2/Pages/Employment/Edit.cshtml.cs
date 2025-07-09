@@ -25,6 +25,14 @@ namespace PIS2.Pages.Employment
         public jobPlacementModel jobPlacementModel { get; set; } = default!;
         [BindProperty]
         public personModel personModel { get; set; } = default!;
+        [BindProperty]
+        public experienceModel experimentModel { get; set; } = default!;
+        [BindProperty]
+        public personEducationLevelModel personEducationLevelModel { get; set; } = default!;
+        [BindProperty]
+        public List<experienceModel> Experiments { get; set; } = default!;
+        [BindProperty]
+        public List<personEducationLevelModel> PersonEducationLevels { get; set; } = default!;
         public async Task<IActionResult> OnGetAsync(int? id)
         {
             if (id == null)
@@ -36,7 +44,7 @@ namespace PIS2.Pages.Employment
                 .Include(e => e.personModel)
                 .Include(e => e.JobPlacements)
                 .FirstOrDefaultAsync(m => m.employmentID == id);
-            
+            Experiments = new List<experienceModel>();
             if (employmentmodel == null)
             {
                 return NotFound();
@@ -125,6 +133,7 @@ namespace PIS2.Pages.Employment
             ViewData["jobID"] = new SelectList(_context.Jobs, "jobID", "jobTitle");
             ViewData["shiftID"] = new SelectList(_context.Shifts, "shiftID", "shiftName");
             ViewData["addressID"] = new SelectList(_context.Addresses, "addressID", "addressFormatted");
+            ViewDate["educationLevelID"] = new SelectList(_context.EducationLevels, "educationLevelID", "educationLevelName");
 
         }
     }

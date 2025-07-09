@@ -24,7 +24,7 @@
                 @Html.DisplayNameFor(model => model.experienceModel[0].experienceEndDate)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.experienceModel[0].jobPlacementID)
+                @Html.DisplayNameFor(model => model.experienceModel[0].jobTitle)
             </th>
             <th></th>
         </tr>
@@ -42,12 +42,12 @@
                 @Html.DisplayFor(modelItem => item.experienceEndDate)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.jobPlacementID)
+                @Html.DisplayFor(modelItem => item.jobTitle)
             </td>
             <td>
-                <a asp-page="./Edit" asp-route-id="@item.experienceId">Edit</a> |
-                <a asp-page="./Details" asp-route-id="@item.experienceId">Details</a> |
-                <a asp-page="./Delete" asp-route-id="@item.experienceId">Delete</a>
+                <a asp-page="./Edit" asp-route-id="@item.experienceID">Edit</a> |
+                <a asp-page="./Details" asp-route-id="@item.experienceID">Details</a> |
+                <a asp-page="./Delete" asp-route-id="@item.experienceID">Delete</a>
             </td>
         </tr>
 }

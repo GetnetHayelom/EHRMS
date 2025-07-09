@@ -23,11 +23,17 @@ namespace PIS2.Pages.Employment
             if(id >0)
             {
                 Person = _context.Persons.FirstOrDefault(p => p.personID == id);
-                ViewData["personID"] = new SelectList(_context.Persons, "personID", "personFullName", id);
+                ViewData["personID"] = new SelectList(_context.Persons
+                    .Where(p => !_context.Employments
+                        .Any(e => e.personID == p.personID && e.employmentStatus == mainStatus.Active))
+                    .OrderBy(p => p.personFirstName).ToList(), "personID", "personFullName", id);
             }
             else
             {
-                ViewData["personID"] = new SelectList(_context.Persons, "personID", "personFullName");
+                ViewData["personID"] = new SelectList(_context.Persons
+                    .Where(p => !_context.Employments
+                        .Any(e => e.personID == p.personID && e.employmentStatus == mainStatus.Active))
+                    .OrderBy(p => p.personFirstName).ToList(), "personID", "personFullName");
             }
             
             ViewData["employmentTypeID"] = new SelectList(_context.EmploymentTypes, "employmentTypeID", "employmentTypeName");

@@ -58,6 +58,7 @@
                                     <a class="dropdown-item" asp-page="/JobCategory/Index">Job Categories</a>
                                     <a class="dropdown-item" asp-page="/JobClass/Index">Job Classes</a>
                                     <a class="dropdown-item" asp-page="/JobGrade/Index">Job Grades</a>
+                                    <a class="dropdown-item" asp-page="/JobStep/Index">Job Step</a>
                                     <a class="dropdown-item" asp-page="/Shift/Index">Shift</a>
 
                                 </div>
@@ -85,14 +86,14 @@
                                     <a class="dropdown-item" asp-page="/Break/Index">Breaks</a>
                                     <a class="dropdown-item" asp-page="/LeaveType/Index">Leave Setup</a>
                                     <a class="dropdown-item" asp-page="/Allowance/Index">Allowance Setup</a>
-                                    <a class="dropdown-item" asp-page="/EmploymentMethod/Index">Allowance Setup</a>
+                                    
                                 </div>
                             </li>
                         }
                         @if (User.IsInRole("mie\\PMS_HRCLERK"))
                         {
                             <li class="nav-item dropdown">
-                            <a class="nav-link text-white dropdown-toggle" asp-area="" role="button" data-bs-toggle="dropdown">HR Clerk</a>
+                            <a class="nav-link text-white dropdown-toggle" asp-area="" role="button" data-bs-toggle="dropdown">HR Personel</a>
                             <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
                                 <a class="dropdown-item" asp-page="/Person/Index">Person</a>
                                 <a class="dropdown-item" asp-page="/Employment/Index">Employments</a>
@@ -119,7 +120,9 @@
                         <li class="nav-item">
                             <a class="nav-link text-white" asp-area="" asp-page="/Management/Index">Management</a>
                         </li>
-
+                        <li class="nav-item">
+                            <a class="nav-link text-white" asp-area="" asp-page="/HRClerk/Index">HR Dashboard</a>
+                        </li>
                         <li class="nav-item">
                             <a class="nav-link text-white" asp-area="" asp-page="/Privacy">Privacy</a>
                         </li>

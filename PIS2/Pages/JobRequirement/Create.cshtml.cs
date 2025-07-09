@@ -20,8 +20,8 @@ namespace PIS2.Pages.JobRequirement
 
         public IActionResult OnGet()
         {
-        ViewData["departmentID"] = new SelectList(_context.Departments, "departmentID", "departmentName");
-        ViewData["jobID"] = new SelectList(_context.Jobs, "jobID", "jobID");
+        ViewData["departmentID"] = new SelectList(_context.Departments.Where(d=> d.departmentStatus == mainStatus.Active).OrderBy(d =>d.departmentName), "departmentID", "departmentName");
+        ViewData["jobID"] = new SelectList(_context.Jobs.Where(j => j.jobStatus == mainStatus.Active).OrderBy(j => j.jobTitle), "jobID", "jobTitle");
             return Page();
         }
 
@@ -31,6 +31,7 @@ namespace PIS2.Pages.JobRequirement
         // For more information, see https://aka.ms/RazorPagesCRUD.
         public async Task<IActionResult> OnPostAsync()
         {
+            jobRequirementModel.modifiedBy = User.Identity.Name;
             if (!ModelState.IsValid)
             {
                 return Page();

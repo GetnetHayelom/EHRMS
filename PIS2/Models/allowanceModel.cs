@@ -13,10 +13,14 @@ namespace PIS2.Models
         public decimal allowanceAmount { get; set; } = 0;
         public bool allowanceTaxable { get; set; } = true;
         public mainStatus allowanceStatus { get; set; }
+        public allowanceDuration allowanceDuration { get; set; }
         //Navigation Property
         public virtual ICollection<allowanceAssignmentModel>? AllowanceAssignments { get; set; }
         public string modifiedBy { get; set; }
         public allowanceModel() { }
     }
-
+    public enum allowanceDuration{
+        Permanent,
+        Limited
+    }
 }

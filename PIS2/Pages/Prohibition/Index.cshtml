@@ -1,0 +1,79 @@
+﻿@page
+@model PIS2.Pages.Prohibition.IndexModel
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-page="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.prohibitionModel[0].employmentModel)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.prohibitionModel[0].prohibitionStart)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.prohibitionModel[0].prohibitionEnd)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.prohibitionModel[0].prohibitionStatus)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.prohibitionModel[0].prohibitionReason)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.prohibitionModel[0].prohibitionType)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.prohibitionModel[0].prohibitionRemark)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.prohibitionModel[0].modifiedBy)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model.prohibitionModel) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.employmentModel.givenID)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.prohibitionStart)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.prohibitionEnd)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.prohibitionStatus)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.prohibitionReason)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.prohibitionType)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.prohibitionRemark)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.modifiedBy)
+            </td>
+            <td>
+                <a asp-page="./Edit" asp-route-id="@item.prohibitionID">Edit</a> |
+                <a asp-page="./Details" asp-route-id="@item.prohibitionID">Details</a> |
+                <a asp-page="./Delete" asp-route-id="@item.prohibitionID">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

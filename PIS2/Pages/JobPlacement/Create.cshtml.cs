@@ -18,12 +18,15 @@ namespace PIS2.Pages.JobPlacement
             _context = context;
         }
 
+        [BindProperty]
+        public int company { get; set; }
         public IActionResult OnGet()
         {
-        ViewData["departmentID"] = new SelectList(_context.Departments, "departmentID", "departmentName");
-        ViewData["employmentID"] = new SelectList(_context.Employments, "employmentID", "givenID");
-        ViewData["jobID"] = new SelectList(_context.Jobs, "jobID", "jobTitle");
-        ViewData["shiftID"] = new SelectList(_context.Shifts, "shiftID", "shiftName");
+            ViewData["companyID"] = new SelectList(_context.Companies.Where(c => c.companyStatus == mainStatus.Active), "companyID", "companyName");
+            ViewData["departmentID"] = new SelectList(_context.Departments.Where( d=> d.departmentStatus == mainStatus.Active), "departmentID", "departmentName");
+            ViewData["employmentID"] = new SelectList(_context.Employments.Where(e => e.employmentStatus == mainStatus.Active), "employmentID", "givenID");
+            ViewData["jobID"] = new SelectList(_context.Jobs.Where(j => j.jobStatus == mainStatus.Active), "jobID", "jobTitle");
+            ViewData["shiftID"] = new SelectList(_context.Shifts.Where(s => s.shiftStatus == mainStatus.Active), "shiftID", "shiftName");
             return Page();
         }
 
