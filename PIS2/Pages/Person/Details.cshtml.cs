@@ -32,7 +32,7 @@ namespace PIS2.Pages.Person
                 return NotFound();
             }
 
-            var personmodel = await _context.Persons.FirstOrDefaultAsync(m => m.personID == id);
+            var personmodel = await _context.Persons.Include(p => p.PersonHistories)?.ThenInclude(ph => ph.addressModel).FirstOrDefaultAsync(m => m.personID == id);
             if (personmodel == null)
             {
                 return NotFound();

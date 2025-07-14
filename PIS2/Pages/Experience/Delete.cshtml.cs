@@ -28,7 +28,7 @@ namespace PIS2.Pages.Exprience
                 return NotFound();
             }
 
-            var experiencemodel = await _context.Expriences.FirstOrDefaultAsync(m => m.experienceID == id);
+            var experiencemodel = await _context.Experiences.FirstOrDefaultAsync(m => m.experienceID == id);
 
             if (experiencemodel == null)
             {
@@ -48,11 +48,11 @@ namespace PIS2.Pages.Exprience
                 return NotFound();
             }
 
-            var experiencemodel = await _context.Expriences.FindAsync(id);
+            var experiencemodel = await _context.Experiences.FindAsync(id);
             if (experiencemodel != null)
             {
                 experienceModel = experiencemodel;
-                _context.Expriences.Remove(experienceModel);
+                _context.Experiences.Remove(experienceModel);
                 await _context.SaveChangesAsync();
             }
 

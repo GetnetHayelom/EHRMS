@@ -36,7 +36,8 @@ namespace PIS2.Pages.PersonEducationLevel
             }
             personEducationLevelModel = personeducationlevelmodel;
            ViewData["educationLevelID"] = new SelectList(_context.EducationLevels, "educationLevelID", "educationLevelName");
-           ViewData["personID"] = new SelectList(_context.Persons, "personID", "personFullName");
+           ViewData["personID"] = new SelectList(_context.Persons.OrderBy(e => e.personFirstName)
+               .OrderBy(e => e.personLastName).OrderBy(e=> e.personLastName), "personID", "personFullName");
             return Page();
         }
 
@@ -44,8 +45,16 @@ namespace PIS2.Pages.PersonEducationLevel
         // For more information, see https://aka.ms/RazorPagesCRUD.
         public async Task<IActionResult> OnPostAsync()
         {
+            personEducationLevelModel.modifiedBy = User.Identity.Name;
             if (!ModelState.IsValid)
             {
+                foreach (var kv in ModelState)
+                {
+                    foreach (var error in kv.Value.Errors)
+                    {
+                        Console.WriteLine($"{kv.Key} --> {error.ErrorMessage}");
+                    }
+                }
                 return Page();
             }
 

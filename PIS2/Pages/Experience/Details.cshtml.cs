@@ -27,7 +27,7 @@ namespace PIS2.Pages.Exprience
                 return NotFound();
             }
 
-            var experiencemodel = await _context.Expriences.FirstOrDefaultAsync(m => m.experienceID == id);
+            var experiencemodel = await _context.Experiences.FirstOrDefaultAsync(m => m.experienceID == id);
             if (experiencemodel == null)
             {
                 return NotFound();

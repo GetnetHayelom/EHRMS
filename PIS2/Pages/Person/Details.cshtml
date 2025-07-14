@@ -110,16 +110,53 @@
 </div>
     
 <div class="d-flex justify-content-end">
-    <a asp-page="./Edit" asp-route-id="@Model.personModel.personID" class="btn btn-success me-2 d-print-none">Edit</a>
+    <a asp-page="./Edit" asp-route-id="@Model.personModel.personID" class="btn btn-success m-2 d-print-none">Edit</a>
     <a asp-page="./Index" class="btn btn-secondary me-2 d-print-none">Back to List</a>
     @if (Model.isPersonActiveEmployee)
     {
-        <a asp-page="/Termination/Create" asp-route-item-id="@Model.personModel.personID" class="btn btn-danger me-2 d-print-none">Terminate Employment</a>
-        <a asp-page="/Employment/Details" asp-route-item-id="@Model.personModel.personID" class="btn btn-info me-2 d-print-none">Employment Info</a>
+        <a asp-page="/Termination/Create" asp-route-item-id="@Model.personModel.personID" class="btn btn-danger m-2 d-print-none">Terminate Employment</a>
+        <a asp-page="/Employment/Details" asp-route-item-id="@Model.personModel.personID" class="btn btn-info m-2 d-print-none">Employment Info</a>
     }
     else
     {
-        <a asp-page="/Employment/Create" asp-route-item-id="@Model.personModel.personID" class="btn btn-primary me-2 d-print-none">Add To employment</a>
+        <a asp-page="/Employment/Create" asp-route-item-id="@Model.personModel.personID" class="btn btn-primary m-2 d-print-none">Add To employment</a>
     }
     @await Html.PartialAsync("print")
+</div>
+<div class="">
+    <h4 class="fw-bold">Person Record History</h4>
+    <table class="table table-striped table-hover">
+        <thead class="bg-info text-white">
+            <tr>
+                <td>Record ID</td>
+                <td>First Name</td>
+                <td>Fathers Name</td>
+                <td>Last Name</td>
+                <td>Date of Birth</td>
+                <td>ID Type</td>
+                <td>ID Number</td>
+                <td>Phone Number</td>
+                <td>Email</td>
+                <td>Address</td>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model.personModel.PersonHistories.Any()){
+            @foreach(var item in Model.personModel.PersonHistories)
+            {
+                <tr>
+                    <td>@item.personID</td>
+                    <td>@item.personFirstName</td>
+                    <td>@item.personFatherName</td>
+                    <td>@item.personLastName</td>
+                    <td>@item.personDoB.ToString("MMM dd, yyyy")</td>
+                    <td>@item.personIDType</td>
+                    <td>@item.personIDNumber</td>
+                    <td>@item.personPhoneNumber</td>
+                    <td>@item.personEmailAddress</td>
+                    <td>@item.addressModel.addressFormatted</td>
+                </tr>
+            }}
+        </tbody>
+    </table>
 </div>

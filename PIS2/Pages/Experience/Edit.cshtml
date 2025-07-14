@@ -1,0 +1,75 @@
+﻿@page
+@model PIS2.Pages.Exprience.EditModel
+
+@{
+    ViewData["Title"] = "Edit";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<h1 class="fw-bold">Experience</h1>
+
+<h4 class="fw-bold">Edit Experience</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="experienceModel.experienceID" />
+            <input type="hidden" asp-for="experienceModel.personID" />
+            <input type="hidden" asp-for = "experienceModel.modifiedBy" value="@User.Identity.Name"/>
+
+            <div class="form-group pe-4 pt-2">
+                <label asp-for="experienceModel.experienceType" class="control-label">Experience Type</label>
+                <select asp-for="experienceModel.experienceType" class="form-control" asp-items="Html.GetEnumSelectList<Models.Ex_In>()"></select>
+                <span asp-validation-for="experienceModel.experienceType" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <span class="text-danger">*</span>
+                <label asp-for="experienceModel.experienceStartDate" class="control-label">Start Date</label>
+                <input asp-for="experienceModel.experienceStartDate" class="form-control" type="date"/>
+                <span asp-validation-for="experienceModel.experienceStartDate" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="experienceModel.experienceEndDate" class="control-label">End Date</label>
+                <input asp-for="experienceModel.experienceEndDate" class="form-control" type="date" />
+                <span asp-validation-for="experienceModel.experienceEndDate" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="experienceModel.jobTitle" class="control-label">Job Title</label>
+                <input asp-for="experienceModel.jobTitle" class="form-control" />
+                <span asp-validation-for="experienceModel.jobTitle" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="experienceModel.jobGrade" class="control-label">Job Grade</label>
+                <input asp-for="experienceModel.jobGrade" class="form-control" />
+                <span asp-validation-for="experienceModel.jobGrade" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="experienceModel.jobStep" class="control-label">Job Step</label>
+                <input asp-for="experienceModel.jobStep" class="form-control" />
+                <span asp-validation-for="experienceModel.jobStep" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="experienceModel.jobSalary" class="control-label">Salary</label>
+                <input asp-for="experienceModel.jobSalary" class="form-control" />
+                <span asp-validation-for="experienceModel.jobSalary" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="experienceModel.jobDepartment" class="control-label">Company Name</label>
+                <input asp-for="experienceModel.jobDepartment" class="form-control" />
+                <span asp-validation-for="experienceModel.jobDepartment" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-page="./Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

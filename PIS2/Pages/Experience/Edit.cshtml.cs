@@ -29,7 +29,7 @@ namespace PIS2.Pages.Exprience
                 return NotFound();
             }
 
-            var experiencemodel =  await _context.Expriences.FirstOrDefaultAsync(m => m.experienceID == id);
+            var experiencemodel =  await _context.Experiences.Include(e => e.personModel).FirstOrDefaultAsync(m => m.experienceID == id);
             if (experiencemodel == null)
             {
                 return NotFound();
@@ -42,8 +42,16 @@ namespace PIS2.Pages.Exprience
         // For more information, see https://aka.ms/RazorPagesCRUD.
         public async Task<IActionResult> OnPostAsync()
         {
+            
             if (!ModelState.IsValid)
             {
+                foreach (var kv in ModelState)
+                {
+                    foreach (var error in kv.Value.Errors)
+                    {
+                        Console.WriteLine($"{kv.Key} --> {error.ErrorMessage}");
+                    }
+                }
                 return Page();
             }
 
@@ -70,7 +78,7 @@ namespace PIS2.Pages.Exprience
 
         private bool experienceModelExists(int id)
         {
-            return _context.Expriences.Any(e => e.experienceID == id);
+            return _context.Experiences.Any(e => e.experienceID == id);
         }
     }
 }

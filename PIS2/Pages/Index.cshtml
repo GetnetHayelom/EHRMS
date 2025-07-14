@@ -84,9 +84,18 @@
                         </dt>
                         @if (Model.Employment != null)
                         {
-                            <dd class="" onclick="location.href='@Url.Page("/Employment/Details", new { id = Model.Employment.employmentID })'" style="cursor:pointer;">
-                                <u>@Html.DisplayFor(model => model.Person.personFullName)</u>
-                            </dd>
+                            @if(User.IsInRole("MIE\\PMS_HRCLERK")){
+                                <dd class="" onclick="location.href='@Url.Page("/Employment/Edit", new { id = Model.Employment.employmentID })'" style="cursor:pointer;">
+                                    <u>@Html.DisplayFor(model => model.Person.personFullName)</u>
+                                </dd>
+                            }
+                            else
+                            {
+                                <dd class="" onclick="location.href='@Url.Page("/Employment/Details", new { id = Model.Employment.employmentID })'" style="cursor:pointer;">
+                                    <u>@Html.DisplayFor(model => model.Person.personFullName)</u>
+                                </dd>
+                            }
+                            
                         }
                         else
                         {

@@ -34,7 +34,7 @@ namespace PIS2.Pages.Exprience
                 return Page();
             }
 
-            _context.Expriences.Add(experienceModel);
+            _context.Experiences.Add(experienceModel);
             await _context.SaveChangesAsync();
 
             return RedirectToPage("./Index");

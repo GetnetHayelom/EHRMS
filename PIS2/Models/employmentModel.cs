@@ -31,7 +31,7 @@ namespace PIS2.Models
         public virtual employmentMethodModel? employmentMethodModel { get; set; }
         public int? employmentRequestID { get; set; }
         public virtual employmentRequestModel? employmentRequestModel { get; set; }
-        public string employmentPosition { get; set; }
+        public EmploymentPositions employmentPosition { get; set; }
         public virtual ICollection<overtimeRecordModel>? OvertimeRecords { get; set; }
         public virtual ICollection<jobPlacementModel>? JobPlacements { get; set; }
         public virtual ICollection<leaveModel>? Leaves { get; set; }
@@ -176,6 +176,11 @@ namespace PIS2.Models
         Approved,
         Inprogress,
         Completed
+    }
+    public enum EmploymentPositions
+    {        
+        Non_Management,
+        Management
     }
 }
 

@@ -399,8 +399,6 @@ namespace PIS2.Models
                 e.Property(e => e.modifiedBy).HasColumnName("modifiedBy");
                 e.Property(e => e.modifiedDate).HasColumnName("modifiedDate");
 
-
-
             });
             modelBuilder.Entity<familyModel>(entity =>
             {
@@ -1079,7 +1077,7 @@ namespace PIS2.Models
         public DbSet<employmentRequestModel> EmploymentRequests { get; set; }
         public DbSet<employmentRequestHistoryModel> EmploymentRequestHistories { get; set; }
         public DbSet<employmentTypeModel> EmploymentTypes { get; set; }
-        public DbSet<experienceModel> Expriences { get; set; }
+        public DbSet<experienceModel> Experiences { get; set; }
         public DbSet<familyModel> Families { get; set; }
         public DbSet<guarantyModel> Guaranties { get; set; }
         public DbSet<guarantyHistoryModel> GuarantyHistories { get; set; }

@@ -16,7 +16,7 @@ namespace PIS2.Models
         public DateOnly educationLevelDate { get; set; }
         public string educationLevelMark { get; set; }//CPA or GPA
         public string educationLevelInstitutionName { get; set; }
-        public string? educationLevelNumber { get; set; }
+        public string? educationLevelNumber { get; set; }//Certificate serial Number if any
         public string? educationField { get; set; }
         //public ICollection<personModel> Persons { get; set; } = null!;
         public string modifiedBy { get; set; }

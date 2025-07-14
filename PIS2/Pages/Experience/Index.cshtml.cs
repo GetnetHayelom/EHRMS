@@ -22,7 +22,7 @@ namespace PIS2.Pages.Exprience
 
         public async Task OnGetAsync()
         {
-            experienceModel = await _context.Expriences.ToListAsync();
+            experienceModel = await _context.Experiences.ToListAsync();
         }
     }
 }
