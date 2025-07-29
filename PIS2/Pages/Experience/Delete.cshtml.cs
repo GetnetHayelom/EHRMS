@@ -47,16 +47,18 @@ namespace PIS2.Pages.Exprience
             {
                 return NotFound();
             }
-
+            int empID=0;
             var experiencemodel = await _context.Experiences.FindAsync(id);
             if (experiencemodel != null)
             {
                 experienceModel = experiencemodel;
+                var emp = await _context.Employments.FirstOrDefaultAsync(e => e.personID == experienceModel.personID);
+                empID = emp.employmentID;
                 _context.Experiences.Remove(experienceModel);
                 await _context.SaveChangesAsync();
             }
 
-            return RedirectToPage("./Index");
+            return RedirectToPage("/Employment/Edit", new { id = empID });
         }
     }
 }

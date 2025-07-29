@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using PIS2.Models;
 
 namespace PIS2.Models
@@ -389,7 +390,7 @@ namespace PIS2.Models
                 e.Property(e => e.experienceID).HasColumnName("exprienceID");
                 e.Property(e => e.personID).HasColumnName("personID");
                 e.Property(e => e.experienceStartDate).HasColumnName("experienceStartDate");
-                e.Property(e => e.experienceEndDate).HasColumnName("exprienceEndDate");
+                e.Property(e => e.experienceEndDate).HasColumnName("experienceEndDate");
                 e.Property(e => e.jobTitle).HasColumnName("jobTitle");
                 e.Property(e => e.jobGrade).HasColumnName("jobGrade");
                 e.Property(e => e.jobStep).HasColumnName("jobStep");
@@ -470,7 +471,7 @@ namespace PIS2.Models
                 entity.Property(e => e.jobCategoryID).HasColumnName("jobCategoryID");
                 entity.Property(e => e.jobClassID).HasColumnName("jobClassID");
                 entity.Property(e => e.jobDescription).HasColumnName("jobDescription");
-                entity.Property(e => e.jobGradeID).HasColumnName("jobGrade");                
+                entity.Property(e => e.jobGradeID).HasColumnName("jobGradeID");                
                 entity.Property(e => e.jobStatus).HasColumnName("jobStatus");
                 entity.Property(e => e.jobTitle).HasColumnName("jobTitle");
                 entity.Property(e => e.jobCode).HasColumnName("jobCode");
@@ -522,7 +523,7 @@ namespace PIS2.Models
 
                 entity.Property(e => e.jobPlacementID).HasColumnName("jobPlacementID");
                 entity.Property(e => e.departmentID).HasColumnName("departmentID");
-                entity.Property(e => e.employmentID).HasColumnName("employeeID");
+                entity.Property(e => e.employmentID).HasColumnName("employmentID");
                 entity.Property(e => e.jobID).HasColumnName("jobID");
                 entity.Property(e => e.jobPlacementDate).HasColumnName("jobPlacementDate");
                 entity.Property(e => e.jobPlacementReference).HasColumnName("jobPlacementReference");
@@ -562,6 +563,7 @@ namespace PIS2.Models
                 entity.Property(e => e.jobPlacementStatus).HasColumnName("jobPlacementStatus");
                 entity.Property(e => e.departmentID).HasColumnName("departmentID");
                 entity.Property(e => e.jobPlacementReason).HasColumnName("jobPlacementReason");
+                entity.Property(e => e.jobPlacementDate).HasColumnName("jobPlacementDate");
                 entity.Property(e => e.modifiedBy).HasColumnName("modifiedBy");
                 entity.Property(e => e.modifiedDate).HasColumnName("modifiedDate");
 
@@ -986,6 +988,7 @@ namespace PIS2.Models
                 entity.HasOne(t => t.EmploymentModel).WithOne(e => e.TerminationModel).HasForeignKey<terminationModel>(d => d.employmentID).OnDelete(DeleteBehavior.Cascade);
 
                 entity.HasIndex(e => e.employmentID).IsUnique();
+                entity.ToTable(tb => tb.UseSqlOutputClause(false));
             });
 
             modelBuilder.Entity<userModel>(entity =>

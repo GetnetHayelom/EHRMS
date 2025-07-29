@@ -24,7 +24,7 @@ namespace PIS2.Models
         public mainStatus jobPlacementStatus { get; set; }
         public string jobPlacementReference { get; set; }
         public string jobPlacementReason { get; set; }
-        public virtual ICollection<jobPlacementHistoryModel> JobPlacementHistories { get; set; }
+        public virtual ICollection<jobPlacementHistoryModel>? JobPlacementHistories { get; set; }
 
         public string modifiedBy { get; set; }
         public jobPlacementModel() { }
@@ -50,6 +50,7 @@ namespace PIS2.Models
         public double jobPlacementSalary { get; }
         public mainStatus jobPlacementStatus { get; }
         public string jobPlacementReason { get; }
+        public DateTime jobPlacementDate { get; }
 
         public string modifiedBy { get; }
         public DateTime modifiedDate { get; }

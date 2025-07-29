@@ -182,7 +182,7 @@
                         @item.Person.personFullName</a>
                     </td>
                     <td>
-                        @item.Job.jobModel.jobTitle
+                        @item.Job.jobModel?.jobTitle
                     </td>
                     <td>
                         $@Math.Round(item.Job.jobPlacementSalary, 2)
@@ -194,7 +194,7 @@
                         @item.Shift.shiftName
                     </td>
                     <td>
-                        @item.WorkSite.workSiteName
+                        @item.WorkSite?.workSiteName
                     </td>
                 </tr>
                

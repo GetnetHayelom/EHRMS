@@ -5,6 +5,9 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
 using PIS2.Models;
 
 namespace PIS2.Pages.Exprience
@@ -17,9 +20,17 @@ namespace PIS2.Pages.Exprience
         {
             _context = context;
         }
-
-        public IActionResult OnGet()
+        [BindProperty]
+        public List<experienceModel> Experiences { get; set; } = default!;
+        public IActionResult OnGet(int? id)
         {
+            if(id != null)
+            {
+                experienceModel = new experienceModel();
+                experienceModel.personID = id ?? 0;
+                Experiences = _context.Experiences.Where(e => e.personID == id).ToList();
+            }
+            ViewData["personID"] = new SelectList(_context.Persons.ToList(), "personID", "personFullName");
             return Page();
         }
 
@@ -34,10 +45,13 @@ namespace PIS2.Pages.Exprience
                 return Page();
             }
 
+            int empID = 0;
+            var emp = await _context.Employments.FirstOrDefaultAsync(e => e.personID == experienceModel.personID);
+            empID = emp.employmentID;
             _context.Experiences.Add(experienceModel);
             await _context.SaveChangesAsync();
 
-            return RedirectToPage("./Index");
+            return RedirectToPage("/Employment/Edit", new { id = empID });
         }
     }
 }

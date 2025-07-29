@@ -6,50 +6,65 @@
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
 
-<h1>Create</h1>
+<h1 class="fw-bold">Employment</h1>
 
-<h4>terminationModel</h4>
+<h4 class="fw-bold">Employment Termination</h4>
 <hr />
-<div class="row">
+<div class="">
+    <form method="get" class="d-print-none">
+        <div class="d-flex justify-content-between">
+            
+            <div class="d-flex">
+                <input asp-for="employmentModel.givenID" id="givenID" class="form-control me-2" placeholder="Enter Given ID" name="givenID" />
+                <button type="submit" class="btn btn-primary" id="goButton">Go</button>
+            </div>
+            
+        </div>
+    </form>
+</div>
+@if(Model.employmentModel != null)
+{
+    <div class="row">
+    <h4 class="fw-bold"><u>@Model.employmentModel.personModel?.personFullName</u></h4>
     <div class="col-md-4">
         <form method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input asp-for="terminationModel.modifiedBy" value="@User.Identity.Name"  type="hidden"/>
+            <input asp-for="terminationModel.employmentID" value= "@Model.employmentModel.employmentID" type="hidden" name="id"/>
+            
             <div class="form-group">
-                <span class="text-danger">*</span>
-                <label asp-for="terminationModel.employmentID" class="control-label"></label>
-                <select asp-for="terminationModel.employmentID" class ="form-control" asp-items="ViewBag.employmentID"></select>
-            </div>
-            <div class="form-group">
-                <label asp-for="terminationModel.terminationDate" class="control-label"></label>
-                <input asp-for="terminationModel.terminationDate" class="form-control" />
+                <label asp-for="terminationModel.terminationDate" class="control-label">Date</label>
+                <input asp-for="terminationModel.terminationDate" class="form-control" type="date"/>
                 <span asp-validation-for="terminationModel.terminationDate" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="terminationModel.terminationReason" class="control-label"></label>
+                <label asp-for="terminationModel.terminationReason" class="control-label">Reason</label>
                 <input asp-for="terminationModel.terminationReason" class="form-control" />
                 <span asp-validation-for="terminationModel.terminationReason" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="terminationModel.terminationRemark" class="control-label"></label>
+                <label asp-for="terminationModel.terminationRemark" class="control-label">Remark</label>
                 <input asp-for="terminationModel.terminationRemark" class="form-control" />
                 <span asp-validation-for="terminationModel.terminationRemark" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="terminationModel.terminationStatus" class="control-label"></label>
-                <select asp-for="terminationModel.terminationStatus" class="form-control"></select>
+                <label asp-for="terminationModel.terminationStatus" class="control-label">Status</label>
+                <select asp-for="terminationModel.terminationStatus" class="form-control" asp-items="@Html.GetEnumSelectList<Models.terminationStatus>()"></select>
                 <span asp-validation-for="terminationModel.terminationStatus" class="text-danger"></span>
             </div>
+            
             <div class="form-group">
-                <label asp-for="terminationModel.modifiedBy" class="control-label"></label>
-                <input asp-for="terminationModel.modifiedBy" class="form-control" />
-                <span asp-validation-for="terminationModel.modifiedBy" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
+                <input type="submit" value="Create" class="btn btn-primary m-2" />
             </div>
         </form>
     </div>
-</div>
+    </div>
+}
+else
+{
+    <h5 class="fw-bold text-info">Enter Employee ID To Proceed!</h5>
+}
+
 
 <div>
     <a asp-page="Index">Back to List</a>

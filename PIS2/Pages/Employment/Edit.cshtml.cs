@@ -67,7 +67,7 @@ namespace PIS2.Pages.Employment
             
             var employmentmodel =  await _context.Employments
                 .Include(e => e.personModel)
-                .Include(e => e.JobPlacements)
+                .Include(e => e.JobPlacements).ThenInclude(jp => jp.jobModel)
                 .FirstOrDefaultAsync(m => m.employmentID == id);
 
             
@@ -84,6 +84,22 @@ namespace PIS2.Pages.Employment
             personModel = employmentModel.personModel ?? new personModel();
             PersonEducationLevels = _context.PersonEducationLevels.Where(p=>p.personID == employmentModel.personID).ToList();
             Experiences = _context.Experiences.Where(e => e.personID == employmentModel.personID).ToList();
+            if(jobPlacementModel.jobPlacementID != 0)
+            {
+                Experiences.Add(new experienceModel
+                {
+                    jobTitle = jobPlacementModel.jobModel.jobTitle,
+                    jobDepartment = "MIE",
+                    jobSalary = jobPlacementModel.jobPlacementSalary,
+                    experienceEndDate = DateTime.Now,
+                    experienceStartDate =jobPlacementModel.jobPlacementDate,
+                    experienceType = Ex_In.Internal
+                });
+            }
+            else
+            {
+                //jobPlacementModel = _context.JobPlacements.Include(jp => jp.jobModel).OrderByDescending(jp=> jp.jobPlacementDate).FirstOrDefault(jp => jp.employmentID == id) ?? new jobPlacementModel();
+            }
             populateViewBags();
             return Page();
         }      
@@ -164,8 +180,8 @@ namespace PIS2.Pages.Employment
         public async Task<IActionResult> OnPostSaveJobPlacement(int id)
         {
             populateViewBags();
-            //ModelState.Clear();
-            Console.WriteLine("####### Post job Plac is Called");
+            ModelState.Clear();
+            Console.WriteLine("####### Post job Plac is Called " + id);
             if (!ModelState.IsValid)
             {
                 foreach (var kv in ModelState)
@@ -178,7 +194,22 @@ namespace PIS2.Pages.Employment
                 return Page();
             }
 
-            _context.Attach(jobPlacementModel).State = EntityState.Modified;
+            var currentJP = await _context.JobPlacements.AsNoTracking().FirstOrDefaultAsync( j => j.jobPlacementID == jobPlacementModel.jobPlacementID);
+            if (currentJP == null)
+            {
+                currentJP = new jobPlacementModel();
+                jobPlacementModel.jobPlacementID = 0;
+            }
+
+            if (currentJP.jobID != jobPlacementModel.jobID)
+            {
+                jobPlacementModel.jobPlacementID = 0;
+                _context.JobPlacements.Add(jobPlacementModel);
+            }
+            else
+            {
+                _context.Attach(jobPlacementModel).State = EntityState.Modified;
+            }
 
             try
             {
@@ -196,7 +227,7 @@ namespace PIS2.Pages.Employment
                 }
             }
             EmpID = employmentModel.employmentID;
-            return Page();
+            return RedirectToPage("Edit", new {id = jobPlacementModel.employmentID});
         }
         public async Task<IActionResult> OnPostAddExperience(int id)
         {
@@ -267,11 +298,11 @@ namespace PIS2.Pages.Employment
         {
             ViewData["personID"] = new SelectList(_context.Persons, "personID", "personFullName");
             ViewData["employmentTypeID"] = new SelectList(_context.EmploymentTypes, "employmentTypeID", "employmentTypeName");
-            ViewData["departmentID"] = new SelectList(_context.Departments, "departmentID", "departmentName");
-            ViewData["jobID"] = new SelectList(_context.Jobs, "jobID", "jobTitle");
+            ViewData["departmentID"] = new SelectList(_context.Departments.Where(d => d.departmentStatus ==mainStatus.Active), "departmentID", "departmentName");
+            ViewData["jobID"] = new SelectList(_context.Jobs.Where(j => j.jobStatus == mainStatus.Active), "jobID", "jobTitle");
             ViewData["jobStepID"] = new SelectList(_context.JobSteps, "jobStepID", "jobStepName");
-            ViewData["shiftID"] = new SelectList(_context.Shifts, "shiftID", "shiftName");
-            ViewData["addressID"] = new SelectList(_context.Addresses, "addressID", "addressFormatted");
+            ViewData["shiftID"] = new SelectList(_context.Shifts.Where(s => s.shiftStatus == mainStatus.Active), "shiftID", "shiftName");
+            ViewData["addressID"] = new SelectList(_context.Addresses.Where(a => a.addressStatus == mainStatus.Active), "addressID", "addressFormatted");
             ViewData["educationLevelID"] = new SelectList(_context.EducationLevels, "educationLevelID", "educationLevelName");
 
         }

@@ -18,7 +18,7 @@ namespace PIS2.Models
         public string? jobTitle { get; set; }
         public string? jobGrade { get; set; }
         public string? jobStep { get; set; }
-        public string? jobSalary { get; set; }
+        public decimal? jobSalary { get; set; }
         public string? jobDepartment { get; set; }
         public Ex_In experienceType { get; set; }
         public string modifiedBy { get; set; }

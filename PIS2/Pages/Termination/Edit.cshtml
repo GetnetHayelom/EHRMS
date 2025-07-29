@@ -6,48 +6,45 @@
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
 
-<h1>Edit</h1>
+<h1 class="fw-bold">Employment</h1>
 
-<h4>terminationModel</h4>
+<h4 class="fw-bold">Update Termination</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
         <form method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="terminationModel.terminationID" />
+            <input asp-for="terminationModel.modifiedBy" type="hidden" value="@User.Identity.Name"/>
             <div class="form-group">
                 <span class="text-danger">*</span>
-                <label asp-for="terminationModel.employmentID" class="control-label"></label>
+                <label asp-for="terminationModel.employmentID" class="control-label">Employee ID</label>
                 <select asp-for="terminationModel.employmentID" class="form-control" asp-items="ViewBag.employmentID"></select>
                 <span asp-validation-for="terminationModel.employmentID" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="terminationModel.terminationDate" class="control-label"></label>
-                <input asp-for="terminationModel.terminationDate" class="form-control" />
+                <label asp-for="terminationModel.terminationDate" class="control-label">Termination Date</label>
+                <input asp-for="terminationModel.terminationDate" class="form-control" type="date"/>
                 <span asp-validation-for="terminationModel.terminationDate" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="terminationModel.terminationReason" class="control-label"></label>
+                <label asp-for="terminationModel.terminationReason" class="control-label">Reason</label>
                 <input asp-for="terminationModel.terminationReason" class="form-control" />
                 <span asp-validation-for="terminationModel.terminationReason" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="terminationModel.terminationRemark" class="control-label"></label>
+                <label asp-for="terminationModel.terminationRemark" class="control-label">Remark</label>
                 <input asp-for="terminationModel.terminationRemark" class="form-control" />
                 <span asp-validation-for="terminationModel.terminationRemark" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="terminationModel.terminationStatus" class="control-label"></label>
-                <select asp-for="terminationModel.terminationStatus" class="form-control"></select>
+                <label asp-for="terminationModel.terminationStatus" class="control-label">Status</label>
+                <select asp-for="terminationModel.terminationStatus" class="form-control" asp-items="@Html.GetEnumSelectList<Models.terminationStatus>()"></select>
                 <span asp-validation-for="terminationModel.terminationStatus" class="text-danger"></span>
             </div>
+            
             <div class="form-group">
-                <label asp-for="terminationModel.modifiedBy" class="control-label"></label>
-                <input asp-for="terminationModel.modifiedBy" class="form-control" />
-                <span asp-validation-for="terminationModel.modifiedBy" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
+                <input type="submit" value="Save" class="btn btn-primary m-2" />
             </div>
         </form>
     </div>

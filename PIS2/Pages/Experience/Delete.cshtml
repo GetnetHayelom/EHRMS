@@ -6,33 +6,34 @@
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
 
-<h1>Delete</h1>
+<h1 class="fw-bold">Experience</h1>
 
-<h3>Are you sure you want to delete this?</h3>
+<h3 class="fw-bold">Are you sure you want to delete this experience record?</h3>
 <div>
-    <h4>experienceModel</h4>
     <hr />
     <dl class="row">
         <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.experienceModel.personID)
+            Name:
         </dt>
         <dd class="col-sm-10">
             @Html.DisplayFor(model => model.experienceModel.personID)
         </dd>
+        <div class="d-flex">
+            <dt class="col-sm-2">
+                From:
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.experienceModel.experienceStartDate)
+            </dd>
+            <dt class="col-sm-2">
+                To:
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.experienceModel.experienceEndDate)
+            </dd>
+        </div>
         <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.experienceModel.experienceStartDate)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.experienceModel.experienceStartDate)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.experienceModel.experienceEndDate)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.experienceModel.experienceEndDate)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.experienceModel.jobTitle)
+            Job Title:
         </dt>
         <dd class="col-sm-10">
             @Html.DisplayFor(model => model.experienceModel.jobTitle)
@@ -42,6 +43,6 @@
     <form method="post">
         <input type="hidden" asp-for="experienceModel.experienceID" />
         <input type="submit" value="Delete" class="btn btn-danger" /> |
-        <a asp-page="./Index">Back to List</a>
+        <a asp-page="/Person/Edit/?id=@Model.experienceModel.experienceID" >Back to Employee View</a>
     </form>
 </div>

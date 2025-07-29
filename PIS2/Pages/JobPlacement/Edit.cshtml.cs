@@ -29,16 +29,16 @@ namespace PIS2.Pages.JobPlacement
                 return NotFound();
             }
 
-            var jobplacementmodel =  await _context.JobPlacements.FirstOrDefaultAsync(m => m.jobPlacementID == id);
+            var jobplacementmodel =  await _context.JobPlacements
+                .Include(jp => jp.employmentModel).ThenInclude(e => e.personModel)
+                .Include(jp => jp.departmentModel).ThenInclude(d => d.companyModel)
+                .Include(jp => jp.jobModel).FirstOrDefaultAsync(m => m.jobPlacementID == id);
             if (jobplacementmodel == null)
             {
                 return NotFound();
             }
             jobPlacementModel = jobplacementmodel;
-           ViewData["departmentID"] = new SelectList(_context.Departments, "departmentID", "departmentName");
-           ViewData["employmentID"] = new SelectList(_context.Employments, "employmentID", "givenID");
-           ViewData["jobID"] = new SelectList(_context.Jobs, "jobID", "jobTitle");
-           ViewData["shiftID"] = new SelectList(_context.Shifts, "shiftID", "shiftName");
+            populateSelect();
             return Page();
         }
 
@@ -75,6 +75,42 @@ namespace PIS2.Pages.JobPlacement
         private bool jobPlacementModelExists(int id)
         {
             return _context.JobPlacements.Any(e => e.jobPlacementID == id);
+        }
+        public JsonResult OnGetDepartmentsByCompany(int companyID)
+        {
+            var departments = _context.Departments
+                .Where(d => d.companyID == companyID && d.departmentStatus == mainStatus.Active)
+                .OrderBy(d => d.departmentName)
+                .Select(d => new { d.departmentID, d.departmentName })
+                .ToList();
+
+            return new JsonResult(departments);
+        }
+        public JsonResult OnGetSalary(int jobStepID)
+        {
+            var Salary = _context.JobSteps.FirstOrDefault(js => js.jobStepID == jobStepID).jobStepSalary;
+            return new JsonResult(Salary);
+        }
+        public JsonResult OnGetJobGrade(int jobID)
+        {
+            var jobGradeID = _context.Jobs.FirstOrDefault(j => j.jobID == jobID).jobGradeID;
+            return new JsonResult(jobGradeID);
+        }
+        public JsonResult OnGetJobStep(int jobGradeID)
+        {
+            var jobSteps = _context.JobSteps
+                .Where(js => js.jobGradeID == jobGradeID)
+                .Select(js => new { js.jobStepID, js.jobStepNumber })
+                .ToList();
+            return new JsonResult(jobSteps);
+        }
+        public void populateSelect()
+        {
+            ViewData["companyID"] = new SelectList(_context.Companies.Where(c => c.companyStatus == mainStatus.Active).OrderBy(c => c.companyName), "companyID", "companyName");
+            ViewData["workSiteID"] = new SelectList(_context.WorkSites.Where(s => s.workSiteStatus == mainStatus.Active).OrderBy(c => c.workSiteName), "workSiteID", "workSiteName");
+            ViewData["jobGradeID"] = new SelectList(_context.JobGrades.Where(s => s.jobGradeStatus == mainStatus.Active).OrderBy(c => c.jobGradeName), "jobGradeID", "jobGradeName");
+            ViewData["jobID"] = new SelectList(_context.Jobs.Where(j => j.jobStatus == mainStatus.Active).OrderBy(c => c.jobTitle), "jobID", "jobTitle");
+            ViewData["shiftID"] = new SelectList(_context.Shifts.Where(s => s.shiftStatus == mainStatus.Active), "shiftID", "shiftName");
         }
     }
 }

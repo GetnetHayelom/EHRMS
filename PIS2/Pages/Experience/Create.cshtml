@@ -6,45 +6,102 @@
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
 
-<h1>Create</h1>
+<h1 class="fw-bold">Experiences</h1>
 
-<h4>experienceModel</h4>
+<h4 class="fw-bold">Add New Experience Record</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
         <form method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input asp-for = "experienceModel.modifiedBy" value="@User.Identity.Name" type="hidden" />
             <div class="form-group">
-                <label asp-for="experienceModel.personID" class="control-label"></label>
-                <input asp-for="experienceModel.personID" class="form-control" />
-                <span asp-validation-for="experienceModel.personID" class="text-danger"></span>
+                <label asp-for="experienceModel.personID" class="control-label">Full Name</label>
+                <select asp-for="experienceModel.personID" class="form-control" asp-items="ViewBag.personID"></select>
+            </div>
+            <div class="d-flex justify-content-around">
+                <div class="form-group">
+                    <span class="text-danger">*</span>
+                    <label asp-for="experienceModel.experienceStartDate" class="control-label m-2">From</label>
+                    <input asp-for="experienceModel.experienceStartDate" class="form-control" type="date" />
+                    <span asp-validation-for="experienceModel.experienceStartDate" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="experienceModel.experienceEndDate" class="control-label m-2">To</label>
+                    <input asp-for="experienceModel.experienceEndDate" class="form-control" type="date"/>
+                    <span asp-validation-for="experienceModel.experienceEndDate" class="text-danger"></span>
+                </div>
             </div>
             <div class="form-group">
-                <span class="text-danger">*</span>
-                <label asp-for="experienceModel.experienceStartDate" class="control-label"></label>
-                <input asp-for="experienceModel.experienceStartDate" class="form-control" />
-                <span asp-validation-for="experienceModel.experienceStartDate" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="experienceModel.experienceEndDate" class="control-label"></label>
-                <input asp-for="experienceModel.experienceEndDate" class="form-control" />
-                <span asp-validation-for="experienceModel.experienceEndDate" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="experienceModel.jobTitle" class="control-label"></label>
+                <label asp-for="experienceModel.jobTitle" class="control-label">Job Title</label>
                 <input asp-for="experienceModel.jobTitle" class="form-control" />
                 <span asp-validation-for="experienceModel.jobTitle" class="text-danger"></span>
             </div>
+            <div class="d-flex">
+                <div class="form-group m-2">
+                    <label asp-for="experienceModel.jobGrade" class="control-label">Grade</label>
+                    <input asp-for="experienceModel.jobGrade" class="form-control" />
+                    <span asp-validation-for="experienceModel.jobGrade" class="text-danger"></span>
+                </div>
+                <div class="form-group m-2">
+                    <label asp-for="experienceModel.jobStep" class="control-label">Step</label>
+                    <input asp-for="experienceModel.jobStep" class="form-control" />
+                    <span asp-validation-for="experienceModel.jobStep" class="text-danger"></span>
+                </div>
+                <div class="form-group m-2">
+                    <label asp-for="experienceModel.jobSalary" class="control-label">Salary</label>
+                    <input asp-for="experienceModel.jobSalary" class="form-control" />
+                    <span asp-validation-for="experienceModel.jobSalary" class="text-danger"></span>
+                </div>
+            </div>
             <div class="form-group">
+                <label asp-for="experienceModel.experienceType" class="control-label">Experience Type</label>
+                <select asp-for="experienceModel.experienceType" class="form-control" asp-items="@Html.GetEnumSelectList<Models.Ex_In>()"></select>
+                <span asp-validation-for="experienceModel.experienceType" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="experienceModel.jobDepartment" class="control-label">Company</label>
+                <input asp-for="experienceModel.jobDepartment" class="form-control" />
+                <span asp-validation-for="experienceModel.jobDepartment" class="text-danger"></span>
+            </div>
+            <div class="form-group m-2 justify-content-end">
                 <input type="submit" value="Create" class="btn btn-primary" />
             </div>
         </form>
     </div>
+    <div class="col-md-8">
+        <table class="table table-striped table-hover">
+            <thead class="bg-info text-white">
+                <tr>
+                    <td>From-To</td>
+                    <td>Job Title</td>
+                    <td>Salary</td>
+
+                    <td>Type</td>
+                    <td>Company</td>
+                    <td>Duration</td>
+
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.Experiences)
+                {
+                    <tr onclick="location.href='@Url.Page("/Experience/Edit", new {id = item.experienceID})'" style="cursor:pointer">
+                        <td>@item.experienceStartDate.ToString("dd/MM/yyyy") - @item.experienceEndDate.ToString("dd/MM/yyyy")</td>
+                        <td>@item.jobTitle</td>
+                        <td>@item.jobSalary</td>
+
+                        <td>@item.experienceType</td>
+                        <td>@item.jobDepartment</td>
+                        <td>@(item.experienceEndDate.Year - item.experienceStartDate.Year)</td>
+
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
 </div>
 
-<div>
-    <a asp-page="Index">Back to List</a>
-</div>
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}

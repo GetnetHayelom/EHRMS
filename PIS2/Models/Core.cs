@@ -325,16 +325,16 @@ namespace PIS2.Models
             employmentModel employment = new employmentModel();
             employment = _context.Employments.Where(e => e.employmentID == empID).First();
             DateTime leaveCountEndDate;// = DateTime.Now;
-           if(employment.employmentStatus == mainStatus.Inactive)
+            if(employment.employmentStatus == mainStatus.Inactive)
             {
-                leaveCountEndDate = _context.Terminations.First(t => t.employmentID == empID)?.terminationDate?? DateTime.Now;
+                leaveCountEndDate = _context.Terminations.First(t => t.employmentID == empID)?.terminationDate ?? DateTime.Now;
                 //leaveCountEndDate = GetEmpHist(empID).OrderByDescending(eh=> eh.modifiedDate).First().modifiedDate;
             }
             else
             {
                 leaveCountEndDate=DateTime.Now;
             }
-           if (leaveCountEndDate == GetLeaveStart(empID))
+            if (leaveCountEndDate == GetLeaveStart(empID))
             {
                 leaveCountEndDate = DateTime.Now;
             }

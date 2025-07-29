@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PIS2.Models;
 
@@ -11,9 +12,11 @@ using PIS2.Models;
 namespace PIS2.Migrations
 {
     [DbContext(typeof(PISContext))]
-    partial class PISContextModelSnapshot : ModelSnapshot
+    [Migration("20250714091804_migration57")]
+    partial class migration57
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1063,8 +1066,8 @@ namespace PIS2.Migrations
                         .HasColumnType("nvarchar(max)")
                         .HasColumnName("jobGrade");
 
-                    b.Property<decimal?>("jobSalary")
-                        .HasColumnType("decimal(18,2)")
+                    b.Property<string>("jobSalary")
+                        .HasColumnType("nvarchar(max)")
                         .HasColumnName("jobSalary");
 
                     b.Property<string>("jobStep")
@@ -2757,8 +2760,6 @@ namespace PIS2.Migrations
                         .IsUnique();
 
                     b.ToTable("Terminations");
-
-                    b.HasAnnotation("SqlServer:UseSqlOutputClause", false);
                 });
 
             modelBuilder.Entity("PIS2.Models.userHistoryModel", b =>

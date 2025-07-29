@@ -6,53 +6,78 @@
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
 
-<h1>Job Placement</h1>
+<h1 class="fw-bold">Job Placement</h1>
 
-<h4>Edit Job Placement</h4>
+<h4 class="fw-bold">Update Job Placement</h4>
 <hr />
 <div class="row">
+    <h4 class="fw-bold"><u>@Model.jobPlacementModel.employmentModel.personModel?.personFullName</u></h4>
+    <h4 class="fw-bold"><u>@Model.jobPlacementModel.employmentModel.givenID</u></h4>
     <div class="col-md-4">
         <form method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="jobPlacementModel.jobPlacementID" />
+            <input asp-for="jobPlacementModel.modifiedBy" value="@User.Identity.Name" type="hidden" />
+
             <div class="form-group">
-                <label asp-for="jobPlacementModel.employmentID" class="control-label">Employee ID</label>
-                <select asp-for="jobPlacementModel.employmentID" class="form-control" asp-items="ViewBag.employmentID"></select>
-                <span asp-validation-for="jobPlacementModel.employmentID" class="text-danger"></span>
+                <span class="text-danger">*</span>
+                <label asp-for="jobPlacementModel.jobModel.jobTitle" class="control-label">Job Title</label>
+                <input asp-for="jobPlacementModel.jobModel.jobTitle" class="form-control" readonly />
+                <span asp-validation-for="jobPlacementModel.jobModel.jobTitle" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="jobPlacementModel.departmentModel.companyModel.companyName" class="control-label">Company</label>
+                <select asp-for="jobPlacementModel.departmentModel.companyModel.companyName" class="form-control" asp-items="ViewBag.companyID" id="companyID"></select>
             </div>
             <div class="form-group">
                 <label asp-for="jobPlacementModel.departmentID" class="control-label">Department</label>
-                <select asp-for="jobPlacementModel.departmentID" class="form-control" asp-items="ViewBag.departmentID"></select>
-                <span asp-validation-for="jobPlacementModel.departmentID" class="text-danger"></span>
+                <select asp-for="jobPlacementModel.departmentID" class="form-control" id="departmentID"></select>
             </div>
-            <div class="form-group">
-                <label asp-for="jobPlacementModel.jobID" class="control-label">Job Title</label>
-                <select asp-for="jobPlacementModel.jobID" class="form-control" asp-items="ViewBag.jobID"></select>
-                <span asp-validation-for="jobPlacementModel.jobID" class="text-danger"></span>
+  
+            <div class="d-flex justify-content-between">
+                <div class="form-group">
+                    <label class="control-label">Job Grade</label>
+                    <select class="form-control" asp-items="ViewBag.jobGradeID" id="jobGradeID"></select>
+                </div>
+                <div class="form-group">
+                    <label asp-for="jobPlacementModel.jobStepID" class="control-label">Job Step</label>
+                    <select asp-for="jobPlacementModel.jobStepID" class="form-control" id="jobStepID"></select>
+                </div>
+                <div class="form-group">
+                    <span class="text-danger">*</span>
+                    <label asp-for="jobPlacementModel.jobPlacementSalary" class="control-label">Salary</label>
+                    <input asp-for="jobPlacementModel.jobPlacementSalary" class="form-control" id="salary" />
+                    <span asp-validation-for="jobPlacementModel.jobPlacementSalary" class="text-danger"></span>
+                </div>
             </div>
-            <div class="form-group">
-                <label asp-for="jobPlacementModel.shiftID" class="control-label">Shift</label>
-                <select asp-for="jobPlacementModel.shiftID" class="form-control" asp-items="ViewBag.shiftID"></select>
-                <span asp-validation-for="jobPlacementModel.shiftID" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <span class="text-danger">*</span>
-                <label asp-for="jobPlacementModel.jobPlacementSalary" class="control-label">Salary</label>
-                <input asp-for="jobPlacementModel.jobPlacementSalary" class="form-control" />
-                <span asp-validation-for="jobPlacementModel.jobPlacementSalary" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="jobPlacementModel.jobPlacementDate" class="control-label">Date</label>
-                <input asp-for="jobPlacementModel.jobPlacementDate" class="form-control" type="date"/>
-                <span asp-validation-for="jobPlacementModel.jobPlacementDate" class="text-danger"></span>
-            </div>
+
             <div class="form-group">
                 <label asp-for="jobPlacementModel.jobPlacementStatus" class="control-label">Status</label>
                 <select asp-for="jobPlacementModel.jobPlacementStatus" class="form-control" asp-items="Html.GetEnumSelectList<Models.mainStatus>()"></select>
                 <span asp-validation-for="jobPlacementModel.jobPlacementStatus" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
+                <span class="text-danger">*</span>
+                <label asp-for="jobPlacementModel.jobPlacementReason" class="control-label">Reason</label>
+                <select asp-for="jobPlacementModel.jobPlacementReason" class="form-control">
+                    <option value=""> -- Select Reason--</option>
+                    <option value="New Hire"> New Hire</option>
+                    <option value="Promotion"> Promotion</option>
+                    <option value="Transfer"> Transfer</option>
+                    <option value="Demotion"> Demotion</option>
+                    <option value="Temporary Assignment"> Temporary Assignment</option>
+                    <option value="Other"> Other</option>
+                </select>
+                <span asp-validation-for="jobPlacementModel.jobPlacementReason" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <span class="text-danger">*</span>
+                <label asp-for="jobPlacementModel.jobPlacementReference" class="control-label">Reference</label>
+                <input asp-for="jobPlacementModel.jobPlacementReference" class="form-control" />
+                <span asp-validation-for="jobPlacementModel.jobPlacementReference" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary m-2" />
             </div>
         </form>
     </div>
@@ -64,4 +89,65 @@
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        $(document).ready(function () {
+            $('#companyID').change(function () {
+                var companyID = $(this).val();
+                $('#departmentID').empty().append('<option value="">-- Loading --</option>');
+
+                if (companyID) {
+                    $.getJSON('?handler=DepartmentsByCompany&companyID=' + companyID, function (data) {
+                        $('#departmentID').empty().append('<option value="">-- Select Department --</option>');
+                        $.each(data, function (i, dept) {
+                            $('#departmentID').append($('<option>', {
+                                value: dept.departmentID,
+                                text: dept.departmentName
+                            }));
+                        });
+                    });
+                } else {
+                    $('#departmentID').empty().append('<option value="">-- Select Department --</option>');
+                }
+            });
+            
+
+            function getJobSteps() {
+                var jobGradeID = $('#jobGradeID').val();
+                if (jobGradeID) {
+                    $.getJSON('?handler=JobStep&jobGradeID=' + jobGradeID, function (data) {
+                        var $jobStep = $('#jobStepID');
+                        $jobStep.empty().append('');
+                        $.each(data, function (i, js) {
+                            $jobStep.append($('<option>', {
+                                value: js.jobStepID,
+                                text: js.jobStepNumber
+                            }));
+                        });
+                        // Auto-select first option if available
+                        if (data.length > 0) {
+                            $jobStep.val(data[0].jobStepID).trigger('change'); // triggers getSalary
+                        }
+                    });
+
+
+                }
+            }
+            $('#jobGradeID').change(getJobSteps);
+            if ($('#jobGradeID').val()) getJobSteps();
+
+            function getSalary() {
+                var jobStepID = $('#jobStepID').val();
+                $('#salary').empty().append('0.00');
+
+                if (jobStepID) {
+                    $.getJSON('?handler=Salary&jobStepID=' + jobStepID, function (data) {
+                        $('#salary').val(data)
+                    })
+                }
+            }
+            $('#jobStepID').change(getSalary);
+            if ($('#jobStepID').val()) getSalary();
+        });
+
+    </script>
 }

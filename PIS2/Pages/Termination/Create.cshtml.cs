@@ -18,10 +18,38 @@ namespace PIS2.Pages.Termination
         {
             _context = context;
         }
-
-        public IActionResult OnGet()
+        [BindProperty(SupportsGet = true)]
+        public string givenID { get; set; }
+        public string ErrorMessage { get; set; }
+        [BindProperty]
+        public employmentModel Employment { get; set; }
+        int? EmpID { get; set; }
+        public IActionResult OnGet(int? id)
         {
-        ViewData["employmentID"] = new SelectList(_context.Employments, "employmentID", "givenID");
+            Employment = new employmentModel();
+            if (!string.IsNullOrEmpty(givenID))
+            {
+                var emp = _context.Employments
+                    .FirstOrDefault(e => e.givenID == givenID);
+
+                if (emp != null)
+                {
+
+                    // Redirect to the Details page with employmentID
+                    id = emp.employmentID;
+                    Console.WriteLine("############## The ID is == " + id);
+                    employmentModel = _context.Employments.Include(e => e.personModel).FirstOrDefault(e => e.employmentID == id);
+                    return Page();
+                    //return RedirectToPage("Create", new { id = emp.employmentID });
+                }
+
+                ErrorMessage = "No employee found with that Given ID.";
+            }
+            if(id != null && id != 0)
+            {
+                employmentModel = _context.Employments.Include(e => e.personModel).FirstOrDefault(e => e.employmentID == id);
+            }
+            
             return Page();
         }
 
@@ -32,24 +60,34 @@ namespace PIS2.Pages.Termination
         // For more information, see https://aka.ms/RazorPagesCRUD.
         public async Task<IActionResult> OnPostAsync(int? id)
         {
+            ModelState.Remove("modifiedBy");
+            terminationModel.modifiedBy = User.Identity.Name;
             if (!ModelState.IsValid)
             {
+                foreach (var kv in ModelState)
+                {
+                    foreach (var error in kv.Value.Errors)
+                    {
+                        Console.WriteLine($"{kv.Key} --> {error.ErrorMessage}");
+                        
+                    }
+                }
+                Console.WriteLine("===ID IS===" +id);
+                
                 return Page();
             }
-            employmentModel = await _context.Employments.FirstOrDefaultAsync(e => e.employmentID == id);
+            employmentModel = await _context.Employments.Include(e => e.personModel)?.FirstOrDefaultAsync(e => e.employmentID == id);
+            Console.WriteLine("===Emp  ID IS===" + terminationModel.employmentID);
             if (employmentModel == null)
             {
                 return NotFound();
             }
-            if (terminationModel.terminationStatus == terminationModel.terminationStatus)
-            {
-
-            }
+            
             _context.Terminations.Add(terminationModel);
             await _context.SaveChangesAsync();
 
             
-            return RedirectToPage("./Index");
+            return RedirectToPage("./Edit", new { id =employmentModel.employmentID});
         }
     }
 }
