@@ -35,7 +35,17 @@ body {
     .print-flex-column {
         flex-direction:column;
     }
+    .print-small-image {
+        width: 150px;
+        height: 150px;
+        object-fit: cover;
+    }
 }
 table select{
     max-width:100px;
+}
+.normal-image {
+    width: 300px;
+    height: 300px;
+    object-fit: cover;
 }

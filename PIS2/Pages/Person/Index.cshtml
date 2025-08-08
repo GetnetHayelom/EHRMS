@@ -7,10 +7,10 @@
     int No = 0;
 }
 
-<h1>Person List</h1>
+<h1 class="fw-bold">Person</h1>
 
 <p>
-    <a asp-page="Create">Add New Person</a>
+    <a asp-page="Create" class="btn btn-primary">Add New Person</a>
 </p>
 <div>
     <!-- Pagination Controls -->
@@ -60,7 +60,7 @@
         <div class="d-none">@(No = (Model.CurrentPage - 1) * (Model.PageSize))</div>
 @foreach (var item in Model.personModel) {
             No++;
-            <tr>
+            <tr onclick="location.href='@Url.Page("Details", new {id =item.personID})'" style="cursor:pointer;">
             <td>@No</td>
             <td>
                 @Html.DisplayFor(modelItem => item.personFullName)

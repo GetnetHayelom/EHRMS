@@ -24,7 +24,10 @@ namespace PIS2.Pages.PersonEducationLevel
         {
             personEducationLevelModel = await _context.PersonEducationLevels
                 .Include(p => p.educationLevelModel)
-                .Include(p => p.personModel).ToListAsync();
+                .Include(p => p.personModel)
+                .OrderBy(p => p.personModel.personFirstName)
+                .ThenBy(p => p.personModel.personFatherName)
+                .ThenBy(p => p.personModel.personLastName).ToListAsync();
         }
     }
 }

@@ -88,6 +88,31 @@ function filterTable() {
         row.style.display = text.includes(input) ? "" : "none";
     });
 }
+
+function highlightDifferences() {
+    const table = document.getElementById("historyTable");
+    if (!table) return;
+
+    const rows = table.rows;
+
+    for (let i = 2; i < rows.length; i++) {
+        const currentRow = rows[i];
+        const prevRow = rows[i - 1];
+
+        const columnsToCheck = currentRow.cells.length - 2;
+
+        for (let j = 0; j < columnsToCheck; j++) {
+            const currCell = currentRow.cells[j];
+            const prevCell = prevRow.cells[j];
+
+            if (currCell.textContent.trim() !== prevCell.textContent.trim()) {
+                currCell.classList.add("bg-warning");
+            }
+        }
+    }
+}
+
+
 // Attach event listener when the DOM is fully loaded
 document.addEventListener("DOMContentLoaded", function () {
     let input = document.getElementById("searchBox");
@@ -107,7 +132,7 @@ function filterVisibleRows(inputId, columnIndex) {
 
     // Store the filter value in the global array
     filters[columnIndex] = filterInput;
-
+ 
     visibleRows.forEach(row => {
         let isVisible = true; // Assume row should be shown
 
@@ -133,7 +158,7 @@ function updateRowCount(countId) {
     let totalRows = document.querySelectorAll("#dataTable tbody tr").length;
     let visibleRows = document.querySelectorAll("#dataTable tbody tr:not([style*='display: none'])").length;
     let countElement = document.getElementById(countId);
-    countElement.textContent = `Filter result= ${visibleRows}`;
+    //countElement.textContent = `Filter result= ${visibleRows}`;
 }
 
 // Run on page load to set initial row count

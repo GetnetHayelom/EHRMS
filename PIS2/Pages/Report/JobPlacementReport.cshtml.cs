@@ -9,11 +9,11 @@ using PIS2.Models;
 
 namespace PIS2.Pages.JobPlacement
 {
-    public class IndexModel : PageModel
+    public class JobPlacementReportModel : PageModel
     {
         private readonly PIS2.Models.PISContext _context;
 
-        public IndexModel(PIS2.Models.PISContext context)
+        public JobPlacementReportModel(PIS2.Models.PISContext context)
         {
             _context = context;
         }

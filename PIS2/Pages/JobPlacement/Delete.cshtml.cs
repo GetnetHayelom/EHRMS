@@ -23,39 +23,48 @@ namespace PIS2.Pages.JobPlacement
 
         public async Task<IActionResult> OnGetAsync(int? id)
         {
-            if (id == null)
+            if (User.IsInRole("PMS_HRCLERK"))
             {
-                return NotFound();
-            }
+                if (id == null)
+                {
+                    return NotFound();
+                }
+             
+                var jobplacementmodel = await _context.JobPlacements
+                    .Include(j => j.employmentModel)
+                    .Include(j => j.jobModel)
+                    .Include(j => j.departmentModel)
+                    .Include(j => j.shiftModel).FirstOrDefaultAsync(m => m.jobPlacementID == id);
 
-            var jobplacementmodel = await _context.JobPlacements.FirstOrDefaultAsync(m => m.jobPlacementID == id);
-
-            if (jobplacementmodel == null)
-            {
-                return NotFound();
-            }
-            else
-            {
-                jobPlacementModel = jobplacementmodel;
+                if (jobplacementmodel == null)
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    jobPlacementModel = jobplacementmodel;
+                }
             }
             return Page();
         }
 
         public async Task<IActionResult> OnPostAsync(int? id)
         {
-            if (id == null)
+            if (User.IsInRole("PMS_HRCLERK"))
             {
-                return NotFound();
-            }
+                if (id == null)
+                {
+                    return NotFound();
+                }
 
-            var jobplacementmodel = await _context.JobPlacements.FindAsync(id);
-            if (jobplacementmodel != null)
-            {
-                jobPlacementModel = jobplacementmodel;
-                _context.JobPlacements.Remove(jobPlacementModel);
-                await _context.SaveChangesAsync();
+                var jobplacementmodel = await _context.JobPlacements.FindAsync(id);
+                if (jobplacementmodel != null)
+                {
+                    jobPlacementModel = jobplacementmodel;
+                    _context.JobPlacements.Remove(jobPlacementModel);
+                    await _context.SaveChangesAsync();
+                }
             }
-
             return RedirectToPage("./Index");
         }
     }

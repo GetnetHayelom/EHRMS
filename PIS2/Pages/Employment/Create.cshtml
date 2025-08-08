@@ -7,9 +7,9 @@
     var successMessage = TempData["SuccessMessage"] as string;
 }
 
-<h1>Employment</h1>
+<h1 class="fw-bold">Employment</h1>
 
-<h4>Add New Employment</h4>
+<h4 class="fw-bold">Add New Employment</h4>
 <hr />
 @if (!string.IsNullOrEmpty(successMessage))
 {
@@ -21,6 +21,7 @@
     <div class="col-md-4">
         <form method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input asp-for="employmentModel.modifiedBy" value="@User.Identity.Name" />
             <div class="form-group">
                 <label asp-for="employmentModel.personID" class="control-label">Full Name</label>
                 <select asp-for="employmentModel.personID" class="form-control" asp-items="ViewBag.personID"></select>

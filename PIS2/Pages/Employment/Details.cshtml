@@ -56,7 +56,7 @@
                         Full Name:
                     </dt>
                     <dd>
-                        <u>@Html.DisplayFor(model => model.employmentModel.personModel.personFullName)</u>
+                        <u onclick="location.href='@Url.Page("/Person/Details", new {id = Model.employmentModel.personID})'" style="cursor:pointer;">@Html.DisplayFor(model => model.employmentModel.personModel.personFullName)</u>
                     </dd>
                 </div>
                 <div class="d-flex me-3">
@@ -281,7 +281,7 @@
                 <tbody>
                     @foreach (var item in Model.employmentModel.JobPlacements)
                     {
-                        <tr onclick="location.href='@Url.Page("Details", new {id = item.jobPlacementID})'" style="cursor:pointer">
+                        <tr onclick="location.href='@Url.Page("/JobPlacement/Details", new {id = item.jobPlacementID})'" style="cursor:pointer">
                             <td>@item.jobPlacementDate.ToString("MMM dd, yyyy")</td>
                             <td>@item.jobModel?.jobTitle</td>
                             <td>@item.jobModel?.jobGradeModel?.jobGradeName</td>
@@ -301,12 +301,12 @@
 
 </div>
 
-<div class="d-print-none d-flex">
+<div class="d-print-none d-flex justify-content-end">
     @if (User.IsInRole("PMS_HRCLERK"))
     {
         <a class="btn btn-primary m-2" asp-page="./Edit" asp-route-id="@Model.employmentModel.employmentID">Edit</a>
     }
     
-    <a class = "btn btn-primary m-2" asp-page="./Index">Back to List</a> 
+    <a class = "btn btn-primary m-2" asp-page="./Index">View All Employee List</a> 
     @await Html.PartialAsync("print")
 </div>

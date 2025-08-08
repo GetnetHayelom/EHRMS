@@ -15,7 +15,7 @@
         <form method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="experienceModel.experienceID" />
-            <input type="hidden" asp-for="experienceModel.modifiedBy" value="@User.Identity.Name"/>
+            
             <div class="form-group">
                 <label asp-for="experienceModel.personID" class="control-label">Name</label>
                 <h4 class="fw-bold"><u>@Model.personModel.personFullName</u></h4>
@@ -85,6 +85,22 @@
                 <a asp-page="./Delete" asp-route-id="@Model.experienceModel.experienceID" class="btn btn-danger m-2">Delete</a>
             </div>
         </form>
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div id="successMessage" class="alert alert-success alert-dismissible fade show" role="alert">
+                @TempData["SuccessMessage"]
+            </div>
+
+            <script>
+                setTimeout(function () {
+                    var msg = document.getElementById('successMessage');
+                    if (msg) {
+                        msg.style.display = 'none';
+                    }
+                }, 3000);
+            </script>
+        }
+
     </div>
 
     <div class="col-md-8">

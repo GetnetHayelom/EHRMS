@@ -16,22 +16,37 @@
             <!-- Left Logo -->
             <div style="width: 15%; text-align: left;">
                 <img src="/assets/mie_logo.png" alt="Logo" style="width: 100%; max-height: 80px;">
-                <p>Form No.<span id="formNo">WF/HRM/11</span> </p>
+                <p style ="margin: 0;">Form No.</p>
+                <p style="margin: 0;"><span id="formNo">WF/HRM/11</span> </p>
             </div>
 
             <!-- Centered Company Info -->
             <div style="width: 70%; text-align: center;">
-                <h3 style="margin: 0;" class="fw-bold">መስፍን ኢንዳስትሪያል ኢንጂነሪንግ ሓ/የተ/የግ/ኩባንያ</h3>
-                <h2 style="margin: 0;" class="fw-bold">Mefin Industrial Engineering PLC</h2>
-                <p style="margin: 0;">Mekelle, Ethiopia</p>
-                <p style="margin: 0;">Phone: +123 456 789 | Email: contact@company.com</p>
+                <h3 style="margin: 0;" class="fw-bold">መስፍን ብረታ ብረትና ኢንጂነሪንግ ሓ/የተ/የግ/ማህበር</h3>
+                <h2 style="margin: 0;" class="fw-bold">Mefin Metals & Engineering PLC</h2>
+                <div class="d-flex">
+                    <div class="col-6">
+                        <p style="margin: 0;">Mekelle Head Office</p>
+                        <p style="margin: 0;">Tel: (0)344 40-68-00, Fax:40-62-25</p>
+                        <p style ="margin: 0;">P.O.box 508  Email: miesco@ethionet.et</p>
+                        <p style="margin: 0;">Mekelle - Tigray - Ethiopia</p>
+  
+                    </div>
+                    <div class="col-6">
+                        <p style="margin: 0;">Addis Ababa Office</p>
+                        <p style="margin: 0;">Tel: 251-11-6 29-85-62, Fax:251-011-6029-85-60</p>
+                        <p style="margin: 0;">P.O.box 24480  Email: mie@ethionet.et</p>
+                    </div>
+                </div>
+                <p>Website: www.mie-ethiopia.com</p>
             </div>
 
             <!-- Right Logo -->
             <div style="width: 15%; text-align: right;">
                 <img src="/assets/mie_logo.png" alt="Logo" style="width: 100%; max-height: 80px;">
-                <p style="margin: 10px 0; font-weight: bold;">Date: @DateTime.Now.ToString("MMM dd, yyyy")</p>
-            </div>
+                <p style="margin: 0;" class="fw-bold">Date:</p>
+                <p style="margin: 0;">@DateTime.Now.ToString("MMM dd, yyyy")</p>
+            </div><hr />
         </div>
         
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-dark border-bottom box-shadow mb-3 d-print-none">
@@ -111,20 +126,39 @@
                             <a class="nav-link text-white dropdown-toggle" role = "button" data-bs-toggle = "dropdown">System Adminstration</a>
                             <div class="dropdown-menu">
                                 <a class="dropdown-item" asp-page="/Users/Index">Users</a>
-                                <a class="dropdown-item" asp-page="">Backup</a>
-                                <a class="dropdown-item" asp-page="">Restore</a>
-                                <a class="dropdown-item" asp-page="">Backup</a>
+                                <a class="dropdown-item" asp-page="/SysAdmin/BackupDatabase">Backup</a>
+                                <a class="dropdown-item" asp-page="/SysAdmin/RestoreDatabase">Restore</a>                              
                             </div>
                         </li>
                         }
+                        @if (User.IsInRole("mie\\PMS_Management"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-white" asp-area="" asp-page="/Management/Index">Management</a>
+                            </li>
+                        }
+                        @if (User.IsInRole("mie\\PMS_HRMANAGER"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-white" asp-area="" asp-page="/HRClerk/Index">HR Dashboard</a>
+                            </li>
+                        }
+                        @if (User.IsInRole("mie\\PMS_HRCLERK") || User.IsInRole("MIE\\PMS_HRMANAGER"))
+                        {
+                            <li class="nav-item dropdown">
+                                <a class="nav-link text-white dropdown-toggle" asp-area="" role="button" data-bs-toggle="dropdown">Reporting</a>
+                                <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                                    <a class="dropdown-item" asp-page="/Report/LeaveReport">Leave and Attendance</a>
+                                    <a class="dropdown-item" asp-page="/Report/OvertimeRecordReport">Overtime</a>
+                                    <a class="dropdown-item" asp-page="/Report/AllowanceAssignmentReport">Allowance</a>
+                                    <a class="dropdown-item" asp-page="/Report/EmploymentReport">Employment</a>
+                                    <a class="dropdown-item" asp-page="/Report/JobPlacementReport">Job Placements</a>
+                                    
+                                </div>
+                            </li>
+                        }
                         <li class="nav-item">
-                            <a class="nav-link text-white" asp-area="" asp-page="/Management/Index">Management</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-white" asp-area="" asp-page="/HRClerk/Index">HR Dashboard</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-white" asp-area="" asp-page="/Privacy">Privacy</a>
+                            <a class="nav-link text-white" asp-area="" asp-page="/Privacy">Help</a>
                         </li>
                     </ul>
                     <p class="nav navbar-text text-white">Hello, @User.Identity?.Name!</p>

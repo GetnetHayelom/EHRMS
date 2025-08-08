@@ -117,7 +117,7 @@ namespace PIS2.Pages.JobPlacement
                 await _context.SaveChangesAsync();
             }
             
-            return RedirectToPage("./Edit", new {id = jobPlacementModel.jobPlacementID});
+            return RedirectToPage("/Employment/Edit", new {id = jobPlacementModel.jobPlacementID});
         }
         public JsonResult OnGetDepartmentsByCompany(int companyID)
         {

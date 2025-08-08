@@ -16,27 +16,33 @@
             Name:
         </dt>
         <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.experienceModel.personID)
+            @Html.DisplayFor(model => model.experienceModel.personModel.personFullName)
         </dd>
-        <div class="d-flex">
-            <dt class="col-sm-2">
-                From:
-            </dt>
-            <dd class="col-sm-10">
-                @Html.DisplayFor(model => model.experienceModel.experienceStartDate)
-            </dd>
-            <dt class="col-sm-2">
-                To:
-            </dt>
-            <dd class="col-sm-10">
-                @Html.DisplayFor(model => model.experienceModel.experienceEndDate)
-            </dd>
-        </div>
+        
+        <dt class="col-sm-2">
+            From:
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.experienceModel.experienceStartDate)
+        </dd>
+        <dt class="col-sm-2">
+            To:
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.experienceModel.experienceEndDate)
+        </dd>
+        
         <dt class="col-sm-2">
             Job Title:
         </dt>
         <dd class="col-sm-10">
             @Html.DisplayFor(model => model.experienceModel.jobTitle)
+        </dd>
+        <dt class="col-sm-2">
+            Company:
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.experienceModel.jobDepartment)
         </dd>
     </dl>
     

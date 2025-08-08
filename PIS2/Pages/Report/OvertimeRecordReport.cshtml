@@ -1,0 +1,75 @@
+﻿@page
+@model PIS2.Pages.OvertimeRecord.IndexModel
+
+@{
+    ViewData["Title"] = "Overtime Records";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<h1>Overtime Records</h1>
+
+<p>
+    <a asp-page="Create">Add New Overtime Record</a>
+</p>
+<div class="mb-1">
+    <!-- Pagination Controls -->
+    @if (Model.CurrentPage > 1)
+    {
+        <a asp-page="./Index" asp-route-id="@(Model.CurrentPage - 1)" class="btn btn-primary">Previous</a>
+    }
+
+    <span>Page @Model.CurrentPage of @Model.TotalPages</span>
+
+    @if (Model.CurrentPage < Model.TotalPages)
+    {
+        <a asp-page="./Index" asp-route-id="@(Model.CurrentPage + 1)" class="btn btn-primary">Next</a>
+    }
+</div>
+<table class="table" id="dataTable">
+    <thead class="bg-dark text-white">
+        <tr>
+            <th>
+                Emplopyment ID
+            </th>
+            <th>
+                Overtime Type
+            </th>
+            <th>
+                Date
+            </th>
+            <th>
+                Start Time
+            </th>
+            <th>
+                End Time
+            </th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model.overtimeRecordModel) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.employmentModel.givenID)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.overtimeModel.overtimeName)
+            </td>
+            <td>
+                @item.overtimeRecordDate.ToString("dd/MM/yyyy")
+            </td>
+            <td>
+                @item.overtimeRecordStartTime
+            </td>
+            <td>
+                @item.overtimeRecordEndTime
+            </td>
+            <td>
+                <a asp-page="./Edit" asp-route-id="@item.overtimeRecordID">Edit</a> |
+                <a asp-page="./Details" asp-route-id="@item.overtimeRecordID">Details</a> |
+                <a asp-page="./Delete" asp-route-id="@item.overtimeRecordID">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

@@ -52,24 +52,24 @@ namespace PIS2.Pages.Person
             _context.Persons.Add(personModel);
             await _context.SaveChangesAsync();
 
-            var personHistory = new personHistoryModel
-            {
-                personID = personModel.personID,
-                personFirstName = personModel.personFirstName,
-                personFatherName = personModel.personFatherName,
-                personLastName = personModel.personLastName,
-                personGender = personModel.personGender,
-                personDoB = personModel.personDoB,
-                personEmailAddress = personModel.personEmailAddress,
-                personIDNumber = personModel.personIDNumber,
-                personIDType = personModel.personIDType,
-                personPhoneNumber = personModel.personPhoneNumber,
-                personRecordNumber = personModel.personRecordNumber,
-                modifiedBy = personModel.modifiedBy,
-                modifiedDate = DateTime.Now.ToString()
-            };
-            _context.PersonHistories.Add(personHistory);
-            await _context.SaveChangesAsync();
+            //var personHistory = new personHistoryModel
+            //{
+            //    personID = personModel.personID,
+            //    personFirstName = personModel.personFirstName,
+            //    personFatherName = personModel.personFatherName,
+            //    personLastName = personModel.personLastName,
+            //    personGender = personModel.personGender,
+            //    personDoB = personModel.personDoB,
+            //    personEmailAddress = personModel.personEmailAddress,
+            //    personIDNumber = personModel.personIDNumber,
+            //    personIDType = personModel.personIDType,
+            //    personPhoneNumber = personModel.personPhoneNumber,
+            //    personRecordNumber = personModel.personRecordNumber,
+            //    modifiedBy = personModel.modifiedBy,
+            //    modifiedDate = DateTime.Now.ToString()
+            //};
+            //_context.PersonHistories.Add(personHistory);
+            //await _context.SaveChangesAsync();
 
             Console.WriteLine("################# Pesron Saved" + personModel.personID);
             if (Photo != null && Photo.Length > 0)

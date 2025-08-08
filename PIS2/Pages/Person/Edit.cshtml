@@ -1,82 +1,142 @@
 ﻿@page
 @model PIS2.Pages.Person.EditModel
-
 @{
     ViewData["Title"] = "Edit";
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
 
-<h1>Edit</h1>
-
-<h4>Person List</h4>
+<h1 class="fw-bold">Edit Person</h1>
 <hr />
 <div class="row">
-    <div class="col-md-4">
-        <form method="post">
+    <div>
+        <form method="post" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="personModel.personID" />
-            <div class="form-group">
-                <label asp-for="personModel.personFirstName" class="control-label">First Name</label>
-                <input asp-for="personModel.personFirstName" class="form-control" />
-                <span asp-validation-for="personModel.personFirstName" class="text-danger"></span>
+
+            <div class="d-flex">
+                <!-- Left Column -->
+                <div class="col-md-4 me-4">
+                    <h5 class="fw-bold">Personal Info.</h5>
+
+                    <div class="form-group">
+                        <label asp-for="personModel.personFirstName">First Name</label>
+                        <input asp-for="personModel.personFirstName" class="form-control" />
+                        <span asp-validation-for="personModel.personFirstName" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="personModel.personFatherName">Father Name</label>
+                        <input asp-for="personModel.personFatherName" class="form-control" />
+                        <span asp-validation-for="personModel.personFatherName" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="personModel.personLastName">Last Name</label>
+                        <input asp-for="personModel.personLastName" class="form-control" />
+                        <span asp-validation-for="personModel.personLastName" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="personModel.personDoB">Date Of Birth</label>
+                        <input asp-for="personModel.personDoB" class="form-control" type="date" />
+                        <span asp-validation-for="personModel.personDoB" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="personModel.personGender">Gender</label>
+                        <select asp-for="personModel.personGender" class="form-control"
+                                asp-items="Html.GetEnumSelectList<Models.Gender>()"></select>
+                        <span asp-validation-for="personModel.personGender" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="personModel.personIDType">ID Type</label>
+                        <input asp-for="personModel.personIDType" class="form-control" />
+                        <span asp-validation-for="personModel.personIDType" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="personModel.personIDNumber">Id Number</label>
+                        <input asp-for="personModel.personIDNumber" class="form-control" />
+                        <span asp-validation-for="personModel.personIDNumber" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="personModel.personRecordNumber">Record Number</label>
+                        <input asp-for="personModel.personRecordNumber" class="form-control" />
+                        <span asp-validation-for="personModel.personRecordNumber" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <!-- Middle Column -->
+                <div class="col-md-5 me-2">
+                    <h5 class="fw-bold">Contact Info.</h5>
+
+                    <div class="form-group">
+                        <label asp-for="personModel.personPhoneNumber">Phone Number</label>
+                        <input asp-for="personModel.personPhoneNumber" class="form-control" />
+                        <span asp-validation-for="personModel.personPhoneNumber" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="personModel.personEmailAddress">Email</label>
+                        <input asp-for="personModel.personEmailAddress" class="form-control" />
+                        <span asp-validation-for="personModel.personEmailAddress" class="text-danger"></span>
+                    </div>
+
+                    <h5 class="fw-bold mt-4">Address</h5>
+
+                    <div class="form-group">
+                        <label asp-for="addressModel.addressCountry">Country</label>
+                        <select asp-for="addressModel.addressCountry" class="form-control"
+                                asp-items="Html.GetEnumSelectList<Models.Country>()"></select>
+                        <span asp-validation-for="addressModel.addressCountry" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="addressModel.addressRegion">Region</label>
+                        <input asp-for="addressModel.addressRegion" class="form-control" />
+                        <span asp-validation-for="addressModel.addressRegion" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="addressModel.addressZone">Zone</label>
+                        <input asp-for="addressModel.addressZone" class="form-control"/>
+                        <span asp-validation-for="addressModel.addressZone" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="addressModel.addressWoreda">Woreda</label>
+                        <input asp-for="addressModel.addressWoreda" class="form-control" />
+                        <span asp-validation-for="addressModel.addressWoreda" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="addressModel.addressTabya">Tabya</label>
+                        <input asp-for="addressModel.addressTabya" class="form-control" />
+                        <span asp-validation-for="addressModel.addressTabya" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <!-- Right Column - Photo -->
+                <div class="col-md-3">
+                    <label class="fw-bold">Update Person Photo</label>
+                    <input type="file" id="imageUpload" name="Photo" class="form-control" accept="image/jpeg" onchange="previewImage(event)" />
+
+                    @if (Model.PhotoExists)
+                    {
+                        <img src="~/images/@(Model.personModel.personID + ".jpg")" style="max-width:200px; margin-top:10px;" />
+
+                    }
+
+                    <img id="preview" style="max-width:200px; display:none; margin-top:10px;" />
+                </div>
             </div>
-            <div class="form-group">
-                <label asp-for="personModel.personFatherName" class="control-label">Fathers Name</label>
-                <input asp-for="personModel.personFatherName" class="form-control" />
-                <span asp-validation-for="personModel.personFatherName" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="personModel.personLastName" class="control-label">Last Name</label>
-                <input asp-for="personModel.personLastName" class="form-control" />
-                <span asp-validation-for="personModel.personLastName" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="personModel.personDoB" class="control-label">Date of Birth</label>
-                <input asp-for="personModel.personDoB" class="form-control" type="date"/>
-                <span asp-validation-for="personModel.personDoB" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="personModel.personGender" class="control-label">Gender</label>
-                <select asp-for="personModel.personGender" class="form-control" asp-items="Html.GetEnumSelectList<Models.Gender>()"></select>
-                <span asp-validation-for="personModel.personGender" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="personModel.personIDType" class="control-label">ID Type</label>
-                <input asp-for="personModel.personIDType" class="form-control" />
-                <span asp-validation-for="personModel.personIDType" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="personModel.personIDNumber" class="control-label">ID Number</label>
-                <input asp-for="personModel.personIDNumber" class="form-control" />
-                <span asp-validation-for="personModel.personIDNumber" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="personModel.personPhoneNumber" class="control-label">Phone</label>
-                <input asp-for="personModel.personPhoneNumber" class="form-control" />
-                <span asp-validation-for="personModel.personPhoneNumber" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="personModel.personRecordNumber" class="control-label">Record Number</label>
-                <input asp-for="personModel.personRecordNumber" class="form-control" />
-                <span asp-validation-for="personModel.personRecordNumber" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="personModel.addressID" class="control-label">Address</label>
-                <select asp-for="personModel.addressID" class="form-control" asp-items="ViewBag.addressFormatted"></select>
-                <span asp-validation-for="personModel.addressID" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="personModel.personEmailAddress" class="control-label">Email</label>
-                <input asp-for="personModel.personEmailAddress" class="form-control" />
-                <span asp-validation-for="personModel.personEmailAddress" class="text-danger"></span>
-            </div>
-            <div class="form-group">
+
+            <div class="form-group mt-3">
                 <input type="submit" value="Save" class="btn btn-primary" />
             </div>
         </form>
-    </div>
-    <div class="col-md-4">
-
     </div>
 </div>
 
@@ -85,5 +145,18 @@
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        function previewImage(event) {
+            const reader = new FileReader();
+            reader.onload = function () {
+                const preview = document.getElementById('preview');
+                preview.src = reader.result;
+                preview.style.display = 'block';
+            }
+            reader.readAsDataURL(event.target.files[0]);
+        }
+    </script>
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }

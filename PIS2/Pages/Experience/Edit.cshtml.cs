@@ -26,7 +26,7 @@ namespace PIS2.Pages.Experience
         public personModel personModel { get; set; } = default!;
         [BindProperty]
         public List<experienceModel> Experiences { get; set; } = default!;
-
+        
         public async Task<IActionResult> OnGetAsync(int? id)
         {
             if (id == null)
@@ -51,10 +51,14 @@ namespace PIS2.Pages.Experience
         // For more information, see https://aka.ms/RazorPagesCRUD.
         public async Task<IActionResult> OnPostAsync()
         {
+            ModelState.Clear();
+            experienceModel.modifiedBy = User.Identity.Name;
+
             if (!ModelState.IsValid)
             {
                 return Page();
             }
+
 
             _context.Attach(experienceModel).State = EntityState.Modified;
 
@@ -73,7 +77,9 @@ namespace PIS2.Pages.Experience
                     throw;
                 }
             }
-
+            Experiences = _context.Experiences.Where(e => e.personID == experienceModel.personID).ToList();
+            personModel = await _context.Persons.FirstOrDefaultAsync(m => m.personID == experienceModel.personID);
+            TempData["SuccessMessage"] = "Updates saved successfully!";
             return Page();
         }
 

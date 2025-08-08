@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -7,43 +7,55 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using PIS2.Models;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Hosting;
 
 namespace PIS2.Pages.Person
 {
     public class EditModel : PageModel
     {
-        private readonly PIS2.Models.PISContext _context;
+        private readonly PISContext _context;
+        private readonly IWebHostEnvironment _environment;
 
-        public EditModel(PIS2.Models.PISContext context)
+        public EditModel(PISContext context, IWebHostEnvironment environment)
         {
             _context = context;
+            _environment = environment;
         }
 
         [BindProperty]
         public personModel personModel { get; set; } = default!;
+        [BindProperty]
+        public addressModel addressModel { get; set; } = default!;
+        [BindProperty]
+        public IFormFile Photo { get; set; } = default!;
+        public bool PhotoExists { get; set; }
 
         public async Task<IActionResult> OnGetAsync(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
-            var personmodel =  await _context.Persons.FirstOrDefaultAsync(m => m.personID == id);
-            if (personmodel == null)
-            {
-                return NotFound();
-            }
-            personModel = personmodel;
-           ViewData["addressID"] = new SelectList(_context.Addresses, "addressID", "addressFormatted");
+            var person = await _context.Persons.FirstOrDefaultAsync(m => m.personID == id);
+            if (person == null) return NotFound();
+
+            personModel = person;
+            addressModel = await _context.Addresses.FirstOrDefaultAsync(a => a.addressID == person.addressID)
+                           ?? new addressModel();
+
+            var photoPath = Path.Combine(_environment.WebRootPath, "images", $"{person.personID}.jpg");
+            PhotoExists = System.IO.File.Exists(photoPath);
+
+            ViewData["addressID"] = new SelectList(_context.Addresses, "addressID", "addressFormatted");
             return Page();
         }
 
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more information, see https://aka.ms/RazorPagesCRUD.
         public async Task<IActionResult> OnPostAsync()
         {
-            if (!ModelState.IsValid)
+            personModel.modifiedBy = User.Identity?.Name ?? "system";
+            personModel.addressID = await GetOrCreateAddress(addressModel);
+
+            ModelState.Clear(); // Ensure clean state for re-validation
+            if (!TryValidateModel(personModel))
             {
                 return Page();
             }
@@ -57,21 +69,51 @@ namespace PIS2.Pages.Person
             catch (DbUpdateConcurrencyException)
             {
                 if (!personModelExists(personModel.personID))
-                {
                     return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                throw;
             }
 
-            return RedirectToPage("./Index");
+            if (Photo != null && Photo.Length > 0)
+            {
+                var fileExt = Path.GetExtension(Photo.FileName);
+                var fileName = $"{personModel.personID}{fileExt}";
+                var imagesFolder = Path.Combine(_environment.WebRootPath, "images");
+
+                if (!Directory.Exists(imagesFolder))
+                    Directory.CreateDirectory(imagesFolder);
+
+                var filePath = Path.Combine(imagesFolder, fileName);
+
+                using var stream = new FileStream(filePath, FileMode.Create);
+                await Photo.CopyToAsync(stream);
+            }
+
+            return RedirectToPage("./Details", new { id = personModel.personID });
         }
 
         private bool personModelExists(int id)
         {
             return _context.Persons.Any(e => e.personID == id);
+        }
+
+        public async Task<int> GetOrCreateAddress(addressModel addressModel)
+        {
+            var existingAddress = _context.Addresses.FirstOrDefault(a =>
+                a.addressCountry == addressModel.addressCountry &&
+                a.addressRegion.ToLower() == addressModel.addressRegion.ToLower() &&
+                a.addressZone.ToLower() == addressModel.addressZone.ToLower() &&
+                a.addressWoreda.ToLower() == addressModel.addressWoreda.ToLower() &&
+                a.addressTabya.ToLower() == addressModel.addressTabya.ToLower());
+
+            if (existingAddress != null)
+                return existingAddress.addressID;
+
+            addressModel.modifiedBy = User.Identity?.Name ?? "system";
+            addressModel.addressStatus = mainStatus.Active;
+
+            _context.Addresses.Add(addressModel);
+            await _context.SaveChangesAsync();
+            return addressModel.addressID;
         }
     }
 }

@@ -65,7 +65,7 @@ namespace PIS2.Pages.Employment
             _context.Employments.Add(employmentModel);
             await _context.SaveChangesAsync();
 
-            return RedirectToPage("./Index");
+            return RedirectToPage("/JobPlacement/Create", new {id= employmentModel.employmentID});
         }
     }
 }

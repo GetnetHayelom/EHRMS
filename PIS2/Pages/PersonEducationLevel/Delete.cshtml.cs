@@ -28,7 +28,9 @@ namespace PIS2.Pages.PersonEducationLevel
                 return NotFound();
             }
 
-            var personeducationlevelmodel = await _context.PersonEducationLevels.FirstOrDefaultAsync(m => m.personEducationLevelID == id);
+            var personeducationlevelmodel = await _context.PersonEducationLevels
+                .Include(pel => pel.personModel)
+                .Include(pel => pel.educationLevelModel).FirstOrDefaultAsync(m => m.personEducationLevelID == id);
 
             if (personeducationlevelmodel == null)
             {
@@ -56,7 +58,7 @@ namespace PIS2.Pages.PersonEducationLevel
                 await _context.SaveChangesAsync();
             }
 
-            return RedirectToPage("./Index");
+            return RedirectToPage("/Person/Details", new {id= personEducationLevelModel.personID});
         }
     }
 }

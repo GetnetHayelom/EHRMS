@@ -1,0 +1,30 @@
+﻿@page
+@model BackupDatabaseModel
+@{
+    ViewData["Title"] = "Backup Database";
+}
+
+<h2>Backup SQL Database (.bak)</h2>
+<form method="post">
+    <div class="form-group">
+        <label asp-for="BackupPath">Select backup file path (.bak)</label>
+        <input asp-for="BackupPath" class="form-control" placeholder="e.g. C:\Backups\PIS2.bak" />
+    </div>
+    <button type="submit" name="action" value="BackupSql" class="btn btn-primary mt-2">Backup Database</button>
+</form>
+
+<hr />
+
+<h2>Export to Excel (.xlsx)</h2>
+<form method="post">
+    <div class="form-group">
+        <label asp-for="ExcelPath">Select Excel file path (.xlsx)</label>
+        <input asp-for="ExcelPath" class="form-control" placeholder="e.g. C:\Backups\PIS2.xlsx" />
+    </div>
+    <button type="submit" name="action" value="ExportExcel" class="btn btn-success mt-2">Export to Excel</button>
+</form>
+
+@if (!string.IsNullOrEmpty(Model.Message))
+{
+    <div class="alert alert-info mt-3">@Html.Raw(Model.Message)</div>
+}

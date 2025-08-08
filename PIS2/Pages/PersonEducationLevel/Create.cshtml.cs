@@ -18,10 +18,18 @@ namespace PIS2.Pages.PersonEducationLevel
             _context = context;
         }
 
-        public IActionResult OnGet()
-        {
-        ViewData["educationLevelID"] = new SelectList(_context.EducationLevels, "educationLevelID", "educationLevelName");
-        ViewData["personID"] = new SelectList(_context.Persons, "personID", "personFullName");
+        public IActionResult OnGet(int? id)
+        { 
+            if (id != null)
+            {
+                ViewData["personID"] = new SelectList(_context.Persons, "personID", "personFullName", id);
+            }
+            else
+            {
+                ViewData["personID"] = new SelectList(_context.Persons.OrderBy(p => p.personFirstName).ThenBy(p => p.personFatherName).ThenBy(p => p.personLastName), "personID", "personFullName");
+            }
+            ViewData["educationLevelID"] = new SelectList(_context.EducationLevels, "educationLevelID", "educationLevelName");
+        
             return Page();
         }
 
@@ -31,6 +39,7 @@ namespace PIS2.Pages.PersonEducationLevel
         // For more information, see https://aka.ms/RazorPagesCRUD.
         public async Task<IActionResult> OnPostAsync()
         {
+            
             if (!ModelState.IsValid)
             {
                 return Page();
