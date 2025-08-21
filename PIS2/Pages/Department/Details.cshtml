@@ -22,14 +22,14 @@
             <button class="flex-grow-1 btn btn-primary m-2 p-2  position-relative">
             Overtime
                 <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                    @Model.leaveModel.Count()
+                    @Model.overtimeModel.Count()
                     <span class="visually-hidden">Pending Leaves</span>
                 </span>
             </button>
-            <button class="flex-grow-1 btn btn-primary m-2 p-2">Shift</button>
-            <button class="flex-grow-1 btn btn-primary m-2 p-2">Work Location</button>
+            <a asp-page="/ShiftAssignment" class="flex-grow-1 btn btn-primary m-2 p-2">Shift</a>
+            <a asp-page="/SiteAssignment" class="flex-grow-1 btn btn-primary m-2 p-2">Work Location</a>
             <button class="btn flex-grow-1  btn-primary m-2 p-2">Evaluation</button>
-            <button class="flex-grow-1 btn btn-danger m-2 p-2">Penality</button>
+            <a asp-page="/Delegation/Create" asp-route-id="@Model.Employments" class="flex-grow-1 btn btn-primary m-2 p-2">Delegate</a>
             <button class="flex-grow-1 btn btn-warning m-2 p-2">Employment Request</button>
         </div>
      </div>
@@ -170,8 +170,7 @@
             </tr>
         </thead>
         <tbody>
-            @foreach(var item in Model.EmploymentView
-            .Where(e => e.Job.jobPlacementStatus == Models.mainStatus.Active && e.Job.departmentID == Model.departmentModel.departmentID))
+            @foreach(var item in Model.EmploymentView)
             {
                 
                 <tr>
@@ -191,7 +190,7 @@
                         @Math.Round(item.Leave.AllowedLeave, 2)
                     </td>
                     <td>
-                        @item.Shift.shiftName
+                        @item.Shift?.shiftName
                     </td>
                     <td>
                         @item.WorkSite?.workSiteName
@@ -203,10 +202,7 @@
     </table>
 </div>
     
-<div>
-    <a asp-page="./Edit" asp-route-id="@Model.departmentModel.departmentID">Edit</a> |
-    <a asp-page="./Index">Back to List</a>
-</div>
+
 <!--LEAVE MANAGE-->
 <!-- Modal -->
 <div class="modal fade" id="LeaveModal" tabindex="-1" aria-labelledby="LeaveModalLabel" aria-hidden="true">
@@ -256,13 +252,13 @@
                                     @Html.DisplayFor(modelItem => item.employmentModel.givenID)
                                 </td>
                                 <td>
-                                    @item.leaveReaquestDate.ToString("MMM dd, yyyy")
+                                    @item.leaveReaquestDate.ToString("yyyy-MM-dd")
                                 </td>
                                 <td>
-                                    @item.leaveStartDate.ToString("MMM dd, yyyy")
+                                    @item.leaveStartDate.ToString("yyyy-MM-dd")
                                 </td>
                                 <td>
-                                    @item.leaveEndDate.ToString("MMM dd, yyyy")
+                                    @item.leaveEndDate.ToString("yyyy-MM-dd")
                                 </td>
                                 <td>
                                     @Html.DisplayFor(modelItem => item.leaveDays)
@@ -287,7 +283,7 @@
                                                    value="approve"
                                                    data-leave-id="@item.leaveID">
                                             <label class="btn btn-outline-success" for="approve_@item.leaveID">
-                                                <i class="fas fa-check-circle me-2"></i> Approve
+                                                <i class="bi bi-check-lg"></i>
                                             </label>
 
                                             <input type="radio" class="btn-check approval-radio"
@@ -296,7 +292,7 @@
                                                    value="reject"
                                                    data-leave-id="@item.leaveID">
                                             <label class="btn btn-outline-danger" for="reject_@item.leaveID">
-                                                <i class="fas fa-times-circle me-2"></i> Decline
+                                                <i class="bi bi-x-lg"></i>
                                             </label>
                                         </div>
                                     }
@@ -326,6 +322,7 @@
             });
         });
 
+        console.log(decisions);
         if (decisions.length === 0) {
             alert('Please make at least one decision');
             return;
@@ -343,14 +340,14 @@
                 'Content-Type': 'application/json',
                 'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
             },
-            body: JSON.stringify({
-                leaveId: decisions.map(d => d.leaveId),
-                action: decisions.map(d => d.action)
-            })
+            body: JSON.stringify(decisions)
         })
             .then(response => {
-                if (!response.ok) throw new Error('Network error');
-                return response.json();
+                // Read the response body as text to get the error message
+                return response.text().then(text => {
+                    // Throw a new error with the server's message
+                    throw new Error(text || 'Unknown server error');
+                });
             })
             .then(data => {
                 if (data.success) {
@@ -363,7 +360,7 @@
             })
             .catch(error => {
                 console.error('Error:', error);
-                alert('Failed to save decisions');
+                alert('Failed to save decisions' + error.message);
             })
             .finally(() => {
                 saveBtn.innerHTML = '<i class="fas fa-save me-2"></i> Save Changes';

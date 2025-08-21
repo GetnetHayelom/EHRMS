@@ -158,13 +158,23 @@ namespace PIS2.Pages.Management
                  }).ToList();
 
             //WorkSite Employee Distribution
-            WorkSiteEmployees = _context.JobPlacements.Where(jp => jp.jobPlacementStatus == mainStatus.Active).Include(jp => jp.workSiteModel)
-                .GroupBy(w => new { w.workSiteID, w.workSiteModel.workSiteName })
-                .Select(we => new NameAndCount
+            WorkSiteEmployees = _context.SiteAssignments
+                .Where(ws => ws.employmentModel.employmentStatus == mainStatus.Active)
+                .GroupBy(ws => new { ws.employmentID, ws.workSiteModel.workSiteName })
+                .Select(g => new
                 {
-                    zName = we.Key.workSiteName,
-                    zCount = we.Count()
-                }).OrderByDescending(g => g.zCount).ToList().Where(g => g.zCount>0).ToList();
+                    g.Key.employmentID,
+                    g.Key.workSiteName
+                }) // now we have distinct employment per site
+                .GroupBy(x => x.workSiteName)
+                .Select(g => new NameAndCount
+                {
+                    zName = g.Key,
+                    zCount = g.Count()
+                })
+                .OrderByDescending(wl => wl.zCount)
+                .ToList();
+
             //WorkSiteEmployees = (from jp in _context.JobPlacements
             //                      join ws in _context.WorkSites on jp.workSiteID equals ws.workSiteID into wsGroup
             //                      from ws in wsGroup.DefaultIfEmpty() // Left join

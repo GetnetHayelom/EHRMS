@@ -26,8 +26,7 @@ namespace PIS2.Pages.JopPlacementHistory
                 .Include(j => j.departmentModel)
                 .Include(j => j.employmentModel)
                 .Include(j => j.jobModel)
-                .Include(j => j.shiftModel)
-                .Include(j => j.workSiteModel).ToListAsync();
+                .ToListAsync();
         }
     }
 }

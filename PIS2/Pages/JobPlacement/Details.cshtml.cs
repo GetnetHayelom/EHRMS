@@ -19,7 +19,7 @@ namespace PIS2.Pages.JobPlacement
         }
 
         public jobPlacementModel jobPlacementModel { get; set; } = default!;
-        public List<jobPlacementModel> jobPlacementList { get; set; } = default!;
+        public List<jobPlacementHistoryModel> jobPlacementHistoryList { get; set; } = default!;
 
         public async Task<IActionResult> OnGetAsync(int? id)
         {
@@ -43,7 +43,8 @@ namespace PIS2.Pages.JobPlacement
             {
                 
                 jobPlacementModel = jobplacementmodel;
-
+                jobPlacementHistoryList =_context.JobPlacementHistories
+                    .Include(jh => jh.departmentModel).Where(jh => jh.jobPlacementID == jobPlacementModel.jobPlacementID).ToList() ?? new List<jobPlacementHistoryModel>();
                 //jobPlacementList = await _context.Where(jp => jp.employmentID == jobPlacementModel.employmentID)
                 //    .Include(jp=>jp.jobModel).ThenInclude(j => j.jobGradeModel)
                 //    .Include(jp=> jp.jobStepModel)

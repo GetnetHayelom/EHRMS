@@ -187,7 +187,96 @@ namespace PIS2.Pages.HRClerck
                         return $"<tr onclick=\"location.href='{url}'\" style='cursor:pointer'><td>{c.givenID}</td><td>{c.personModel.personFullName}</td><td>{department}</td><td>{jobTitle}</td><td>{c.employmentTerminationDate}</td></tr>";
                     }));
                     break;
-                
+                case "Termination":
+                    var terminationList = _context.Terminations.Include(t => t.EmploymentModel)
+                        .ThenInclude(e => e.JobPlacements).ThenInclude(j => j.departmentModel)
+                        .Include(t => t.EmploymentModel).ThenInclude(e => e.personModel)
+                        .Where(e => e.terminationStatus == terminationStatus.Hold).ToList();
+
+
+                    tableTitle = "Requests for Employment Termination";
+                    tableHeader = "<td>Employee ID</td><td>Full Name</td><td>Date</td><td>Department</td><td>Job Title</td><td>Reason</td><td>Status</td>";
+
+                    tableBody = string.Join("", terminationList.Select(t =>
+                    {
+                        var url = Url.Page("/Termination/Details", new { id = t.terminationID });
+                        var activeJobPlacement = t.EmploymentModel.JobPlacements.FirstOrDefault(j => j.jobPlacementStatus == mainStatus.Active);
+
+                        string jobTitle = activeJobPlacement?.jobModel?.jobTitle ?? "N/A";
+                        string department = activeJobPlacement?.departmentModel?.departmentName ?? "N/A";
+
+                        return $"<tr onclick=\"location.href='{url}'\" style='cursor:pointer'><td>{t.EmploymentModel.givenID}</td>" +
+                        $"<td>{t.EmploymentModel?.personModel.personFullName}</td><td>{t.terminationDate.ToShortDateString()}</td><td>{department}</td><td>{jobTitle}</td>" +
+                        $"<td>{t.terminationReason}</td><td>{t.terminationStatus}</td></tr>";
+                    }));
+                    break;
+                case "Allowance":
+                    var AllowanceList = _context.AllowanceAssignments.Include(a => a.employmentModel)
+                        .ThenInclude(e => e.JobPlacements).ThenInclude(j => j.departmentModel)
+                        .Include(a => a.allowanceModel)
+                        .Include(e => e.employmentModel).ThenInclude(e => e.personModel)
+                        .Where(e => e.allowanceStatus == mainStatus.Suspended).ToList();
+
+
+                    tableTitle = "Pending Allowance";
+                    tableHeader = "<td>Employee ID</td><td>Full Name</td><td>Date</td><td>Department</td><td>Job Title</td><td>Allowance Name</td><td>Status</td>";
+
+                    tableBody = string.Join("", AllowanceList.Select(a =>
+                    {
+                        var url = Url.Page("/Termination/Details", new { id = a.allowanceAssignmentID });
+                        var activeJobPlacement = a.employmentModel.JobPlacements.FirstOrDefault(j => j.jobPlacementStatus == mainStatus.Active);
+
+                        string jobTitle = activeJobPlacement?.jobModel?.jobTitle ?? "N/A";
+                        string department = activeJobPlacement?.departmentModel?.departmentName ?? "N/A";
+
+                        return $"<tr onclick=\"location.href='{url}'\" style='cursor:pointer'><td>{a.employmentModel.givenID}</td>" +
+                        $"<td>{a.employmentModel?.personModel.personFullName}</td><td>{a.allowanceAssignmentDate}</td><td>{department}</td><td>{jobTitle}</td>" +
+                        $"<td>{a.allowanceModel.allowanceName}</td><td>{a.allowanceStatus}</td></tr>";
+                    }));
+                    break;
+                case "JobPlacement":
+                    var JobPlacementList = _context.JobPlacements.Include(j => j.departmentModel)
+                        .Include(j => j.jobModel)
+                        .Include(j => j.employmentModel).ThenInclude(e => e.personModel)
+                        .Where(e => e.jobPlacementStatus == mainStatus.Suspended).ToList();
+
+
+                    tableTitle = "Pending Job Placements";
+                    tableHeader = "<td>Employee ID</td><td>Full Name</td><td>Date</td><td>Department</td><td>Job Title</td><td>Reason</td><td>Status</td>";
+
+                    tableBody = string.Join("", JobPlacementList.Select(j =>
+                    {
+                        var url = Url.Page("/JobPlacement/Details", new { id = j.jobPlacementID });
+                        var activeJobPlacement = j.employmentModel.JobPlacements.FirstOrDefault(j => j.jobPlacementStatus == mainStatus.Active);
+
+                        string jobTitle = activeJobPlacement?.jobModel?.jobTitle ?? "N/A";
+                        string department = activeJobPlacement?.departmentModel?.departmentName ?? "N/A";
+
+                        return $"<tr onclick=\"location.href='{url}'\" style='cursor:pointer'><td>{j.employmentModel.givenID}</td>" +
+                        $"<td>{j.employmentModel?.personModel.personFullName}</td><td>{j.jobPlacementDate}</td><td>{department}</td><td>{jobTitle}</td>" +
+                        $"<td>{j.jobPlacementReason}</td><td>{j.jobPlacementStatus}</td></tr>";
+                    }));
+                    break;
+                case "Prohibition":
+                    var prohibitionList = _context.Prohibitions
+                        .Include(j => j.employmentModel).ThenInclude(e => e.personModel)
+                        .Where(e => e.prohibitionStatus == mainStatus.Active).ToList();
+
+
+                    tableTitle = "Active Prohibitions";
+                    tableHeader = "<td>Employee ID</td><td>Full Name</td><td>From</td><td>To</td><td>Type</td><td>Reason</td><td>Modified By</td>";
+
+                    tableBody = string.Join("", prohibitionList.Select(p =>
+                    {
+                        var url = Url.Page("/Prohibition/Details", new { id = p.prohibitionID });
+                        
+
+                        return $"<tr onclick=\"location.href='{url}'\" style='cursor:pointer'><td>{p.employmentModel.givenID}</td>" +
+                        $"<td>{p.employmentModel?.personModel.personFullName}</td><td>{p.prohibitionStart}</td><td>{p.prohibitionEnd}</td><td>{p.prohibitionType}</td>" +
+                        $"<td>{p.prohibitionReason}</td><td>{p.modifiedBy}</td></tr>";
+                    }));
+                    break;
+
             }
 
             return new JsonResult(new { tableHeader, tableBody, tableTitle });

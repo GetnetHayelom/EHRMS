@@ -1,0 +1,78 @@
+﻿@page
+@model PIS2.Pages.delegation.CreateModel
+
+@{
+    ViewData["Title"] = "Create";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<h1 class="fw-bold">Delegation</h1>
+
+<h4 class="fw-bold">New Delegation</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="delegationModel.delegationFrom" class="control-label">Delegator</label>
+                <select asp-for="delegationModel.delegationFrom" class ="form-control select2">
+                    <option value="">Select Delegator</option>
+                    @foreach(var item in Model.Employments)
+                    {
+                        <option value="@item.employmentID">@item.personModel?.personFullName</option>
+                    }
+                </select>
+               
+            </div>
+
+            <div class="form-group">
+                <label asp-for="delegationModel.delegationTo" class="control-label">Delegatee</label>
+                <select asp-for="delegationModel.delegationTo" class ="form-control select2">
+                    <option value="">Select Delegatee</option>
+                    @foreach (var item in Model.Employments)
+                    {
+                        <option value="@item.employmentID">@item.personModel?.personFullName</option>
+                    }
+                </select>
+                
+            </div>
+            <div class="form-group">
+                <label asp-for="delegationModel.delegationStartDate" class="control-label">Start</label>
+                <input asp-for="delegationModel.delegationStartDate" class="form-control" value="@DateTime.Now.ToString("yyyy-MM-dd")" type="date"/>
+                <span asp-validation-for="delegationModel.delegationStartDate" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="delegationModel.delegationEndDate" class="control-label">End</label>
+                <input asp-for="delegationModel.delegationEndDate" class="form-control" value="@DateTime.Now.ToString("yyyy-MM-dd")" type="date" />
+                <span asp-validation-for="delegationModel.delegationEndDate" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="delegationModel.delegationScope" class="control-label">Scope</label>
+                <select asp-for="delegationModel.delegationScope" class="form-control" asp-items="@Html.GetEnumSelectList<Models.delegationScopes>()"></select>
+                <span asp-validation-for="delegationModel.delegationScope" class="text-danger"></span>
+            </div>
+           
+            
+            <div class="form-group d-flex justify-content-end">
+                <input type="submit" value="Save" class="btn btn-success m-2" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-page="Index">View All Delegations</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
+<script>
+    $(document).ready(function () {
+        $('.select2').select2({
+            placeholder: "Select Delegator",
+            allowClear: true
+        });
+    });
+</script>

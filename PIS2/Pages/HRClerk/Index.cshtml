@@ -11,12 +11,12 @@
 @if (User.IsInRole("PMS_HRMANAGER"))
 {
     <div class="d-flex justify-content-around">
-        <button class="btn btn-primary m-2 flex-grow-1">Allowance</button>
-        <button class="btn btn-warning m-2 flex-grow-1">Prohibition</button>
-        <button class="btn btn-primary m-2 flex-grow-1">Employment</button>
-        <button class="btn btn-primary m-2 flex-grow-1">Job Placements</button>
-        <button class="btn btn-warning m-2 flex-grow-1">Termination</button>
-        <button class="btn btn-danger m-2 flex-grow-1">Penality</button>
+        <button class="btn btn-primary m-2 flex-grow-1" onclick="getList('Allowance')">Allowance</button>
+        <button class="btn btn-warning m-2 flex-grow-1" onclick="getList('Prohibition')">Prohibition</button>
+        <button class="btn btn-primary m-2 flex-grow-1" onclick="getList('Employment')">Employment</button>
+        <button class="btn btn-primary m-2 flex-grow-1" onclick="getList('JobPlacement')">Job Placements</button>
+        <button class="btn btn-warning m-2 flex-grow-1" onclick="getList('Termination')">Termination</button>
+        <button class="btn btn-danger m-2 flex-grow-1">penalty</button>
         <button class="btn btn-success m-2 flex-grow-1">Promotion</button>
     </div>
 }
@@ -24,6 +24,7 @@
 <hr />
 <div class="d-flex">
     <div class="col-4">
+        
         <div class="d-flex card shadow justify-content-center m-2 p-2" onclick="getList('Leave')" style="cursor:pointer">
             <h4 class="fw-bold">Leaves On Hold</h4>
             <div class="d-flex justify-content-center bg-info text-white">

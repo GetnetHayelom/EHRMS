@@ -82,13 +82,15 @@ namespace PIS2.Pages.OvertimeRecord
         // For more information, see https://aka.ms/RazorPagesCRUD.
         public async Task<IActionResult> OnPostAsync()
         {
+            int depID;
             int empID = Convert.ToInt32(TempData["MyNumber"]);
             var job = _context.JobPlacements
-                .Include(j => j.shiftModel)
+                
                 .FirstOrDefault(j => j.employmentID == empID && j.jobPlacementStatus == mainStatus.Active) ?? new jobPlacementModel();
 
-            var shift = job.shiftModel ?? new shiftModel();
+            var shift = _context.ShiftAssignments.OrderByDescending(sa => sa.modifiedDate).FirstOrDefault(sa => sa.employmentID == empID).shiftModel ?? new shiftModel();
             Employment = _context.Employments.FirstOrDefault(e => e.employmentID == empID) ?? new employmentModel();
+            depID = _context.JobPlacements.FirstOrDefault(jp => jp.employmentID == Employment.employmentID && jp.jobPlacementStatus == mainStatus.Active).departmentID;
 
             var nightOt = _context.Overtimes.FirstOrDefault(o => o.overtimeName.ToLower() == "night" && o.overtimeStatus == mainStatus.Active);
             var normalOt = _context.Overtimes.FirstOrDefault(o => o.overtimeName.ToLower() == "normal" && o.overtimeStatus == mainStatus.Active);
@@ -128,7 +130,8 @@ namespace PIS2.Pages.OvertimeRecord
                     overtimeRecordEndTime = otEnd,
                     overtimeID = sundayOt.overtimeID,
                     overtimeRate = sundayOt.overtimeRate,
-                    overtimeRecordReason = overtimeRecordModel.overtimeRecordReason
+                    overtimeRecordReason = overtimeRecordModel.overtimeRecordReason,
+                    departmentID = depID
                 });
             }
             //Holiday OT
@@ -145,7 +148,8 @@ namespace PIS2.Pages.OvertimeRecord
                     overtimeRecordEndTime = otEnd,
                     overtimeID = holidayOt.overtimeID,
                     overtimeRate = holidayOt.overtimeRate,
-                    overtimeRecordReason = overtimeRecordModel.overtimeRecordReason
+                    overtimeRecordReason = overtimeRecordModel.overtimeRecordReason,
+                    departmentID = depID
                 });
             }
             else
@@ -166,7 +170,8 @@ namespace PIS2.Pages.OvertimeRecord
                         overtimeRecordEndTime = otEnd,
                         overtimeID = nightOt.overtimeID,
                         overtimeRate = nightOt.overtimeRate,
-                        overtimeRecordReason = overtimeRecordModel.overtimeRecordReason
+                        overtimeRecordReason = overtimeRecordModel.overtimeRecordReason,
+                        departmentID = depID
                     });
                 }
                 //OT From normal To Night
@@ -183,7 +188,8 @@ namespace PIS2.Pages.OvertimeRecord
                         overtimeRecordEndTime = nightStart,
                         overtimeID = normalOt.overtimeID,
                         overtimeRate = normalOt.overtimeRate,
-                        overtimeRecordReason = overtimeRecordModel.overtimeRecordReason
+                        overtimeRecordReason = overtimeRecordModel.overtimeRecordReason,
+                        departmentID = depID
                     });
 
                     records.Add(new overtimeRecordModel
@@ -197,7 +203,8 @@ namespace PIS2.Pages.OvertimeRecord
                         overtimeRecordEndTime = otEnd,
                         overtimeID = nightOt.overtimeID,
                         overtimeRate = nightOt.overtimeRate,
-                        overtimeRecordReason = overtimeRecordModel.overtimeRecordReason
+                        overtimeRecordReason = overtimeRecordModel.overtimeRecordReason,
+                        departmentID = depID
                     });
                     Console.WriteLine(records.Count + "####### OT From Normal To Night !!!!!!!!!!!!!!!!!!!!!!!!!!");
                 }
@@ -215,7 +222,8 @@ namespace PIS2.Pages.OvertimeRecord
                         overtimeRecordEndTime = nightEnd,
                         overtimeID = nightOt.overtimeID,
                         overtimeRate = nightOt.overtimeRate,
-                        overtimeRecordReason = overtimeRecordModel.overtimeRecordReason
+                        overtimeRecordReason = overtimeRecordModel.overtimeRecordReason,
+                        departmentID = depID
                     });
 
                     records.Add(new overtimeRecordModel
@@ -229,7 +237,8 @@ namespace PIS2.Pages.OvertimeRecord
                         overtimeRecordEndTime = otEnd,
                         overtimeID = normalOt.overtimeID,
                         overtimeRate = normalOt.overtimeRate,
-                        overtimeRecordReason = overtimeRecordModel.overtimeRecordReason
+                        overtimeRecordReason = overtimeRecordModel.overtimeRecordReason,
+                        departmentID = depID
                     });
                 }
                 else
@@ -245,7 +254,8 @@ namespace PIS2.Pages.OvertimeRecord
                         overtimeRecordEndTime = otEnd,
                         overtimeID = normalOt.overtimeID,
                         overtimeRate = normalOt.overtimeRate,
-                        overtimeRecordReason = overtimeRecordModel.overtimeRecordReason
+                        overtimeRecordReason = overtimeRecordModel.overtimeRecordReason,
+                        departmentID = depID
                     });
                 }
             }

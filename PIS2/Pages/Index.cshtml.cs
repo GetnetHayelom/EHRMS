@@ -48,6 +48,10 @@ namespace PIS2.Pages
         public bool isSelf { get; set; } = false;
         public Core methods { get; set; } = default!;
         public bool PhotoExists { get; set; }
+        public bool IsLeaveAllow { get; set; } = true;
+        public bool IsOvertimeAllow { get; set; } = true;
+        public bool IsGuarantyAllow { get; set; } = true;
+
         public IndexModel(PISContext ctx, Core methods, IWebHostEnvironment environment)
         {
             _context = ctx;
@@ -59,7 +63,7 @@ namespace PIS2.Pages
         {
            
             //Person = new personModel();
-            People = await _context.Persons.ToListAsync();
+            People = await _context.Persons.OrderBy(p => p.personFirstName).ThenBy(p => p.personFatherName).ThenBy(p => p.personLastName).ToListAsync();
             Employments = await _context.Employments.ToListAsync();
             
 
@@ -89,11 +93,12 @@ namespace PIS2.Pages
                         .Include(e => e.OvertimeRecords).Where(e => e.personID == Person.personID).ToListAsync();
                     if (PersonEmployments != null && PersonEmployments.Any())
                     {
-                        Employment = PersonEmployments.OrderBy(e => e.employmentDate).LastOrDefault();
+                        Employment = PersonEmployments.First(pe => pe.employmentStatus == mainStatus.Active)?? PersonEmployments.OrderBy(e => e.employmentDate).LastOrDefault(); 
+                        //Employment = PersonEmployments.OrderBy(e => e.employmentDate).LastOrDefault();
                         if (Employment != null)
                         {
                             Leaves = Employment.Leaves.OrderByDescending(l => l.leaveReaquestDate).ToList();
-                            JobPlacements = await _context.JobPlacements.Where(l => l.employmentID == Employment.employmentID).ToListAsync();
+                            JobPlacements = await _context.JobPlacements.OrderBy(j => j.jobPlacementDate).Where(l => l.employmentID == Employment.employmentID).ToListAsync();
                             LeaveDetail = _core.GetLeaveSummary(Employment.employmentID);
                             Overtimes =await _context.OvertimeRecords.Include(ot=> ot.overtimeModel)
                                 .Include(ot=>ot.OvertimeHistories).Where(l => l.employmentID == Employment.employmentID).ToListAsync();
@@ -102,7 +107,25 @@ namespace PIS2.Pages
                                 .Include(jp => jp.jobModel)
                                 .Include(j => j.jobStepModel).ThenInclude(js => js.jobGradeModel)
                                 .OrderBy(jp => jp.jobPlacementDate).LastOrDefault(jp => jp.employmentID == Employment.employmentID) ?? new jobPlacementModel();
+
+                            if (Employment.employmentStatus == mainStatus.Active)
+                            {
+                                if(_context.Prohibitions.Where(p => p.prohibitionType == ProhibitionType.Leave && p.prohibitionStatus== mainStatus.Active).Any(p => p.employmentID == Employment.employmentID))
+                                {
+                                    IsLeaveAllow = false;
+                                }
+                                if (_context.Prohibitions.Where(p => p.prohibitionType == ProhibitionType.Overtime && p.prohibitionStatus == mainStatus.Active).Any(p => p.employmentID == Employment.employmentID))
+                                {
+                                    IsOvertimeAllow = false;
+                                }
+                                if (_context.Prohibitions.Where(p => p.prohibitionType == ProhibitionType.Guaranty && p.prohibitionStatus == mainStatus.Active).Any(p => p.employmentID == Employment.employmentID))
+                                {
+                                    IsGuarantyAllow = false;
+                                }
+                            }
                         }
+
+                        
 
                     }
 

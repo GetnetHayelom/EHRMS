@@ -30,6 +30,8 @@ namespace PIS2.Pages.Prohibition
         // For more information, see https://aka.ms/RazorPagesCRUD.
         public async Task<IActionResult> OnPostAsync()
         {
+            ModelState.Remove("prohibitionModel.modifiedBy");
+            prohibitionModel.modifiedBy = User.Identity.Name;
             if (!ModelState.IsValid)
             {
                 return Page();

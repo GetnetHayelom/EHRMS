@@ -1,0 +1,75 @@
+﻿@page
+@model PIS2.Pages.delegation.IndexModel
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<h1 class="fw-bold">Delegations</h1>
+
+<p>
+    <a asp-page="Create" class="btn btn-primary">New Delegation</a>
+</p>
+<table class="table table-striped table-hover">
+    <thead class="d-flex text-white">
+        <tr>
+            <th>
+                Deligator
+            </th>
+            <th>
+                Deligate
+            </th>
+            <th>
+                Start
+            </th>
+            <th>
+                End
+            </th>
+            <th>
+                Scope
+            </th>
+            <th>
+                Status
+            </th>
+            <th>
+                Modified Date
+            </th>
+            <th>
+                Modified User
+            </th>
+            
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model.delegationModel) {
+        <tr onclick="location.href='@Url.Page("Details", new {id = item.delegationID})'" style="cursor:pointer;">
+            <td>
+                @Html.DisplayFor(modelItem => item.FromEmployment.givenID)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ToEmployment.givenID)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.delegationStartDate.ToString("yyyy-MM-dd"))
+            </td>
+            <td>
+                    @Html.DisplayFor(modelItem => item.delegationEndDate.ToString("yyyy-MM-dd"))
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.delegationScope)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.delegationStatus)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.modifiedDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.modifiedBy)
+            </td>
+            
+        </tr>
+    }
+    </tbody>
+</table>

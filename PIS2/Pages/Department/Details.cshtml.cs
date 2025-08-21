@@ -24,6 +24,7 @@ namespace PIS2.Pages.Department
         public DepartmentSummary DepartmentSummary { get; set; }
         public double allowedLeave { get; set; }
         public double leaveCost {  get; set; }
+        public double overtimeCost { get; set; }
         public List<EducationLevelData> EducationLevels { get; set; }
         public List<NameAndCount> EmploymentTypes { get; set; }
         public List<YearAndCount> EmploymentHireRate { get; set; }
@@ -36,14 +37,30 @@ namespace PIS2.Pages.Department
         public List<employmentModel> Employments { get; set; }
         public List<EmployeeView> EmploymentView { get; set; }
         public IList<leaveModel> leaveModel { get; set; } = default!;
+        public IList<overtimeRecordModel> overtimeModel { get; set; } = default!;
         public string ModifiedBy { get; set; }
 
         public async Task<IActionResult> OnGetAsync(int? id)
 
         {
-            if (id == null)
+            //if (!User.IsInRole("MIE\\PMS_MANAGER"))
+            //{
+            //    return BadRequest();
+            //}
+            if (id == null || id==0)
             {
-                return NotFound();
+                int personID = _context.Users.FirstOrDefault(u => u.userName == User.Identity.Name).personID;
+                Console.WriteLine("SELECTED PERSON ID IS________________" + personID);
+                int empID = _context.Employments.FirstOrDefault(e => e.personID == personID && e.employmentStatus == mainStatus.Active).employmentID;
+                Console.WriteLine("SELECTED EMPLOYEE ID IS________________" + empID);
+                int depID = _context.JobPlacements.FirstOrDefault(jp => jp.employmentID == empID && jp.jobPlacementStatus == mainStatus.Active).departmentID;
+
+                id = depID;
+                Console.WriteLine("SELECTED DEPARTMENT ID IS________________" + depID);
+                if (id == null || id == 0)
+                {
+                    return NotFound();
+                }
             }
 
             var departmentmodel = await _context.Departments.Include(d => d.companyModel).FirstOrDefaultAsync(m => m.departmentID == id);
@@ -55,23 +72,23 @@ namespace PIS2.Pages.Department
             {
                
                 departmentModel = departmentmodel;
-                Jobs = _context.JobPlacements.Include(j => j.employmentModel).ThenInclude(e => e.personModel).Where(j => j.departmentID == id).ToList();
-                Employments = _context.Employments.Include(e => e.employmentTypeModel).Distinct().Where(e => Jobs.Select(j => j.employmentID).Contains(e.employmentID)).ToList();
+                Jobs = _context.JobPlacements.Where(j => j.departmentID ==departmentModel.departmentID && j.jobPlacementStatus == mainStatus.Active)
+                    .Include(j => j.employmentModel).ThenInclude(e => e.personModel)
+                    .Include(j => j.employmentModel).ThenInclude(e => e.employmentTypeModel)
+                    .Include(j=> j.jobModel).ToList();
+                //Jobs = _context.JobPlacements.Include(j => j.employmentModel).ThenInclude(e => e.personModel).Where(j => j.departmentID == id).ToList();
+                //Employments = _context.Employments.Include(e => e.employmentTypeModel).Distinct().Where(e => Jobs.Select(j => j.employmentID).Contains(e.employmentID)).ToList();
+                Employments =Jobs.Select(j => j.employmentModel).Distinct().ToList();
 
 
-                EmploymentView = _context.Employments
-                    .Include(e => e.personModel).ThenInclude(p => p.addressModel)
-                    .Include(e => e.JobPlacements).ThenInclude(jp => jp.jobModel)
-                    .Include(e => e.JobPlacements).ThenInclude(jp => jp.workSiteModel)
-                    .Include(e => e.JobPlacements).ThenInclude(jp => jp.shiftModel)
-                    .Where(e => Employments.Select(e => e.employmentID).Contains(e.employmentID) && e.employmentStatus == mainStatus.Active)
-                    .ToList().Select(ev => new EmployeeView
+                
+                EmploymentView =Employments.Select(ev => new EmployeeView
                     {
-                        Employment =ev,
-                        Job = ev.JobPlacements.OrderByDescending(j => j.jobPlacementDate).First(),
+                        Employment = ev,
+                        Job = ev.JobPlacements.Where(j => j.jobPlacementStatus == mainStatus.Active).First(),
                         Person = ev.personModel,
-                        WorkSite = ev.JobPlacements.OrderByDescending(j => j.jobPlacementDate).First().workSiteModel,
-                        Shift = ev.JobPlacements.OrderByDescending(j => j.jobPlacementDate).First().shiftModel,
+                        //WorkSite = _context.SiteAssignments.OrderByDescending(j => j.modifiedDate).First(ws => ws.employmentID == ev.employmentID).workSiteModel ?? new workSiteModel(),
+                        //Shift = _context.ShiftAssignments.OrderByDescending(j => j.modifiedDate).First(ws => ws.employmentID == ev.employmentID).shiftModel ?? new shiftModel(),
                         Leave = _core.leaveSummary(ev.employmentID)
                     }).OrderBy(ev => ev.Person.personFirstName).ThenBy(ev => ev.Person.personFatherName).ThenBy(ev => ev.Person.personLastName).ToList();
 
@@ -80,18 +97,18 @@ namespace PIS2.Pages.Department
                 DepartmentSummary.DepartmentID = departmentmodel.departmentID;
                 DepartmentSummary.DepartmentName = departmentmodel.departmentName;
 
-                DepartmentSummary.Employees = Employments
-                        .Where(e => e.employmentStatus == mainStatus.Active).Count();
+                DepartmentSummary.Employees = Employments.Count();
                         
-                DepartmentSummary.Salary = Jobs
-                        .Where(jp => jp.jobPlacementStatus == mainStatus.Active).Sum(j => j.jobPlacementSalary);
+                DepartmentSummary.Salary = Jobs.Sum(j => j.jobPlacementSalary);
 
                 DepartmentSummary.Leaves = _core.getAllLeaveSummary("Dep", DepartmentSummary.DepartmentID);
+                DepartmentSummary.Overtime = _core.getAllOvertime("Dep", departmentModel.departmentID).Sum(ot => ot.GetOtCost);
                 DepartmentSummary.xEmployees = Employments
                         .Where(e => e.employmentStatus == mainStatus.Inactive).Count();
 
                 allowedLeave = DepartmentSummary.Leaves.AllowedLeave;
                 leaveCost = DepartmentSummary.Leaves.leaveCost;
+                overtimeCost = DepartmentSummary.Overtime;
                 DepartmentSummary.Total = leaveCost + (double) EmploymentView.Where(ev => ev.Job.jobPlacementStatus == mainStatus.Active).Sum(ev => ev.Job.jobPlacementSalary); ;
                 
                 // Education Level Data
@@ -110,7 +127,6 @@ namespace PIS2.Pages.Department
                 //Employment Types
                 EmploymentTypes = new List<NameAndCount>();
                 EmploymentTypes = Employments
-               .Where(e => e.employmentStatus == mainStatus.Active)
                .GroupBy(e => new { e.employmentTypeModel.employmentTypeName, e.employmentTypeID })
                .Select(g => new NameAndCount
                {
@@ -121,30 +137,43 @@ namespace PIS2.Pages.Department
 
                 //Active Leaves
                 leaveEmployments = _context.Leaves
-                    .Where(l => l.leaveStartDate <= DateTime.Now && l.leaveEndDate >= DateTime.Now && l.leaveTypeModel.leaveTypeImpact == leaveTypeImpact.Negative
+                    .Where(l => l.leaveStartDate <= DateTime.Now && l.leaveEndDate >= DateTime.Now
+                    && l.leaveTypeModel.leaveTypeImpact == leaveTypeImpact.Negative
                     && l.employmentModel.employmentStatus == mainStatus.Active && l.leaveStatus == leaveStatus.Posted
                     && l.leaveTypeID != 64 && Employments.Select(ae => ae.employmentID).Contains(l.employmentID)).Count();
 
-                leaveModel = await _context.Leaves.Where(l => l.leaveStatus == leaveStatus.Hold && Employments.Select(e => e.employmentID).Contains(l.employmentID))
+                leaveModel = await _context.Leaves.Where(l => l.leaveStatus == leaveStatus.Hold && Employments.Select(e => e.employmentID).Contains(l.employmentID)
+                && l.leaveTypeModel.leaveGroup == leaveGroup.AnnualLeave)
                 .Include(l => l.employmentModel)
                 .Include(l => l.leaveTypeModel).ToListAsync();
+
+                //Overtime Model
+                overtimeModel =await _context.OvertimeRecords.Where(ot => ot.overtimeRecordStatus == overtimeStatus.Hold && Employments.Select(e => e.employmentID).Contains(ot.employmentID))
+                    .Include(ot => ot.employmentModel)
+                    .Include(ot => ot.overtimeModel).ToListAsync();
             }
             return Page();
         }
         [HttpPost]
-        public async Task<JsonResult> OnPostApprove(List<int> leaveId, List<string> action)
+        public async Task<JsonResult> OnPostApprove([FromBody] List<LeaveDecision> decisions)
         {
-            
+            // Check if the decisions list is null or empty
+            if (decisions == null || decisions.Count == 0)
+            {
+                return new JsonResult(new { success = false, message = "No decisions received." });
+            }
             try
             {
-                for (int i = 0; i < leaveId.Count; i++)
+                foreach (var decision in decisions)
                 {
-                    var leave = await _context.Leaves.FindAsync(leaveId[i]);
+                    int leaveId = decision.LeaveId;
+                    string action = decision.Action;
+                    var leave = await _context.Leaves.FindAsync(leaveId);
                     if (leave != null)
                     {
                         leave.modifiedBy = User.Identity.Name!;
-                        Console.WriteLine("Error is not hear");
-                        leave.leaveStatus = action[i] == "Approve"
+                        Console.WriteLine("######################Error is not here");
+                        leave.leaveStatus = action == "Approve"
                             ? Models.leaveStatus.Approved
                             : Models.leaveStatus.Declined;
                     }
@@ -159,5 +188,11 @@ namespace PIS2.Pages.Department
             }
         }
 
+    }
+
+    public class LeaveDecision
+    {
+        public int LeaveId { get; set; }
+        public string Action { get; set; }
     }
 }

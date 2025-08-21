@@ -48,7 +48,9 @@ namespace PIS2.Pages.Employment
         {
             ViewData["personID"] = new SelectList(_context.Persons, "personID", "personFullName");
             ViewData["employmentTypeID"] = new SelectList(_context.EmploymentTypes, "employmentTypeID", "employmentTypeName");
-            
+            ModelState.Remove("employmentModel.modifiedBy");
+            employmentModel.modifiedBy = User.Identity.Name;
+
             if (!ModelState.IsValid)
             {
                 

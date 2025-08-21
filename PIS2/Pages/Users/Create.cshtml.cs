@@ -24,7 +24,9 @@ namespace PIS2.Pages.Users
 
         public IActionResult OnGet()
         {
-        ViewData["personID"] = new SelectList(_context.Persons.OrderBy(p => p.personFirstName).ThenBy(p => p.personFatherName), "personID", "personFullName");
+        ViewData["personID"] = new SelectList(_context.Persons
+            .OrderBy(p => p.personFirstName).ThenBy(p => p.personFatherName).ThenBy(p => p.personLastName)
+            .Where(p => !_context.Users.Any(u => u.personID == p.personID)), "personID", "personFullName");
 
             return Page();
         }
@@ -39,9 +41,17 @@ namespace PIS2.Pages.Users
             userModel.modifiedBy = User.Identity.Name!;
             if (!ModelState.IsValid)
             {
+                foreach (var kv in ModelState)
+                {
+                    foreach (var error in kv.Value.Errors)
+                    {
+                        Console.WriteLine($"{kv.Key} --> {error.ErrorMessage}");
+                    }
+                    Console.WriteLine(kv.ToString());
+                }
                 return Page();
             }
-            
+
             _context.Users.Add(userModel);
             await _context.SaveChangesAsync();
 

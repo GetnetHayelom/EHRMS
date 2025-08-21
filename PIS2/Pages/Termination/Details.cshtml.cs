@@ -27,7 +27,7 @@ namespace PIS2.Pages.Termination
                 return NotFound();
             }
 
-            var terminationmodel = await _context.Terminations.FirstOrDefaultAsync(m => m.terminationID == id);
+            var terminationmodel = await _context.Terminations.Include(e => e.EmploymentModel).FirstOrDefaultAsync(m => m.terminationID == id);
             if (terminationmodel == null)
             {
                 return NotFound();

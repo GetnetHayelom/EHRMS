@@ -6,40 +6,41 @@
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
 
-<h1>Index</h1>
+<h1 class="fw-bold">Users</h1>
 
 <p>
-    <a asp-page="Create">Create New</a>
+    <a asp-page="Create" class="btn btn-primary">Add New User</a>
 </p>
-<table class="table">
-    <thead>
+@await Html.PartialAsync("filter")
+<table class="table table-striped table-hover">
+    <thead class="bg-dark text-white">
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.userModel[0].userName)
+                User Name
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.userModel[0].personModel)
+                Full Name
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.userModel[0].userStatus)
+                Status
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.userModel[0].modifiedBy)
+                Modified By
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.userModel[0].modifiedDate)
+                Modified Date
             </th>
-            <th></th>
+            
         </tr>
     </thead>
     <tbody>
 @foreach (var item in Model.userModel) {
-        <tr>
+        <tr onclick="location.href='@Url.Page("Details", new {id = item.userID})'" style="cursor:pointer;">
             <td>
                 @Html.DisplayFor(modelItem => item.userName)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.personModel.personID)
+                @Html.DisplayFor(modelItem => item.personModel.personFullName)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.userStatus)
@@ -50,11 +51,7 @@
             <td>
                 @Html.DisplayFor(modelItem => item.modifiedDate)
             </td>
-            <td>
-                <a asp-page="./Edit" asp-route-id="@item.userID">Edit</a> |
-                <a asp-page="./Details" asp-route-id="@item.userID">Details</a> |
-                <a asp-page="./Delete" asp-route-id="@item.userID">Delete</a>
-            </td>
+            
         </tr>
 }
     </tbody>

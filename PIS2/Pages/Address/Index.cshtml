@@ -6,10 +6,10 @@
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
 
-<h1>Addresses</h1>
+<h1 class="fw-bold">Addresses</h1>
 
 <p>
-    <a asp-page="Create">Add New Address</a>
+    <a asp-page="Create" class="btn btn-primary">Add New Address</a>
 </p>
 @await Html.PartialAsync("filter")
 <table class="table table-stripped table-hover" id="dataTable">
@@ -33,36 +33,32 @@
             <th>
                 Status
             </th>
-            <th>Actions</th>
+            
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model.addressModel) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.addressCountry)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.addressRegion)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.addressZone)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.addressWoreda)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.addressTabya)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.addressStatus)
-            </td>
-            <td>
-                <a asp-page="./Edit" asp-route-id="@item.addressID">Edit</a> |
-                <a asp-page="./Details" asp-route-id="@item.addressID">Details</a> |
-                <a asp-page="./Delete" asp-route-id="@item.addressID">Delete</a>
-            </td>
-        </tr>
-}
+        @foreach (var item in Model.addressModel) {
+            <tr onclick="location.href='@Url.Page("Details", new {id = item.addressID})'" style="cursor:pointer;">
+                <td>
+                    @Html.DisplayFor(modelItem => item.addressCountry)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.addressRegion)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.addressZone)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.addressWoreda)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.addressTabya)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.addressStatus)
+                </td>
+                    
+            </tr>
+        }
     </tbody>
 </table>

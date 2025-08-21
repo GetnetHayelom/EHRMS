@@ -24,6 +24,7 @@
                 }
                 <img src="@Url.Content(imagePath)" class="rounded-circle mb-4 print-small-image normal-image" />
                 <h4 class="fw-bold"><u>@Model.personModel.personFullName</u></h4>
+                
             </div>
             <div class="d-flex d-print-block col-8">
                 <div class="col-6 print-full-width">
@@ -114,7 +115,7 @@
     <a asp-page="./Index" class="btn btn-secondary m-2 d-print-none">Back to List</a>
     @if (Model.isPersonActiveEmployee)
     {
-        <a asp-page="/Termination/Create" asp-route-item-id="@Model.personModel.personID" class="btn btn-danger m-2 d-print-none">Terminate Employment</a>
+        <a asp-page="/Termination/Create" asp-route-id="@Model.personModel.Employments.FirstOrDefault(e => e.employmentStatus == Models.mainStatus.Active).employmentID" class="btn btn-danger m-2 d-print-none">Terminate Employment</a>
         <a asp-page="/Employment/Details" asp-route-id="@Model.personModel.Employments.FirstOrDefault().employmentID" class="btn btn-info m-2 d-print-none">Employment Info</a>
     }
     else
@@ -123,8 +124,8 @@
     }
     @await Html.PartialAsync("print")
 </div>
-<div class="accordion" id="accordion">
-    
+<div class="accordion d-print-none" id="accordion">
+  <!--Person Certification -->  
     @if (Model.personCertifications != null && Model.personCertifications.Any())
     {
         <div class="collapse-item">
@@ -175,6 +176,8 @@
         </div>
         
     }
+
+    <!--Person Experiences -->
     @if (Model.personExperiences != null && Model.personExperiences.Any())
     {
         <div class="collapse-item">
@@ -202,7 +205,7 @@
                             @foreach (var item in Model.personExperiences)
                             {
                                 <tr onclick="location.href='@Url.Page("/Experience/Edit", new {id = item.experienceID})'" style="cursor:pointer">
-                                    <td>@item.experienceStartDate.ToString("dd/MM/yyyy") - @item.experienceEndDate.ToString("dd/MM/yyyy")</td>
+                                    <td>@item.experienceStartDate.ToString("MM/dd/yyyy") - @item.experienceEndDate.ToString("MM/dd/yyyy")</td>
                                     <td>@item.jobTitle</td>
                                     <td>@item.jobSalary</td>
 
@@ -222,6 +225,8 @@
         </div>
 
     }
+
+    <!--Person Employments -->
     @if (Model.personEmployments != null && Model.personEmployments.Any())
     {
         <div class="accordio-item">
@@ -238,6 +243,7 @@
                                 <td>Hire Date</td>
                                 <td>Termination Date</td>
                                 <td>Termination Reason</td>
+                                <td>Employment Status</td>
                 
                             </tr>
                         </thead>
@@ -247,10 +253,11 @@
                             {
                                 <tr onclick="location.href='@Url.Page("/Employment/Details", new {id = item.employmentID})'" style="cursor:pointer;">
                                     <td>@item.givenID</td>
-                                    <td>@item.employmentTypeModel.employmentTypeName</td>
-                                    <td>@item.employmentDate</td>
+                                    <td>@item.employmentTypeModel?.employmentTypeName</td>
+                                    <td>@item.employmentDate.ToString("yyyy-MM-dd")</td>
                                     <td>@item.employmentTerminationDate</td>
-                                    <td></td>
+                                    <td>@item.TerminationModel?.terminationReason</td>
+                                    <td>@item.employmentStatus</td>
                     
                                 </tr>
                             }
@@ -261,6 +268,8 @@
             </div>
         </div>
     }
+
+    <!--Person Record History -->
     @if (Model.personModel.PersonHistories != null && Model.personModel.PersonHistories.Any())
     {
         <div class="accordion-item">
@@ -269,7 +278,7 @@
             </h4>
             <div id="collapse1" class="accordion-collapse collapse" aria-labelledby="header1" data-bs-parent="#collapse">
                 <div class="accordion-body">
-                    <table class="table table-striped table-hover" id="historyTable">
+                    <table class="table table-striped table-hover historyTable">
                         <thead class="bg-info text-white">
                             <tr>
                                 <td>Record ID</td>
@@ -313,21 +322,6 @@
         </div>
     }
 </div>
-<script>
-    const table = document.getElementById("historyTable");
-    const rows = table.rows;
+<script src="~/js/highlightChange.js"></script>
 
-    for (let i = 2; i < rows.length; i++) {
-        const currentRow = rows[i];
-        const prevRow = rows[i - 1];
 
-        for (let j = 0; j < currentRow.cells.length-2; j++) {
-            const currCell = currentRow.cells[j];
-            const prevCell = prevRow.cells[j];
-
-            if (currCell.textContent !== prevCell.textContent) {
-                currCell.classList.add("bg-warning");
-            }
-        }
-    }
-</script>

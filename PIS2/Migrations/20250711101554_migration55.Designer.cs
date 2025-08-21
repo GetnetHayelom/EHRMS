@@ -484,38 +484,38 @@ namespace PIS2.Migrations
                     b.HasAnnotation("SqlServer:UseSqlOutputClause", false);
                 });
 
-            modelBuilder.Entity("PIS2.Models.deligationModel", b =>
+            modelBuilder.Entity("PIS2.Models.delegationModel", b =>
                 {
-                    b.Property<int>("deligationID")
+                    b.Property<int>("delegationID")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
-                        .HasColumnName("deligationID");
+                        .HasColumnName("delegationID");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("deligationID"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("delegationID"));
 
-                    b.Property<DateTime>("deligationEndDate")
+                    b.Property<DateTime>("delegationEndDate")
                         .HasColumnType("datetime2")
-                        .HasColumnName("deligationEndDate");
+                        .HasColumnName("delegationEndDate");
 
-                    b.Property<int>("deligationFrom")
+                    b.Property<int>("delegationFrom")
                         .HasColumnType("int")
-                        .HasColumnName("deligationFrom");
+                        .HasColumnName("delegationFrom");
 
-                    b.Property<int>("deligationScope")
+                    b.Property<int>("delegationScope")
                         .HasColumnType("int")
-                        .HasColumnName("deligationScope");
+                        .HasColumnName("delegationScope");
 
-                    b.Property<DateTime>("deligationStartDate")
+                    b.Property<DateTime>("delegationStartDate")
                         .HasColumnType("datetime2")
-                        .HasColumnName("deligationStartDate");
+                        .HasColumnName("delegationStartDate");
 
-                    b.Property<int>("deligationStatus")
+                    b.Property<int>("delegationStatus")
                         .HasColumnType("int")
-                        .HasColumnName("deligationStatus");
+                        .HasColumnName("delegationStatus");
 
-                    b.Property<int>("deligationTo")
+                    b.Property<int>("delegationTo")
                         .HasColumnType("int")
-                        .HasColumnName("deligationTo");
+                        .HasColumnName("delegationTo");
 
                     b.Property<string>("modifiedBy")
                         .IsRequired()
@@ -526,13 +526,13 @@ namespace PIS2.Migrations
                         .HasColumnType("datetime2")
                         .HasColumnName("modifiedDate");
 
-                    b.HasKey("deligationID");
+                    b.HasKey("delegationID");
 
-                    b.HasIndex("deligationFrom");
+                    b.HasIndex("delegationFrom");
 
-                    b.HasIndex("deligationTo");
+                    b.HasIndex("delegationTo");
 
-                    b.ToTable("Deligations");
+                    b.ToTable("delegations");
                 });
 
             modelBuilder.Entity("PIS2.Models.departmentModel", b =>
@@ -3066,17 +3066,17 @@ namespace PIS2.Migrations
                     b.Navigation("employmentModel");
                 });
 
-            modelBuilder.Entity("PIS2.Models.deligationModel", b =>
+            modelBuilder.Entity("PIS2.Models.delegationModel", b =>
                 {
                     b.HasOne("PIS2.Models.employmentModel", "FromEmployment")
-                        .WithMany("DeligationsFrom")
-                        .HasForeignKey("deligationFrom")
+                        .WithMany("delegationsFrom")
+                        .HasForeignKey("delegationFrom")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("PIS2.Models.employmentModel", "ToEmployment")
-                        .WithMany("DeligationsTo")
-                        .HasForeignKey("deligationTo")
+                        .WithMany("delegationsTo")
+                        .HasForeignKey("delegationTo")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
@@ -3786,9 +3786,9 @@ namespace PIS2.Migrations
                 {
                     b.Navigation("AllowanceAssignments");
 
-                    b.Navigation("DeligationsFrom");
+                    b.Navigation("delegationsFrom");
 
-                    b.Navigation("DeligationsTo");
+                    b.Navigation("delegationsTo");
 
                     b.Navigation("EmploymentHistories");
 

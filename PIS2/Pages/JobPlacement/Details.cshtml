@@ -42,9 +42,7 @@
                 <dt class="m-2">
                     Shift:
                 </dt>
-                <dd class="m-2">
-                    <u>@Html.DisplayFor(model => model.jobPlacementModel.shiftModel.shiftName)</u>
-                </dd>
+                
             </div>
             <div class="d-flex">
                 <dt class="m-2">
@@ -103,10 +101,10 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach(var item in Model.jobPlacementModel.JobPlacementHistories)
+                @foreach(var item in Model.jobPlacementHistoryList)
                 {
                     <tr>
-                        <td>@item.modifiedDate.ToString("MMM dd, yyyy")</td>
+                        <td>@item.modifiedDate</td>
                         <td>@item.jobStepModel?.jobStepNumber</td>
                         <td>@item.jobPlacementSalary</td>
                         <td>@item.departmentModel?.departmentName</td>
@@ -119,7 +117,7 @@
     </div>
 </div>
 <div class="d-print-none d-flex justify-content-end">
-    @if (User.IsInRole("PMS_HRCLERK"))
+    @if (User.IsInRole("MIE\\PMS_HRCLERK"))
     {
         <a asp-page="./Edit" asp-route-id="@Model.jobPlacementModel.jobPlacementID" class="btn btn-primary m-2">Edit</a>
         <a asp-page="./Delete" asp-route-id="@Model.jobPlacementModel.jobPlacementID" class="btn btn-danger m-2">Delete</a>

@@ -87,7 +87,7 @@ namespace PIS2.Pages.Leave
                     Department = l.employmentModel.JobPlacements.OrderByDescending(j => j.jobPlacementDate).First().departmentModel,
                     Company = l.employmentModel.JobPlacements.OrderByDescending(j => j.jobPlacementDate).First().departmentModel.companyModel,
                     jobTitle = l.employmentModel.JobPlacements.OrderByDescending(j => j.jobPlacementDate).First().jobModel,
-                    WorkSite = l.employmentModel.JobPlacements.OrderByDescending(j => j.jobPlacementDate).First().workSiteModel,
+                    WorkSite = _context.SiteAssignments.OrderByDescending(j => j.modifiedDate).First(ws => ws.employmentID == l.employmentID).workSiteModel,
                     person = l.employmentModel.personModel,
                     empType = l.employmentModel.employmentTypeModel
                 })

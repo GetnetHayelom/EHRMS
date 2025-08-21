@@ -29,8 +29,8 @@ body {
         max-width: 100% !important;
         flex: 0 0 100% !important; /* Force it to take the full width */
     }
-    table, thead, tbody, th,td{
-        width:auto;
+    table, thead, tbody, th, td {
+        width: auto !important;
     }
     .print-flex-column {
         flex-direction:column;
@@ -39,6 +39,17 @@ body {
         width: 150px;
         height: 150px;
         object-fit: cover;
+    }
+    .table {
+        border: 1px solid black !important;
+        border-collapse: collapse !important;
+    }
+    .table td, table th, table thead {
+        border: 1px solid black !important;
+    }
+    * Remove striping effect */
+    .table-striped > tbody > tr:nth-of-type(odd) > * {
+        background-color: transparent !important;
     }
 }
 table select{

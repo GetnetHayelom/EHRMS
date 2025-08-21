@@ -40,9 +40,9 @@ namespace PIS2.Pages.Leave
             else
             {
                 leaveModel = leavemodel;
-                Job = _context.JobPlacements.Include(j => j.shiftModel)
+                Job = _context.JobPlacements
                     .Include(j => j.departmentModel).ThenInclude(d => d.companyModel)
-                    .Include(j=> j.workSiteModel).OrderByDescending(j => j.jobPlacementDate).First(j => j.employmentID == leaveModel.employmentID);
+                    .OrderByDescending(j => j.jobPlacementDate).First(j => j.employmentID == leaveModel.employmentID);
 
                 var currentUser = _context.Users.FirstOrDefault(u => u.userName == User.Identity.Name);
 
@@ -61,6 +61,7 @@ namespace PIS2.Pages.Leave
         public async Task<IActionResult> OnPost(int leaveId)
         {
             Console.WriteLine($"Received ID: {leaveId}");
+
             var leave = await _context.Leaves.FindAsync(leaveId);
             if (leave == null)
             {
@@ -71,6 +72,7 @@ namespace PIS2.Pages.Leave
             {
                 // Update the leaveStatus
                 leave.leaveStatus = leaveStatus.Posted;
+                leave.modifiedBy = User.Identity.Name;
                 _context.Update(leave);
                 await _context.SaveChangesAsync();
                 return RedirectToPage(new {id = leaveId});

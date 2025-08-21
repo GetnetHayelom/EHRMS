@@ -21,7 +21,7 @@ namespace PIS2.Pages.Users
 
         [BindProperty]
         public userModel userModel { get; set; } = default!;
-
+        public List<userHistoryModel> userHistory { get; set; } = default!;
         public async Task<IActionResult> OnGetAsync(int? id)
         {
             if (id == null)
@@ -29,13 +29,13 @@ namespace PIS2.Pages.Users
                 return NotFound();
             }
 
-            var usermodel =  await _context.Users.FirstOrDefaultAsync(m => m.userID == id);
+            var usermodel =  await _context.Users.Include(u => u.personModel).Include(u => u.UserHistories).FirstOrDefaultAsync(m => m.userID == id);
             if (usermodel == null)
             {
                 return NotFound();
             }
             userModel = usermodel;
-           ViewData["personID"] = new SelectList(_context.Persons, "personID", "personID");
+            userHistory =userModel.UserHistories.ToList() ?? new List<userHistoryModel>();
             return Page();
         }
 
@@ -43,6 +43,8 @@ namespace PIS2.Pages.Users
         // For more information, see https://aka.ms/RazorPagesCRUD.
         public async Task<IActionResult> OnPostAsync()
         {
+            ModelState.Remove("userModel.modifiedBy");
+            userModel.modifiedBy = User.Identity.Name;
             if (!ModelState.IsValid)
             {
                 return Page();

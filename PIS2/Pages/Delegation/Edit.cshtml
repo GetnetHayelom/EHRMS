@@ -1,0 +1,62 @@
+﻿@page
+@model PIS2.Pages.delegation.EditModel
+
+@{
+    ViewData["Title"] = "Edit";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<h1 class="fw-bold">Delegation</h1>
+
+<h4 class="fw-bold">Update Delegation</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="delegationModel.delegationID" />
+            <div class="form-group">
+                <label asp-for="delegationModel.delegationFrom" class="control-label">Delegator:</label>
+                <select asp-for="delegationModel.delegationFrom" class="form-control" asp-items="ViewBag.delegationFrom"></select>
+                <span asp-validation-for="delegationModel.delegationFrom" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="delegationModel.delegationTo" class="control-label">Delegatee</label>
+                <select asp-for="delegationModel.delegationTo" class="form-control" asp-items="ViewBag.delegationTo"></select>
+                <span asp-validation-for="delegationModel.delegationTo" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="delegationModel.delegationStartDate" class="control-label">From</label>
+                <input asp-for="delegationModel.delegationStartDate" class="form-control" />
+                <span asp-validation-for="delegationModel.delegationStartDate" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="delegationModel.delegationEndDate" class="control-label">To</label>
+                <input asp-for="delegationModel.delegationEndDate" class="form-control" />
+                <span asp-validation-for="delegationModel.delegationEndDate" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="delegationModel.delegationScope" class="control-label">Scope</label>
+                <select asp-for="delegationModel.delegationScope" class="form-control"></select>
+                <span asp-validation-for="delegationModel.delegationScope" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="delegationModel.delegationStatus" class="control-label">Status</label>
+                <select asp-for="delegationModel.delegationStatus" class="form-control"></select>
+                <span asp-validation-for="delegationModel.delegationStatus" class="text-danger"></span>
+            </div>
+            
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-page="./Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

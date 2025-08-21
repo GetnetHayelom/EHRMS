@@ -171,13 +171,23 @@ namespace PIS2.Pages.Management
                      }).ToList();
 
                     //WorkSite Employee Distribution
-                    WorkSiteEmployees = _context.JobPlacements.Include(jp => jp.workSiteModel)
-                        .Where(jp => jp.jobPlacementStatus == mainStatus.Active && Employments.Select(e => e.employmentID).Contains(jp.employmentID))
-                        .GroupBy(jp => jp.workSiteModel.workSiteName).Select(we=> new NameAndCount
+                    WorkSiteEmployees = _context.SiteAssignments
+                        .Where(ws => ws.employmentModel.employmentStatus == mainStatus.Active)
+                        .GroupBy(ws => new { ws.employmentID, ws.workSiteModel.workSiteName })
+                        .Select(g => new
                         {
-                            zName = we.Key,
-                            zCount = we.Count()
-                        }).OrderByDescending(wl => wl.zCount).ToList();
+                            g.Key.employmentID,
+                            g.Key.workSiteName
+                        }) // now we have distinct employment per site
+                        .GroupBy(x => x.workSiteName)
+                        .Select(g => new NameAndCount
+                        {
+                            zName = g.Key,
+                            zCount = g.Count()
+                        })
+                        .OrderByDescending(wl => wl.zCount)
+                        .ToList();
+
 
 
                     //edu level summary

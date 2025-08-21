@@ -6,6 +6,7 @@ using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pag
 using NuGet.Protocol.Plugins;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 using PIS2.Models;
+using System;
 
 namespace PIS2.Models
 {
@@ -24,6 +25,13 @@ namespace PIS2.Models
         const int daysPerMonth = 26;
         const int workHoursPerDay = 8;
 
+        
+        //IS Self
+        public bool IsSelf(string userName)
+        {
+            //_context.Users.FirstOrDefault(u => u.userName == User.Identity.Name)?.personID == Person.personID ? true : false;
+            return false;
+        }
         //calculate leave balance in a given time interval
         public leaveDetail leaveSummary(int empID)
         {
@@ -108,10 +116,44 @@ namespace PIS2.Models
 
             return leaveSum;
         }
+
+        public List<overtimeRecordModel> getAllOvertime(string selectBy, int ID)
+        {
+            List<overtimeRecordModel> overtimes = new List<overtimeRecordModel>();
+            
+           
+
+            switch (selectBy)
+            {
+
+                case "Comp":
+                    overtimes = _context.OvertimeRecords
+                        .Where(ot => ot.employmentModel.JobPlacements
+                            .Any(jp => jp.departmentModel.companyID == ID && jp.jobPlacementStatus == mainStatus.Active)).ToList();
+
+                    break;
+                case "Dep":
+                    overtimes = _context.OvertimeRecords
+                        .Where(ot => ot.employmentModel.JobPlacements
+                            .Any(jp => jp.departmentID == ID && jp.jobPlacementStatus == mainStatus.Active)).ToList();
+                    break;
+                default:
+                    
+                    break;
+            }
+
+            
+
+            return overtimes;
+        }
         public leaveDetail GetLeaveSummary(int empID)
         {
             mainStatus empStatus = _context.Employments.Where(e => e.employmentID == empID).FirstOrDefault().employmentStatus;
-            double hRate = (double)_context.JobPlacements.OrderByDescending(js => js.jobPlacementDate).First(js => js.employmentID == empID).jobPlacementSalary / 26;
+            double hRate = 0;
+            if (_context.JobPlacements.Any( jp=> jp.employmentID == empID))
+            {
+                hRate = (double)_context.JobPlacements.OrderByDescending(js => js.jobPlacementDate).First(js => js.employmentID == empID).jobPlacementSalary / 26;
+            }
             DateTime startDate = GetLeaveStart(empID);
             DateTime endDate = GetLeaveEnd(empID);
             List<leaveModel> leaves = new List<leaveModel>();
@@ -164,7 +206,11 @@ namespace PIS2.Models
         public List<leavePerYear> LeavesPerYear(int empID)
         {
             //get employee hourly rate
-            double hRate = (double) _context.JobPlacements.OrderByDescending(js => js.jobPlacementDate).First(js => js.employmentID == empID).jobPlacementSalary/26;
+            double hRate = 0;
+            if (_context.JobPlacements.Any(jp => jp.employmentID == empID))
+            {
+                hRate = (double)_context.JobPlacements.OrderByDescending(js => js.jobPlacementDate).First(js => js.employmentID == empID).jobPlacementSalary / 26;
+            }
             //Returns all leaves of the employee
             List<leaveModel> Leaves = GetLeaves(empID) ?? new List<leaveModel>();
             List<leaveModel> accrued = GetAccruedLeaves(empID)?? new List<leaveModel>();

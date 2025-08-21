@@ -19,6 +19,7 @@ namespace PIS2.Pages.AllowanceAssignment
         }
 
         public allowanceAssignmentModel allowanceAssignmentModel { get; set; } = default!;
+        public List<allowanceAssignmentModel> allowanceAssignments { get; set; }
 
         public async Task<IActionResult> OnGetAsync(int? id)
         {
@@ -40,6 +41,7 @@ namespace PIS2.Pages.AllowanceAssignment
             else
             {
                 allowanceAssignmentModel = allowanceassignmentmodel;
+                allowanceAssignments = await _context.AllowanceAssignments.Where(aa => aa.employmentID ==allowanceAssignmentModel.employmentID).ToListAsync();
             }
             return Page();
         }

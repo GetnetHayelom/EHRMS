@@ -69,8 +69,9 @@ namespace PIS2.Pages.JobPlacement
         // For more information, see https://aka.ms/RazorPagesCRUD.
         public async Task<IActionResult> OnPostAsync()
         {
-            Console.WriteLine("########### " + jobPlacementModel.jobPlacementID);
-            ModelState.Remove("modifiedBy");
+            
+            ModelState.Remove("jobPlacementModel.modifiedBy");
+            jobPlacementModel.modifiedBy = User.Identity.Name;
             ModelState.Remove("givenID");
             if (!ModelState.IsValid)
             {
@@ -81,12 +82,13 @@ namespace PIS2.Pages.JobPlacement
                         Console.WriteLine($"{kv.Key} --> {error.ErrorMessage}");
 
                     }
+                    
                 }
-                Console.WriteLine("===ID IS===");
+                Console.WriteLine("===ID IS==  #############");
                 populateSelect();
                 return Page();
             }
-            populateSelect();
+            //populateSelect();
             var job = _context.JobPlacements.FirstOrDefault(j => j.jobPlacementStatus == mainStatus.Active && j.employmentID == jobPlacementModel.employmentID);
             if(job !=null && job.jobID == jobPlacementModel.jobID)
             {
@@ -102,13 +104,14 @@ namespace PIS2.Pages.JobPlacement
                 try
                 {
                     await _context.SaveChangesAsync();
-                    return RedirectToPage("./Edit", new { id = job.jobPlacementID });
+                    return RedirectToPage("./Details", new { id = job.jobPlacementID });
                 }
-                catch (DbUpdateConcurrencyException)
+                catch (DbUpdateException ex)
                 {
-                    
-                        throw;
-                   
+                  
+                    ModelState.AddModelError(string.Empty, ex.InnerException.Message);
+
+                    throw;
                 }
             }
             else

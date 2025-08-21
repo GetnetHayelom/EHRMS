@@ -42,7 +42,7 @@
                             Work Location:
                         </dt>
                         <dd class="">
-                            <u>@Html.DisplayFor(model => model.Job.workSiteModel.workSiteName)</u>
+                            <u>workSiteName</u>
                         </dd>
                     </div>
                     <div class="d-flex mb-2">
@@ -92,7 +92,7 @@
                             Shift:
                         </dt>
                         <dd class="">
-                            <u>@Model.Job.shiftModel.shiftName</u>
+                            <u>shiftName</u>
                         </dd>
                     </div>
                     <div class="d-flex mb-2">
@@ -150,7 +150,7 @@
             <tbody>
                 @foreach (var item in Model.leaveModel.LeaveHistories)
                 {
-                    <tr onclick="location.href='@Url.Page("/LeaveHistory/Index", new { id = item.leaveID })'" style="cursor:pointer;">
+                    <tr>
                         <td>@item.modifiedDate</td>
                         <td>@item.leaveHistoryAction</td>
                         <td>@item.modifiedBy</td>

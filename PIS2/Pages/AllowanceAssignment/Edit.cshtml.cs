@@ -29,14 +29,16 @@ namespace PIS2.Pages.AllowanceAssignment
                 return NotFound();
             }
 
-            var allowanceassignmentmodel =  await _context.AllowanceAssignments.FirstOrDefaultAsync(m => m.allowanceAssignmentID == id);
+            var allowanceassignmentmodel =  await _context.AllowanceAssignments
+                .Include(aa => aa.employmentModel)
+                .Include(aa => aa.allowanceModel).FirstOrDefaultAsync(m => m.allowanceAssignmentID == id);
             if (allowanceassignmentmodel == null)
             {
                 return NotFound();
             }
             allowanceAssignmentModel = allowanceassignmentmodel;
-           ViewData["allowanceID"] = new SelectList(_context.Allowances, "allowanceID", "allowanceName");
-           ViewData["employmentID"] = new SelectList(_context.Employments, "employmentID", "givenID");
+            ViewData["allowanceID"] = new SelectList(_context.Allowances, "allowanceID", "allowanceName");
+            ViewData["employmentID"] = new SelectList(_context.Employments, "employmentID", "givenID");
             return Page();
         }
 
@@ -44,8 +46,22 @@ namespace PIS2.Pages.AllowanceAssignment
         // For more information, see https://aka.ms/RazorPagesCRUD.
         public async Task<IActionResult> OnPostAsync()
         {
+            ModelState.Remove("allowanceAssignmentModel.modifiedBy");
+            allowanceAssignmentModel.modifiedBy = User.Identity.Name;
+
             if (!ModelState.IsValid)
             {
+              
+                Console.WriteLine("Invalid model:");
+                
+                foreach (var kv in ModelState)
+                {
+                    foreach (var error in kv.Value.Errors)
+                    {
+                        Console.WriteLine($"{kv.Key} --> {error.ErrorMessage}");
+                    }
+                }
+
                 return Page();
             }
 
@@ -67,12 +83,12 @@ namespace PIS2.Pages.AllowanceAssignment
                 }
             }
 
-            return RedirectToPage("./Index");
+            return RedirectToPage("./Details", new { id = allowanceAssignmentModel.allowanceAssignmentID});
         }
 
         private bool allowanceAssignmentModelExists(int id)
         {
-            return _context.AllowanceAssignments.Any(e => e.allowanceAssignmentID == id);
+            return _context.AllowanceAssignments.Include(aa => aa.allowanceModel).Any(e => e.allowanceAssignmentID == id);
         }
     }
 }

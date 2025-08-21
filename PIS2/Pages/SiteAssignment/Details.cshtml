@@ -1,0 +1,44 @@
+﻿@page
+@model PIS2.Pages.SiteAssignment.DetailsModel
+
+@{
+    ViewData["Title"] = "Details";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<h1>Details</h1>
+
+<div>
+    <h4>siteAssignmentModel</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.siteAssignmentModel.employmentModel)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.siteAssignmentModel.employmentModel.givenID)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.siteAssignmentModel.workSiteModel)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.siteAssignmentModel.workSiteModel.workSiteID)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.siteAssignmentModel.modifiedDate)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.siteAssignmentModel.modifiedDate)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.siteAssignmentModel.modifiedBy)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.siteAssignmentModel.modifiedBy)
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-page="./Edit" asp-route-id="@Model.siteAssignmentModel.siteAssignmentID">Edit</a> |
+    <a asp-page="./Index">Back to List</a>
+</div>

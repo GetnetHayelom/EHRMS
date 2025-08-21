@@ -13,16 +13,34 @@ namespace PIS2.Views
         {
             _context = context;
         }
+        /// <summary>
+        /// The department
+        /// </summary>
         public departmentModel Department = new departmentModel();
+        /// <summary>
+        /// Active Employments in the department
+        /// </summary>
         public List<employmentModel> Employments { get; set; }
+        /// <summary>
+        /// ExEmployee from the department, based on their last job placement
+        /// </summary>
         public List<employmentModel> ExEmployments { get; set; }
         public List<employmentModel> ExContract { get; set; }
         public List<employmentModel> ExPermanent { get; set; }
+        /// <summary>
+        /// Employees on leave
+        /// </summary>
         public List<employmentModel> OnLeaveEmployments { get; set; }
         public List<employmentModel> ActiveEmployments { get; set; }
         public List<employmentModel> ActiveContract { get; set; }
         public List<employmentModel> ActivePermanent { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
         public List<leaveModel> Leaves { get; set; }
+        /// <summary>
+        /// Job placements on the department
+        /// </summary>
         public List<jobPlacementModel> JobPlacements { get; set; }
         public int totalNoEmployment { get; set; }
         public int exEmployments { get; set; }
@@ -31,9 +49,18 @@ namespace PIS2.Views
         public int contractEmployments { get; set; }
         public int contractEnding { get; set; }
         public int pensionEmployments { get; set; }
-
+        /// <summary>
+        /// All the leaves from the department on hold
+        /// </summary>
         public List<leaveModel> leaves { get; set; }
+        /// <summary>
+        /// Overtime records from the department
+        /// </summary>
         public List<overtimeRecordModel> overtimeRecords { get; set; }
+        /// <summary>
+        /// Allowances in the department
+        /// </summary>
+        public List<allowanceAssignmentModel> allowanceAssignments { get; set; }
         public leaveDetail leaveSummary { get; set; }
         public DepartmentView(int id)
         {
@@ -52,7 +79,7 @@ namespace PIS2.Views
                         .Where(e => e != null)
                         .ToList() ?? new List<employmentModel?>();
                     ExEmployments = Employments.Where(e => e.employmentStatus == mainStatus.Inactive).ToList();
-                    ExContract = ExEmployments.Where(e => e.employmentTypeModel.employmentTypeName == "Contract").ToList();
+                    ExContract = ExEmployments.Where(e => e.employmentTypeModel.employmentTypeName == "Contract" && e.employmentStatus == mainStatus.Inactive).ToList();
 
                 }
             }
@@ -61,7 +88,7 @@ namespace PIS2.Views
 
             }
 
-            Employments = _context.Employments.Where(e => e.JobPlacements.Any(jp => jp.departmentID == id))?.ToList();
+            //Employments = _context.Employments.Where(e => e.JobPlacements.Any(jp => jp.departmentID == id))?.ToList();
 
             totalNoEmployment = Employments.Count;
             exEmployments = Employments.Where(e => e.employmentStatus == mainStatus.Inactive).Count();

@@ -33,31 +33,31 @@ namespace PIS2.Migrations
                 nullable: true);
 
             migrationBuilder.CreateTable(
-                name: "Deligations",
+                name: "delegations",
                 columns: table => new
                 {
-                    deligationID = table.Column<int>(type: "int", nullable: false)
+                    delegationID = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    deligationFrom = table.Column<int>(type: "int", nullable: false),
-                    deligationTo = table.Column<int>(type: "int", nullable: false),
-                    deligationStartDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    deligationEndDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    deligationScope = table.Column<int>(type: "int", nullable: false),
-                    deligationStatus = table.Column<int>(type: "int", nullable: false),
+                    delegationFrom = table.Column<int>(type: "int", nullable: false),
+                    delegationTo = table.Column<int>(type: "int", nullable: false),
+                    delegationStartDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    delegationEndDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    delegationScope = table.Column<int>(type: "int", nullable: false),
+                    delegationStatus = table.Column<int>(type: "int", nullable: false),
                     modifiedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     modifiedBy = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Deligations", x => x.deligationID);
+                    table.PrimaryKey("PK_delegations", x => x.delegationID);
                     table.ForeignKey(
-                        name: "FK_Deligations_Employments_deligationFrom",
-                        column: x => x.deligationFrom,
+                        name: "FK_delegations_Employments_delegationFrom",
+                        column: x => x.delegationFrom,
                         principalTable: "Employments",
                         principalColumn: "employmentID");
                     table.ForeignKey(
-                        name: "FK_Deligations_Employments_deligationTo",
-                        column: x => x.deligationTo,
+                        name: "FK_delegations_Employments_delegationTo",
+                        column: x => x.delegationTo,
                         principalTable: "Employments",
                         principalColumn: "employmentID");
                 });
@@ -202,14 +202,14 @@ namespace PIS2.Migrations
                 column: "jobStepModeljobStepID");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Deligations_deligationFrom",
-                table: "Deligations",
-                column: "deligationFrom");
+                name: "IX_delegations_delegationFrom",
+                table: "delegations",
+                column: "delegationFrom");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Deligations_deligationTo",
-                table: "Deligations",
-                column: "deligationTo");
+                name: "IX_delegations_delegationTo",
+                table: "delegations",
+                column: "delegationTo");
 
             migrationBuilder.CreateIndex(
                 name: "IX_JobPlacementHistories_jobPlacementID",
@@ -267,7 +267,7 @@ namespace PIS2.Migrations
                 table: "JobPlacements");
 
             migrationBuilder.DropTable(
-                name: "Deligations");
+                name: "delegations");
 
             migrationBuilder.DropTable(
                 name: "JobPlacementHistories");

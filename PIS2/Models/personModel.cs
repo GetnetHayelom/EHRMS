@@ -24,6 +24,7 @@ namespace PIS2.Models
         public String? personPhoneNumber { get; set; }
         public String? personRecordNumber {get; set; }
         public int? addressID { get; set; }
+        public mainStatus personStatus { get; set; }
         public virtual addressModel? addressModel { get; set; }
         [EmailAddress(ErrorMessage ="Invalid emailaddress")]
         public string? personEmailAddress { get; set; }
@@ -104,6 +105,7 @@ namespace PIS2.Models
         public string personFullName => $"{personFirstName} {personFatherName} {personLastName}";
         public int personsAge => DateTime.Now.Year - personDoB.Year;
         public virtual userModel? userModel { get; set; }
+        public mainStatus personStatus { get; set; }
         public string modifiedBy { get; set; }
         public string modifiedDate { get; set; }
         public personHistoryModel() { }

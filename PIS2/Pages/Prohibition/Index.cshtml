@@ -6,52 +6,53 @@
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
 
-<h1>Index</h1>
+<h1 class="fw-bold">Prohibitions</h1>
 
 <p>
-    <a asp-page="Create">Create New</a>
+    <a asp-page="Create" class="btn btn-primary">New Prohibition</a>
 </p>
-<table class="table">
-    <thead>
+@await Html.PartialAsync("filter")
+<table class="table table-striped table-hover">
+    <thead class="bg-dark text-white">
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.prohibitionModel[0].employmentModel)
+                Employee ID
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.prohibitionModel[0].prohibitionStart)
+                Start
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.prohibitionModel[0].prohibitionEnd)
+                End
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.prohibitionModel[0].prohibitionStatus)
+                Status
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.prohibitionModel[0].prohibitionReason)
+                Reason
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.prohibitionModel[0].prohibitionType)
+                Type
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.prohibitionModel[0].prohibitionRemark)
+                Remark
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.prohibitionModel[0].modifiedBy)
+                Modified By
             </th>
-            <th></th>
+            
         </tr>
     </thead>
     <tbody>
 @foreach (var item in Model.prohibitionModel) {
-        <tr>
+        <tr onclick="location.href='@Url.Page("Details", new {id = item.prohibitionID})'" style="cursor:pointer;">
             <td>
                 @Html.DisplayFor(modelItem => item.employmentModel.givenID)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.prohibitionStart)
+                @item.prohibitionStart.ToString("MMM dd, yyyy")
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.prohibitionEnd)
+                @item.prohibitionEnd.ToString("MMM dd, yyyy")
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.prohibitionStatus)
@@ -68,11 +69,7 @@
             <td>
                 @Html.DisplayFor(modelItem => item.modifiedBy)
             </td>
-            <td>
-                <a asp-page="./Edit" asp-route-id="@item.prohibitionID">Edit</a> |
-                <a asp-page="./Details" asp-route-id="@item.prohibitionID">Details</a> |
-                <a asp-page="./Delete" asp-route-id="@item.prohibitionID">Delete</a>
-            </td>
+            
         </tr>
 }
     </tbody>

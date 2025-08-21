@@ -134,7 +134,7 @@
                     <span asp-validation-for="leaveModel.leaveEndDate" class="text-danger"></span>
                 </div>
                 <div class="form-group m-1">
-                    <label asp-for="leaveModel.leaveTypeID" class="control-label">Leave Type</label>
+                    <label asp-for="leaveModel.leaveTypeID" class="control-label">Reason</label>
                     <select asp-for="leaveModel.leaveTypeID" class="form-control" asp-items="ViewBag.leaveTypeID" id="leaveType" onchange="summary()">
                         <option value="0">Select Reason</option>
                     </select>

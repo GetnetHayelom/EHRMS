@@ -1,0 +1,50 @@
+﻿@page
+@model PIS2.Pages.PenaltyType.CreateModel
+
+@{
+    ViewData["Title"] = "Create";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<h1>Create</h1>
+
+<h4>penaltyTypeModel</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="penaltyTypeModel.penaltyName" class="control-label"></label>
+                <input asp-for="penaltyTypeModel.penaltyName" class="form-control" />
+                <span asp-validation-for="penaltyTypeModel.penaltyName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="penaltyTypeModel.penaltyTypeStatus" class="control-label"></label>
+                <select asp-for="penaltyTypeModel.penaltyTypeStatus" class="form-control"></select>
+                <span asp-validation-for="penaltyTypeModel.penaltyTypeStatus" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="penaltyTypeModel.modifiedDate" class="control-label"></label>
+                <input asp-for="penaltyTypeModel.modifiedDate" class="form-control" />
+                <span asp-validation-for="penaltyTypeModel.modifiedDate" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="penaltyTypeModel.modifiedBy" class="control-label"></label>
+                <input asp-for="penaltyTypeModel.modifiedBy" class="form-control" />
+                <span asp-validation-for="penaltyTypeModel.modifiedBy" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-page="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

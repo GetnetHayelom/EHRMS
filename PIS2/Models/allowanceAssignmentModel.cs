@@ -31,7 +31,7 @@ namespace PIS2.Models
         public DateTime modifiedDate { get;} 
         public mainStatus allowanceAssignmentHistoryStatus { get; }
         public double allowanceAssignmentAmount { get;}
-        public DateTime allowanceAssignmentEndDate { get;  }
+        public DateTime? allowanceAssignmentEndDate { get;  }
         public string modifiedBy { get; }
        
         public allowanceAssignmentHistoryModel()

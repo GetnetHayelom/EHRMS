@@ -58,7 +58,6 @@ namespace PIS2.Pages.Employment
                 .Include(e =>e.JobPlacements).ThenInclude(jp => jp.jobModel).ThenInclude(j => j.jobGradeModel)
                 .Include(e => e.JobPlacements).ThenInclude(jp => jp.jobModel).ThenInclude(j => j.jobCategoryModel)
                 .Include(e => e.JobPlacements).ThenInclude(jp => jp.jobModel).ThenInclude(j => j.jobClassModel)
-                .Include(e => e.JobPlacements).ThenInclude(jp => jp.workSiteModel)
                 .Include(e =>e.JobPlacements).ThenInclude(jp => jp.departmentModel).ThenInclude(d => d.companyModel).FirstOrDefaultAsync(m => m.employmentID == id);
             if (employmentmodel == null)
             {

@@ -20,7 +20,7 @@ namespace PIS2.Models
         public allowanceModel() { }
     }
     public enum allowanceDuration{
-        Permanent,
+        Unlimited,
         Limited
     }
 }

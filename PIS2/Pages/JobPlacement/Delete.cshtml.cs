@@ -21,7 +21,7 @@ namespace PIS2.Pages.JobPlacement
         [BindProperty]
         public jobPlacementModel jobPlacementModel { get; set; } = default!;
 
-        public async Task<IActionResult> OnGetAsync(int? id)
+        public async Task<IActionResult> OnGetAsync(int? id, string? referer)
         {
             if (User.IsInRole("PMS_HRCLERK"))
             {
@@ -34,7 +34,7 @@ namespace PIS2.Pages.JobPlacement
                     .Include(j => j.employmentModel)
                     .Include(j => j.jobModel)
                     .Include(j => j.departmentModel)
-                    .Include(j => j.shiftModel).FirstOrDefaultAsync(m => m.jobPlacementID == id);
+                    .FirstOrDefaultAsync(m => m.jobPlacementID == id);
 
                 if (jobplacementmodel == null)
                 {

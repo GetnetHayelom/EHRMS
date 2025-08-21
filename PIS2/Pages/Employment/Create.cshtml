@@ -21,7 +21,7 @@
     <div class="col-md-4">
         <form method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input asp-for="employmentModel.modifiedBy" value="@User.Identity.Name" />
+            
             <div class="form-group">
                 <label asp-for="employmentModel.personID" class="control-label">Full Name</label>
                 <select asp-for="employmentModel.personID" class="form-control" asp-items="ViewBag.personID"></select>

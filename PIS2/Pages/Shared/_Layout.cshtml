@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - PIS2</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="css/select2.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/PIS2.styles.css" asp-append-version="true" />
     <script src="~/js/chart.umd.js"></script>
@@ -46,7 +47,9 @@
                 <img src="/assets/mie_logo.png" alt="Logo" style="width: 100%; max-height: 80px;">
                 <p style="margin: 0;" class="fw-bold">Date:</p>
                 <p style="margin: 0;">@DateTime.Now.ToString("MMM dd, yyyy")</p>
-            </div><hr />
+            </div>
+            <hr class="border-5 border-dark" />
+            
         </div>
         
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-dark border-bottom box-shadow mb-3 d-print-none">
@@ -123,7 +126,7 @@
                         @if (User.IsInRole("mie\\PMS_ADMIN"))
                         {
                             <li class="nav-item dropdown">
-                            <a class="nav-link text-white dropdown-toggle" role = "button" data-bs-toggle = "dropdown">System Adminstration</a>
+                            <a class="nav-link text-white dropdown-toggle" role = "button" data-bs-toggle = "dropdown">Sys Admin</a>
                             <div class="dropdown-menu">
                                 <a class="dropdown-item" asp-page="/Users/Index">Users</a>
                                 <a class="dropdown-item" asp-page="/SysAdmin/BackupDatabase">Backup</a>
@@ -158,6 +161,9 @@
                             </li>
                         }
                         <li class="nav-item">
+                            <a class="nav-link text-white" asp-area="" asp-page="/Department/Details">Department</a>
+                        </li>
+                        <li class="nav-item">
                             <a class="nav-link text-white" asp-area="" asp-page="/Privacy">Help</a>
                         </li>
                     </ul>
@@ -181,6 +187,7 @@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/js/funcs.js"></script>
     <script src="~/js/print.js"></script>
+    <script src="~/js/select2/select2.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js?v=@DateTime.UtcNow.Ticks"></script>
     

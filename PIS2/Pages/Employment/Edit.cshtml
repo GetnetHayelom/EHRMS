@@ -91,6 +91,7 @@
             </div>
             <div class="form-group d-flex justify-content-end">
                 <input type="submit" value="Save" class="btn btn-success m-2" />
+                <a asp-page="/Person/Details" asp-route-id="@Model.personModel.personID" class="btn btn-Info m-2">More...</a>
             </div>
         </form>
     </div>
@@ -138,11 +139,7 @@
                             <input asp-for="employmentModel.employmentReference" class="form-control" />
                             <span asp-validation-for="employmentModel.employmentReference" class="text-danger"></span>
                         </div>
-                        <div class="form-group pe-4 pt-2">
-                            <label asp-for="employmentModel.workingHoursPerWeek" class="control-label">Working Hours</label>
-                            <input asp-for="employmentModel.workingHoursPerWeek" class="form-control" />
-                            <span asp-validation-for="employmentModel.workingHoursPerWeek" class="text-danger"></span>
-                        </div>
+                        
                     </div>
                     <div class="form-group pe-4 m-2 d-flex justify-content-end">
                         <input type="submit" value="Save" class="btn btn-success m-2" />
@@ -150,6 +147,7 @@
                         {
                             <a asp-page="/Termination/Create" asp-route-id="@Model.employmentModel.employmentID" class="btn btn-danger m-2">Terminate Employment</a>
                         }
+                            <a asp-page="/Employment/Details" asp-route-id="@Model.employmentModel.employmentID" class="btn btn-Info m-2">More...</a>
                     </div>
 
                 </form>
@@ -182,11 +180,7 @@
                                 <select asp-for="jobPlacementModel.jobStepID" class="form-control" asp-items="ViewBag.jobStepID"></select>
                                 <span asp-validation-for="jobPlacementModel.jobStepID" class="text-danger"></span>
                             </div>
-                            <div class="form-group pe-4 pt-2">
-                                <label asp-for="jobPlacementModel.shiftID" class="control-label">Shift</label>
-                                <select asp-for="jobPlacementModel.shiftID" class="form-control" asp-items="ViewBag.shiftID"></select>
-                                <span asp-validation-for="jobPlacementModel.shiftID" class="text-danger"></span>
-                            </div>
+                            
                             <div class="form-group pe-4 pt-2">
                                 <span class="text-danger">*</span>
                                 <label asp-for="jobPlacementModel.jobPlacementSalary" class="control-label">Basic Salary</label>
@@ -209,22 +203,32 @@
                                 <select asp-for="jobPlacementModel.jobPlacementStatus" class="form-control" asp-items="Html.GetEnumSelectList<Models.mainStatus>()"></select>
                                 <span asp-validation-for="jobPlacementModel.jobPlacementStatus" class="text-danger"></span>
                             </div>
-                            <div class="form-group pe-4 pt-2">
+                            <div class="form-group">
                                 <span class="text-danger">*</span>
                                 <label asp-for="jobPlacementModel.jobPlacementReason" class="control-label">Reason</label>
-                                <input asp-for="jobPlacementModel.jobPlacementReason" class="form-control" />
+                                <select asp-for="jobPlacementModel.jobPlacementReason" class="form-control">
+                                    <option value=""> -- Select Reason--</option>
+                                    <option value="New Hire"> New Hire</option>
+                                    <option value="Promotion"> Promotion</option>
+                                    <option value="Transfer"> Transfer</option>
+                                    <option value="Demotion"> Demotion</option>
+                                    <option value="Temporary Assignment"> Temporary Assignment</option>
+                                    <option value="Other"> Other</option>
+                                </select>
                                 <span asp-validation-for="jobPlacementModel.jobPlacementReason" class="text-danger"></span>
                             </div>
                         </div>
                         <div class="form-group d-flex justify-content-end">
                             <input type="submit" value="Save" class="btn btn-success align-items-baseline m-2" />
                             <a asp-page="/JobPlacement/Create" asp-route-id="@Model.employmentModel.employmentID" class="btn btn-primary m-2">Assign a new job</a>
+                            <a asp-page="/JobPlacement/Details" asp-route-id="@Model.jobPlacementModel.jobPlacementID" class="btn btn-Info m-2">More...</a>
                         </div>
                     </form>
                 }
                 else
                 {
                     <a asp-page="/JobPlacement/Create" asp-route-id="@Model.employmentModel.employmentID" class="btn btn-primary m-2">Assign a job</a>
+                   
                 }
             }
         </div>

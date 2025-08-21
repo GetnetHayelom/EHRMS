@@ -52,13 +52,12 @@ namespace PIS2.Pages.ServiceRequest
             //EndDate = _context.ServiceRequests.OrderBy(s => s.serviceRequestDate).FirstOrDefault().serviceRequestDate;
 
             var qry = _context.ServiceRequests
-                .Include(s => s.Employment)
-                    .ThenInclude(e => e.JobPlacements)
+                .Include(s => s.Employment).ThenInclude(e => e.SiteAssignments.OrderByDescending(sa =>sa.modifiedDate).FirstOrDefault())
+                    .Include(s => s.Employment).ThenInclude(e => e.JobPlacements)
                         .ThenInclude(j => j.departmentModel)
                             .ThenInclude(d => d.companyModel)
                 .Include(s => s.Employment)
                     .ThenInclude(e => e.JobPlacements)
-                        .ThenInclude(j => j.workSiteModel)
                 .AsQueryable();
 
             if (!string.IsNullOrEmpty(status))
@@ -79,7 +78,7 @@ namespace PIS2.Pages.ServiceRequest
                                       .Any(j => j.departmentModel.companyModel.companyID == int.Parse(company)));
 
             if (!string.IsNullOrEmpty(workLoc))
-                qry = qry.Where(s => s.Employment.JobPlacements
+                qry = qry.Where(s => s.Employment.SiteAssignments
                                       .Any(j => j.workSiteModel.workSiteID == int.Parse(workLoc)));
 
             if (DateTime.TryParse(startDate, out var start))

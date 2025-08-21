@@ -39,6 +39,8 @@ namespace PIS2.Pages.Guaranty
         // For more information, see https://aka.ms/RazorPagesCRUD.
         public async Task<IActionResult> OnPostAsync()
         {
+            ModelState.Remove("guarantyModel.modifiedBy");
+            guarantyModel.modifiedBy = User.Identity.Name;
             var currentUserName = User.Identity?.Name;
             if (string.IsNullOrEmpty(givenID))
             {                

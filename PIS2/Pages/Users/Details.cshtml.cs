@@ -19,7 +19,7 @@ namespace PIS2.Pages.Users
         }
 
         public userModel userModel { get; set; } = default!;
-
+        public List<userHistoryModel> userHistory { get; set; } = default!;
         public async Task<IActionResult> OnGetAsync(int? id)
         {
             if (id == null)
@@ -27,7 +27,8 @@ namespace PIS2.Pages.Users
                 return NotFound();
             }
 
-            var usermodel = await _context.Users.FirstOrDefaultAsync(m => m.userID == id);
+            var usermodel = await _context.Users.Include(u => u.personModel)
+                .Include(u => u.UserHistories).FirstOrDefaultAsync(m => m.userID == id);
             if (usermodel == null)
             {
                 return NotFound();
@@ -35,6 +36,7 @@ namespace PIS2.Pages.Users
             else
             {
                 userModel = usermodel;
+                userHistory = userModel.UserHistories.ToList() ?? new List<userHistoryModel>();
             }
             return Page();
         }

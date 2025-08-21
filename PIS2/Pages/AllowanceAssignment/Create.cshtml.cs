@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 using PIS2.Models;
 
 namespace PIS2.Pages.AllowanceAssignment
@@ -17,11 +19,37 @@ namespace PIS2.Pages.AllowanceAssignment
         {
             _context = context;
         }
-
+        [BindProperty]
+        [ValidateNever]
+        public List<employmentModel>? Employments { get; set; } = default!;
+        public employmentModel Employment { get; set; }= new employmentModel();
+        [BindProperty(SupportsGet = true)]
+        public string searchID { get; set; } = default!;
+        public string successMessage { get; set; }
+        
         public IActionResult OnGet()
         {
-        ViewData["allowanceID"] = new SelectList(_context.Allowances.Where(a => a.allowanceStatus == mainStatus.Active), "allowanceID", "allowanceName");
-        ViewData["employmentID"] = new SelectList(_context.Employments.Where(a => a.employmentStatus == mainStatus.Active).OrderBy(e => e.givenID), "employmentID", "givenID");
+            Employment = new employmentModel();
+
+            if (!string.IsNullOrEmpty(searchID))
+            {
+                Employment =_context.Employments
+                    .Include(e => e.personModel)
+                    .Include(e => e.AllowanceAssignments)?.FirstOrDefault(e => e.givenID == searchID);
+               
+                if (Employment == null || Employment.employmentID ==0)
+                {
+                    TempData["SuccessMessage"] = $"No employment found with employment ID {searchID}";
+                    return Page();
+                }
+
+            }
+            else
+            {
+                Employment = new employmentModel();
+            }
+
+            ViewData["allowanceID"] = new SelectList(_context.Allowances.Where(a => a.allowanceStatus == mainStatus.Active), "allowanceID", "allowanceName");
             return Page();
         }
 

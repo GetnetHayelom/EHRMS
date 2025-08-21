@@ -62,7 +62,7 @@ namespace PIS2.Pages.Employment
                     Department = e.JobPlacements.OrderByDescending(j => j.jobPlacementDate).First().departmentModel,
                     Company = e.JobPlacements.OrderByDescending(j => j.jobPlacementDate).First().departmentModel.companyModel,
                     jobTitle = e.JobPlacements.OrderByDescending(j => j.jobPlacementDate).First().jobModel,
-                    WorkSite = e.JobPlacements.OrderByDescending(j => j.jobPlacementDate).First().workSiteModel,
+                    WorkSite = _context.SiteAssignments.OrderByDescending(j => j.modifiedDate).First(ws => ws.employmentID == e.employmentID).workSiteModel,
                     person = e.personModel,
                     empType = e.employmentTypeModel,
                 })
@@ -113,7 +113,7 @@ namespace PIS2.Pages.Employment
             if (workLoc.HasValue && workLoc != null)
             {
                
-                employmentModel = employmentModel.Where(e => e.lastJob.workSiteID == workLoc);
+                employmentModel = employmentModel.Where(e => e.WorkSite != null && e.WorkSite.workSiteID == workLoc);
             }
             // Filter by Start TIme (if provided)
             if (dateStart.HasValue && dateStart != null)

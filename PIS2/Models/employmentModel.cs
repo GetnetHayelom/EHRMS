@@ -43,9 +43,11 @@ namespace PIS2.Models
         public virtual ICollection<guarantyModel>? Guaranties { get; set; }
         public virtual ICollection<serviceRequestModel>? ServiceRequests { get; set; }
         public virtual ICollection<prohibitionModel>? Prohibitions { get; set; }
-        public virtual ICollection<deligationModel>? DeligationsFrom { get; set; }
-        public virtual ICollection<deligationModel>? DeligationsTo { get; set; }
-        public virtual ICollection<familyModel>? Families { get; set; }
+        public virtual ICollection<delegationModel>? delegationsFrom { get; set; }
+        public virtual ICollection<delegationModel>? delegationsTo { get; set; }
+        public virtual ICollection<penaltyModel>? Penalties { get; set; }
+        public virtual ICollection<shiftAssignmentModel>? ShiftAssignments { get; set; }
+        public virtual ICollection<siteAssignmentModel>? SiteAssignments { get; set; }
         public virtual contractModel? contractModel { get; set; }
         public virtual terminationModel? TerminationModel { get; set; }
         //public virtual departmentModel? departmentModel { get; set; }

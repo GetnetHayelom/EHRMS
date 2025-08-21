@@ -1,0 +1,69 @@
+﻿@page
+@model PIS2.Pages.delegation.DetailsModel
+
+@{
+    ViewData["Title"] = "Details";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<h1 class="fw-bold">delegation</h1>
+
+<div>
+    <h4 class="fw-bold">delegation Detail</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">
+            Deligator:
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.delegationModel.FromEmployment.givenID)<h5>(@Model.delegationModel.FromEmployment.personModel.personFullName)</h5>
+        </dd>
+        <dt class="col-sm-2">
+            Deligatee:
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.delegationModel.ToEmployment.givenID)<h5>(@Model.delegationModel.ToEmployment.personModel.personFullName)</h5>
+        </dd>
+        <dt class="col-sm-2">
+            Start:
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.delegationModel.delegationStartDate)
+        </dd>
+        <dt class="col-sm-2">
+            End:
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.delegationModel.delegationEndDate)
+        </dd>
+        <dt class="col-sm-2">
+            Scope:
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.delegationModel.delegationScope)
+        </dd>
+        <dt class="col-sm-2">
+            Status:
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.delegationModel.delegationStatus)
+        </dd>
+        <dt class="col-sm-2">
+            Modified Date:
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.delegationModel.modifiedDate)
+        </dd>
+        <dt class="col-sm-2">
+            Modified By:
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.delegationModel.modifiedBy)
+        </dd>
+    </dl>
+</div>
+<div class="btn btn-primary">
+    <a asp-page="./Edit" asp-route-id="@Model.delegationModel.delegationID" class="btn btn-primary">Edit</a>
+    
+</div>
+<a asp-page="./Index">View All delegations</a>

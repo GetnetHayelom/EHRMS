@@ -42,8 +42,19 @@ namespace PIS2.Pages.Address
         // For more information, see https://aka.ms/RazorPagesCRUD.
         public async Task<IActionResult> OnPostAsync()
         {
+            ModelState.Remove("addressModel.modifiedBy");
+            addressModel.modifiedBy = User.Identity.Name;
+
             if (!ModelState.IsValid)
             {
+                foreach (var kv in ModelState)
+                {
+                    foreach (var error in kv.Value.Errors)
+                    {
+                        Console.WriteLine($"{kv.Key} --> {error.ErrorMessage}");
+                    }
+                    Console.WriteLine(kv.ToString());
+                }
                 return Page();
             }
 
@@ -52,20 +63,23 @@ namespace PIS2.Pages.Address
             try
             {
                 await _context.SaveChangesAsync();
+                TempData["SuccessMessage"] = "Address updated successfully!";
             }
-            catch (DbUpdateConcurrencyException)
+            catch (DbUpdateException ex)
             {
                 if (!addressModelExists(addressModel.addressID))
                 {
                     return NotFound();
                 }
-                else
+                else if(ex.InnerException != null && ex.InnerException.Message.Contains("UNIQUE", StringComparison.OrdinalIgnoreCase))
                 {
-                    throw;
-                }
+                    ModelState.AddModelError(string.Empty, "This address already exists.");
+                    return Page();
+                }                
+                    throw;                
             }
-
-            return RedirectToPage("./Index");
+            return Page();
+            //return RedirectToPage("./Index");
         }
 
         private bool addressModelExists(int id)

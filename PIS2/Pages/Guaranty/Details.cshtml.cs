@@ -27,7 +27,7 @@ namespace PIS2.Pages.Guaranty
                 return NotFound();
             }
 
-            var guarantymodel = await _context.Guaranties.FirstOrDefaultAsync(m => m.guarantyID == id);
+            var guarantymodel = await _context.Guaranties.Include(g => g.Employment).FirstOrDefaultAsync(m => m.guarantyID == id);
             if (guarantymodel == null)
             {
                 return NotFound();

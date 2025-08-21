@@ -39,9 +39,9 @@ namespace PIS2.Pages.Absentism
             else
             {
                 leaveModel = leavemodel;
-                Job = _context.JobPlacements.Include(j => j.shiftModel)
+                Job = _context.JobPlacements
                     .Include(j => j.departmentModel).ThenInclude(d => d.companyModel)
-                    .Include(j => j.workSiteModel).OrderByDescending(j => j.jobPlacementDate).First(j => j.employmentID == leaveModel.employmentID);
+                    .OrderByDescending(j => j.jobPlacementDate).First(j => j.employmentID == leaveModel.employmentID);
 
                
             }

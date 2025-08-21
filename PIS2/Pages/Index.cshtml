@@ -40,7 +40,7 @@
                         <option value="@item.givenID"></option>
                     }
                 </datalist>
-                <button type="submit" class="btn btn-success mb-1">View</button>
+                <button type="submit" class="btn btn-primary mb-1">View</button>
                 
             </form>
             <!--form for searching using name-->
@@ -53,7 +53,7 @@
                         <option value="@item.personFullName">@item.personFullName</option>
                     }
                 </datalist>
-                <button type="submit" class="btn btn-success mb-1">View</button>
+                <button type="submit" class="btn btn-primary mb-1">View</button>
                
             </form>
         </div>
@@ -178,9 +178,17 @@
                 @if(Model.Employment.employmentStatus == Models.mainStatus.Active)
                 {
                     <!--Leave Request button-->
-                    <a role="button" class="text-white nav-link flex-grow-1" asp-page="/Leave/Create" asp-route-id="@Model.Employment.employmentID">Leave Request</a>        
-                <!--Ovetime Button-->
-                    <a role="button" class="text-white nav-link flex-grow-1" asp-page="/OvertimeRecord/Create" asp-route-id="@Model.Employment.employmentID">Overtime Record</a>
+                    @if (Model.IsLeaveAllow)
+                    {
+                        <a role="button" class="text-white nav-link flex-grow-1" asp-page="/Leave/Create" asp-route-id="@Model.Employment.employmentID">Leave Request</a>
+                    }
+
+                    <!--Ovetime Button-->
+                    @if (Model.IsOvertimeAllow)
+                    {
+                        <a role="button" class="text-white nav-link flex-grow-1" asp-page="/OvertimeRecord/Create" asp-route-id="@Model.Employment.employmentID">Overtime Record</a>
+                    }
+                    
                 }
                 
                 <!--leave report-->
@@ -451,15 +459,19 @@
                     
                     <div class="modal-header d-flex justify-content-around">
                         <h3 class="fw-bold">Employment History</h3>
-                        @if (Model.isSelf)
+                        @if (Model.isSelf && Model.PersonEmployments.FirstOrDefault(pe => pe.employmentStatus == Models.mainStatus.Active) != null)
                         {
                             
                             <button class="form-control btn btn-primary m-2 d-print-none" id="btnExprience" asp-page-handler="HandleRequest">Request Official Exprience</button>
 
                             <input type="hidden" id="antiForgeryToken" value="@tokens.RequestToken" />
-                            <button class="form-control btn btn-primary m-2 d-print-none" id="btnTermination" onclick="handleRequest('Exprience')">Request Termination</button>
-                            <a href="/Guaranty/Create" class="form-control btn btn-primary m-2 d-print-none" id="btnGuarantee">Request Guaranty</a>
-                            
+                            <a class="form-control btn btn-primary m-2 d-print-none" id="btnTermination" asp-page="/Termination/Create"
+                               asp-route-id="@Model.PersonEmployments.FirstOrDefault(pe => pe.employmentStatus == Models.mainStatus.Active).employmentID">Request Termination</a>
+                            @if (Model.IsGuarantyAllow)
+                            {
+                                <a href="/Guaranty/Create" class="form-control btn btn-primary m-2 d-print-none" id="btnGuarantee">Request Guaranty</a>
+                            }
+                                                       
                         }
                         
                     </div>

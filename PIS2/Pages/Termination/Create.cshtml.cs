@@ -47,7 +47,10 @@ namespace PIS2.Pages.Termination
             }
             if(id != null && id != 0)
             {
-                employmentModel = _context.Employments.Include(e => e.personModel).FirstOrDefault(e => e.employmentID == id);
+                employmentModel = _context.Employments.Include(e => e.personModel)
+                    .Where(e => e.employmentStatus == mainStatus.Active && e.TerminationModel == null)
+                    .FirstOrDefault(e => e.employmentID == id);
+                givenID = employmentModel.givenID;
             }
             
             return Page();
@@ -60,8 +63,11 @@ namespace PIS2.Pages.Termination
         // For more information, see https://aka.ms/RazorPagesCRUD.
         public async Task<IActionResult> OnPostAsync(int? id)
         {
+            ModelState.Remove("terminationModel.modifiedBy");
             ModelState.Remove("modifiedBy");
+            ModelState.Remove("givenID");
             terminationModel.modifiedBy = User.Identity.Name;
+            terminationModel.terminationStatus = terminationStatus.Hold;
             if (!ModelState.IsValid)
             {
                 foreach (var kv in ModelState)

@@ -31,10 +31,13 @@ namespace PIS2.Pages.Person
     
             TotalPages = (int)Math.Ceiling(totalPersons / (double)PageSize);
 
+            //personModel = await _context.Persons
+            //    .Include(p => p.addressModel).OrderBy(p => p.personFirstName).ThenBy(p => p.personFatherName).ThenBy(p => p.personLastName)
+            //    .Skip((CurrentPage - 1) * PageSize)
+            //    .Take(PageSize)
+            //    .ToListAsync();
             personModel = await _context.Persons
                 .Include(p => p.addressModel).OrderBy(p => p.personFirstName).ThenBy(p => p.personFatherName).ThenBy(p => p.personLastName)
-                .Skip((CurrentPage - 1) * PageSize)
-                .Take(PageSize)
                 .ToListAsync();
         }
     }

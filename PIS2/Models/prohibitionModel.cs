@@ -15,14 +15,14 @@ namespace PIS2.Models
         public ProhibitionType prohibitionType { get; set; }
         public string? prohibitionRemark { get; set; }
         public string modifiedBy { get; set; }
-        public virtual ICollection<prohibitionHitoryModel>? ProhibitionHistories { get; set; }
+        public virtual ICollection<prohibitionHistoryModel>? ProhibitionHistories { get; set; }
          public prohibitionModel()
         {
 
         }
     }
 
-    public class prohibitionHitoryModel
+    public class prohibitionHistoryModel
     {
         [Key]
         public int prohibitionHistoryID { get;}
@@ -37,7 +37,7 @@ namespace PIS2.Models
         public string modifiedBy { get; }
         public DateTime modifiedDate { get; }
 
-        public prohibitionHitoryModel()
+        public prohibitionHistoryModel()
         {
 
         }
@@ -51,6 +51,7 @@ namespace PIS2.Models
         Transfer,
         Guaranty,
         Exprience,
-        Promotion
+        Promotion,
+        Overtime
     }
 }

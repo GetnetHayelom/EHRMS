@@ -1,0 +1,55 @@
+﻿@page
+@model PIS2.Pages.ShiftAssignment.IndexModel
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-page="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.shiftAssignmentModel[0].EmploymentModel)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.shiftAssignmentModel[0].shiftModel)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.shiftAssignmentModel[0].modifiedDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.shiftAssignmentModel[0].modifiedBy)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model.shiftAssignmentModel) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.EmploymentModel.givenID)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.shiftModel.shiftName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.modifiedDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.modifiedBy)
+            </td>
+            <td>
+                <a asp-page="./Edit" asp-route-id="@item.shiftAssignmentID">Edit</a> |
+                <a asp-page="./Details" asp-route-id="@item.shiftAssignmentID">Details</a> |
+                <a asp-page="./Delete" asp-route-id="@item.shiftAssignmentID">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

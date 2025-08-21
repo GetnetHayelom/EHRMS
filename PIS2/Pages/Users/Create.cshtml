@@ -6,42 +6,42 @@
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
 
-<h1>Create</h1>
+<h1 class="fw-bold">Users</h1>
 
-<h4>userModel</h4>
+<h4 class="fw-bold">New User</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
         <form method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
-                <label asp-for="userModel.personID" class="control-label"></label>
+                <label asp-for="userModel.personID" class="control-label">Full Name</label>
                 <select asp-for="userModel.personID" class="form-control select2" asp-items="ViewBag.personID">
                     <option value="">-- Select a Person --</option>
                 </select>
             </div>
             <div class="form-group">
                 <span class="text-danger">*</span>
-                <label asp-for="userModel.userName" class="control-label"></label>
+                <label asp-for="userModel.userName" class="control-label">User Name</label>
                 <input asp-for="userModel.userName" class="form-control" />
                 <span asp-validation-for="userModel.userName" class="text-danger"></span>
             </div>
             
             <div class="form-group">
-                <label asp-for="userModel.userStatus" class="control-label"></label>
+                <label asp-for="userModel.userStatus" class="control-label">Status</label>
                 <select asp-for="userModel.userStatus" class="form-control" asp-items="Html.GetEnumSelectList<Models.mainStatus>()"></select>
                 <span asp-validation-for="userModel.userStatus" class="text-danger"></span>
             </div>
             
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
+            <div class="form-group d-flex justify-content-end">
+                <input type="submit" value="Save" class="btn btn-success m-2" />
             </div>
         </form>
     </div>
 </div>
 
 <div>
-    <a asp-page="Index">Back to List</a>
+    <a asp-page="Index">View All Users</a>
 </div>
 
 @section Scripts {

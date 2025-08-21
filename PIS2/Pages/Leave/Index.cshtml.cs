@@ -47,7 +47,10 @@ namespace PIS2.Pages.Leave
                 .Include(l => l.employmentModel).ThenInclude(e => e.personModel)
                 .Include(l => l.leaveTypeModel)
                 .Where(l => l.leaveStatus == leaveStatus.Hold || l.leaveStatus == leaveStatus.Approved)
-                .Take(1500)
+                .Select(e => new
+                {
+
+                })
                 .ToListAsync();
            
             totalUnposted = leaveModel.Sum(l => l.leaveDays);
@@ -87,7 +90,7 @@ namespace PIS2.Pages.Leave
                     Department = l.employmentModel.JobPlacements.OrderByDescending(j => j.jobPlacementDate).First().departmentModel,
                     Company = l.employmentModel.JobPlacements.OrderByDescending(j => j.jobPlacementDate).First().departmentModel.companyModel,
                     jobTitle = l.employmentModel.JobPlacements.OrderByDescending(j => j.jobPlacementDate).First().jobModel,
-                    WorkSite = l.employmentModel.JobPlacements.OrderByDescending(j => j.jobPlacementDate).First().workSiteModel,
+                    //WorkSite = _context.SiteAssignments.OrderByDescending(ws => ws.modifiedDate).Where(ws => ws.employmentID == l.employmentModel.employmentID),
                     person = l.employmentModel.personModel,
                     empType = l.employmentModel.employmentTypeModel
                 })
@@ -132,7 +135,7 @@ namespace PIS2.Pages.Leave
             // Filter by workloc (if provided)
             if (workLoc.HasValue && workLoc != null)
             {
-                leaves = leaves.Where(e => e.WorkSite.workSiteID == workLoc);
+                //leaves = leaves.Where(e => e.WorkSite.workSiteID == workLoc);
             }
             // Filter by Start TIme (if provided)
             if (dateStart.HasValue && dateStart != null)

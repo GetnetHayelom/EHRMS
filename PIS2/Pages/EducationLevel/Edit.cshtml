@@ -6,8 +6,8 @@
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
 
-<h1>Edit Academic Level</h1>
-
+<h1 class="fw-bold">Academic Level</h1>
+<h4 class="fw-bold">Edit Academic Level</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
@@ -40,8 +40,8 @@
                 <select asp-for="educationLevelModel.educationLevelStatus" class="form-control" asp-items="Html.GetEnumSelectList<Models.mainStatus>()"></select>
                 <span asp-validation-for="educationLevelModel.educationLevelStatus" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
+            <div class="form-group d-flex justify-content-end">
+                <input type="submit" value="Save" class="btn btn-success" />
             </div>
         </form>
     </div>
