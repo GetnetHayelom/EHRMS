@@ -82,6 +82,7 @@
                     </div>
                 </div>
             </div>
+            <!--Employment Types-->
             <div class="p-2 flex-grow-1 m-2 shadow">
                 <div class="w-100">
                     <h3 class="bg-dark text-white p-2"><b>Employment Types</b></h3>
@@ -108,7 +109,7 @@
                 </div>
                 <div>
                     <p class="small mb-1">Overtime</p>
-                    <h5 class="fw-bold">$@Math.Round((Model.CompanySummaries.Sum(c => c.Salary)), 2).ToString("N0")</h5>  
+                    <h5 class="fw-bold">$@Math.Round((Model.CompanySummaries.Sum(c => c.Overtime)), 2).ToString("N0")</h5>  
                 </div>
                 <div>
                     <p class="small mb-1">Acc. Leaves</p>
@@ -116,39 +117,15 @@
                 </div>
                 <div>
                     <p class="small mb-1">Allowance</p>
-                    <h5 class="fw-bold">$@Math.Round((Model.CompanySummaries.Sum(c => c.Salary)), 2).ToString("N0")</h5>
+                    <h5 class="fw-bold">$@Math.Round((Model.CompanySummaries.Sum(c => c.Allowance)), 2).ToString("N0")</h5>
                 </div>
                 <div>
                     <p class="small mb-1">Total</p>
-                    <h4 class="fw-bold">$@Math.Round((Model.CompanySummaries.Sum(c => c.Salary)), 2).ToString("N0")</h4>
+                    <h4 class="fw-bold">$@Math.Round((Model.CompanySummaries.Sum(c => c.Salary + c.Allowance + c.Overtime)), 2).ToString("N0")</h4>
                 </div>
 
            </div>
-            <!--Payables summary-->
-            <div class="d-flex flex-column flex-grow-1 col-3 p-2 m-2">
-                <h3 class="p-2 bg-dark text-white">Current Payable</h3><hr />
-                <div class="">
-                    <p class="small mb-1">Salary</p>
-                    <h5 class="fw-bold">$@Math.Round((Model.CompanySummaries.Sum(c => c.Salary)), 2).ToString("N0")</h5>
-                </div>
-                <div>
-                    <p class="small mb-1">Overtime</p>
-                    <h5 class="fw-bold">$@Math.Round((Model.CompanySummaries.Sum(c => c.Salary)), 2).ToString("N0")</h5>
-                </div>
-                <div>
-                    <p class="small mb-1">Acc. Leaves</p>
-                    <h5 class="fw-bold">$@Math.Round((Model.CompanySummaries.Sum(c => c.Leaves.leaveCost)), 2).ToString("N0")</h5>
-                </div>
-                <div>
-                    <p class="small mb-1">Allowance</p>
-                    <h5 class="fw-bold">$@Math.Round((Model.CompanySummaries.Sum(c => c.Salary)), 2).ToString("N0")</h5>
-                </div>
-                <div>
-                    <p class="small mb-1">Total</p>
-                    <h4 class="fw-bold">$@Math.Round((Model.CompanySummaries.Sum(c => c.Salary)), 2).ToString("N0")</h4>
-                </div>
-
-            </div>
+            
         </div>
        <hr />
         <!-- Charts Container1-->

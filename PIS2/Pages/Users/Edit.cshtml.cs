@@ -45,11 +45,19 @@ namespace PIS2.Pages.Users
         {
             ModelState.Remove("userModel.modifiedBy");
             userModel.modifiedBy = User.Identity.Name;
+
             if (!ModelState.IsValid)
             {
+                foreach (var kv in ModelState)
+                {
+                    foreach (var error in kv.Value.Errors)
+                    {
+                        Console.WriteLine($"{kv.Key} --> {error.ErrorMessage}");
+                    }
+                    Console.WriteLine(kv.ToString());
+                }
                 return Page();
             }
-
             _context.Attach(userModel).State = EntityState.Modified;
 
             try

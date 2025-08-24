@@ -9,7 +9,7 @@ namespace PIS2.Models
         [Required]
         public string userName { get; set; }
         public int personID { get; set; }
-        public virtual personModel personModel { get; set; }
+        public virtual personModel? personModel { get; set; }
         public mainStatus userStatus { get; set; }
         public string modifiedBy { get; set; }
         public DateTime modifiedDate { get; set; } = DateTime.Now;

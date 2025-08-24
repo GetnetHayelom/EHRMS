@@ -7,72 +7,186 @@
 }
 
 <h1 class="fw-bold">Allowance Assignments</h1>
-<hr />
-<p>
-    <a asp-page="Create" class="btn btn-primary m-2">New Allowance Assignment</a>
-    @await Html.PartialAsync("filter")
-</p>
-<table class="table table-striped table-hover" id="dataTable">
-    <thead class="bg-dark text-white">
-        <tr>
-            <th>
-                Employment ID
-            </th>
-            <th>Employee Name</th>
-            <th>
-                Allowance Type
-            </th>
-            <th>
-                Allowance Amount
-            </th>
-            <th>
-                Allowance Assignment Date
-            </th>
-            <th>
-                Allowance Status
-            </th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model.allowanceAssignmentModel) {
-            <tr onclick="location.href='@Url.Page("Details", new { id = item.allowanceAssignmentID})'" style="cursor:pointer">
-                <td>
-                    @Html.DisplayFor(modelItem => item.employmentModel.givenID)
-                </td>
-                <td>
-                    @item.employmentModel.personModel.personFullName
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.allowanceModel.allowanceName)
-                </td>
-                <td>
-                    @item.allowanceAssignmentAmount
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.allowanceAssignmentDate)
-                </td>@{
-                    string bg_color;
-                    if (item.allowanceStatus == Models.mainStatus.Suspended)
-                    {
-                        bg_color = "bg-warning text-black";
-                    }
-                    else if (item.allowanceStatus == Models.mainStatus.Active)
-                    {
-                        bg_color = "bg-success text-white";
-                    }
-                    else
-                    {
-                        bg_color = "bg-grey text-black";
-                    }
-                }
-                <td class="@bg_color">
-                    @Html.DisplayFor(modelItem => item.allowanceStatus)
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
-<div class="d-flex justify-content-end">
-    @await Html.PartialAsync("print")
-</div>
 
+<div class="d-flex justify-content-between">
+    <div>
+        <a asp-page="Create" class="btn btn-primary m-2">New Allowance Assignment</a>
+        <a asp-page="Create" class="btn btn-primary m-2" data-bs-toggle="collapse" data-bs-target="#rawView">List View</a>
+        <a asp-page="Create" class="btn btn-primary m-2" data-bs-toggle="collapse" data-bs-target="#groupDepView">Department View</a>
+    </div>
+    <div>
+        <h4 class="fw-bold">Total No of Allowance:@Model.allowanceCount</h4>
+        <h4 class="fw-bold">Sum No of Allowance:@Math.Round(Model.allowanceSum, 2) </h4>
+    </div>
+    
+</div>
+<hr />
+<div id="parentDiv">
+    <!--List View-->
+    <div id="rawView" class="show" data-bs-parent="#parentDiv">
+        @await Html.PartialAsync("filter")
+        <table class="table table-striped table-hover" id="dataTable">
+            <thead class="bg-dark text-white">
+                <tr>
+                    <th>
+                        Employment ID
+                    </th>
+                    <th>Employee Name</th>
+                    <th>
+                        Allowance Type
+                    </th>
+                    <th>
+                        Allowance Amount
+                    </th>
+                    <th>
+                        Allowance Assignment Date
+                    </th>
+                    <th>
+                        Allowance Status
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.allowanceAssignmentModel) {
+                    <tr onclick="location.href='@Url.Page("Details", new { id = item.allowanceAssignmentID})'" style="cursor:pointer">
+                        <td>
+                            @Html.DisplayFor(modelItem => item.employmentModel.givenID)
+                        </td>
+                        <td>
+                            @item.employmentModel.personModel.personFullName
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.allowanceModel.allowanceName)
+                        </td>
+                        <td>
+                            @item.allowanceAssignmentAmount
+                        </td>
+                        <td>
+                            @item.allowanceAssignmentDate.Value.ToString("yyyy-MM-dd")
+                        </td>@{
+                            string bg_color;
+                            if (item.allowanceStatus == Models.mainStatus.Suspended)
+                            {
+                                bg_color = "bg-warning text-black";
+                            }
+                            else if (item.allowanceStatus == Models.mainStatus.Active)
+                            {
+                                bg_color = "bg-success text-white";
+                            }
+                            else
+                            {
+                                bg_color = "bg-grey text-black";
+                            }
+                        }
+                        <td class="@bg_color">
+                            @Html.DisplayFor(modelItem => item.allowanceStatus)
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+        <div class="d-flex justify-content-end">
+            @await Html.PartialAsync("print")
+        </div>
+
+    </div>
+    <!--Group View-->
+    <div id="groupDepView" class="show" data-bs-parent="#parentDiv">
+        <table class="table table-striped table-hover">
+
+            <tbody id="departmentsAccordion">
+                @{
+                    int index = 0;
+                }
+                @foreach (var dep in Model.GroupedAllowance)
+                {
+                    var collapseId = $"collapse{index}";
+                    <tr class="">
+                        <td colspan="6">
+                            <h4 class="fw-bold"
+                                data-bs-toggle="collapse"
+                                data-bs-target="#@collapseId"
+                                style="cursor:pointer;">
+                                @dep.Name : @dep.Count Allowances/ @Math.Round(dep.Sum, 2) Birr
+                            </h4>
+
+                        </td>
+
+                    </tr>
+
+                    <tr>
+                        <td colspan="6" class="p-0">
+                            <div id="@collapseId" class="accordion-collapse collapse"
+                                 data-bs-parent="#departmentsAccordion">
+                                <table class="table table-striped table-hover mb-0">
+                                    <thead class="bg-dark text-white">
+                                        <tr>
+                                            <th>
+                                                Employment ID
+                                            </th>
+                                            <th>Employee Name</th>
+                                            <th>
+                                                Allowance Type
+                                            </th>
+                                            <th>
+                                                Allowance Amount
+                                            </th>
+                                            <th>
+                                                Allowance Assignment Date
+                                            </th>
+                                            <th>
+                                                Allowance Status
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+
+                                        @foreach (var item in dep.Records)
+                                        {
+                                            <tr onclick="location.href='@Url.Page("Details", new { id = item.allowanceAssignmentID})'" style="cursor:pointer">
+                                                <td>
+                                                    @Html.DisplayFor(modelItem => item.employmentModel.givenID)
+                                                </td>
+                                                <td>
+                                                    @item.employmentModel.personModel.personFullName
+                                                </td>
+                                                <td>
+                                                    @Html.DisplayFor(modelItem => item.allowanceModel.allowanceName)
+                                                </td>
+                                                <td>
+                                                    @item.allowanceAssignmentAmount
+                                                </td>
+                                                <td>
+                                                    @item.allowanceAssignmentDate.Value.ToString("yyyy-MM-dd")
+                                                </td>@{
+                                                    string bg_color;
+                                                    if (item.allowanceStatus == Models.mainStatus.Suspended)
+                                                    {
+                                                        bg_color = "bg-warning text-black";
+                                                    }
+                                                    else if (item.allowanceStatus == Models.mainStatus.Active)
+                                                    {
+                                                        bg_color = "bg-success text-white";
+                                                    }
+                                                    else
+                                                    {
+                                                        bg_color = "bg-grey text-black";
+                                                    }
+                                                }
+                                                <td class="@bg_color">
+                                                    @Html.DisplayFor(modelItem => item.allowanceStatus)
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </td>
+                    </tr>
+                    index++;
+
+                }
+            </tbody>
+        </table>
+    </<div>
+</div>

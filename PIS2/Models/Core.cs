@@ -27,10 +27,13 @@ namespace PIS2.Models
 
         
         //IS Self
-        public bool IsSelf(string userName)
+        public int getUserEmp(string userName)
         {
-            //_context.Users.FirstOrDefault(u => u.userName == User.Identity.Name)?.personID == Person.personID ? true : false;
-            return false;
+            
+            var personID = _context.Users.FirstOrDefault(u => u.userName.ToLower() == userName.ToLower())?.personID;
+            var emp =_context.Employments.Where(e => e.personID == personID).FirstOrDefault()?.employmentID ?? 0;
+            
+            return emp;
         }
         //calculate leave balance in a given time interval
         public leaveDetail leaveSummary(int empID)

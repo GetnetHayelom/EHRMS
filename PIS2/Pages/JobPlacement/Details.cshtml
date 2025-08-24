@@ -117,10 +117,18 @@
     </div>
 </div>
 <div class="d-print-none d-flex justify-content-end">
+    @if (User.IsInRole("MIE\\PMS_HRMANAGER"))
+    {
+         <form method="POST">
+            <input type="hidden" asp-for="jobPlacementID" Value="@Model.jobPlacementModel.jobPlacementID" />
+            <button type="submit" class="btn btn-success m-2 d-print-none">Approve</button>
+        </form>
+    }
     @if (User.IsInRole("MIE\\PMS_HRCLERK"))
     {
-        <a asp-page="./Edit" asp-route-id="@Model.jobPlacementModel.jobPlacementID" class="btn btn-primary m-2">Edit</a>
-        <a asp-page="./Delete" asp-route-id="@Model.jobPlacementModel.jobPlacementID" class="btn btn-danger m-2">Delete</a>
+
+        <a asp-page="./Edit" asp-route-id="@Model.jobPlacementModel.jobPlacementID" class="btn btn-primary m-2 d-print-none">Edit</a>
+        <a asp-page="./Delete" asp-route-id="@Model.jobPlacementModel.jobPlacementID" class="btn btn-danger m-2 d-print-none">Delete</a>
     }
     
     @await Html.PartialAsync("print")

@@ -76,15 +76,15 @@
                 <input asp-for="jobPlacementModel.jobPlacementReference" class="form-control" />
                 <span asp-validation-for="jobPlacementModel.jobPlacementReference" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary m-2" />
+            <div class="form-group d-flex justify-content-end">
+                <input type="submit" value="Save" class="btn btn-success m-2" />
             </div>
         </form>
     </div>
 </div>
 
 <div>
-    <a asp-page="./Index">Back to List</a>
+    <a asp-page="./Index">View All Job Placements</a>
 </div>
 
 @section Scripts {

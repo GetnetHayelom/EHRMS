@@ -41,18 +41,38 @@ namespace PIS2.Pages.JobPlacement
             }
             else
             {
-                
+
                 jobPlacementModel = jobplacementmodel;
-                jobPlacementHistoryList =_context.JobPlacementHistories
+                jobPlacementHistoryList = _context.JobPlacementHistories
                     .Include(jh => jh.departmentModel).Where(jh => jh.jobPlacementID == jobPlacementModel.jobPlacementID).ToList() ?? new List<jobPlacementHistoryModel>();
-                //jobPlacementList = await _context.Where(jp => jp.employmentID == jobPlacementModel.employmentID)
-                //    .Include(jp=>jp.jobModel).ThenInclude(j => j.jobGradeModel)
-                //    .Include(jp=> jp.jobStepModel)
-                //    .Include(jp => jp.departmentModel)
-                //    .Include(j => j.employmentModel)
-                //    .Include(jp => jp.shiftModel).ToListAsync();
+
             }
             return Page();
+        }
+        [BindProperty]
+        public int jobPlacementID { get; set; }
+        public async Task<IActionResult> OnPostAsync()
+        {
+            var jobPlacement = await _context.JobPlacements.FindAsync(jobPlacementID);
+            if (jobPlacement == null)
+            {
+                return NotFound();
+            }
+
+            jobPlacement.modifiedBy = User.Identity.Name;
+            jobPlacement.jobPlacementStatus = mainStatus.Active;
+
+            _context.Attach(jobPlacement).State = EntityState.Modified;
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException ex)
+            {
+                Console.WriteLine(ex.Message.ToString());
+            }
+
+            return RedirectToPage("./Details", new { id = jobPlacementID });
         }
     }
 }

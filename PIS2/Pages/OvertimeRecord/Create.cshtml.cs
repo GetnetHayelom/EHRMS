@@ -88,7 +88,7 @@ namespace PIS2.Pages.OvertimeRecord
                 
                 .FirstOrDefault(j => j.employmentID == empID && j.jobPlacementStatus == mainStatus.Active) ?? new jobPlacementModel();
 
-            var shift = _context.ShiftAssignments.OrderByDescending(sa => sa.modifiedDate).FirstOrDefault(sa => sa.employmentID == empID).shiftModel ?? new shiftModel();
+            var shift = _context.ShiftAssignments.OrderByDescending(sa => sa.modifiedDate).FirstOrDefault(sa => sa.employmentID == empID).shiftModel ?? _context.Shifts.FirstOrDefault();
             Employment = _context.Employments.FirstOrDefault(e => e.employmentID == empID) ?? new employmentModel();
             depID = _context.JobPlacements.FirstOrDefault(jp => jp.employmentID == Employment.employmentID && jp.jobPlacementStatus == mainStatus.Active).departmentID;
 

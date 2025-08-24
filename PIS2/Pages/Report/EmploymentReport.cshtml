@@ -1,5 +1,5 @@
 ﻿@page
-@model PIS2.Pages.Employment.IndexModel
+@model PIS2.Pages.Report.EmploymentReportModel
 
 @{
     ViewData["Title"] = "Employments";
@@ -9,16 +9,14 @@
 <h1 class="fw-bold">Employments</h1>
 <hr />
 <div class="d-flex justify-content-between">
-    <p>
-        <a asp-page="Create" class="d-print-none btn btn-primary">Add New Employee</a>
-    </p>
+    <h4 class="fw-bold"><span id="filteredCount"></span> of @Model.totalCount</h4>
     <div class="d-inline-flex">
         @await Html.PartialAsync("filter")
         @await Html.PartialAsync("print")
     </div>
 </div>
 
-<div class="row">
+<div class="row m-2">
     @if (Model.employmentModel!=null)
     {          
    
@@ -187,13 +185,13 @@
         dateEnd = (!dateEnd || dateEnd === "") ? null : dateEnd;
 
         // Build the URL with multiple filters
-        const url = `/Employment/Index?handler=Filter&department=${encodeURIComponent(department)}&jobTitle=${encodeURIComponent(jobTitle)}&empStatus=${encodeURIComponent(empStatus)}&empType=${encodeURIComponent(empType)}&company=${encodeURIComponent(company)}&workLoc=${encodeURIComponent(workLoc)}&dateStart=${encodeURIComponent(dateStart)}&dateEnd=${encodeURIComponent(dateEnd)}`;
+        const url = `/Report/EmploymentReport?handler=Filter&department=${encodeURIComponent(department)}&jobTitle=${encodeURIComponent(jobTitle)}&empStatus=${encodeURIComponent(empStatus)}&empType=${encodeURIComponent(empType)}&company=${encodeURIComponent(company)}&workLoc=${encodeURIComponent(workLoc)}&dateStart=${encodeURIComponent(dateStart)}&dateEnd=${encodeURIComponent(dateEnd)}`;
         
         fetch(url)
             //.then(response => response.text())
             .then(response => response.json())
             .then(data => {
-
+                document.getElementById('filteredCount').innerHTML = data.filteredCount;
                 document.getElementById('table-body').innerHTML = data.tableHtml;
                 const selector = document.getElementById('filter-department');
                 document.getElementById('filter-department').innerHTML =

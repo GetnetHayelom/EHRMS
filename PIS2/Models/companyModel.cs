@@ -1,9 +1,12 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.CodeAnalysis.CSharp.Syntax;
+using System.ComponentModel.DataAnnotations;
 
 namespace PIS2.Models
 {
     public class companyModel
     {
+        
+
         [Key]
         public int companyID { get; set; }
         [Required(ErrorMessage = "Company name can not be empty.")]
@@ -16,6 +19,8 @@ namespace PIS2.Models
         public mainStatus companyStatus { get; set; }
         public virtual ICollection<departmentModel>? Departments { get; set; } = null!;
         public string modifiedBy { get; set; }
+
+        
         public companyModel()
         {
 

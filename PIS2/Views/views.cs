@@ -1,10 +1,14 @@
-﻿using PIS2.Models;
+﻿using Microsoft.EntityFrameworkCore;
+using PIS2.Models;
+using PIS2.Pages.OvertimeHistory;
+using System.Text.RegularExpressions;
+using static System.Formats.Asn1.AsnWriter;
 
 namespace PIS2.Views
 {
+    
     public class views
-    {
-    }
+    {}
     public class EducationLevelData
     {
         public string EducationLevelCategory { get; set; }
@@ -23,13 +27,21 @@ namespace PIS2.Views
     }
     public class CompanySummary
     {
-      public int CompanyID { get; set; }
+        
+        public int CompanyID { get; set; }
         public string CompanyName { get; set; }
         public string Manager { get; set; }
         public int Departments { get; set; }
         public int Employees { get; set; }
         public int xEmployees { get; set; }
         public decimal Salary { get; set; }
+        public decimal Allowance { get; set; } = 0;
+        public decimal Overtime { get; set; }           
+        
+        public decimal getTotalExpence()
+        {
+            return Salary + Allowance + Overtime;
+        }
         public leaveDetail Leaves { get; set; }
     }
     public class DepartmentSummary

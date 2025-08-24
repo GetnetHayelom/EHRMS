@@ -1,5 +1,5 @@
 ﻿@page
-@model PIS2.Pages.JobPlacement.IndexModel
+@model PIS2.Pages.Report.JobPlacementReportModel
 
 @{
     ViewData["Title"] = "Job Placements";
@@ -40,7 +40,7 @@
     </thead>
     <tbody>
     @foreach (var item in Model.jobPlacementModel) {
-            <tr onclick="location.href='@Url.Page("Details", new {id=item.jobPlacementID})'" style="cursor:pointer">
+            <tr onclick="location.href='@Url.Page("/JobPlacement/Details", new {id=item.jobPlacementID})'" style="cursor:pointer">
                 <td>
                     @Html.DisplayFor(modelItem => item.employmentModel.givenID)
                 </td>

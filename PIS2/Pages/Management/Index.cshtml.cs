@@ -58,16 +58,16 @@ namespace PIS2.Pages.Management
             //group employments into departments
             //var companies = new List<companyModel>().AsQueryable();
             Companies = await _context.Companies.ToListAsync();
-            Departments= await _context.Departments.ToListAsync();
+            Departments = await _context.Departments.ToListAsync();
             Employments = await _context.Employments.ToListAsync();
-            exEmployments = _context.Employments.Where(e => e.employmentStatus == mainStatus.Inactive).Count();
+            exEmployments =  _context.Employments.Where(e => e.employmentStatus == mainStatus.Inactive).Count();
             ActiveEmployments = _context.Employments.Where(e => e.employmentStatus == mainStatus.Active).Count();
             ActiveCompanies = _context.Companies.Where(c => c.companyStatus == mainStatus.Active).Count();
             OldCompanies = _context.Companies.Where(c => c.companyStatus == mainStatus.Inactive).Count();
-            ActiveDepartments= _context.Departments.Where(c => c.departmentStatus == mainStatus.Active).Count();
+            ActiveDepartments = _context.Departments.Where(c => c.departmentStatus == mainStatus.Active).Count();
             OldDepartments = _context.Departments.Where(c => c.departmentStatus == mainStatus.Inactive).Count();
             LeaveSummary = new List<leaveDetail>();
-            
+
 
             // Education Level Data
             EducationLevels = _context.PersonEducationLevels
@@ -80,7 +80,7 @@ namespace PIS2.Pages.Management
                     EducationLevelName = g.Key.educationLevelName,
                     EducationLevelCount = g.Count()
                 }).OrderByDescending(e => e.EducationLevelCount).ToList();
-           
+
             //Employment Types
             EmploymentTypes = _context.Employments
            .Where(e => e.employmentStatus == mainStatus.Active)
@@ -127,7 +127,7 @@ namespace PIS2.Pages.Management
                 {
                     zName = g.Key,
                     zCount = g.Count()
-                }).OrderByDescending(g =>g.zCount).ToList();
+                }).OrderByDescending(g => g.zCount).ToList();
 
             //jobclass Summary
             JobClassSummary = _context.JobPlacements.Include(j => j.jobModel).ThenInclude(j => j.jobClassModel)
@@ -143,19 +143,19 @@ namespace PIS2.Pages.Management
                 (from e in _context.Employments select e.employmentDate.Year)
                 .Union(from t in _context.Terminations select t.terminationDate.Year)
                 .Distinct())
-                 from e in _context.Employments
-                 where e.employmentDate.Year <= y // Employees hired before or in the given year
-                 join t in _context.Terminations on e.employmentID equals t.employmentID into termGroup
-                 from t in termGroup.DefaultIfEmpty()
-                 where t == null || t.terminationDate.Year > y // Exclude employees terminated in or before the given year
-                                                               
-                 group e by y into grouped
-                 orderby grouped.Key
-                 select new YearAndCount
-                 {
-                     zYear = grouped.Key,
-                     zCount = grouped.Count()
-                 }).ToList();
+             from e in _context.Employments
+             where e.employmentDate.Year <= y // Employees hired before or in the given year
+             join t in _context.Terminations on e.employmentID equals t.employmentID into termGroup
+             from t in termGroup.DefaultIfEmpty()
+             where t == null || t.terminationDate.Year > y // Exclude employees terminated in or before the given year
+
+             group e by y into grouped
+             orderby grouped.Key
+             select new YearAndCount
+             {
+                 zYear = grouped.Key,
+                 zCount = grouped.Count()
+             }).ToList();
 
             //WorkSite Employee Distribution
             WorkSiteEmployees = _context.SiteAssignments
@@ -186,40 +186,53 @@ namespace PIS2.Pages.Management
             //                          zCount = grouped.Count()
             //                      }).ToList().Where(we => we.zCount > 0).OrderByDescending(wl =>wl.zCount).ToList();
 
+            WorkSiteEmployees = await _context.SiteAssignments
+                .Include(sa => sa.workSiteModel)
+                .Include(sa => sa.employmentModel).Where(sa => sa.employmentModel.employmentStatus == mainStatus.Active)
+                .GroupBy(sa => sa.workSiteModel.workSiteName)
+                .Select(g => new NameAndCount
+                {
+                    zName =g.Key,
+                    zCount =g.Count()
+                }).ToListAsync();
             //edu level summary
             EduLevelSummary = (from pel in _context.PersonEducationLevels
-                                  join el in _context.EducationLevels on pel.educationLevelID equals el.educationLevelID
-                                  join e in _context.Employments on pel.personID equals e.personID
-                                  where e.employmentStatus == mainStatus.Active
-                                  group pel by el.educationLevelCategory into grouped
-                                  select new NameAndCount
-                                  {
-                                      zName = grouped.Key,
-                                      zCount = grouped.Count()
-                                  }).OrderByDescending(el => el.zCount).ToList();
-            CompanySummaries = (from js in _context.JobPlacements
-                                join e in _context.Employments on js.employmentID equals e.employmentID into empGroup
-                                from e in empGroup.DefaultIfEmpty()
-                                join dp in _context.Departments on js.departmentID equals dp.departmentID into deptGroup
-                                from dp in deptGroup.DefaultIfEmpty()
-                                join cmp in _context.Companies on dp.companyID equals cmp.companyID into compGroup
-                                from cmp in compGroup.DefaultIfEmpty()
-                                join p in _context.Persons on e.personID equals p.personID into personGroup
-                                from p in personGroup.DefaultIfEmpty()
-                                where js.jobPlacementStatus == mainStatus.Active
-                                group js by new { cmp.companyName, cmp.companyID } into grouped
-                                select new CompanySummary
-                                {
-                                    
-                                    CompanyName = grouped.Key.companyName,
-                                    CompanyID = grouped.Key.companyID,
-                                    Employees = grouped.Select(x => x.employmentID).Distinct().Count(),
-                                    Departments = grouped.Select(x => x.departmentID).Distinct().Count(),
-                                    Salary = grouped.Sum(x => x.jobPlacementSalary) 
-                                }).OrderByDescending(cs => cs.Salary).ToList();
-            foreach(var c in CompanySummaries)
+                               join el in _context.EducationLevels on pel.educationLevelID equals el.educationLevelID
+                               join e in _context.Employments on pel.personID equals e.personID
+                               where e.employmentStatus == mainStatus.Active
+                               group pel by el.educationLevelCategory into grouped
+                               select new NameAndCount
+                               {
+                                   zName = grouped.Key,
+                                   zCount = grouped.Count()
+                               }).OrderByDescending(el => el.zCount).ToList();
+
+            var companies = _context.Companies.Include(c => c.Departments).ThenInclude(d => d.JobPlacements).ThenInclude(js => js.employmentModel).ThenInclude(e => e.AllowanceAssignments)
+                .Include(c => c.Departments).ThenInclude(d => d.JobPlacements).ThenInclude(js => js.employmentModel).ThenInclude(e => e.OvertimeRecords)
+                .Where(c => c.companyStatus == mainStatus.Active).ToList();
+            CompanySummaries = new List<CompanySummary>();
+            foreach(var comp in companies)
             {
-                //c.Leaves = _core.getAllLeaveSummary("Comp", c.CompanyID);
+                CompanySummaries.Add(new CompanySummary
+                {
+                    CompanyName = comp.companyName,
+                    CompanyID = comp.companyID,
+                    Employees = _context.Employments.Include(e => e.JobPlacements).ThenInclude(js => js.departmentModel)
+                        .Where(e => e.JobPlacements.FirstOrDefault(js => js.jobPlacementStatus == mainStatus.Active).departmentModel.companyID == comp.companyID).ToList().Count(),
+                    Departments = _context.Departments.Where(d => d.departmentStatus == mainStatus.Active && d.companyID == comp.companyID).Count(),
+                    Salary = comp.Departments.SelectMany(d => d.JobPlacements).Where(jp => jp.jobPlacementStatus == mainStatus.Active).Sum(js => js.jobPlacementSalary),
+                    Allowance = (decimal)comp.Departments.SelectMany(d => d.JobPlacements).Select(js => js.employmentModel).Where(e => e.employmentStatus== mainStatus.Active)
+                        .SelectMany(e => e.AllowanceAssignments).Where(aa => aa.allowanceStatus == mainStatus.Active).Sum(aa => aa.allowanceAssignmentAmount),
+                    Overtime = (decimal)comp.Departments.SelectMany(d => d.JobPlacements).Select(js => js.employmentModel)
+                        .SelectMany(e => e.OvertimeRecords).Where(ot => new[] { overtimeStatus.Hold, overtimeStatus.Approved, overtimeStatus.Posted }.Contains(ot.overtimeRecordStatus))
+                        .Sum(ot => ot.GetOtCost)
+                }
+                );
+            }
+            
+            foreach (var c in CompanySummaries)
+            {
+                c.Leaves = _core.getAllLeaveSummary("Comp", c.CompanyID);
                 c.Leaves = new leaveDetail();
             }
             

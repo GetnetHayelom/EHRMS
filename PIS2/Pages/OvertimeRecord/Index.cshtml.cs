@@ -6,37 +6,86 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using PIS2.Models;
+using static System.Formats.Asn1.AsnWriter;
 
 namespace PIS2.Pages.OvertimeRecord
 {
     public class IndexModel : PageModel
     {
         private readonly PIS2.Models.PISContext _context;
+        private readonly PIS2.Models.Core _core;
 
-        public IndexModel(PIS2.Models.PISContext context)
+        public IndexModel(PIS2.Models.PISContext context, Core core)
         {
             _context = context;
+            _core = core;
         }
 
+        // Expose to Razor Page
+        public List<DepartmentOvertimeGroup> GroupedOvertimes { get; set; } = new();
+
+        public class DepartmentOvertimeGroup
+        {
+            public string DepartmentName { get; set; } = string.Empty;
+            public int Count { get; set; }
+            public List<overtimeRecordModel> Records { get; set; } = new();
+        }
         public IList<overtimeRecordModel> overtimeRecordModel { get;set; } = default!;
-        public int TotalPages { get; set; }
-        public int CurrentPage { get; set; } = 1;
-        public int PageSize { get; set; } = 100;
+        public int otrCount { get; set; }
+        
         public async Task OnGetAsync(List<int>? id)
         {
-            var otr = _context.OvertimeRecords
-                .Include(o => o.employmentModel)
+            var empID = _core.getUserEmp(User.Identity.Name);
+
+            var company = _context.JobPlacements.Include(j => j.departmentModel)
+                .FirstOrDefault(j => j.jobPlacementStatus == mainStatus.Active && j.employmentID == empID)?.departmentModel?.companyID;
+
+            // Step 1: get the filtered records from the database
+            var otr = await _context.OvertimeRecords
+                .Include(o => o.employmentModel).ThenInclude(e => e.JobPlacements).ThenInclude(j => j.departmentModel)
                 .Include(o => o.overtimeModel)
-                .Include(o => o.OvertimeHistories).AsQueryable();
-            if (id != null && id.Any())
-            {
-                overtimeRecordModel =await otr.Where(o => id.Contains(o.overtimeRecordID))
-                .ToListAsync();
-            }
-            else
-            {
-                overtimeRecordModel = await otr.Where(otr => otr.overtimeRecordStatus == overtimeStatus.Hold).ToListAsync();
-            }
+                .Include(o => o.OvertimeHistories)
+                .Where(o => (o.overtimeRecordStatus == overtimeStatus.Hold || o.overtimeRecordStatus == overtimeStatus.Approved)
+                    && o.employmentModel.JobPlacements.Any(j => j.jobPlacementStatus == mainStatus.Active
+                        && j.departmentModel.companyID == company))
+                .ToListAsync();   // ✅ force materialization here
+
+            // Step 2: group in memory
+            GroupedOvertimes = otr
+                .GroupBy(o => o.employmentModel.JobPlacements
+                    .FirstOrDefault(j => j.jobPlacementStatus == mainStatus.Active)?.departmentModel)
+                .Select(g => new DepartmentOvertimeGroup
+                {
+                    DepartmentName = g.Key?.departmentName ?? "Unknown",
+                    Count = g.Count(),
+                    Records = g.ToList()
+                })
+                .ToList();
+
+            overtimeRecordModel = otr.ToList();
+            otrCount = overtimeRecordModel.GroupBy(o => new {o.employmentID, o.overtimeRecordDate}).Count();
+        }
+
+        // Post handler
+        [BindProperty]
+        public int overtimeRecordID { get; set; }
+        //[HttpPost]
+        public async Task<IActionResult> OnPostApprove(int overtimeRecordID)
+        {
+            var overtimeRecord = await _context.OvertimeRecords.FindAsync(overtimeRecordID);
+            if (overtimeRecord == null)
+                return new JsonResult(new { success = false, message = "Overtime Record not found." });
+
+            if (!User.IsInRole("MIE\\PMS_HRCLERK"))
+                return new JsonResult(new { success = false, message = "Access denied." });
+
+            overtimeRecord.overtimeRecordStatus = overtimeStatus.Posted;
+            overtimeRecord.modifiedBy = User.Identity.Name;
+
+            _context.Update(overtimeRecord);
+            await _context.SaveChangesAsync();
+
+            return new JsonResult(new { success = true, message = "Overtime posted successfully." });
         }
     }
 }

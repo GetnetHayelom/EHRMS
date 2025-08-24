@@ -5,56 +5,217 @@
     ViewData["Title"] = "Overtime Records";
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
+@inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Antiforgery
+
+<input type="hidden" name="__RequestVerificationToken" value="@Antiforgery.GetAndStoreTokens(HttpContext).RequestToken" />
 
 <h1 class="fw-bold">Overtime Records</h1>
 
-<p>
-    <a asp-page="Create" class="btn btn-primary">Add New Overtime Record</a>
-</p>
+<div class="d-flex justify-content-between">
+    <div class="d-flex">
+        <a asp-page="Create" class="btn btn-primary m-2">Add New Overtime Record</a>
+        <a asp-page="Create" class="btn btn-primary m-2" data-bs-toggle="collapse" data-bs-target="#rawView">List View</a>
+        <a asp-page="Create" class="btn btn-primary m-2" data-bs-toggle="collapse" data-bs-target="#groupView">Grouped View</a>
+    </div>
+    
+    <h4 class="fw-bold m-2">Total:@Model.otrCount</h4>
+</div>
+<hr />
+<div id="parentDiv">
+<!--List View-->
+    <div id="rawView" class="show" data-bs-parent="#parentDiv">
+        @await Html.PartialAsync("filter")
+        <table class="table table-striped table-hover" id="dataTable">
+            <thead class="bg-dark text-white">
+                <tr>
+                    <th>
+                        Emplopyment ID
+                    </th>
+                    <th>
+                        Overtime Type
+                    </th>
+                    <th>
+                        Date
+                    </th>
+                    <th>
+                        Start Time
+                    </th>
+                    <th>
+                        End Time
+                    </th>
+                    <th>Reason</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.overtimeRecordModel)
+                {
+                    <tr>
+                        <td onclick="location.href='@Url.Page("Details", new {id = item.overtimeRecordID})'" style="cursor:pointer;">
+                            <a >
+                            @Html.DisplayFor(modelItem => item.employmentModel.givenID)
+                            </a>
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.overtimeModel.overtimeName)
+                        </td>
+                        <td>
+                            @item.overtimeRecordDate.ToString("MM/dd/yyyy")
+                        </td>
+                        <td>
+                            @item.overtimeRecordStartTime
+                        </td>
+                        <td>
+                            @item.overtimeRecordEndTime
+                        </td>
+                        <td>
+                            @item.overtimeRecordReason
+                        </td>
+                        <td class="d-flex flex-grow-1">
+                            @if (User.IsInRole("MIE\\PMS_HRCLERK"))
+                            {
 
-<table class="table table-striped table-hover" id="dataTable">
-    <thead class="bg-dark text-white">
-        <tr>
-            <th>
-                Emplopyment ID
-            </th>
-            <th>
-                Overtime Type
-            </th>
-            <th>
-                Date
-            </th>
-            <th>
-                Start Time
-            </th>
-            <th>
-                End Time
-            </th>
-            <th>Reason</th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model.overtimeRecordModel) {
-            <tr onclick="location.href='@Url.Page("Details", new {id = item.overtimeRecordID})'" style="cursor:pointer;">
-            <td>
-                @Html.DisplayFor(modelItem => item.employmentModel.givenID)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.overtimeModel.overtimeName)
-            </td>
-            <td>
-                @item.overtimeRecordDate.ToString("dd/MM/yyyy")
-            </td>
-            <td>
-                @item.overtimeRecordStartTime
-            </td>
-            <td>
-                @item.overtimeRecordEndTime
-            </td>
-            <td>
-                @item.overtimeRecordReason
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+                                <button class="btn btn-success post-button" data-id="@item.overtimeRecordID">Post</button>
+
+                            }
+
+
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+<!--Group View-->
+    <div id="groupView" class="collapse" data-bs-parent="#parentDiv">
+        <table class="table table-striped table-hover">
+            
+            <tbody id="departmentsAccordion">
+                @{
+                    int index = 0;
+                }
+                @foreach (var dep in Model.GroupedOvertimes)
+                {
+                    var collapseId = $"collapse{index}";
+                    <tr class="">
+                        <td colspan="6">
+                            <h4 class="fw-bold"
+                                data-bs-toggle="collapse"
+                                data-bs-target="#@collapseId"
+                                style="cursor:pointer;">
+                                @dep.DepartmentName : @dep.Count
+                            </h4>
+
+                        </td>
+
+                    </tr>
+
+                    <tr>
+                        <td colspan="6" class="p-0">
+                            <div id="@collapseId" class="accordion-collapse collapse"
+                                 data-bs-parent="#departmentsAccordion">
+                                <table class="table table-striped table-hover mb-0">
+                                    <thead class="bg-dark text-white">
+                                        <tr>
+                                            <th>
+                                                Emplopyment ID
+                                            </th>
+                                            <th>
+                                                Overtime Type
+                                            </th>
+                                            <th>
+                                                Date
+                                            </th>
+                                            <th>
+                                                Start Time
+                                            </th>
+                                            <th>
+                                                End Time
+                                            </th>
+                                            <th>Reason</th>
+                                            <th></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+
+                                        @foreach (var item in dep.Records)
+                                        {
+                                            <tr>
+                                                <td onclick="location.href='@Url.Page("Details", new {id = item.overtimeRecordID})'" style="cursor:pointer;">
+                                                    <a>@Html.DisplayFor(modelItem => item.employmentModel.givenID)</a>
+                                                </td>
+                                                <td>
+                                                    @Html.DisplayFor(modelItem => item.overtimeModel.overtimeName)
+                                                </td>
+                                                <td>
+                                                    @item.overtimeRecordDate.ToString("MM/dd/yyyy")
+                                                </td>
+                                                <td>
+                                                    @item.overtimeRecordStartTime
+                                                </td>
+                                                <td>
+                                                    @item.overtimeRecordEndTime
+                                                </td>
+                                                <td>
+                                                    @item.overtimeRecordReason
+                                                </td>
+                                                <td class="d-flex flex-grow-1">
+                                                    @if (User.IsInRole("MIE\\PMS_HRCLERK"))
+                                                    {
+
+                                                        <button class="btn btn-success post-button" data-id="@item.overtimeRecordID">Post</button>
+
+                                                    }
+
+
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </td>
+                    </tr>
+                    index++;
+
+                }
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $('.post-button').click(function (e) {
+            e.preventDefault();
+
+            var overtimeRecordID = $(this).data('id');
+            var button = $(this);
+            var token = $('input[name="__RequestVerificationToken"]').val(); // get CSRF token
+
+            $.ajax({
+                url: '@Url.Page("Index", "Approve")', // your Razor Page & handler
+                type: 'POST',
+                data: {
+                    overtimeRecordID: overtimeRecordID,
+                    __RequestVerificationToken: token
+                },
+                success: function (response) {
+                    if (response.success) {
+                        button.prop('disabled', true).text('Posted');
+                        alert(response.message);
+                    } else {
+                        alert("Error: " + response.message);
+                    }
+                },
+                error: function (xhr, status, error) {
+                    alert('Error: ' + error);
+                }
+            });
+        });
+    });
+</script>

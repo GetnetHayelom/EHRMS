@@ -38,5 +38,30 @@ namespace PIS2.Pages.Termination
             }
             return Page();
         }
+        [BindProperty]
+        public int terminationID { get; set; }
+        public async Task<IActionResult> OnPostAsync()
+        {
+            var termination = await _context.Terminations.FindAsync(terminationID);
+            if (termination == null)
+            {
+                return NotFound();
+            }
+
+            termination.modifiedBy = User.Identity.Name;
+            termination.terminationStatus = terminationStatus.Posted;
+
+            _context.Attach(termination).State = EntityState.Modified;
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException ex)
+            {
+                Console.WriteLine(ex.Message.ToString());
+            }
+
+            return RedirectToPage("./Details", new { id = terminationID });
+        }
     }
 }

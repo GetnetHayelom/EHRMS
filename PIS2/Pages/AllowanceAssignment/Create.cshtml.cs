@@ -24,12 +24,14 @@ namespace PIS2.Pages.AllowanceAssignment
         public List<employmentModel>? Employments { get; set; } = default!;
         public employmentModel Employment { get; set; }= new employmentModel();
         [BindProperty(SupportsGet = true)]
-        public string searchID { get; set; } = default!;
-        public string successMessage { get; set; }
+        public string? searchID { get; set; } = default!;
+        public string? successMessage { get; set; }
         
-        public IActionResult OnGet()
+        public IActionResult OnGet(int? id)
         {
             Employment = new employmentModel();
+            
+            
 
             if (!string.IsNullOrEmpty(searchID))
             {
@@ -49,6 +51,19 @@ namespace PIS2.Pages.AllowanceAssignment
                 Employment = new employmentModel();
             }
 
+            if (id != null)
+            {
+                Employment = _context.Employments
+                    .Include(e => e.personModel)
+                    .Include(e => e.AllowanceAssignments)?.FirstOrDefault(e => e.employmentID == id);
+
+                if (Employment == null || Employment.employmentID == 0)
+                {
+                    TempData["SuccessMessage"] = $"No employment found with employment ID {searchID}";
+                    return Page();
+                }
+            }
+
             ViewData["allowanceID"] = new SelectList(_context.Allowances.Where(a => a.allowanceStatus == mainStatus.Active), "allowanceID", "allowanceName");
             return Page();
         }
@@ -60,7 +75,7 @@ namespace PIS2.Pages.AllowanceAssignment
         public async Task<IActionResult> OnPostAsync()
         {
             ModelState.Remove("allowanceAssignmentModel.modifiedBy");
-
+            
             allowanceAssignmentModel.modifiedBy = User.Identity.Name;
             allowanceAssignmentModel.allowanceStatus = mainStatus.Suspended;
 

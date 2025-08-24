@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using PIS2.Models;
 
-namespace PIS2.Pages.Employment
+namespace PIS2.Pages.Report
 {
     public class EmploymentReportModel : PageModel
     {
@@ -47,7 +47,8 @@ namespace PIS2.Pages.Employment
                 .Include(e => e.JobPlacements.OrderByDescending(jp => jp.jobPlacementDate).Take(1)).ThenInclude(jp => jp.jobModel)
                 .ToListAsync();
             StartDate =employmentModel.IsNullOrEmpty()? DateTime.MinValue : employmentModel.Min(e => e.employmentDate);
-            totalCount = employmentModel.Count;            
+            totalCount = employmentModel.Count;
+            filteredCount = employmentModel.Count;
         }
      
         public IActionResult OnGetFilter(int? department, int? jobTitle, int? empStatus, int? empType, int? company, int? workLoc, DateTime? dateStart, DateTime? dateEnd)
@@ -130,7 +131,7 @@ namespace PIS2.Pages.Employment
 
             // Execute the query and get the filtered results
             var filteredEmployees = employmentModel.OrderBy(e => e.Employee.givenID).ToList();
-
+            filteredCount = filteredEmployees.Count;
             // Generate the table HTML
             var tableHtml = string.Join("", filteredEmployees.Select(e =>
             {
@@ -158,7 +159,7 @@ namespace PIS2.Pages.Employment
             filteredCount = employmentModel.Count();
             // Return the generated HTML
             //return Content(tableHtml);
-            return new JsonResult(new { tableHtml, departs });
+            return new JsonResult(new { tableHtml, departs, filteredCount });
         }
     }
 }

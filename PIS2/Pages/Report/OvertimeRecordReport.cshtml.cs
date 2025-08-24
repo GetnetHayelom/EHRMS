@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using PIS2.Models;
 
-namespace PIS2.Pages.OvertimeRecord
+namespace PIS2.Pages.Report
 {
     public class OvertimeReceordReportModel : PageModel
     {

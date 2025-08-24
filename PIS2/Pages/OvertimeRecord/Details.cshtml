@@ -7,10 +7,11 @@
 }
 
 <h1 class="fw-bold">Overtime Record</h1>
+<h4 class="fw-bold"><u>Overtime Record Details</u></h4>
+<hr />
 <div class="d-flex print-flex-column">
     <div class="col-md-6 print-full-width">
-        <h4 class="fw-bold"><u>Overtime Record Details</u></h4>
-        <hr />
+        
         <div class="d-flex">
             <h6 class="me-2"><b>Voucher ID:</b></h6>
             <h6><u>@Html.DisplayFor(model => model.overtimeRecordModel.overtimeRecordID)</u></h6>
@@ -101,7 +102,7 @@
             <div class="d-flex justify-content-between">
                 <h4 class="fw-bold"><u>Overtime Record History</u></h4>
                 <div class="d-flex">
-                    <input id="overtimeRecordID" class="form-control me-2" placeholder="Enter OT Batch Number" name="id" />
+                    <input id="overtimeRecordID" class="form-control m-2" placeholder="Enter OT Batch Number" name="id" />
                     <button type="submit" class="btn btn-primary" id="goButton">Go</button>
                 </div>
             </div>
@@ -116,8 +117,7 @@
         }
         <table class="@tableClass">
             <thead class="bg-info text-white">
-                <tr>
-                    <th>Date</th>
+                <tr>                   
                     <th>Status</th>
                     <th>Modified By</th>
                     <th>Modified Date</th>
@@ -128,10 +128,10 @@
                 @foreach(var item in Model.OvertimeHistories)
                 {
                     <tr>
-                        <td>@item.modifiedDate.ToString("dd/MM/yyyy")</td>
+                        
                         <td>@item.overtimeHistoryAction</td>
                         <td>@item.modifiedBy</td>
-                        <td>@item.modifiedDate</td>
+                        <td>@item.modifiedDate.ToString("MM/dd/yyyy")</td>
                     </tr>
                 }
             </tbody>
@@ -139,11 +139,21 @@
     </div>
 </div>
 <div class="d-flex justify-content-end">
-    @if(Model.overtimeRecordModel.overtimeRecordStatus == Models.overtimeStatus.Hold)
+
+    @if ((Model.overtimeRecordModel.overtimeRecordStatus == Models.overtimeStatus.Hold || Model.overtimeRecordModel.overtimeRecordStatus == Models.overtimeStatus.Approved)
+    && User.IsInRole("MIE\\PMS_HRCLERK"))
     {
-        <a class="btn btn-success me-2 d-print-none" asp-page="./Edit" asp-route-id="@Model.overtimeRecordModel.overtimeRecordID">Edit</a>
+        <form method="post">
+            <input asp-for="overtimeRecordID" value="@Model.overtimeRecordModel.overtimeRecordID" type="hidden" />
+            <button class="btn btn-success m-2 d-print-none" type="submit">Post</button>
+        </form>
+        
+    }
+    @if(Model.overtimeRecordModel.overtimeRecordStatus == Models.overtimeStatus.Hold && User.IsInRole("MIE\\PMS_HRCLERK"))
+    {
+        <a class="btn btn-primary m-2 d-print-none" asp-page="./Edit" asp-route-id="@Model.overtimeRecordModel.overtimeRecordID">Edit</a>
     }   
-    <a class="btn btn-secondary me-2 d-print-none" asp-page="./Index">Back to List</a>
+    <a class="btn btn-secondary m-2 d-print-none" asp-page="./Index">Back to List</a>
     @await Html.PartialAsync("print")
 </div>
 

@@ -69,10 +69,12 @@ namespace PIS2.Pages.JobPlacement
         // For more information, see https://aka.ms/RazorPagesCRUD.
         public async Task<IActionResult> OnPostAsync()
         {
+            ModelState.Remove("modifiedBy");
             
             ModelState.Remove("jobPlacementModel.modifiedBy");
             jobPlacementModel.modifiedBy = User.Identity.Name;
             ModelState.Remove("givenID");
+
             if (!ModelState.IsValid)
             {
                 foreach (var kv in ModelState)
@@ -84,7 +86,7 @@ namespace PIS2.Pages.JobPlacement
                     }
                     
                 }
-                Console.WriteLine("===ID IS==  #############");
+                
                 populateSelect();
                 return Page();
             }
@@ -99,10 +101,11 @@ namespace PIS2.Pages.JobPlacement
                 job.jobPlacementReference = jobPlacementModel.jobPlacementReference;
                 job.modifiedBy = jobPlacementModel.modifiedBy;
                 
-                //_context.Attach(job).State = EntityState.Modified;
-
+                
+                Console.WriteLine("===ID IS==  #############" + jobPlacementModel.employmentID);
                 try
                 {
+                    _context.Attach(job).State = EntityState.Modified;
                     await _context.SaveChangesAsync();
                     return RedirectToPage("./Details", new { id = job.jobPlacementID });
                 }
@@ -120,7 +123,7 @@ namespace PIS2.Pages.JobPlacement
                 await _context.SaveChangesAsync();
             }
             
-            return RedirectToPage("/Employment/Edit", new {id = jobPlacementModel.jobPlacementID});
+            return RedirectToPage("./Details", new {id = jobPlacementModel.jobPlacementID});
         }
         public JsonResult OnGetDepartmentsByCompany(int companyID)
         {

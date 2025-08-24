@@ -46,8 +46,18 @@ namespace PIS2.Pages.JobPlacement
         // For more information, see https://aka.ms/RazorPagesCRUD.
         public async Task<IActionResult> OnPostAsync()
         {
+            ModelState.Clear();
+            jobPlacementModel.modifiedBy = User.Identity.Name;
             if (!ModelState.IsValid)
             {
+                foreach (var kv in ModelState)
+                {
+                    foreach (var error in kv.Value.Errors)
+                    {
+                        Console.WriteLine($"{kv.Key} --> {error.ErrorMessage}");
+                    }
+                    Console.WriteLine(kv.ToString());
+                }
                 return Page();
             }
 
@@ -59,17 +69,10 @@ namespace PIS2.Pages.JobPlacement
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!jobPlacementModelExists(jobPlacementModel.jobPlacementID))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
             }
 
-            return RedirectToPage("./Index");
+            
+            return RedirectToPage("./Details", new { id = jobPlacementModel.jobPlacementID });
         }
 
         private bool jobPlacementModelExists(int id)

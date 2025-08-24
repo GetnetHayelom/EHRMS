@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Hosting;
 using PIS2.Models;
 
-namespace PIS2.Pages.Leave
+namespace PIS2.Pages.Report
 {
     public class LeaveReportModel : PageModel
     {
@@ -52,6 +52,7 @@ namespace PIS2.Pages.Leave
            
             totalUnposted = leaveModel.Sum(l => l.leaveDays);
             CountUnposted = leaveModel.Count();
+            totalCount = leaveModel.Count();
         }
         // Post handler
         [BindProperty]
@@ -167,10 +168,10 @@ namespace PIS2.Pages.Leave
             }));
 
             
-            filteredCount = leaves.Count();
+            filteredCount = filteredLeaves.Count();
             // Return the generated HTML
             //return Content(tableHtml);
-            return new JsonResult(new { tableHtml});
+            return new JsonResult(new { tableHtml, filteredCount});
         }
     }
 }

@@ -45,5 +45,30 @@ namespace PIS2.Pages.OvertimeRecord
             }
             return Page();
         }
+        [BindProperty]
+        public int overtimeRecordID { get; set; }
+        public async Task<IActionResult> OnPostAsync()
+        {
+            var overtimeRecord = await _context.OvertimeRecords.FindAsync(overtimeRecordID);
+            if (overtimeRecord == null)
+            {
+                return NotFound();
+            }
+
+            overtimeRecord.modifiedBy = User.Identity.Name;
+            overtimeRecord.overtimeRecordStatus = overtimeStatus.Posted;
+
+            _context.Attach(overtimeRecord).State = EntityState.Modified;
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException ex)
+            {
+                Console.WriteLine(ex.Message.ToString());
+            }
+
+            return RedirectToPage("./Details", new { id = overtimeRecordID });
+        }
     }
 }

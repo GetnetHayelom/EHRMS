@@ -276,6 +276,25 @@ namespace PIS2.Pages.HRClerck
                         $"<td>{p.prohibitionReason}</td><td>{p.modifiedBy}</td></tr>";
                     }));
                     break;
+                case "Employment":
+                    var employmentsList = _context.Employments.Include(e => e.personModel)
+                        .Include(e => e.employmentTypeModel)
+                        .Where(e => e.employmentStatus == mainStatus.Suspended).ToList();
+
+
+                    tableTitle = "Suspended Employments";
+                    tableHeader = "<td>Employee ID</td><td>Full Name</td><td>Hire Date</td><td>Type</td><td>Reference</td><td>Modified By</td>";
+
+                    tableBody = string.Join("", employmentsList.Select(e =>
+                    {
+                        var url = Url.Page("/Employment/Details", new { id = e.employmentID });
+
+
+                        return $"<tr onclick=\"location.href='{url}'\" style='cursor:pointer'><td>{e.givenID}</td>" +
+                        $"<td>{e.personModel?.personFullName}</td><td>{e.employmentDate}</td><td>{e.employmentTypeModel?.employmentTypeName}</td>" +
+                        $"<td>{e.employmentReference}</td><td>{e.modifiedBy}</td></tr>";
+                    }));
+                    break;
 
             }
 

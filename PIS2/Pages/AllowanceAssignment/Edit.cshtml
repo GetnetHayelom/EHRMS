@@ -17,7 +17,7 @@
             <input type="hidden" asp-for="allowanceAssignmentModel.allowanceAssignmentID" />
             <input asp-for="allowanceAssignmentModel.employmentID" class="form-control" type="hidden"></input>
             <input asp-for="allowanceAssignmentModel.allowanceID" class="form-control" type="hidden"></input>
-            <div class="form-group m-2 d-flex justify-content-around">
+            <div class="form-group m-2 d-flex justify-content-between">
                 <label class="control-label text-decoration-underline">Employee ID: <span class="fw-bold>"><u>@Model.allowanceAssignmentModel.employmentModel.givenID</u></span></label>
                 <label class="control-label text-decoration-underline">Allowance Type: <span><u>@Model.allowanceAssignmentModel.allowanceModel.allowanceName</u></span></label>
             </div>
@@ -49,8 +49,8 @@
                 <span asp-validation-for="allowanceAssignmentModel.allowanceAssignmentAmount" class="text-danger"></span>
             </div>
             <div class="form-group d-flex justify-content-end">
-                <a asp-page="./Create" asp-route-id="@Model.allowanceAssignmentModel.employmentID" class="btn btn-success m-2"> New Allowance</a>
-                <input type="submit" value="Save" class="btn btn-primary m-2" />
+                <a asp-page="./Create" asp-route-id="@Model.allowanceAssignmentModel.employmentID" class="btn btn-primary m-2"> New Allowance</a>
+                <input type="submit" value="Save" class="btn btn-success m-2" />
             </div>
         </form>
     </div>
