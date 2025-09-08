@@ -6,31 +6,33 @@
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
 
-<h1>Index</h1>
+<h1 class="fw-bold">Penalty</h1>
 
 <p>
-    <a asp-page="Create">Create New</a>
+    <a asp-page="Create" class="btn btn-primary">New Penalty Record</a>
 </p>
-<table class="table">
-    <thead>
+<hr />
+@await Html.PartialAsync("filter")
+<table class="table table-bordered table-striped table-hover">
+    <thead class="bg-dark text-white">
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.penaltyModel[0].employmentModel)
+                Employee ID
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.penaltyModel[0].penaltyIssueDate)
+                Issue Date
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.penaltyModel[0].penaltyReason)
+                Reason
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.penaltyModel[0].penaltyStatus)
+                Status
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.penaltyModel[0].penaltyTypeModel)
+                Type
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.penaltyModel[0].modifiedBy)
+                Modified By
             </th>
             <th></th>
         </tr>
@@ -58,10 +60,10 @@
             </td>
             <td>
                 <a asp-page="./Edit" asp-route-id="@item.penaltyID">Edit</a> |
-                <a asp-page="./Details" asp-route-id="@item.penaltyID">Details</a> |
-                <a asp-page="./Delete" asp-route-id="@item.penaltyID">Delete</a>
+                <a asp-page="./Details" asp-route-id="@item.penaltyID">Details</a>
             </td>
         </tr>
 }
     </tbody>
 </table>
+

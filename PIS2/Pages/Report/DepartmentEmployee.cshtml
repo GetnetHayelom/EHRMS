@@ -1,0 +1,59 @@
+﻿@page
+@model PIS2.Pages.Report.DepartmentEmployee
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<h1 class="fw-bold">Prohibitions</h1>
+
+<p>
+    <a asp-page="Create" class="btn btn-primary">New Prohibition</a>
+</p>
+@await Html.PartialAsync("filter")
+<table class="table table-striped table-hover">
+    <thead class="bg-dark text-white">
+        <tr>
+            <th>
+                Employee ID
+            </th>
+            <th>
+                Start
+            </th>
+            <th>
+                End
+            </th>
+            <th>
+                Status
+            </th>
+            <th>
+                Reason
+            </th>
+            <th>
+                Type
+            </th>
+            <th>
+                Remark
+            </th>
+            <th>
+                Modified By
+            </th>
+            
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model.Employments) {
+        <tr onclick="location.href='@Url.Page("/Employment/Details", new {id = item.employmentID})'" style="cursor:pointer;">
+            <td>
+                @Html.DisplayFor(modelItem => item.givenID)
+            </td>
+            
+            <td>
+                @Html.DisplayFor(modelItem => item.modifiedBy)
+            </td>
+            
+        </tr>
+}
+    </tbody>
+</table>

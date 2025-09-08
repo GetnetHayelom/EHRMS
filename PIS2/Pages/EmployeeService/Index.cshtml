@@ -1,0 +1,213 @@
+﻿@page
+@model PIS2.Pages.EmployeeService.IndexModel
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+    
+}
+
+<h1 class="fw-bold">Earnings</h1>
+<h4 class="fw-bold">@Model.Company</h4>
+
+<div class="d-flex justify-content-between">
+    <div>       
+        <a asp-page="Create" class="btn btn-primary m-2 d-print-none" data-bs-toggle="collapse" data-bs-target="#rawView">List View</a>
+        <a asp-page="Create" class="btn btn-primary m-2 d-print-none" data-bs-toggle="collapse" data-bs-target="#groupDepView">Department View</a>
+        @await Html.PartialAsync("print")
+    </div>
+    
+    
+</div>
+<hr />
+<div class="d-flex justify-content-between">
+    <h4 class="fw-bold">Salary:<u>@Model.SalarySum.ToString("N2")</u></h4>
+    <h4 class="fw-bold">Allowance:<u>@Math.Round(Model.allowanceSum, 2).ToString("N2") </u></h4>
+    <h4 class="fw-bold">Total:<u>@Math.Round(Model.allowanceSum + Model.SalarySum, 2).ToString("N2")</u> </h4>
+</div>
+
+<div id="parentDiv">
+    <!--List View-->
+    <div id="rawView" class="show" data-bs-parent="#parentDiv">
+        @await Html.PartialAsync("filter")
+        <table class="table table-striped table-hover" id="dataTable">
+            <thead class="bg-dark text-white">
+                <tr>
+                    <th>
+                        Emp-ID
+                    </th>
+                    <th>Employee Name</th>
+                    <th>
+                        Job Title
+                    </th>
+                    <th>
+                        Department
+                    </th>
+
+                    <th>
+                        Salary
+                    </th>
+                    <th>
+                        Allowance
+                    </th>
+                    <th>
+                        Total
+                    </th>                   
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.EarningView) {
+                    <tr onclick="location.href='@Url.Page("Earning", new { id = item.empID})'" style="cursor:pointer">
+                        <td>
+                            @Html.DisplayFor(modelItem => item.EmployeeID)
+                        </td>
+                        <td>
+                            @item.EmployeeName
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.JobTitle)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Department)
+                        </td>
+                        
+                        <td>
+                            @item.Salary.ToString("N2")
+                        </td>
+                        <td>
+                            @item.Allowance.ToString("N2")
+                        </td>
+                        <td class="fw-bold">
+                            @Math.Round(item.Allowance + item.Salary, 2).ToString("N2")
+                        </td>
+                    </tr>
+                }
+                <tr class="fw-bold">
+                    
+                </tr>
+            </tbody>
+        </table>
+        <div class="d-flex justify-content-end">
+            @await Html.PartialAsync("print")
+        </div>
+
+    </div>
+    <!--Group View-->
+    <div id="groupDepView" class="show" data-bs-parent="#parentDiv">
+        <table class="table table-striped table-hover">
+            <thead class="bg-dark text-white">
+                <tr>
+                    <th>S/No</th>
+                    <th>Department Name</th>
+                    <th></th>
+                    <th>Department Salary</th>
+                    <th>Department Allowance</th>
+                    <th>Department Total</th>
+                </tr>
+            </thead>
+            <tbody id="departmentsAccordion">
+                @{
+                    int index = 0;
+                    int rowNo = 1;
+                }
+                @foreach (var dep in Model.GroupedEarning)
+                {
+                    var collapseId = $"collapse{index}";
+                    <tr class="" data-bs-toggle="collapse"
+                        data-bs-target="#@collapseId"
+                        style="cursor:pointer;">
+                        <td><h5>@rowNo</h5></td>
+                        <td colspan="2" >
+                            <h5 class="">
+                                @dep.Name 
+                            </h5>
+
+                        </td>
+                       
+                        <td colspan="1">
+                            <h5 class="">
+                                @Math.Round(dep.Salary, 2).ToString("N2")
+                            </h5>
+
+                        </td>
+                        <td colspan="1">
+                            <h5 class="">
+                                @Math.Round(dep.Allowance, 2).ToString("N2")
+                            </h5>
+
+                        </td>
+                        <td colspan="2">
+                            <h5 class="fw-bold">
+                                @Math.Round(dep.Salary + dep.Allowance, 2).ToString("N2")
+                            </h5>
+
+                        </td>
+
+                    </tr>
+
+                    <tr>
+                        <td colspan="6" class="p-0">
+                            <div id="@collapseId" class="accordion-collapse collapse"
+                                 data-bs-parent="#departmentsAccordion">
+                                <table class="table table-striped table-hover mb-0">
+                                    <thead class="bg-dark text-white">
+                                        <tr>
+                                            <th>
+                                                Employment ID
+                                            </th>
+                                            <th>Employee Name</th>
+                                            <th>
+                                                Job Title
+                                            </th>
+                                            <th>
+                                                Salary
+                                            </th>
+                                            <th>
+                                                Allowance
+                                            </th>
+                                            <th>
+                                                Total
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+
+                                        @foreach (var item in dep.Records)
+                                        {
+                                            <tr onclick="location.href='@Url.Page("Earning", new { id = item.empID})'" style="cursor:pointer">
+                                                <td>
+                                                    @Html.DisplayFor(modelItem => item.EmployeeID)
+                                                </td>
+                                                <td>
+                                                    @item.EmployeeName
+                                                </td>
+                                                <td>
+                                                    @Html.DisplayFor(modelItem => item.JobTitle)
+                                                </td>
+                                                <td>
+                                                    @item.Salary.ToString("N2")
+                                                </td>
+                                                <td>
+                                                    @item.Allowance.ToString("N2")
+                                                
+                                                <td class="">
+                                                        @Math.Round(item.Salary + item.Allowance,2).ToString("N2")
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </td>
+                    </tr>
+                    index++;
+                    rowNo++;
+
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+<div class="d-flex justify-content-end">
+@await Html.PartialAsync("print")
+</div>

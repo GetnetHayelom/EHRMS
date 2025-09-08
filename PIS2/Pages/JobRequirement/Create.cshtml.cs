@@ -31,6 +31,7 @@ namespace PIS2.Pages.JobRequirement
         // For more information, see https://aka.ms/RazorPagesCRUD.
         public async Task<IActionResult> OnPostAsync()
         {
+            ModelState.Clear();
             jobRequirementModel.modifiedBy = User.Identity.Name;
             if (!ModelState.IsValid)
             {

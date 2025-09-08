@@ -19,7 +19,8 @@ namespace PIS2.Pages.JobRequirement
         }
 
         public jobRequirementModel jobRequirementModel { get; set; } = default!;
-
+        public List<jobRequirementHistoryModel> RequestHistory { get; set; } = default!;
+        public List<jobReqCost> JobReqCosts { get; set; } = default!;
         public async Task<IActionResult> OnGetAsync(int? id)
         {
             if (id == null)
@@ -36,6 +37,13 @@ namespace PIS2.Pages.JobRequirement
             {
                 jobRequirementModel = jobrequirementmodel;
             }
+            JobReqCosts = new List<jobReqCost>();
+            RequestHistory = new List<jobRequirementHistoryModel>();
+            var jrHistory = _context.JobRequirementHistories.Where(m => m.jobRequirementID == id).ToList();
+            if (jrHistory.Any()) RequestHistory = jrHistory;
+            
+            var jrCost = _context.JobReqCosts.Where(m => m.jobRequirementID == id).ToList();
+            if (jrCost.Any()) JobReqCosts = jrCost;
             return Page();
         }
     }

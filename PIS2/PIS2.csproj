@@ -25,7 +25,6 @@
     <PackageReference Include="System.Data.SqlClient" Version="4.9.0" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Pages\EmployeeService\" />
     <Folder Include="TempStore\" />
     <Folder Include="wwwroot\assets\" />
     <Folder Include="wwwroot\lib\select2\" />
@@ -98,5 +97,11 @@
   </ItemGroup>
   <ItemGroup>
     <UpToDateCheckInput Remove="Pages\HRDash\Index.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Update="Pages\JobPlacement\Edit.cshtml">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
   </ItemGroup>
 </Project>

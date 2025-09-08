@@ -56,7 +56,7 @@
                 </div>
                 <div class="d-flex">
                     <h6 class="flex-grow-1 border border-info border-1 text-info p-1">Total Number of Employee</h6>
-                    <h4 class="bg-info text-white rounded-end p-1">@Model.Employments.Count()</h4>
+                    <h4 class="bg-info text-white rounded-end p-1">@Model.Employments.Distinct().Count()</h4>
                 </div>
             </div>
         </div>
@@ -88,7 +88,7 @@
                 </div>
                 <div>
                     <p class="small mb-1">Overtime</p>
-                    <h5 class="fw-bold">$@Math.Round((Model.CompanySummary.Salary), 2).ToString("N0")</h5>
+                    <h5 class="fw-bold">$@Math.Round((Model.overtime), 2).ToString("N0")</h5>
                 </div>
                 <div>
                     <p class="small mb-1">Acc. Leaves</p>
@@ -97,11 +97,11 @@
                 <div>
 
                     <p class="small mb-1">Allowance</p>
-                    <h5 class="fw-bold">$@Math.Round((Model.CompanySummary.Salary), 2).ToString("N0")</h5>
+                    <h5 class="fw-bold">$@Math.Round((Model.allowance), 2).ToString("N0")</h5>
                 </div>
                 <div>
                     <p class="small mb-1">Total</p>
-                    <h4 class="fw-bold">$@Math.Round((Model.CompanySummary.Salary), 2).ToString("N0")</h4>
+                    <h4 class="fw-bold">$@Math.Round(((double)Model.CompanySummary.Salary + Model.leaveCost + Model.allowance + Model.overtime), 2).ToString("N0")</h4>
                 </div>
             </div>
         </div>
@@ -150,7 +150,7 @@
                     <div class="card border borber-1 rounded-2 border-primary h-100 shadow">
                         <div class="card-body p-4">
                             <div class="d-flex justify-content-between align-items-start">
-                                <div>
+                                <div style="cursor:pointer;">
                                     <h5 class="card-title fw-bold">@item.DepartmentName</h5>
                                     <h6 class="card-subtitle mb-3 opacity-75">Manager: @(item.Manager ?? "N\\A")</h6>
                                 </div>

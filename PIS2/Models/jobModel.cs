@@ -8,7 +8,7 @@ namespace PIS2.Models
     {
         [Key]
         public int jobID { get; set; }
-        public string jobCode { get; set; }
+        public string? jobCode { get; set; }
         public string jobTitle { get; set; }
         public int jobGradeID { get; set; } 
         public virtual jobGradeModel? jobGradeModel { get; set; }
@@ -23,6 +23,7 @@ namespace PIS2.Models
         public virtual ICollection<jobPlacementModel>? JobPlacements { get; set; }
         public virtual ICollection<jobRequirementModel>? JobRequirements { get; set; }
         public virtual ICollection<employmentRequestModel>? EmploymentRequests { get; set; }
+        public virtual List<structureModel>? Structures { get; set; }
         public string modifiedBy { get; set; }
 
         public jobModel() { }

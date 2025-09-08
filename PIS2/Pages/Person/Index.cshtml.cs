@@ -22,7 +22,8 @@ namespace PIS2.Pages.Person
         public int TotalPages { get; set; }
         public int CurrentPage { get; set; } = 1; 
         public int PageSize { get; set; } = 100;
-
+        public int Employed { get; set; }
+        public int xEmployed { get; set; }
         public async Task OnGetAsync(int id = 1 )
         {
 
@@ -39,6 +40,9 @@ namespace PIS2.Pages.Person
             personModel = await _context.Persons
                 .Include(p => p.addressModel).OrderBy(p => p.personFirstName).ThenBy(p => p.personFatherName).ThenBy(p => p.personLastName)
                 .ToListAsync();
+
+            Employed = personModel.Count(p => _context.Employments.Where(e => e.employmentStatus== mainStatus.Active).Any(e => e.personID == p.personID));
+            xEmployed = personModel.Count(p => _context.Employments.Where(e => e.employmentStatus == mainStatus.Inactive).Any(e => e.personID == p.personID));
         }
     }
 }

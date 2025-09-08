@@ -74,12 +74,7 @@ namespace PIS2.Pages
                 Person = _context.Persons.Find(PersonID);
                 if (Person != null)
                 {
-                    //Check if photo is available
-                    var imagesFolder = Path.Combine(_environment.WebRootPath, "images");
-                    var fileName = $"{Person.personID}.jpg";
-                    var filePath = Path.Combine(imagesFolder, fileName);
-
-                    PhotoExists = System.IO.File.Exists(filePath);
+                    
 
                     //TempData["SuccessMessage"] = $"No person found with Name {searchName}";
                     isSelf = _context.Users.FirstOrDefault(u => u.userName == User.Identity.Name)?.personID == Person.personID ? true : false;
@@ -128,7 +123,7 @@ namespace PIS2.Pages
                         
 
                     }
-
+                    PhotoExists = checkPic(Person.personID);
 
                 }
             }
@@ -164,6 +159,7 @@ namespace PIS2.Pages
                         }
 
                     }
+                    PhotoExists = checkPic(Person.personID);
                 }
                 else { Person = new personModel(); }
                 
@@ -385,6 +381,18 @@ namespace PIS2.Pages
             await _context.SaveChangesAsync();
 
             return new JsonResult(new { success = true });
+        }
+
+
+
+        public bool checkPic(int personID)
+        {
+            //Check if photo is available
+            var imagesFolder = Path.Combine(_environment.WebRootPath, "images");
+            var fileName = $"{personID}.jpg";
+            var filePath = Path.Combine(imagesFolder, fileName);
+
+            return System.IO.File.Exists(filePath);
         }
 
     }

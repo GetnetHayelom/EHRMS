@@ -47,7 +47,7 @@
             LeaveDetailsEndDate = leaveDetailEndDate;
             leaveCost = lCost;
             department = dep;
-            company = dep.companyModel;
+            company = dep.companyModel ?? new companyModel();
         }
         public leaveDetail() { }
     }

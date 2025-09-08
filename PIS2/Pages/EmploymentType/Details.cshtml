@@ -6,10 +6,10 @@
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
 
-<h1>Employment Types</h1>
+<h1 class="fw-bold">Employment Types</h1>
 
 <div>
-    <h4>Employment Type Details</h4>
+    <h4 class="fw-bold">Employment Type Details</h4>
     <hr />
     <dl class="row">
         <dt class="col-sm-2">
@@ -61,20 +61,43 @@
             @Html.DisplayFor(model => model.employmentTypeModel.employmentTypeStatus)
         </dd>
         <dt class="col-sm-2">
-            Leave per Year Rate:
+            Min Age:
         </dt>
         <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.employmentTypeModel.annualAccrualRate)
+            @Html.DisplayFor(model => model.employmentTypeModel.employmentMinAge)
         </dd>
         <dt class="col-sm-2">
-            Base:
+            Max Age:
         </dt>
         <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.employmentTypeModel.employmentBaseLeave)
+            @Html.DisplayFor(model => model.employmentTypeModel.employmentMaxAge)
         </dd>
+        @if (Model.employmentTypeModel.isLeaveCount)
+        {
+            <dt class="col-sm-2">
+                Leave per Year Rate:
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.employmentTypeModel.annualAccrualRate)
+            </dd>
+            <dt class="col-sm-2">
+                Base:
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.employmentTypeModel.employmentBaseLeave)
+            </dd>
+            <dt class="col-sm-2">
+                Leave Ceiling:
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.employmentTypeModel.maxLeaveIncrement)
+            </dd>
+        }
+        
     </dl>
 </div>
-<div>
-    <a asp-page="./Edit" asp-route-id="@Model.employmentTypeModel.employmentTypeID">Edit</a> |
-    <a asp-page="./Index">Back to List</a>
+<div class="d-flex justify-content-end">
+    <a asp-page="./Edit" asp-route-id="@Model.employmentTypeModel.employmentTypeID" class="btn btn-primary">Edit</a>
+    
 </div>
+<a asp-page="./Index">View All Employment Types</a>

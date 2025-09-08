@@ -31,12 +31,14 @@ namespace PIS2.Pages.AllowanceAssignment
         public IList<allowanceAssignmentModel> allowanceAssignmentModel { get;set; } = default!;
         public int allowanceCount { get; set; }
         public double allowanceSum { get; set; }
+        public string Company { get; set; }
         public async Task OnGetAsync()
         {
             var empID = _core.getUserEmp(User.Identity.Name);
 
             var company = _context.JobPlacements.Include(j => j.departmentModel)
                 .FirstOrDefault(j => j.jobPlacementStatus == mainStatus.Active && j.employmentID == empID)?.departmentModel?.companyID;
+            Company = _context.Companies.FirstOrDefault(c => c.companyID == company).companyName;
 
             allowanceAssignmentModel = await _context.AllowanceAssignments
                 .Include(a => a.allowanceModel)

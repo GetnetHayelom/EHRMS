@@ -5,15 +5,63 @@
     ViewData["Title"] = "Index";
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
+<div class="d-flex justify-content-between">
+    <h1 class="fw-bold">Education and Certification</h1>
+    <div class="d-flex justify-content-end">
+        @if (User.IsInRole("MIE\\PMS_HRCLERK"))
+        {
+            <a asp-page="Create" class="btn btn-primary d-print-none m-2">Add New Certification</a>   
+        }
+        <button data-bs-toggle="collapse d-print-none" data-bs-target="#listView" class="btn btn-primary m-2">List View</button>
+        <button data-bt-toggle="collapse d-print-none" data-bs-target="#summaryView" class="btn btn-primary m-2">Summary View</button>
+    </div>
+</div>
 
-<h1 class="fw-bold">Education and Certification</h1>
+<hr />
+<div class="print-full-width" id="collapseParent">   
+    <div data-bs-parent="#collapseParent" class="collapse show" id="summaryView">
+        <h4 class="fw-bold">Certification Summary</h4>
+        <table class="table table-bordered table-striped table-hover">
+            <thead class="bg-info text-white">
+                <tr>
+                    <th>Certification Category</th>
+                    <th>Male</th>
+                    <th>Female</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach(var item in Model.CertificationSummary)
+                {
+                    <tr>
+                        <td>@item.CertificationType</td>
+                        <td>@item.MaleCount</td>
+                        <td>@item.FemaleCount</td>
+                        <td>@item.TotalCount</td>
+                    </tr>
+                }
+                <tr>
+                    <td class="fw-bold">Total</td>
+                    <td class="fw-bold">@Model.CertificationSummary.Sum(cs => cs.MaleCount)</td>
+                    <td class="fw-bold">@Model.CertificationSummary.Sum(cs => cs.FemaleCount)</td>
+                    <td class="fw-bold">@Model.CertificationSummary.Sum(cs => cs.TotalCount)</td>
+                </tr>
+            </tbody>
+        </table>
+        <div class="d-flex justify-content-end">
+            @await Html.PartialAsync("print")
+        </div>
+    </div>
 
-<p>
-    <a asp-page="Create" class="btn btn-primary">Add New Certification</a>
-</p>
-@await Html.PartialAsync("filter")
-<table class="table table-striped table-hover" id="dataTable">
-    <thead class="bg-dark text-white">
+    <div data-bs-parent="#collapseParent" class="collapse" id="listView">
+    <h4 class="fw-bold">Certification List</h4>
+    <div class="d-flex">
+        @await Html.PartialAsync("filter")
+        @await Html.PartialAsync("print")
+    </div>
+    
+    <table class="table table-striped table-hover" id="dataTable">
+        <thead class="bg-dark text-white">
         <tr>
             <th>
                 Full Name
@@ -36,29 +84,31 @@
             
         </tr>
     </thead>
-    <tbody>
-@foreach (var item in Model.personEducationLevelModel) {
-        <tr onclick="location.href='@Url.Page("Edit", new {id =item.personEducationLevelID})'" style="cursor:pointer;">
-            <td>
-                @Html.DisplayFor(modelItem => item.personModel.personFullName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.educationLevelModel.educationLevelName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.educationLevelDate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.educationLevelMark)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.educationLevelInstitutionName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.educationLevelNumber)
-            </td>
+        <tbody>
+        @foreach (var item in Model.personEducationLevelModel) {
+            <tr onclick="location.href='@Url.Page("Edit", new {id =item.personEducationLevelID})'" style="cursor:pointer;">
+                <td>
+                    @Html.DisplayFor(modelItem => item.personModel.personFullName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.educationLevelModel.educationLevelCategory)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.educationLevelDate)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.educationLevelMark)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.educationLevelInstitutionName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.educationLevelNumber)
+                </td>
             
-        </tr>
-}
-    </tbody>
-</table>
+            </tr>   
+        }
+        </tbody>
+    </table>
+</div>
+</div>

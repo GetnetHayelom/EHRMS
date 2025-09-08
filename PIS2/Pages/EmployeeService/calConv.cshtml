@@ -1,0 +1,59 @@
+﻿@page
+@model PIS2.Pages.EmployeeService.calConvModel
+@{
+    ViewData["Title"] = "Calendar Conversion";
+}
+<div class="container mt-4">
+    <h2 class="mb-4">Ethiopian ↔ Gregorian Calendar Converter</h2>
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card shadow-sm p-3 mb-4">
+                <h4 class="card-title">Convert Ethiopian → Gregorian</h4>
+                <form method="post" asp-page-handler="ConvertToGregorian">
+                    <div class="mb-3">
+                        <label class="form-label">Ethiopian Date (yyyy-MM-dd)</label>
+                        <input asp-for="EthiopianDate" class="form-control" placeholder="2016-01-01" />
+                    </div>
+                    <button type="submit" class="btn btn-primary">Convert</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card shadow-sm p-3 mb-4">
+                <h4 class="card-title">Convert Gregorian → Ethiopian</h4>
+                <form method="post" asp-page-handler="ConvertToEthiopian">
+                    <div class="mb-3">
+                        <label class="form-label">Gregorian Date</label>
+                        <input asp-for="GregorianDate" class="form-control" type="date" />
+                    </div>
+                    <button type="submit" class="btn btn-success">Convert</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    @if (!string.IsNullOrEmpty(Model.Result))
+    {
+        <div class="alert alert-info mt-4">
+            <strong>Result:</strong> @Model.Result
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <!-- Ethiopian Date Picker JS -->
+    <script src="https://cdn.jsdelivr.net/gh/matthewhallca/js-datepicker-ethiopian/ethiopianDatePicker.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/matthewhallca/js-datepicker-ethiopian/ethiopianDatePicker.min.css" />
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // Attach Ethiopian Date Picker to the input
+            new EthiopianDatePicker("#ethiopianDate", {
+                format: "yyyy-MM-dd",   // Match your C# binding
+                placeholder: "Select Ethiopian Date"
+            });
+        });
+    </script>
+}

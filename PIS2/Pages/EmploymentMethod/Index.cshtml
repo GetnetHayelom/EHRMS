@@ -6,28 +6,28 @@
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
 
-<h1>Index</h1>
+<h1 class="fw-bold">Employment Method</h1>
 
 <p>
-    <a asp-page="Create">Create New</a>
+    <a asp-page="Create" class="btn btn-primary">Add New Employment Method</a>
 </p>
 <table class="table">
-    <thead>
+    <thead class="bg-dark text-white">
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.employmentMethodModel[0].employmentMethodName)
+                Method Name
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.employmentMethodModel[0].employmentMethodDescription)
+                Description
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.employmentMethodModel[0].employmentMethodStatus)
+                Status
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.employmentMethodModel[0].modifiedDate)
+                Date Modified
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.employmentMethodModel[0].modifiedBy)
+                Modified By
             </th>
             <th></th>
         </tr>
@@ -52,8 +52,8 @@
             </td>
             <td>
                 <a asp-page="./Edit" asp-route-id="@item.employmentMethodID">Edit</a> |
-                <a asp-page="./Details" asp-route-id="@item.employmentMethodID">Details</a> |
-                <a asp-page="./Delete" asp-route-id="@item.employmentMethodID">Delete</a>
+                <a asp-page="./Details" asp-route-id="@item.employmentMethodID">Details</a>
+                
             </td>
         </tr>
 }

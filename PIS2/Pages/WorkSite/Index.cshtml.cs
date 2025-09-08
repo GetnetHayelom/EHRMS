@@ -26,7 +26,7 @@ namespace PIS2.Pages.WorkSite
         public async Task OnGetAsync()
         {
             workSiteModel = await _context.WorkSites
-                .Include(w => w.addressModel).ToListAsync();
+                .Include(w => w.addressModel).OrderBy(ws => ws.workSiteName).ToListAsync();
         }
     }
 }

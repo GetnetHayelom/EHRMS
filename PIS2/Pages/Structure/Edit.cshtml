@@ -1,0 +1,152 @@
+﻿@page
+@model Pages.Structures.EditModel
+
+<h2 class="fw-bold">Structure</h2>
+<h4 class="fw-bold d-print-none">Update Structure</h4>
+<h4 class="fw-bold d-print-block d-none">Structure Information</h4>
+<hr/>
+<div>
+    
+    <form method="post" class="d-flex justify-content-between m-2">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <input type="hidden" asp-for="Structure.structureID" />
+        <div class="col-md-4">
+            <div class="form-group">
+                <label asp-for="Structure.departmentID">Company Name</label>
+                <input class="form-control d-print-none" readonly value="@Model.Structure.departmentModel?.companyModel?.companyName"/>
+                <p class="fw-bold text-decoration-underline d-none d-print-block">@Model.Structure.departmentModel?.companyModel?.companyName</p>
+            </div>
+            <div class="form-group">
+                <label asp-for="Structure.departmentID">Department Name</label>
+                <select asp-for="Structure.departmentID" asp-items="ViewBag.departmentID" class="form-control d-print-none" readonly></select>
+                <p class="fw-bold text-decoration-underline d-none d-print-block">@Model.Structure.departmentModel?.departmentName</p>
+            </div>
+            <div class="form-group">
+                <label asp-for="Structure.jobID">Job Title</label>
+                <select asp-for="Structure.jobID" asp-items="ViewBag.jobID" class="form-control d-print-none" readonly></select>
+                <p class="fw-bold text-decoration-underline d-none d-print-block">@Model.Structure.jobModel?.jobTitle</p>
+            </div>
+            <div class="form-group">
+                <label asp-for="Structure.requiredNumber">Required Number</label>
+                <input asp-for="Structure.requiredNumber" class="form-control d-print-none" />
+                <p class="fw-bold text-decoration-underline d-none d-print-block">@Model.Structure.requiredNumber</p>
+            </div>
+            <div class="form-group">
+                <label asp-for="Structure.structureStatus">Status</label>
+                <select asp-for="Structure.structureStatus" class="form-control d-print-none" asp-items="@Html.GetEnumSelectList<Models.mainStatus>()"></select>
+                <p class="fw-bold text-decoration-underline d-none d-print-block">@Model.Structure.structureStatus</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="p-2 border-1 mt-2">
+                <h5 class="fw-bold m-0 p-0">Reports To</h5>
+                <hr />
+                <div class="form-group">
+                    <div class="form-group">
+                        <label class="control-label">Company</label>
+                        <select class="form-control d-print-none" asp-items="ViewBag.companyID" id="companyID2">
+                            <option value="">@Model.Structure.ReportsTo?.departmentModel?.companyModel?.companyName</option>
+                        </select>
+                        <p class="fw-bold text-decoration-underline d-none d-print-block">@Model.Structure.ReportsTo?.departmentModel?.companyModel?.companyName</p>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Department Name</label>
+                    <select class="form-control d-print-none" id="departmentID2">
+                        <option value="">@Model.Structure.ReportsTo?.departmentModel?.departmentName</option>
+                    </select>
+                    <p class="fw-bold text-decoration-underline d-none d-print-block">@Model.Structure.ReportsTo?.departmentModel?.departmentName</p>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Structure.reportsTo">Reports To</label>
+                    <select asp-for="Structure.reportsTo" class="form-control d-print-none" id="jobID2">
+                        <option value="@Model.Structure.reportsTo">@Model.Structure.ReportsTo?.jobModel?.jobTitle</option>
+                    </select>
+                    <p class="fw-bold text-decoration-underline d-none d-print-block">@Model.Structure.ReportsTo?.jobModel?.jobTitle</p>
+                </div>
+
+            </div>
+        
+            <div class="d-flex justify-content-end">
+                <button type="submit" class="btn btn-success m-2 d-print-none">Save</button>
+                <a asp-page="Index" class="btn btn-secondary m-2 d-print-none">Cancel</a>
+            </div>
+        </div>
+    </form>
+    
+
+    <div class="">
+        <h4 class="fw-bold">Structure History</h4>
+        <table class="table table-bordered table-striped table-hover">
+            <thead class="bg-info text-white">
+                <tr>
+                    <th>Required Number</th>
+                    <th>Status</th>
+                    <th>Reports To</th>
+                    <th>Modified By</th>
+                    <th>Modified Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach(var item in Model.Structures)
+                {
+                    <tr>
+                        <td>@item.requiredNumber</td>
+                        <td>@item.structureStatus</td>
+                        <td>@item.structureModel?.ReportsTo?.departmentModel?.companyModel?.companyName->
+                         @item.structureModel?.ReportsTo?.departmentModel?.departmentName-> 
+                         @item.structureModel?.ReportsTo?.jobModel?.jobTitle</td>
+                        <td>@item.modifiedBy</td>
+                        <td>@item.modifiedDate</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+<div class="d-flex justify-content-end">@await Html.PartialAsync("print")</div>
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script>
+    $(document).ready(function () {
+        
+        $('#companyID2').change(function () {
+            var companyID = $(this).val();
+            $('#departmentID2').empty().append('<option value="">-- Loading --</option>');
+
+            if (companyID) {
+                $.getJSON('?handler=DepartmentsByCompany&companyID=' + companyID, function (data) {
+                    $('#departmentID2').empty().append('<option value="">-- Select Department --</option>');
+                    $.each(data, function (i, dept) {
+                        $('#departmentID2').append($('<option>', {
+                            value: dept.departmentID,
+                            text: dept.departmentName
+                        }));
+                    });
+                });
+            } else {
+                $('#departmentID2').empty().append('<option value="">-- Select Department --</option>');
+            }
+        });
+
+        
+        $('#departmentID2').change(function () {
+            var departmentID = $(this).val();
+            $('#jobID2').empty().append('<option value="">-- Loading --</option>');
+
+            if (departmentID) {
+                $.getJSON('?handler=ReportsTo&departmentID=' + departmentID, function (data) {
+                    $('#jobID2').empty().append('<option value="">-- Select Position --</option>');
+                    $.each(data, function (i, job) {
+                        $('#jobID2').append($('<option>', {
+                            value: job.structureID,
+                            text: job.jobTitle
+                        }));
+                    });
+                });
+            } else {
+                $('#jobID2').empty().append('<option value="">-- Select Position --</option>');
+            }
+        });
+    });
+</script>

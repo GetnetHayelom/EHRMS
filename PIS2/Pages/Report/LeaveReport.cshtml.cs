@@ -39,7 +39,7 @@ namespace PIS2.Pages.Report
         {
             EmploymentTypes = await _context.EmploymentTypes.OrderBy(e => e.employmentTypeName).ToListAsync();
             Departments = await _context.Departments.Where(d => d.departmentStatus == mainStatus.Active).OrderBy(d => d.departmentName).ToListAsync();
-            WorkLocations = await _context.WorkSites.Where(w => w.workSiteStatus==mainStatus.Active).OrderBy(w => w.workSiteName).ToListAsync();
+            
             Companies = await _context.Companies.Where(c =>c.companyStatus == mainStatus.Active).OrderBy(c => c.companyName).ToListAsync();
             LeaveTypes = await _context.LeaveTypes.Where(l => l.leaveTypeStatus==mainStatus.Active).OrderBy(lt => lt.leaveTypeName).ToListAsync();
 
@@ -76,102 +76,94 @@ namespace PIS2.Pages.Report
                 .Include(l => l.leaveTypeModel).ToListAsync();
             return Page();
         }
-        public IActionResult OnGetFilter(int? department, int? leaveStatus, int? leaveType, int? company, int? workLoc, DateTime? dateStart, DateTime? dateEnd)
+        public IActionResult OnGetFilter(
+     int? department, int? company, int? leaveType,
+     int? leaveStatus, DateTime? dateStart, DateTime? dateEnd)
         {
             Console.WriteLine("the Date is " + dateStart);
-            // Start with the full list of employees
-            var leaves = _context.Leaves.Include(l => l.leaveTypeModel)
+
+            var leaves = _context.Leaves
+                .Include(l => l.leaveTypeModel)
                 .Select(l => new
                 {
                     Leave = l,
                     Employee = l.employmentModel,
-                    Department = l.employmentModel.JobPlacements.OrderByDescending(j => j.jobPlacementDate).First().departmentModel,
-                    Company = l.employmentModel.JobPlacements.OrderByDescending(j => j.jobPlacementDate).First().departmentModel.companyModel,
-                    jobTitle = l.employmentModel.JobPlacements.OrderByDescending(j => j.jobPlacementDate).First().jobModel,
-                    WorkSite = _context.SiteAssignments.OrderByDescending(j => j.modifiedDate).First(ws => ws.employmentID == l.employmentID).workSiteModel,
                     person = l.employmentModel.personModel,
-                    empType = l.employmentModel.employmentTypeModel
+                    empType = l.employmentModel.employmentTypeModel,
+
+                    ActiveJobPlacement = l.employmentModel.JobPlacements
+                        .Where(j => j.jobPlacementStatus == mainStatus.Active)
+                        .OrderByDescending(j => j.jobPlacementDate)
+                        .FirstOrDefault(),
+
                 })
-                .AsQueryable(); // Using IQueryable to build a dynamic query
-            var departments = _context.Departments.OrderBy(d => d.departmentName).AsQueryable();
-            // Apply filters based on the provided query parameters
+                .AsEnumerable() // switch to in-memory for null safety
+                .Select(x => new LeaveView
+                {
+                    Leave = x.Leave,
+                    Employee = x.Employee,
+                    person = x.person,
+                    empType = x.empType,
+                    Department = x.ActiveJobPlacement?.departmentModel,
+                    Company = x.ActiveJobPlacement?.departmentModel?.companyModel,
+                    JobTitle = x.ActiveJobPlacement?.jobModel
+                })
+                .AsQueryable();
 
-            // Filter by company (if provided)
-            if (company.HasValue && company != null)
-            {
-                leaves = leaves.Where(e => e.Company.companyID == company);
+            // Apply filters
+            if (company.HasValue)
+                leaves = leaves.Where(e => e.Company != null && e.Company.companyID == company.Value);
 
-            }
-            else
-            {
-                departments = _context.Departments.OrderBy(d => d.departmentName).AsQueryable();
-            }
-            // Filter by Department (if provided)
-            if (department.HasValue && department != null)
-            {
+            if (department.HasValue)
+                leaves = leaves.Where(e => e.Department != null && e.Department.departmentID == department.Value);
 
-                leaves = leaves.Where(e => e.Department.departmentID == department);
-            }
+            if (leaveStatus.HasValue) // enum filter
+                leaves = leaves.Where(e => e.Leave.leaveStatus ==(leaveStatus) leaveStatus.Value);
 
-            // Filter by Status (if provided)
-            if (leaveStatus.HasValue)
-            {
+            if (leaveType.HasValue)
+                leaves = leaves.Where(e => e.Leave.leaveTypeID == leaveType.Value);
 
-                leaves = leaves.Where(e => e.Leave.leaveStatus == (leaveStatus)leaveStatus);
+            if (dateStart.HasValue)
+                leaves = leaves.Where(e => e.Leave.leaveStartDate >= dateStart.Value);
 
-            }
+            if (dateEnd.HasValue)
+                leaves = leaves.Where(e => e.Leave.leaveEndDate <= dateEnd.Value);
 
-           
-            // Filter by type (if provided)
-            if (leaveType.HasValue && leaveType != null)
-            {
+            var filteredLeaves = leaves
+                .OrderBy(e => e.Leave.leaveReaquestDate)
+                .ToList();
 
-                leaves = leaves.Where(e => e.Leave.leaveTypeID == leaveType);
-            }
-
-
-            // Filter by workloc (if provided)
-            if (workLoc.HasValue && workLoc != null)
-            {
-                leaves = leaves.Where(e => e.WorkSite.workSiteID == workLoc);
-            }
-            // Filter by Start TIme (if provided)
-            if (dateStart.HasValue && dateStart != null)
-            {
-                leaves = leaves.Where(e => e.Leave.leaveStartDate >= dateStart);
-            }
-            // Filter by end TIme (if provided)
-            if (dateEnd.HasValue && dateEnd != null)
-            {
-                leaves = leaves.Where(e => e.Leave.leaveEndDate <= dateEnd);
-            }
-
-            // Execute the query and get the filtered results
-            var filteredLeaves = leaves.OrderBy(e => e.Leave.leaveReaquestDate).ToList();
-
-            // Generate the table HTML
+            // Build HTML
             var tableHtml = string.Join("", filteredLeaves.Select(e =>
-            {
+                $"<tr><td><a href='/Leave/Details?id={e.Leave.leaveID}' class='text-decoration-none text-dark'>{e.Leave.leaveID}</a></td>" +
+                $"<td><a href='/Employment/Details?id={e.Employee.employmentID}' class='text-decoration-none text-dark'>{e.Employee.givenID}</a></td>" +
+                $"<td><a href='/Person/Details?id={e.person.personID}' class='text-decoration-none text-dark'>{e.person.personFullName}</a></td>" +
+                $"<td>{e.Leave.leaveReaquestDate:yyyy-MM-dd}</td>" +
+                $"<td>{e.Leave.leaveStartDate:yyyy-MM-dd}</td>" +
+                $"<td>{e.Leave.leaveEndDate:yyyy-MM-dd}</td>" +
+                $"<td>{e.Leave.leaveDays}</td>" +
+                $"<td>{e.Leave.leaveTypeModel.leaveTypeName}</td>" +
+                $"<td>{e.Leave.leaveStatus}</td></tr>"
+            ));
 
-                return $"<tr><td><a href='/Leave/Details?id={e.Leave.leaveID}' class='text-decoration-none text-dark'>{e.Leave.leaveID}</a></td>" +
-                        $"<td> <a href='/Employment/Details?id={e.Employee.employmentID}' class='text-decoration-none text-dark'>{e.Employee.givenID}</a></td>" +
-                        $"<td> <a href='/Person/Details?id={e.person.personID}' class='text-decoration-none text-dark'>{e.person.personFullName}</a></td>" +
-                        $"<td>{e.Leave.leaveReaquestDate.ToShortDateString()}</td>" +
-                        $"<td>{e.Leave.leaveStartDate.ToShortDateString()}</td>" +
-                        $"<td>{e.Leave.leaveEndDate.ToShortDateString()}</td>" +
-                        $"<td>{e.Leave.leaveDays}</td>" +
-                        $"<td>{e.Leave.leaveTypeModel.leaveTypeName}</td>" +
-                        $"<td><form method='post' asp-page-handler='Approve'>" +
-                        $"<input asp-for={e.Leave.leaveID} name='leaveId' type='hidden'></input >" +
-                        $"<button type='submit' class='btn btn-success post-button' data-id={e.Leave.leaveID}>Post Leave</button></form></td></tr>";
-   
-            }));
+            filteredCount = filteredLeaves.Count;
 
-            
-            filteredCount = filteredLeaves.Count();
-            // Return the generated HTML
-            //return Content(tableHtml);
-            return new JsonResult(new { tableHtml, filteredCount});
+            return new JsonResult(new { tableHtml, filteredCount });
         }
+
+
     }
+    public class LeaveView
+    {
+        public leaveModel Leave { get; set; }
+        public employmentModel Employee { get; set; }
+        public personModel person { get; set; }
+        public employmentTypeModel empType { get; set; }
+
+        public departmentModel Department { get; set; }
+        public companyModel Company { get; set; }
+        public jobModel JobTitle { get; set; }
+
+    }
+
 }

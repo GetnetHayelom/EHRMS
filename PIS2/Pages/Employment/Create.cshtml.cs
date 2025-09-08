@@ -37,6 +37,8 @@ namespace PIS2.Pages.Employment
             }
             
             ViewData["employmentTypeID"] = new SelectList(_context.EmploymentTypes, "employmentTypeID", "employmentTypeName");
+            ViewData["employmentMethod"] = new SelectList(_context.EmploymentMethods, "employmentMethodID", "employmentMethodName");
+            ViewData["employmentRequest"] = new SelectList(_context.EmploymentRequests.Where(er => er.requestStatus != employmentRequestStatus.Completed), "employmentRequestID", "employmentRequestID");
             return Page();
         }
 

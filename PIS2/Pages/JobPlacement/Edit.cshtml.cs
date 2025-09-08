@@ -21,33 +21,56 @@ namespace PIS2.Pages.JobPlacement
 
         [BindProperty]
         public jobPlacementModel jobPlacementModel { get; set; } = default!;
+        [BindProperty]
+        public string company { get; set; }
+        [BindProperty]
+        public departmentModel departmentModel { get; set; }
 
-        public async Task<IActionResult> OnGetAsync(int? id)
+        [BindProperty]
+        public string? jobGradeModel { get; set; }
+        [BindProperty]
+        public jobStepModel jobStepModel { get; set; }
+        public string ErrorMessage { get; set; }
+        public IActionResult OnGet(int id)
         {
-            if (id == null)
+            if (id == null && id == 0)
             {
                 return NotFound();
             }
-
-            var jobplacementmodel =  await _context.JobPlacements
+            
+            jobPlacementModel = _context.JobPlacements
                 .Include(jp => jp.employmentModel).ThenInclude(e => e.personModel)
                 .Include(jp => jp.departmentModel).ThenInclude(d => d.companyModel)
-                .Include(jp => jp.jobModel).FirstOrDefaultAsync(m => m.jobPlacementID == id);
-            if (jobplacementmodel == null)
+                .Include(jp => jp.jobStepModel).ThenInclude(js => js.jobGradeModel)
+                .Include(jp => jp.jobModel)
+                .FirstOrDefault(jp => jp.jobPlacementID == id) ?? new jobPlacementModel();
+
+            company = jobPlacementModel.departmentModel.companyModel.companyName;
+
+            jobGradeModel = jobPlacementModel.jobStepModel?.jobGradeModel?.jobGradeName;
+            if(jobPlacementModel == null)
             {
-                return NotFound();
+                ErrorMessage = "Job Placement Not Found.";
+                return Page();
             }
-            jobPlacementModel = jobplacementmodel;
+            
+           
             populateSelect();
             return Page();
         }
 
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
+        
+
         // For more information, see https://aka.ms/RazorPagesCRUD.
         public async Task<IActionResult> OnPostAsync()
         {
-            ModelState.Clear();
+            ModelState.Remove("modifiedBy");
+            ModelState.Remove("jobStepName");
+            ModelState.Remove("departmentName");
+            ModelState.Remove("jobPlacementModel.modifiedBy");
             jobPlacementModel.modifiedBy = User.Identity.Name;
+            
+
             if (!ModelState.IsValid)
             {
                 foreach (var kv in ModelState)
@@ -55,29 +78,29 @@ namespace PIS2.Pages.JobPlacement
                     foreach (var error in kv.Value.Errors)
                     {
                         Console.WriteLine($"{kv.Key} --> {error.ErrorMessage}");
+
                     }
-                    Console.WriteLine(kv.ToString());
+                    
                 }
+
                 return Page();
             }
+            
 
             _context.Attach(jobPlacementModel).State = EntityState.Modified;
-
             try
             {
+                   
                 await _context.SaveChangesAsync();
+                return RedirectToPage("./Details", new { id = jobPlacementModel.jobPlacementID });
             }
-            catch (DbUpdateConcurrencyException)
+            catch (DbUpdateException ex)
             {
+
+                throw;
             }
-
             
-            return RedirectToPage("./Details", new { id = jobPlacementModel.jobPlacementID });
-        }
-
-        private bool jobPlacementModelExists(int id)
-        {
-            return _context.JobPlacements.Any(e => e.jobPlacementID == id);
+           
         }
         public JsonResult OnGetDepartmentsByCompany(int companyID)
         {
@@ -103,18 +126,18 @@ namespace PIS2.Pages.JobPlacement
         {
             var jobSteps = _context.JobSteps
                 .Where(js => js.jobGradeID == jobGradeID)
-                .Select(js => new { js.jobStepID, js.jobStepNumber })
+                .Select(js => new {js.jobStepID, js.jobStepNumber})
                 .ToList();
             return new JsonResult(jobSteps);
         }
         public void populateSelect()
         {
             ViewData["companyID"] = new SelectList(_context.Companies.Where(c => c.companyStatus == mainStatus.Active).OrderBy(c => c.companyName), "companyID", "companyName");
-            ViewData["departmentID"] = new SelectList(_context.Departments.Where(c => c.departmentStatus == mainStatus.Active).OrderBy(c => c.departmentName), "departmentID", "departmentName");
             ViewData["workSiteID"] = new SelectList(_context.WorkSites.Where(s => s.workSiteStatus == mainStatus.Active).OrderBy(c => c.workSiteName), "workSiteID", "workSiteName");
             ViewData["jobGradeID"] = new SelectList(_context.JobGrades.Where(s => s.jobGradeStatus == mainStatus.Active).OrderBy(c => c.jobGradeName), "jobGradeID", "jobGradeName");
             ViewData["jobID"] = new SelectList(_context.Jobs.Where(j => j.jobStatus == mainStatus.Active).OrderBy(c => c.jobTitle), "jobID", "jobTitle");
             ViewData["shiftID"] = new SelectList(_context.Shifts.Where(s => s.shiftStatus == mainStatus.Active), "shiftID", "shiftName");
         }
+       
     }
 }

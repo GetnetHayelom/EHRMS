@@ -18,9 +18,10 @@
 </div>
 }
 <div class="row">
-    <div class="col-md-4">
-        <form method="post">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <form method="post" class="d-flex justify-content-between">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <div class="col-md-4">
+        
             
             <div class="form-group">
                 <label asp-for="employmentModel.personID" class="control-label">Full Name</label>
@@ -43,6 +44,12 @@
                 <input asp-for="employmentModel.employmentDate" class="form-control" type="date" />
                 <span asp-validation-for="employmentModel.employmentDate" class="text-danger"></span>
             </div>
+            <div class="form-group" id="terminationDateGroup">
+                <span class="text-danger">*</span>
+                <label asp-for="employmentModel.employmentTerminationDate" class="control-label">Termination Date</label>
+                <input asp-for="employmentModel.employmentTerminationDate" class="form-control" type="date" />
+                <span asp-validation-for="employmentModel.employmentTerminationDate" class="text-danger"></span>
+            </div>
             <div class="form-group">
                 <label asp-for="employmentModel.employmentStatus" class="control-label">Employment Status</label>
                 <select asp-for="employmentModel.employmentStatus" class="form-control" asp-items="Html.GetEnumSelectList<Models.mainStatus>()"></select>
@@ -54,9 +61,7 @@
                 <span asp-validation-for="employmentModel.employmentReference" class="text-danger"></span>
             </div>
             
-            <div class="form-group d-flex justify-content-end">
-                <input type="submit" value="Save" class="btn btn-success m-2" />
-            </div>
+            
             <div asp-asp-validation-summary="All" class="text-danger"></div>
             @if (TempData["successMessage"] != null)
             {
@@ -71,8 +76,38 @@
                 </div>
             }
 
-        </form>
-    </div>
+
+        </div>
+        <div class="col-md-4">
+            <h4 class="fw-bold">Aditional Info</h4>
+            <div class="form-group">
+                <label asp-for="employmentModel.employmentCarriedOverLeave" class="control-label">Carried Over Leave</label>
+                <input asp-for="employmentModel.employmentCarriedOverLeave" class="form-control" type="number"/>
+                <span asp-validation-for="employmentModel.employmentCarriedOverLeave" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="employmentModel.employmentRequestID" class="control-label">Employment Request ID</label>
+                <select asp-for="employmentModel.employmentRequestID" class="form-control" asp-items="ViewBag.employmentRequest" >
+                    <option value="">None</option>
+                </select>
+                <span asp-validation-for="employmentModel.employmentRequestID" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="employmentModel.employmentMethodID" class="control-label">Employment Method</label>
+                <select asp-for="employmentModel.employmentMethodID" class="form-control" asp-items="ViewBag.employmentMethod"></select>
+                <span asp-validation-for="employmentModel.employmentMethodID" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="employmentModel.employmentPosition" class="control-label">Employment Position</label>
+                <select asp-for="employmentModel.employmentPosition" class="form-control" asp-items="Html.GetEnumSelectList<Models.EmploymentPositions>()"></select>
+                <span asp-validation-for="employmentModel.employmentPosition" class="text-danger"></span>
+            </div>
+            <div class="form-group d-flex justify-content-end">
+                <input type="submit" value="Save" class="btn btn-success m-2" />
+            </div>
+        </div>
+        
+    </form>
 </div>
 
 <div>
@@ -82,3 +117,24 @@
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 }
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const employmentType = document.getElementById("employmentModel_employmentTypeID");
+        const terminationDateGroup = document.getElementById("terminationDateGroup");
+
+        function toggleTerminationDate() {
+            // Replace "2" with the actual value for Contract from your employmentTypeID
+            if (employmentType.value != "1") {
+                terminationDateGroup.style.display = "block";
+            } else {
+                terminationDateGroup.style.display = "none";
+                // Optionally clear value when not contract
+                document.getElementById("employmentModel_terminationDate").value = "";
+            }
+        }
+
+        // Run on load and on change
+        toggleTerminationDate();
+        employmentType.addEventListener("change", toggleTerminationDate);
+    });
+</script>

@@ -6,39 +6,58 @@
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
 
-<h1>Details</h1>
+<h1 class="fw-bold">Penalty Type</h1>
 
 <div>
-    <h4>penaltyTypeModel</h4>
+    <h4 class="fw-bold">Penalty Type Details</h4>
     <hr />
     <dl class="row">
         <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.penaltyTypeModel.penaltyName)
+            Panlty Name:
         </dt>
         <dd class="col-sm-10">
             @Html.DisplayFor(model => model.penaltyTypeModel.penaltyName)
         </dd>
         <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.penaltyTypeModel.penaltyTypeStatus)
+            Status:
         </dt>
         <dd class="col-sm-10">
             @Html.DisplayFor(model => model.penaltyTypeModel.penaltyTypeStatus)
         </dd>
         <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.penaltyTypeModel.modifiedDate)
+            Method:
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.penaltyTypeModel.penaltyMethod)
+        </dd>
+        <dt class="col-sm-2">
+            Rate:
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.penaltyTypeModel.penaltyRate)
+        </dd>
+        <dt class="col-sm-2">
+            Validity in Months:
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.penaltyTypeModel.penaltyValidity)
+        </dd>
+        <dt class="col-sm-2">
+            Date Modified:
         </dt>
         <dd class="col-sm-10">
             @Html.DisplayFor(model => model.penaltyTypeModel.modifiedDate)
         </dd>
         <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.penaltyTypeModel.modifiedBy)
+            Modified By:
         </dt>
         <dd class="col-sm-10">
             @Html.DisplayFor(model => model.penaltyTypeModel.modifiedBy)
         </dd>
     </dl>
 </div>
-<div>
-    <a asp-page="./Edit" asp-route-id="@Model.penaltyTypeModel.penaltyTypeID">Edit</a> |
-    <a asp-page="./Index">Back to List</a>
+<div class="d-flex justify-content-end">
+    <a asp-page="./Edit" asp-route-id="@Model.penaltyTypeModel.penaltyTypeID" class="btn btn-primary">Edit</a>
+    
 </div>
+<a asp-page="./Index">View All Penalty Types</a>

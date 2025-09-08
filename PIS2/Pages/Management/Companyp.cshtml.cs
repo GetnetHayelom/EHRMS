@@ -44,6 +44,8 @@ namespace PIS2.Pages.Management
         public List<leaveDetail> leaveDetails { get; set; }
         public double allowedLeave { get; set; }
         public double leaveCost {  get; set; }
+        public double allowance { get; set; }
+        public double overtime { get; set; }
         public async Task<IActionResult> OnGetAsync(int? id)
         {
             if (id == null)
@@ -69,7 +71,17 @@ namespace PIS2.Pages.Management
                         .ToList();
 
                     Employments = Jobs.Select(j => j.employmentModel).ToList();
-                   
+
+                    var empIDs = Jobs.Select(e => e.employmentID).ToList();
+
+                    allowance = _context.AllowanceAssignments.Where(e => empIDs.Contains(e.employmentID) && e.allowanceStatus == mainStatus.Active).Sum(aa => aa.allowanceAssignmentAmount);
+                    var ots = _context.OvertimeRecords.Where(e => empIDs.Contains(e.employmentID) && e.overtimeRecordStatus == overtimeStatus.Hold).ToList();
+                    overtime = 0;
+                    foreach (var ot in ots)
+                    {
+                        overtime += ((ot.overtimeRecordEndTime - ot.overtimeRecordStartTime).Minutes / 60) * ot.overtimeRecordEmploymentRate * ot.overtimeRate;
+                    }
+                    
                     CompanySummary = new CompanySummary();
                     //CompanySummary.Manager = cmp.employmentModel.personModel.personFullName;
                     CompanySummary.CompanyName = cmp.companyName;
@@ -101,16 +113,15 @@ namespace PIS2.Pages.Management
 
                     //Employment Types
                     EmploymentTypes = new List<NameAndCount>();
-                    EmploymentTypes = activeEmps
-                   .Where(e => e.employmentStatus == mainStatus.Active)
-                   .GroupBy(e => new { e.employmentTypeModel.employmentTypeName, e.employmentTypeID })
-                   .Select(g => new NameAndCount
-                   {
-                       zName = g.Key.employmentTypeName,
-                       zCount = g.Count()
-                   })
-                   .ToList();
-
+                    EmploymentTypes = Jobs.Select(e => e.employmentModel)
+                        .GroupBy(e => new { e.employmentTypeModel.employmentTypeName, e.employmentTypeID })
+                       .Select(g => new NameAndCount
+                       {
+                           zName = g.Key.employmentTypeName,
+                           zCount = g.Count()
+                       })
+                       .ToList();
+                   
                     //Active Leaves
                     leaveEmployments = _context.Leaves
                         .Where(l => l.leaveStartDate <= DateTime.Now && l.leaveEndDate >= DateTime.Now && l.leaveTypeModel.leaveTypeImpact == leaveTypeImpact.Negative

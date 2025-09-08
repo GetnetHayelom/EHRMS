@@ -6,43 +6,49 @@
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
 
-<h1>Create</h1>
+<h1 class="fw-bold">Penalty Setup</h1>
 
-<h4>penaltyTypeModel</h4>
+<h4 class="fw-bold">New Penalty</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
         <form method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
-                <label asp-for="penaltyTypeModel.penaltyName" class="control-label"></label>
+                <label asp-for="penaltyTypeModel.penaltyName" class="control-label">Penalty Name</label>
                 <input asp-for="penaltyTypeModel.penaltyName" class="form-control" />
                 <span asp-validation-for="penaltyTypeModel.penaltyName" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="penaltyTypeModel.penaltyTypeStatus" class="control-label"></label>
-                <select asp-for="penaltyTypeModel.penaltyTypeStatus" class="form-control"></select>
+                <label asp-for="penaltyTypeModel.penaltyTypeStatus" class="control-label">Status</label>
+                <select asp-for="penaltyTypeModel.penaltyTypeStatus" class="form-control" asp-items="@Html.GetEnumSelectList<Models.mainStatus>()"></select>
                 <span asp-validation-for="penaltyTypeModel.penaltyTypeStatus" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="penaltyTypeModel.modifiedDate" class="control-label"></label>
-                <input asp-for="penaltyTypeModel.modifiedDate" class="form-control" />
-                <span asp-validation-for="penaltyTypeModel.modifiedDate" class="text-danger"></span>
+                <label asp-for="penaltyTypeModel.penaltyMethod" class="control-label">Method</label>
+                <select asp-for="penaltyTypeModel.penaltyMethod" class="form-control" asp-items="@Html.GetEnumSelectList<Models.penaltyMethod>()"></select>
+                <span asp-validation-for="penaltyTypeModel.penaltyMethod" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="penaltyTypeModel.modifiedBy" class="control-label"></label>
-                <input asp-for="penaltyTypeModel.modifiedBy" class="form-control" />
-                <span asp-validation-for="penaltyTypeModel.modifiedBy" class="text-danger"></span>
+                <label asp-for="penaltyTypeModel.penaltyValidity" class="control-label">Validity In Months</label>
+                <input asp-for="penaltyTypeModel.penaltyValidity" class="form-control" type="number"/>
+                <span asp-validation-for="penaltyTypeModel.penaltyValidity" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
+                <label asp-for="penaltyTypeModel.penaltyRate" class="control-label">Rate</label>
+                <input asp-for="penaltyTypeModel.penaltyRate" class="form-control" type="number"/>
+                <span asp-validation-for="penaltyTypeModel.penaltyRate" class="text-danger"></span>
+            </div>
+           
+            <div class="form-group d-flex justify-content-end">
+                <input type="submit" value="Save" class="btn btn-success m-2" />
             </div>
         </form>
     </div>
 </div>
 
 <div>
-    <a asp-page="Index">Back to List</a>
+    <a asp-page="Index">View All Penalty Types</a>
 </div>
 
 @section Scripts {

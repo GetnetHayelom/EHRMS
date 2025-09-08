@@ -22,7 +22,24 @@ namespace PIS2.Models
         public ICollection<jobPlacementHistoryModel>? JobPlacementHistories { get; set; } = null!;
         public virtual ICollection<jobRequirementModel>? JobRequirements { get; set; } = null!;
         public virtual ICollection<overtimeRecordModel>? OvertimeRecords { get; set; } = null!;
+        public virtual ICollection<departmentHistoryModel>? DepartmentHistories { get; set; } = null!;
+        public virtual ICollection<structureModel>? Structures { get; set; } = null!;
         public string modifiedBy { get; set; }
         public departmentModel() { }
+    }
+
+    public class departmentHistoryModel
+    {
+        [Key]
+        public int departmentHistoryID { get; set; }
+        public int departmentID { get; set; }
+        public virtual departmentModel? departmentModel { get; } = null!;
+        public string departmentName { get; set; }
+        public mainStatus departmentStatus { get; set; }
+        public int employmentID { get; set; }
+        public virtual employmentModel? employmentModel { get; set; }
+        public string modifiedBy { get; set; }
+        public DateTime modifiedDate { get; set; }
+        public departmentHistoryModel() { }
     }
 }

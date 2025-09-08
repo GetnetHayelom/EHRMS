@@ -23,7 +23,7 @@ namespace PIS2.Pages.Department
         public departmentModel departmentModel { get; set; } = default!;
         public DepartmentSummary DepartmentSummary { get; set; }
         public double allowedLeave { get; set; }
-        public double leaveCost {  get; set; }
+        public double leaveCost { get; set; }
         public double overtimeCost { get; set; }
         public List<EducationLevelData> EducationLevels { get; set; }
         public List<NameAndCount> EmploymentTypes { get; set; }
@@ -37,49 +37,61 @@ namespace PIS2.Pages.Department
         public List<employmentModel> Employments { get; set; }
         public List<EmployeeView> EmploymentView { get; set; }
         public IList<leaveModel> leaveModel { get; set; } = default!;
+        
         public IList<overtimeRecordModel> overtimeModel { get; set; } = default!;
+        public List<shiftModel> Shifts { get; set; }
+        public List<workSiteModel> WorkSites { get; set; }
         public string ModifiedBy { get; set; }
+        public bool isManager { get; set; }
+        public bool isMember { get; set; }
+        public bool isDelegatee { get; set; }
+
 
         public async Task<IActionResult> OnGetAsync(int? id)
 
         {
-            //if (!User.IsInRole("MIE\\PMS_MANAGER"))
-            //{
-            //    return BadRequest();
-            //}
+            Shifts=await _context.Shifts.Where(s => s.shiftStatus == mainStatus.Active).ToListAsync();
+            WorkSites = await _context.WorkSites.Where(s => s.workSiteStatus == mainStatus.Active).ToListAsync();
+
+            int personID = _context.Users.FirstOrDefault(u => u.userName == User.Identity.Name).personID;
+            Console.WriteLine("SELECTED PERSON ID IS________________" + personID);
+            int empID = _context.Employments.FirstOrDefault(e => e.personID == personID && e.employmentStatus == mainStatus.Active).employmentID;
+            Console.WriteLine("SELECTED EMPLOYEE ID IS________________" + empID);
+            int depID = _context.JobPlacements.FirstOrDefault(jp => jp.employmentID == empID && jp.jobPlacementStatus == mainStatus.Active).departmentID;
+            
             if (id == null || id==0)
             {
-                int personID = _context.Users.FirstOrDefault(u => u.userName == User.Identity.Name).personID;
-                Console.WriteLine("SELECTED PERSON ID IS________________" + personID);
-                int empID = _context.Employments.FirstOrDefault(e => e.personID == personID && e.employmentStatus == mainStatus.Active).employmentID;
-                Console.WriteLine("SELECTED EMPLOYEE ID IS________________" + empID);
-                int depID = _context.JobPlacements.FirstOrDefault(jp => jp.employmentID == empID && jp.jobPlacementStatus == mainStatus.Active).departmentID;
+                
 
                 id = depID;
+
+                
                 Console.WriteLine("SELECTED DEPARTMENT ID IS________________" + depID);
                 if (id == null || id == 0)
                 {
                     return NotFound();
                 }
             }
-
-            var departmentmodel = await _context.Departments.Include(d => d.companyModel).FirstOrDefaultAsync(m => m.departmentID == id);
-            if (departmentmodel == null)
-            {
-                return NotFound();
-            }
-            else
-            {
-               
-                departmentModel = departmentmodel;
-                Jobs = _context.JobPlacements.Where(j => j.departmentID ==departmentModel.departmentID && j.jobPlacementStatus == mainStatus.Active)
-                    .Include(j => j.employmentModel).ThenInclude(e => e.personModel)
-                    .Include(j => j.employmentModel).ThenInclude(e => e.employmentTypeModel)
-                    .Include(j=> j.jobModel).ToList();
+            
+            var departmentmodel = await _context.Departments.Include(d => d.companyModel)
+                .Include(d => d.employmentModel).ThenInclude(e => e.personModel)
+                .OrderBy(d => d.departmentName).FirstOrDefaultAsync(m => m.departmentID == id);
+            
+            departmentModel = departmentmodel;
+                isMember = depID== id? true: false;
+                isManager= empID == departmentModel.employmentID? true: false;
+                isDelegatee = _context.Delegations
+                .Where(d => d.delegationFrom == departmentModel.employmentID && d.delegationStatus == mainStatus.Active)?
+                .FirstOrDefault()?.delegationTo ==empID ? true: false;
+                
+            Jobs = _context.JobPlacements.Where(j => j.departmentID ==departmentModel.departmentID && j.jobPlacementStatus == mainStatus.Active)
+                .Include(j => j.employmentModel).ThenInclude(e => e.personModel)
+                .Include(j => j.employmentModel).ThenInclude(e => e.employmentTypeModel)
+                .Include(j=> j.jobModel).ToList();
+            Employments =Jobs.Select(j => j.employmentModel).Distinct().ToList();
                 //Jobs = _context.JobPlacements.Include(j => j.employmentModel).ThenInclude(e => e.personModel).Where(j => j.departmentID == id).ToList();
                 //Employments = _context.Employments.Include(e => e.employmentTypeModel).Distinct().Where(e => Jobs.Select(j => j.employmentID).Contains(e.employmentID)).ToList();
-                Employments =Jobs.Select(j => j.employmentModel).Distinct().ToList();
-
+                
 
                 
                 EmploymentView =Employments.Select(ev => new EmployeeView
@@ -87,8 +99,8 @@ namespace PIS2.Pages.Department
                         Employment = ev,
                         Job = ev.JobPlacements.Where(j => j.jobPlacementStatus == mainStatus.Active).First(),
                         Person = ev.personModel,
-                        //WorkSite = _context.SiteAssignments.OrderByDescending(j => j.modifiedDate).First(ws => ws.employmentID == ev.employmentID).workSiteModel ?? new workSiteModel(),
-                        //Shift = _context.ShiftAssignments.OrderByDescending(j => j.modifiedDate).First(ws => ws.employmentID == ev.employmentID).shiftModel ?? new shiftModel(),
+                        WorkSite = _context.SiteAssignments.OrderByDescending(j => j.modifiedDate).First(ws => ws.employmentID == ev.employmentID).workSiteModel ?? new workSiteModel(),
+                        Shift = _context.ShiftAssignments.OrderByDescending(sa => sa.modifiedDate).First(sa => sa.employmentID == ev.employmentID).shiftModel ?? new shiftModel(),
                         Leave = _core.leaveSummary(ev.employmentID)
                     }).OrderBy(ev => ev.Person.personFirstName).ThenBy(ev => ev.Person.personFatherName).ThenBy(ev => ev.Person.personLastName).ToList();
 
@@ -151,48 +163,130 @@ namespace PIS2.Pages.Department
                 overtimeModel =await _context.OvertimeRecords.Where(ot => ot.overtimeRecordStatus == overtimeStatus.Hold && Employments.Select(e => e.employmentID).Contains(ot.employmentID))
                     .Include(ot => ot.employmentModel)
                     .Include(ot => ot.overtimeModel).ToListAsync();
-            }
+            
             return Page();
         }
-        [HttpPost]
-        public async Task<JsonResult> OnPostApprove([FromBody] List<LeaveDecision> decisions)
+        [ValidateAntiForgeryToken]
+        public async Task<JsonResult> OnPostApprove(LeaveDecision decision)
         {
             // Check if the decisions list is null or empty
-            if (decisions == null || decisions.Count == 0)
+            if (decision == null )
             {
                 return new JsonResult(new { success = false, message = "No decisions received." });
             }
             try
             {
-                foreach (var decision in decisions)
+                if(decision.actionType == 1)
                 {
-                    int leaveId = decision.LeaveId;
-                    string action = decision.Action;
+                    int leaveId = decision.leaveId;
+                    int action = decision.actionId;
                     var leave = await _context.Leaves.FindAsync(leaveId);
                     if (leave != null)
                     {
                         leave.modifiedBy = User.Identity.Name!;
-                        Console.WriteLine("######################Error is not here");
-                        leave.leaveStatus = action == "Approve"
+                        leave.leaveStatus = action == 1
                             ? Models.leaveStatus.Approved
                             : Models.leaveStatus.Declined;
                     }
-                }
 
-                await _context.SaveChangesAsync();
-                return new JsonResult(new { success = true });
+                    _context.Attach(leave).State = EntityState.Modified;
+                    await _context.SaveChangesAsync();
+                    return new JsonResult(new { success = true });
+                }else if (decision.actionType == 2)
+                {
+                    int leaveId = decision.leaveId;
+                    int action = decision.actionId;
+                    var OTR = await _context.OvertimeRecords.FindAsync(leaveId);
+                    if (OTR != null)
+                    {
+                        OTR.modifiedBy = User.Identity.Name!;
+                        OTR.overtimeRecordStatus = action == 1
+                            ? Models.overtimeStatus.Approved
+                            : Models.overtimeStatus.Void;
+                    }
+                    _context.Attach(OTR).State = EntityState.Modified;
+                    await _context.SaveChangesAsync();
+                    return new JsonResult(new { success = true });
+                }
+                
+                
             }
             catch (Exception ex)
             {
                 return new JsonResult(new { success = false, message = ex.Message });
             }
+            return new JsonResult(new { success = false, message = "No Action" });
+        }
+        // Inside your PageModel class
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> OnPostUpdateShiftAsync([FromBody] ShiftUpdateRequest request)
+        {
+            
+  
+            var employmentId = request.EmploymentId;
+            var shiftId = request.ShiftId;
+            var target = request.Target;
+            // 1. Return a JSON error for bad input
+            if (employmentId <= 0 || shiftId <= 0)
+            {
+                return new JsonResult(new { success = false, message = "Invalid employment or shift ID." });
+            }
+
+            // 2. Return a JSON error if the record is not found
+            var employment = await _context.Employments.FindAsync(employmentId);
+            if (employment == null)
+            {
+                return new JsonResult(new { success = false, message = "Employment record not found." });
+            }
+
+            if(target == 1)
+            {
+                // Your database update logic
+                var shiftAssignment = new shiftAssignmentModel()
+                {
+                    modifiedBy = User.Identity?.Name!,
+                    modifiedDate = DateTime.Now,
+                    employmentID = employmentId,
+                    shiftID = shiftId
+                };
+                _context.ShiftAssignments.Add(shiftAssignment);
+                await _context.SaveChangesAsync();
+
+                // 3. Return a JSON success response
+                return new JsonResult(new { success = true, message = "Shift updated successfully!" });
+            }
+            else if(target == 2)
+            {
+                var siteAssignment = new siteAssignmentModel()
+                {
+                    modifiedBy = User.Identity?.Name!,
+                    modifiedDate = DateTime.Now,
+                    employmentID = employmentId,
+                    workSiteID = shiftId
+                };
+                _context.SiteAssignments.Add(siteAssignment);
+                await _context.SaveChangesAsync();
+
+                // 3. Return a JSON success response
+                return new JsonResult(new { success = true, message = "Worksite updated successfully!" });
+            }
+            return new JsonResult(new { success = true, message = "No shift or site updated successfully!" });
+        }
+        public class ShiftUpdateRequest
+        {
+            public int ShiftId { get; set; }
+            public int EmploymentId { get; set; }
+            public int Target { get; set; } 
+            
         }
 
     }
 
     public class LeaveDecision
     {
-        public int LeaveId { get; set; }
-        public string Action { get; set; }
+        public int leaveId { get; set; }
+        public int actionId { get; set; }
+        public int actionType { get; set; }
+        
     }
 }

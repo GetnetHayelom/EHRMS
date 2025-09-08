@@ -25,6 +25,7 @@ namespace PIS2.Pages.OvertimeRecord
         public string givenID { get; set; }
         public string message { get; set; }
         public List<overtimeRecordModel> OtRecords { get; set; }
+       
         public IActionResult OnGet(int id)
         {
 
@@ -90,7 +91,7 @@ namespace PIS2.Pages.OvertimeRecord
 
             var shift = _context.ShiftAssignments.OrderByDescending(sa => sa.modifiedDate).FirstOrDefault(sa => sa.employmentID == empID).shiftModel ?? _context.Shifts.FirstOrDefault();
             Employment = _context.Employments.FirstOrDefault(e => e.employmentID == empID) ?? new employmentModel();
-            depID = _context.JobPlacements.FirstOrDefault(jp => jp.employmentID == Employment.employmentID && jp.jobPlacementStatus == mainStatus.Active).departmentID;
+            depID = _context.JobPlacements.FirstOrDefault(jp => jp.employmentID == Employment.employmentID).departmentID;
 
             var nightOt = _context.Overtimes.FirstOrDefault(o => o.overtimeName.ToLower() == "night" && o.overtimeStatus == mainStatus.Active);
             var normalOt = _context.Overtimes.FirstOrDefault(o => o.overtimeName.ToLower() == "normal" && o.overtimeStatus == mainStatus.Active);
@@ -101,10 +102,12 @@ namespace PIS2.Pages.OvertimeRecord
             TimeSpan otEnd = overtimeRecordModel.overtimeRecordEndTime;
             TimeSpan shiftStart = shift.shiftStart;
             TimeSpan shiftEnd = shift.shiftEnd;
+            TimeSpan shiftEnd2 = shift.shiftEnd;
 
-            if(otStart > otEnd)
+            if (otStart > otEnd)
             {
                 ModelState.AddModelError("","Overtime end time must be later than start time!");
+                LoadPageData(empID);
                 return Page();
             }
 
@@ -262,7 +265,7 @@ namespace PIS2.Pages.OvertimeRecord
             var savedIds = new List<int>();
             if (records.Count > 0)
             {
-                Console.WriteLine(records.Count + "Motherfucking oties!!!!!!!!!!!!!!!!!!!!!!!!!!");
+                
                 _context.OvertimeRecords.AddRange(records);
                 try
                 {
@@ -279,7 +282,7 @@ namespace PIS2.Pages.OvertimeRecord
             }
             else
             {
-                Console.WriteLine(records.Count + "It IS Motherfucking oties!!!!!!!!!!!!!!!!!!!!!!!!!!");
+                
                 return Page();
             }
 
@@ -331,6 +334,24 @@ namespace PIS2.Pages.OvertimeRecord
                 date.Date >= h.holidayStart.Date &&
                 date.Date <= (h.holidayEnd == default ? h.holidayStart.Date : h.holidayEnd.Date)
             );
+        }
+
+
+        private void LoadPageData(int employmentId)
+        {
+            ViewData["employmentID"] = new SelectList(_context.Employments, "employmentID", "givenID");
+            ViewData["overtimeID"] = new SelectList(_context.Overtimes, "overtimeID", "overtimeName");
+
+            EmployeeID = employmentId;
+            TempData["MyNumber"] = EmployeeID;
+
+            Employment = _context.Employments.FirstOrDefault(e => e.employmentID == employmentId) ?? new employmentModel();
+            Person = _context.Persons.FirstOrDefault(e => e.personID == Employment.personID) ?? new personModel();
+
+            OtRecords = _context.OvertimeRecords
+                .Where(e => e.overtimeRecordStatus == overtimeStatus.Hold && e.employmentID == EmployeeID)
+                .Include(otr => otr.overtimeModel)
+                .ToList();
         }
 
 

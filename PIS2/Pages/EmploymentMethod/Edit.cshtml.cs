@@ -42,8 +42,19 @@ namespace PIS2.Pages.EmploymentMethod
         // For more information, see https://aka.ms/RazorPagesCRUD.
         public async Task<IActionResult> OnPostAsync()
         {
+            ModelState.Clear();
+            employmentMethodModel.modifiedBy = User.Identity.Name;
+            employmentMethodModel.modifiedDate = DateTime.Now;
             if (!ModelState.IsValid)
             {
+                foreach (var kv in ModelState)
+                {
+                    foreach (var error in kv.Value.Errors)
+                    {
+                        Console.WriteLine($"{kv.Key} --> {error.ErrorMessage}");
+                    }
+                    Console.WriteLine(kv.ToString());
+                }
                 return Page();
             }
 

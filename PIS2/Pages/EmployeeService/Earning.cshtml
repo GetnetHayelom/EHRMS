@@ -1,0 +1,167 @@
+﻿@page
+@model PIS2.Pages.EmployeeService.EarningModel
+
+@{
+    ViewData["Title"] = "Edit Employment";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+<h1 class="fw-bold">Earnings</h1>
+<h3 class="fw-bold">Earnings Detail </h3>
+<hr />
+<div class="">
+    <form method="get" class="d-print-none">
+        <div class="d-flex justify-content-between">
+            @if(Model.EmpSelected){
+                <h4 class="fw-bold" onclick="location.href='@Url.Page("/Person/Details", new { id = Model.personModel.personID })'" style="cursor:pointer;"><u>@Model.personModel.personFullName</u></h4>
+            }
+            <div class="d-flex m-2">
+                <input asp-for="employmentModel.givenID" id="givenID" class="form-control me-2" placeholder="Enter Given ID" name="givenID" />
+                <button type="submit" class="btn btn-primary" id="goButton">Go</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+@if(Model.EmpSelected){
+    <div class="container print-full-width">
+
+    <!--personal info-->
+    <div class="row">
+        <h4 class="bg-dark text-white fw-bold p-2">Employment Information</h4>
+       
+           
+        <div class="d-flex flex-wrap">
+            <dl class="d-flex flex-wrap">
+                <div class="d-flex justify-content-start me-4">
+                    <dt class="">Employee ID:</dt>
+                    <dd class="text-decoration-underline fw-bold">@Model.employmentModel.givenID</dd>
+                </div>
+                <div class="d-flex justify-content-start me-4">
+                    <dt class="">Name:</dt>
+                    <dd class="text-decoration-underline fw-bold">@Model.personModel.personFullName</dd>
+                </div>
+                <div class="d-flex justify-content-start me-4">
+                    <dt class="">Job Title:</dt>
+                    <dd class="text-decoration-underline fw-bold">@Model.jobPlacementModel?.jobModel?.jobTitle</dd>
+                </div>
+                    
+                <div class="d-flex justify-content-start me-4">
+                    <dt>Salary:</dt>
+                    <dd class="text-decoration-underline fw-bold">@Model.jobPlacementModel?.jobPlacementSalary</dd>
+                </div>
+                <div class="d-flex justify-content-start me-4">
+                    <dt class="">Grade:</dt>
+                    <dd class="text-decoration-underline fw-bold">@Model.jobPlacementModel?.jobStepModel?.jobGradeModel?.jobGradeName</dd>
+                </div>
+                <div class="d-flex justify-content-start me-4">
+                    <dt class="">Step:</dt>
+                    <dd class="text-decoration-underline fw-bold">@Model.jobPlacementModel?.jobStepModel?.jobStepName</dd>
+                </div>
+                <div class="d-flex justify-content-start me-4">
+                    <dt class="">Department:</dt>
+                    <dd class="text-decoration-underline fw-bold">@Model.jobPlacementModel?.departmentModel?.departmentName</dd>
+                </div>
+                <div class="d-flex justify-content-start me-4">
+                    <dt class="">Company:</dt>
+                    <dd class="text-decoration-underline fw-bold">@Model.jobPlacementModel?.departmentModel?.companyModel?.companyName</dd>
+                </div>
+            </dl>
+        </div>
+
+        <div>
+            <h4 class="bg-dark text-white fw-bold p-2">Allowance Details</h4>
+            <table class="table table-bordered table-striped table-hover">
+                <thead class="bg-info text-white">
+                    <tr>
+                        <th>S/No</th>
+                        <th>Allowance Type</th>
+                            <th>Allowance Amount</th>
+                            <th>Time Bounded</th>
+                        <th>start Date</th>
+                        <th>End Date</th>
+                            
+                    </tr>
+                </thead>
+                <tbody>
+                @{
+                    int index = 1;
+                }
+                @foreach (var item in Model.AllowanceAssignments)
+                {
+                    <tr>
+                        <td>@index</td>
+                        <td>@item.allowanceModel?.allowanceName</td>
+                        <td>@item.allowanceAssignmentAmount</td>
+                        <td>@item.allowanceModel?.allowanceDuration</td>
+                        <td>@item.allowanceAssignmentDate</td>
+                        <td>@item.allowanceAssignmentEndDate</td>
+                    </tr>
+                    index++;
+                }
+                
+                </tbody>
+            </table>
+        </div>
+
+            <div>
+                <h4 class="bg-dark text-white fw-bold p-2">Pending Overtime</h4>
+                <table class="table table-bordered table-striped table-hover">
+                    <thead class="bg-info text-white">
+                        <tr>
+                            <th>S/No</th>
+                            <th>Overtime Type</th>
+                            <th>Overtime Date</th>
+                            <th>Time</th>
+                            <th>Cost</th>
+
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @{
+                            int index1 = 1;
+                            foreach (var item in Model.OvertimeRecords)
+                            {
+                                <tr>
+                                    <td>@index1</td>
+                                    <td>@item.overtimeModel?.overtimeName</td>
+                                    <td>@item.overtimeRecordDate</td>
+                                    <td>@item.overtimeRecordEndTime - @item.overtimeRecordStartTime</td>
+                                    <td>@item.GetOtCost</td>
+                                   
+                                </tr>
+                                index1++;
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <hr />
+            <dl class="d-flex justify-content-between">
+                <div>
+                    <dt>Total Allowance</dt>
+                    <dd>@Math.Round(Model.AllowanceAssignments.Sum(aa => aa.allowanceAssignmentAmount),2)</dd>
+                </div>
+                <div>
+                    <dt>Total Overtime</dt>
+                    <dd>@Math.Round(Model.OvertimeRecords.Sum(otr => otr.GetOtCost),2)</dd>
+                </div>
+                <div>
+                    <dt>Gross</dt>
+                    <dd>@Math.Round(Model.Gross, 2)</dd>
+                </div>
+            </dl>
+     
+    </div>
+ 
+</div>
+}
+<div class="d-flex justify-content-end d-print-none">
+    
+    @await Html.PartialAsync("print")
+</div>
+<div class="d-print-none"><a asp-page="./Index">View All Employees List</a></div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

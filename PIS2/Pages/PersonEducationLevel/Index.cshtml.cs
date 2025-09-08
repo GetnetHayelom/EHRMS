@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using PIS2.Models;
+using PIS2.Views;
 
 namespace PIS2.Pages.PersonEducationLevel
 {
@@ -19,6 +20,7 @@ namespace PIS2.Pages.PersonEducationLevel
         }
 
         public IList<personEducationLevelModel> personEducationLevelModel { get;set; } = default!;
+        public IList<CertificationView> CertificationSummary { get;set; }
 
         public async Task OnGetAsync()
         {
@@ -28,6 +30,22 @@ namespace PIS2.Pages.PersonEducationLevel
                 .OrderBy(p => p.personModel.personFirstName)
                 .ThenBy(p => p.personModel.personFatherName)
                 .ThenBy(p => p.personModel.personLastName).ToListAsync();
+
+            var Certifications = _context.PersonEducationLevels
+                .Include(pe => pe.educationLevelModel)
+                .Include(pe => pe.personModel)
+                .GroupBy(pe => pe.educationLevelModel.educationLevelCategory)
+                .Select(g => new CertificationView
+                {
+                    CertificationType = g.Key,
+                    MaleCount = g.Count(pe => pe.personModel.personGender == Gender.Male),
+                    FemaleCount = g.Count(pe => pe.personModel.personGender == Gender.Female),
+                    TotalCount = g.Count()
+                })
+                .ToList();
+
+            CertificationSummary = Certifications;
+
         }
     }
 }

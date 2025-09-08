@@ -122,7 +122,7 @@ namespace PIS2.Models
         public mainStatus employmentMethodStatus { get; set; } = mainStatus.Active;
         public virtual ICollection<employmentModel>? Employments { get; set; }
         public virtual ICollection<employmentMethodHistoryModel>? EmploymentMethodHistories { get; set; }
-        public DateTime modifiedDate { get; set; }
+        public DateTime? modifiedDate { get; set; }
 
         public string modifiedBy { get; set; }
         public employmentMethodModel(){}

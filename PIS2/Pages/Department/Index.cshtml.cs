@@ -24,7 +24,9 @@ namespace PIS2.Pages.Department
         {
             departmentModel = await _context.Departments
                 .Include(d => d.companyModel)
-                .Include(d => d.subAccountModel).ToListAsync();
+                .Include(d => d.subAccountModel)
+                .Include(d => d.employmentModel).ThenInclude(e => e.personModel)
+                .OrderBy(d => d.departmentName).ToListAsync();
         }
     }
 }

@@ -1,0 +1,37 @@
+﻿@page
+@model PIS2.Pages.Structure.IndexModel
+
+<h2 class="fw-bold">Structures</h2>
+<p>
+<a asp-page="Create" class="btn btn-primary">Create New Structure</a></p>
+@await Html.PartialAsync("filter")
+<table class="table table-bordered table-striped table-hover">
+    <thead class="bg-dark text-white">
+        <tr>
+            <th>Department</th>
+            <th>Job</th>
+            <th>Required</th>
+            <th>Status</th>
+            <th>Reports To</th>
+            <th>Modified By</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.Structures)
+        {
+            <tr>
+                <td>@item.departmentModel?.departmentName</td>
+                <td>@item.jobModel?.jobTitle</td>
+                <td>@item.requiredNumber</td>
+                <td>@item.structureStatus</td>
+                <td>@item.ReportsTo?.departmentModel?.departmentName, @item.ReportsTo?.jobModel?.jobTitle</td>
+                <td>@item.modifiedBy</td>
+                <td>
+                    <a asp-page="Edit" asp-route-id="@item.structureID">Edit</a> |
+                    <a asp-page="Details" asp-route-id="@item.structureID">Details</a> 
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

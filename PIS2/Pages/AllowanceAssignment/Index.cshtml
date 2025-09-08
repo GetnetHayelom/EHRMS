@@ -6,19 +6,24 @@
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
 
-<h1 class="fw-bold">Allowance Assignments</h1>
+
 
 <div class="d-flex justify-content-between">
+    <div>
+        <h1 class="fw-bold flex-grow">Allowance Assignments</h1>
+        <h4 class="fw-bold">@Model.Company</h4>
+    </div>
+    
     <div>
         <a asp-page="Create" class="btn btn-primary m-2">New Allowance Assignment</a>
         <a asp-page="Create" class="btn btn-primary m-2" data-bs-toggle="collapse" data-bs-target="#rawView">List View</a>
         <a asp-page="Create" class="btn btn-primary m-2" data-bs-toggle="collapse" data-bs-target="#groupDepView">Department View</a>
     </div>
-    <div>
-        <h4 class="fw-bold">Total No of Allowance:@Model.allowanceCount</h4>
-        <h4 class="fw-bold">Sum No of Allowance:@Math.Round(Model.allowanceSum, 2) </h4>
-    </div>
-    
+        
+</div>
+<div class="d-flex justify-content-between">
+    <p class="fw-bold">Total No of Allowance:<u>@Model.allowanceCount</u></p>
+    <p class="fw-bold">Total Sum of Allowance:<u>@Math.Round(Model.allowanceSum, 2).ToString("N2")</u></p>
 </div>
 <hr />
 <div id="parentDiv">
@@ -93,22 +98,36 @@
     <!--Group View-->
     <div id="groupDepView" class="show" data-bs-parent="#parentDiv">
         <table class="table table-striped table-hover">
-
+            <thead class="bg-info text-white">
+                <tr>
+                    <th>S/No</th>
+                    <th>Department</th>
+                    <th>Number of Allowance</th>
+                    <th>Total Allowance</th>
+                </tr>
+            </thead>
             <tbody id="departmentsAccordion">
                 @{
                     int index = 0;
+                    int rowCounter = 1;
                 }
                 @foreach (var dep in Model.GroupedAllowance)
                 {
                     var collapseId = $"collapse{index}";
-                    <tr class="">
-                        <td colspan="6">
-                            <h4 class="fw-bold"
-                                data-bs-toggle="collapse"
-                                data-bs-target="#@collapseId"
-                                style="cursor:pointer;">
-                                @dep.Name : @dep.Count Allowances/ @Math.Round(dep.Sum, 2) Birr
-                            </h4>
+                    <tr class="" data-bs-toggle="collapse"
+                        data-bs-target="#@collapseId"
+                        style="cursor:pointer;">
+                        <td>@rowCounter</td>
+                        <td>
+                            @dep.Name
+                           
+                        </td>
+                        <td>
+                            @dep.Count
+
+                        </td>
+                        <td>
+                            @Math.Round(dep.Sum, 2).ToString("N2")
 
                         </td>
 
@@ -184,9 +203,12 @@
                         </td>
                     </tr>
                     index++;
-
+                    rowCounter++;
                 }
             </tbody>
         </table>
     </<div>
+</div>
+<div class="d-flex justify-content-end">
+   @await Html.PartialAsync("print")
 </div>

@@ -6,9 +6,9 @@
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
 
-<h1>Edit</h1>
+<h1 class="fw-bold">Employment Method</h1>
 
-<h4>employmentMethodModel</h4>
+<h4 class="fw-bold">Update Employment Method</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
@@ -16,39 +16,30 @@
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="employmentMethodModel.employmentMethodID" />
             <div class="form-group">
-                <label asp-for="employmentMethodModel.employmentMethodName" class="control-label"></label>
+                <label asp-for="employmentMethodModel.employmentMethodName" class="control-label">Method Name</label>
                 <input asp-for="employmentMethodModel.employmentMethodName" class="form-control" />
                 <span asp-validation-for="employmentMethodModel.employmentMethodName" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="employmentMethodModel.employmentMethodDescription" class="control-label"></label>
+                <label asp-for="employmentMethodModel.employmentMethodDescription" class="control-label">Decription</label>
                 <input asp-for="employmentMethodModel.employmentMethodDescription" class="form-control" />
                 <span asp-validation-for="employmentMethodModel.employmentMethodDescription" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="employmentMethodModel.employmentMethodStatus" class="control-label"></label>
-                <select asp-for="employmentMethodModel.employmentMethodStatus" class="form-control"></select>
+                <label asp-for="employmentMethodModel.employmentMethodStatus" class="control-label">Status</label>
+                <select asp-for="employmentMethodModel.employmentMethodStatus" class="form-control" asp-items="@Html.GetEnumSelectList<Models.mainStatus>()"></select>
                 <span asp-validation-for="employmentMethodModel.employmentMethodStatus" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="employmentMethodModel.modifiedDate" class="control-label"></label>
-                <input asp-for="employmentMethodModel.modifiedDate" class="form-control" />
-                <span asp-validation-for="employmentMethodModel.modifiedDate" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="employmentMethodModel.modifiedBy" class="control-label"></label>
-                <input asp-for="employmentMethodModel.modifiedBy" class="form-control" />
-                <span asp-validation-for="employmentMethodModel.modifiedBy" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
+            
+            <div class="form-group d-flex justify-content-end">
+                <input type="submit" value="Save" class="btn btn-success m-2" />
             </div>
         </form>
     </div>
 </div>
 
 <div>
-    <a asp-page="./Index">Back to List</a>
+    <a asp-page="./Index">View All Employment Methods</a>
 </div>
 
 @section Scripts {

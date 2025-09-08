@@ -10,11 +10,11 @@
 
 <h4 class="fw-bold">Add New Certification</h4>
 <hr />
-<div class="row">
+<div class="d-flex justify-content-between">
     <div class="col-md-4">
         <form method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="personEducationLevelModel.modifiedBy" value="@User.Identity.Name" />
+            
             <div class="form-group">
                 <label asp-for="personEducationLevelModel.personID" class="control-label">Person Name</label>
                 <select asp-for="personEducationLevelModel.personID" class ="form-control" asp-items="ViewBag.personID"></select>
@@ -22,6 +22,11 @@
             <div class="form-group">
                 <label asp-for="personEducationLevelModel.educationLevelID" class="control-label">Certification Name</label>
                 <select asp-for="personEducationLevelModel.educationLevelID" class ="form-control" asp-items="ViewBag.educationLevelID"></select>
+            </div>
+            <div class="form-group">
+                <label asp-for="personEducationLevelModel.educationField" class="control-label">Date Issued</label>
+                <input asp-for="personEducationLevelModel.educationField" class="form-control" type="date" />
+                <span asp-validation-for="personEducationLevelModel.educationField" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="personEducationLevelModel.educationLevelDate" class="control-label">Date Issued</label>
@@ -44,9 +49,42 @@
                 <span asp-validation-for="personEducationLevelModel.educationLevelNumber" class="text-danger"></span>
             </div>
             <div class="form-group d-flex justify-content-end">
-                <input type="submit" value="Create" class="btn btn-primary m-2" />
+                <input type="submit" value="Save" class="btn btn-success m-2" />
             </div>
         </form>
+    </div>
+
+    <div class="flex-grow">
+        <h4 class="fw-bold">Certifications</h4>
+        <table class="table table-bordered table-striped table-hover">
+            <thead class="bg-info text-white">
+                <tr>
+                    <th>Level</th>
+                    <th>Category</th>
+                    <th>Field</th>
+                    <th>Mark</th>
+                    <th>Issued Date</th>
+                    <th>Institution</th>
+                    <th>Certification Number</th>
+                    <th>Modified By</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach(var item in Model.CertificationList)
+                {
+                    <tr>
+                        <td>@item?.educationLevelModel?.educationLevelName</td>
+                        <td>@item?.educationLevelModel?.educationLevelCategory</td>
+                        <td>@item?.educationField</td>
+                        <td>@item?.educationLevelMark</td>
+                        <td>@item?.educationLevelDate</td>
+                        <td>@item?.educationLevelInstitutionName</td>
+                        <td>@item?.educationLevelNumber</td>
+                        <td>@item?.modifiedBy</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
     </div>
 </div>
 

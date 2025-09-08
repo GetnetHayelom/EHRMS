@@ -41,7 +41,7 @@ namespace PIS2.Pages.AllowanceAssignment
             else
             {
                 allowanceAssignmentModel = allowanceassignmentmodel;
-                allowanceAssignments = await _context.AllowanceAssignments.Where(aa => aa.employmentID == allowanceAssignmentModel.employmentID
+                allowanceAssignments = await _context.AllowanceAssignments.Include(aa => aa.allowanceModel).Where(aa => aa.employmentID == allowanceAssignmentModel.employmentID
                 && aa.allowanceID != allowanceAssignmentModel.allowanceID).ToListAsync();
             }
             return Page();

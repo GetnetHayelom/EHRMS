@@ -7,22 +7,21 @@
     int num = 0;
 }
 
-<h1>Overtime</h1>
+<h1 class="fw-bold">Overtime</h1>
 
-<h4 class="fw-bold">Overtime Record Form</h4>
 <hr />
 <div class="d-flex justify-content-between">
     <div class="col-md-4">
         <div class="">
             <form method="get" class="d-print-none">
                 <div class="d-flex flex-column">
-                    <h4 class="fw-bold">Leave Request</h4>
+                    <h4 class="fw-bold">Overtime Record</h4>
                     <div class="d-flex">
                         <input asp-for="Employment.givenID" id="givenID" class="form-control me-2" placeholder="Enter ID" name="givenID" />
                         <button type="submit" class="btn btn-primary" id="goButton">Go</button>
                     </div>
-                    <h6 class="mt-2 mb-2"><u>@Model.Person.personFullName</u></h6>
-                    <h6 class="mt-2 mb-2"><u>@Model.Employment.employmentID</u></h6>
+                    <h4 class="fw-bold mt-2 mb-2"><u>@Model.Person.personFullName</u></h4>
+                    
                 </div>
             </form>
         </div>
@@ -52,7 +51,8 @@
                     <span asp-validation-for="overtimeRecordModel.overtimeRecordReason" class="text-danger"></span>
                 </div>
                 <div class="form-group d-flex justify-content-end">
-                    <input type="submit" value="Create" class="btn btn-success d-print-none" />
+                    <input type="submit" value="Save" class="btn btn-success d-print-none" />
+                    
                 </div>
             </form>
         }
@@ -89,8 +89,8 @@
                         num++;
                         <tr onclick="location.href='@Url.Page("Details", new {id = item.overtimeRecordID})'" style="cursor:pointer;">
                             <td>@num</td>
-                            <td>@item.overtimeRecordDate.ToString("dd MMM, yyyy")</td>
-                            <td>@item.overtimeModel.overtimeName</td>
+                            <td>@item.overtimeRecordDate.ToString("MM/dd/yyyy")</td>
+                            <td>@item.overtimeModel?.overtimeName</td>
                             <td>@item.overtimeRecordReason</td>
                             <td>@item.overtimeRecordStartTime.ToString(@"hh\:mm")</td>
                             <td>@item.overtimeRecordEndTime.ToString(@"hh\:mm")</td>
@@ -103,7 +103,7 @@
             </table>
         }else
         {
-            <h2 class="fw-bold">No Pending Overtime Records. Would you rather like to view your <a asp-page="./PersonOTR" asp-route-otrID="null" asp-route-empID="@Model.EmployeeID">Overtime History.</a></h2>
+            <p class="">No Pending Overtime Records. Would you rather like to view your <a asp-page="./PersonOTR" asp-route-otrID="null" asp-route-empID="@Model.EmployeeID">Overtime History.</a></p>
         }
     </div>
 </div>

@@ -6,11 +6,10 @@
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
 
-<h1>Companies</h1>
+<h1 class="fw-bold">Companies</h1>
 
 <p>
-    <a asp-page="Create">Add New Company</a>
-    
+    <a asp-page="Create" class="btn btn-primary">Add New Company</a>
 </p>
 @await Html.PartialAsync("filter")
 <table class="table table-striped table-hover" id="dataTable">
@@ -31,12 +30,12 @@
             <th>
                 Status
             </th>
-            <th>Actions</th>
+   
         </tr>
     </thead>
     <tbody>
 @foreach (var item in Model.companyModel) {
-        <tr>
+        <tr onclick="location.href='@Url.Page("/Management/CompanyP", new {id =item.companyID})'" style="cursor:pointer;">
             <td>
                 @Html.DisplayFor(modelItem => item.companyName)
             </td>
@@ -50,13 +49,19 @@
                 @Html.DisplayFor(modelItem => item.addressModel.addressFormatted)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.companyStatus)
+                    @if(item.companyStatus != Models.mainStatus.Active)
+                    {
+                        <p class="fw-bold text-danger">@Html.DisplayFor(modelItem => item.companyStatus)
+                        </p>
+                    }
+                    else{
+                         <p class="fw-bold text-success">
+                        @Html.DisplayFor(modelItem => item.companyStatus)
+                        </p>
+                        }
+                        
             </td>
-            <td>
-                <a asp-page="./Edit" asp-route-id="@item.companyID">Edit</a> |
-                <a asp-page="./Details" asp-route-id="@item.companyID">Details</a> |
-                <a asp-page="./Delete" asp-route-id="@item.companyID">Delete</a>
-            </td>
+
         </tr>
 }
     </tbody>

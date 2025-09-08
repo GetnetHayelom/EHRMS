@@ -6,25 +6,40 @@
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
 
-<h1>Index</h1>
+<h1 class="fw-bold">Penalty Types</h1>
 
 <p>
-    <a asp-page="Create">Create New</a>
+    <a asp-page="Create" class="btn btn-primary">New Penalty Type</a>
 </p>
-<table class="table">
-    <thead>
+<hr />
+<div class="d-flex">
+    @await Html.PartialAsync("filter")
+    @await Html.PartialAsync("print")
+</div>
+
+<table class="table table-bordered table-striped table-hover">
+    <thead class="bg-dark text-white">
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.penaltyTypeModel[0].penaltyName)
+                Penalty Name
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.penaltyTypeModel[0].penaltyTypeStatus)
+                Status
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.penaltyTypeModel[0].modifiedDate)
+                Method
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.penaltyTypeModel[0].modifiedBy)
+                Rate
+            </th>
+            <th>
+                Validty
+            </th>
+            <th>
+                Modified Date
+            </th>
+            <th>
+                Modified By
             </th>
             <th></th>
         </tr>
@@ -38,6 +53,15 @@
             <td>
                 @Html.DisplayFor(modelItem => item.penaltyTypeStatus)
             </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.penaltyMethod)
+                </td>
+                <td>
+                @Html.DisplayFor(modelItem => item.penaltyRate)
+            </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.penaltyValidity)
+                </td>
             <td>
                 @Html.DisplayFor(modelItem => item.modifiedDate)
             </td>
@@ -46,10 +70,12 @@
             </td>
             <td>
                 <a asp-page="./Edit" asp-route-id="@item.penaltyTypeID">Edit</a> |
-                <a asp-page="./Details" asp-route-id="@item.penaltyTypeID">Details</a> |
-                <a asp-page="./Delete" asp-route-id="@item.penaltyTypeID">Delete</a>
+                <a asp-page="./Details" asp-route-id="@item.penaltyTypeID">Details</a> 
+                
             </td>
         </tr>
 }
     </tbody>
 </table>
+
+

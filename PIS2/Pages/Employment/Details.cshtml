@@ -227,8 +227,17 @@
                         <u>@Model.employmentModel.TerminationModel.terminationReason</u>
                     </dd>
                 </div>
+                
+            }
+            else
+            {
+               
+                
             }
         </dl>
+        <div class="d-flex justify-content-end">
+            <a asp-page="/EmployeeService/Earning" asp-route-id="@Model.employmentModel.employmentID" class="btn btn-primary">View Earnings</a>
+        </div>
     </div>
     <div class="w-100">
     <hr />

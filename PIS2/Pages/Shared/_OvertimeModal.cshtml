@@ -1,0 +1,83 @@
+﻿@model PIS2.Pages.Department.DetailsModel
+
+<div class="modal fade" id="OTModal" tabindex="-1" aria-labelledby="OTModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            @Html.AntiForgeryToken()
+            <div class="modal-header">
+                <h5 class="modal-title" id="OTModalLabel">Active Overtime Records</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <table class="table table-striped table-hover">
+                    <thead class="bg-dark text-white">
+                        <tr>
+                            <th>Overtime No</th>
+                            <th>Employee ID</th>
+                            <th>Date</th>
+                            <th>From</th>
+                            <th>To</th>
+                            <th>Duration</th>
+                            <th>Type</th>
+                            <th>Reason</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.overtimeModel)
+                        {
+                            <tr>
+                                <td><a asp-page="/OvertimeRecord/Details" asp-route-id="@item.overtimeRecordID">@item.overtimeRecordID</a></td>
+                                <td>@item.employmentModel?.givenID</td>
+                                <td>@item.overtimeRecordDate.ToString("yyyy-MM-dd")</td>
+                                <td>@item.overtimeRecordStartTime.ToString(@"hh\:mm")</td>
+                                <td>@item.overtimeRecordEndTime.ToString(@"hh\:mm")</td>
+                                <td>@item.TimeElapsed</td>
+                                <td>@item.overtimeModel?.overtimeName</td>
+                                <td>@item.overtimeRecordReason</td>
+                                <td>@item.overtimeRecordStatus</td>
+                                <td class="d-flex justify-content-between flex-grow-1">
+                                    
+                                    <div class="btn-group w-100" role="group">
+                                        <input type="radio" class="btn-check approval-radio"
+                                            name="approvalStatus_@item.overtimeRecordID"
+                                            id="approve_@item.overtimeRecordID"
+                                            value="approve"
+                                               data-id="@item.overtimeRecordID"
+                                               data-action="1"
+                                               data-type="2">
+                                        <label class="btn btn-success rounded-circle d-flex align-items-center justify-content-center"
+                                            style="width:40px; height:40px;"
+                                            for="approve_@item.overtimeRecordID">
+                                            <i class="fas fa-check"></i>
+                                        </label>
+
+                                        <input type="radio" class="btn-check approval-radio"
+                                            name="approvalStatus_@item.overtimeRecordID"
+                                            id="reject_@item.overtimeRecordID"
+                                            value="reject"
+                                               data-id="@item.overtimeRecordID"
+                                               data-action="2"
+                                               data-type="2">
+                                        <label class="rounded-circle d-flex align-items-center justify-content-center text-danger"
+                                            style="width:40px; height:40px;"
+                                            for="reject_@item.overtimeRecordID">
+                                            <i class="fas fa-times"></i>
+                                        </label>
+                                    </div>
+
+                                   
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <a asp-page="./Details" asp-route-id="@Model.departmentModel.departmentID" class="btn btn-secondary">Close</a>
+
+            </div>
+        </div>
+    </div>
+</div>

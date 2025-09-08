@@ -18,6 +18,7 @@ namespace PIS2.Pages.PersonEducationLevel
             _context = context;
         }
 
+        public List<personEducationLevelModel> CertificationList { get; set; }
         public IActionResult OnGet(int? id)
         { 
             if (id != null)
@@ -29,7 +30,12 @@ namespace PIS2.Pages.PersonEducationLevel
                 ViewData["personID"] = new SelectList(_context.Persons.OrderBy(p => p.personFirstName).ThenBy(p => p.personFatherName).ThenBy(p => p.personLastName), "personID", "personFullName");
             }
             ViewData["educationLevelID"] = new SelectList(_context.EducationLevels, "educationLevelID", "educationLevelName");
-        
+            var certifications = _context.PersonEducationLevels.Where(pel => pel.personID == id).ToList();
+            if (certifications.Any())
+            {
+                CertificationList = certifications;
+            }
+            else { CertificationList = new List<personEducationLevelModel>(); }
             return Page();
         }
 
@@ -39,9 +45,19 @@ namespace PIS2.Pages.PersonEducationLevel
         // For more information, see https://aka.ms/RazorPagesCRUD.
         public async Task<IActionResult> OnPostAsync()
         {
-            
+            ModelState.Remove("personEducationLevelModel.modifiedBy");
+            personEducationLevelModel.modifiedBy = User.Identity?.Name ?? "N\\A";
+
             if (!ModelState.IsValid)
             {
+                foreach (var kv in ModelState)
+                {
+                    foreach (var error in kv.Value.Errors)
+                    {
+                        Console.WriteLine($"{kv.Key} --> {error.ErrorMessage}");
+                    }
+                    Console.WriteLine(kv.ToString());
+                }
                 return Page();
             }
 

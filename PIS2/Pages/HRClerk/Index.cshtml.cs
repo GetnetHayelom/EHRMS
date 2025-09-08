@@ -223,7 +223,7 @@ namespace PIS2.Pages.HRClerck
 
                     tableBody = string.Join("", AllowanceList.Select(a =>
                     {
-                        var url = Url.Page("/Termination/Details", new { id = a.allowanceAssignmentID });
+                        var url = Url.Page("/AllowanceAssignment/Details", new { id = a.allowanceAssignmentID });
                         var activeJobPlacement = a.employmentModel.JobPlacements.FirstOrDefault(j => j.jobPlacementStatus == mainStatus.Active);
 
                         string jobTitle = activeJobPlacement?.jobModel?.jobTitle ?? "N/A";

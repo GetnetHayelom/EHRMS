@@ -17,6 +17,7 @@ namespace PIS2.Models
         public DateTime? modifiedDate { get; set; } = DateTime.Now;
         public string modifiedBy { get; set; }
         public virtual List<delegationHistoryModel>? DelegationHistories { get; set; }
+        
 
         public delegationModel() { }
     }

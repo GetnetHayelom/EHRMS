@@ -9,12 +9,16 @@ namespace PIS2.Models
         public int employmentID { get; set; }
         public virtual employmentModel? employmentModel { get; set; }
         public DateTime penaltyIssueDate { get; set; } = DateTime.Now;
-        public String penaltyReason { get; set; }
+        public string penaltyReason { get; set; }
+        public string penaltyReference { get; set; }
+        public DateTime? penaltyStartDate { get; set; }
+        public DateTime? penaltyEndDate { get; set; }
         public int penaltyTypeID { get; set; }
         public penaltyStatus penaltyStatus { get; set; }
+        public decimal penaltyAmount { get; set; }
         public virtual penaltyTypeModel? penaltyTypeModel { get; set; }
         public string modifiedBy { get; set; }
-        public virtual ICollection<penaltyHistoryModel> PenaltyHistories { get; set; } 
+        public virtual ICollection<penaltyHistoryModel>? PenaltyHistories { get; set; } 
 
         public penaltyModel() { }
     }
@@ -34,7 +38,11 @@ namespace PIS2.Models
         [Key]
         public int penaltyTypeID { get; set; }
         public string penaltyName { get; set; }
+        public penaltyCategory penaltyCategory { get; set; }
         public mainStatus penaltyTypeStatus { get; set; }
+        public penaltyMethod penaltyMethod { get; set; }
+        public decimal penaltyRate { get; set; }
+        public decimal penaltyValidity { get; set; }
         public DateTime modifiedDate { get; set; }
         public string modifiedBy { get; set; }
         public virtual List<penaltyModel>? Penalties { get; set; }
@@ -46,6 +54,21 @@ namespace PIS2.Models
     {
         Hold,
         Post,
+        Complete,
         Void
+    }
+
+    public enum penaltyMethod
+    {
+        None,
+        Fixed,
+        Percent
+    }
+
+    public enum penaltyCategory
+    {
+        Deciplinary,
+        PerformanceRelated,
+        PolicyViolation
     }
 }

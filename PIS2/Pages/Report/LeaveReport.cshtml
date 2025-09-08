@@ -18,7 +18,7 @@
     </div>
 </div>
 <hr />
-<div class="row">
+<div class="row m-2">
     <div class="col-3">
         <label for="filter-status">Status:</label>
         <select class="form-select" aria-label="Default select example" id="filter-status" onchange="filterLeaves()" asp-items="Html.GetEnumSelectList<Models.leaveStatus>()">
@@ -56,16 +56,7 @@
             }
         </select>
     </div>
-    <div class="col-3">
-        <label for="filter-workLoc">Work Location:</label>
-        <select class="form-select" aria-label="Default select example" id="filter-workLoc" onchange="filterLeaves()">
-            <option value="">All</option>
-            @foreach (var workLocation in Model.WorkLocations)
-            {
-                <option value="@workLocation.workSiteID">@workLocation.workSiteName</option>
-            }
-        </select>
-    </div>
+    
     <div class="col-3">
         <label for="dateStart">Date of Start From:</label>
         <input class="form-control" type="date" id="dateStart" onchange="filterLeaves()" />
@@ -103,65 +94,11 @@
             <th>
                 Status
             </th>
-            <th></th>
+            
         </tr>
     </thead>
     <tbody id="table-body">
-        @foreach (var item in Model.leaveModel) {
-            <tr>
-                <td onclick="location.href='@Url.Page("/Leave/Details", new { id = item.leaveID })'" style="cursor:pointer;">
-                    @item.leaveID
-                </td>
-                <td onclick="location.href='@Url.Page("/Employment/Details", new { id = item.leaveID })'" style="cursor:pointer;">
-                    @Html.DisplayFor(modelItem => item.employmentModel.givenID)
-                </td>
-                <td onclick="location.href='@Url.Page("/Employment/Details", new { id = item.leaveID })'" style="cursor:pointer;">
-                    @item.employmentModel.personModel.personFullName
-                </td>
-                <td>
-                        @item.leaveReaquestDate.ToString("MMM dd, yyyy")
-                </td>
-                <td>
-                        @item.leaveStartDate.ToString("MMM dd, yyyy")
-                </td>
-                <td>
-                        @item.leaveEndDate.ToString("MMM dd, yyyy")
-                </td>
-                <td>
-                        @Html.DisplayFor(modelItem => item.leaveDays)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.leaveTypeModel.leaveTypeName)
-                </td>
-                    @if(@item.leaveStatus == Models.leaveStatus.Approved)
-                    {
-                        <td>
-                            <p class="border-success p-1">@Html.DisplayFor(modelItem => item.leaveStatus)</p>
-                        </td>
-                    }
-                    else
-                    {
-                        <td>
-                            @Html.DisplayFor(modelItem => item.leaveStatus)
-                        </td>
-                    }
-                
-                    <td class="d-flex flex-grow-1">
-                    @if(item.leaveStatus == Models.leaveStatus.Posted)
-                    {
-                        <p class="bg-info">Leave is posted.</p>
-                    }
-                    else{
-                        <form method="post" asp-page-handler="Approve">
-                            <input asp-for="@item.leaveID" name="leaveId" type="hidden"></input>
-                            <button type="submit" class="btn btn-success post-button" data-id="@item.leaveID">Post Leave</button>
-                        </form>                        
-                    }
-                   
-                
-                </td>
-            </tr>
-        }
+        
     </tbody>
 </table>
 <script>
@@ -171,7 +108,7 @@
         var department = document.getElementById("filter-department").value;
         var leaveStatus = document.getElementById("filter-status").value;
         var leaveType = document.getElementById("filter-type").value;
-        var workLoc = document.getElementById("filter-workLoc").value;
+        
         var company = document.getElementById("filter-company").value;
         var dateStart = document.getElementById("dateStart").value;
         var dateEnd = document.getElementById("dateEnd").value;
@@ -180,13 +117,13 @@
         department = (!department || department === "") ? null : department;
         leaveStatus = (!leaveStatus || leaveStatus === "") ? null : leaveStatus;
         leaveType = (!leaveType || leaveType === "") ? null : leaveType;
-        workLoc = (!workLoc || workLoc === "") ? null : workLoc;
+        
         company = (!company || company === "") ? null : company;
         dateStart = (!dateStart || dateStart === "") ? null : new Date(dateStart).toISOString();
         dateEnd = (!dateEnd || dateEnd === "") ? null : dateEnd;
 
         // Build the URL with multiple filters
-        const url = `/Report/LeaveReport?handler=Filter&department=${encodeURIComponent(department)}&leaveStatus=${encodeURIComponent(leaveStatus)}&leaveType=${encodeURIComponent(leaveType)}&company=${encodeURIComponent(company)}&workLoc=${encodeURIComponent(workLoc)}&dateStart=${encodeURIComponent(dateStart)}&dateEnd=${encodeURIComponent(dateEnd)}`;
+        const url = `/Report/LeaveReport?handler=Filter&department=${encodeURIComponent(department)}&leaveStatus=${encodeURIComponent(leaveStatus)}&leaveType=${encodeURIComponent(leaveType)}&company=${encodeURIComponent(company)}&dateStart=${encodeURIComponent(dateStart)}&dateEnd=${encodeURIComponent(dateEnd)}`;
 
         fetch(url)
             //.then(response => response.text())

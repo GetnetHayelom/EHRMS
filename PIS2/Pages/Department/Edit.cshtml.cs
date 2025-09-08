@@ -22,6 +22,8 @@ namespace PIS2.Pages.Department
         [BindProperty]
         public departmentModel departmentModel { get; set; } = default!;
 
+        public List<departmentHistoryModel> DepartmentHistories { get; set; } =default!;
+
         public async Task<IActionResult> OnGetAsync(int? id)
         {
             if (id == null)
@@ -35,6 +37,8 @@ namespace PIS2.Pages.Department
                 return NotFound();
             }
             departmentModel = departmentmodel;
+            DepartmentHistories = _context.DepartmentHistories.Include(d => d.employmentModel).ThenInclude(e => e.personModel).Where(m => m.departmentID == departmentmodel.departmentID).ToList();
+
             ViewData["employmentID"] = new SelectList(
                 _context.Employments.OrderBy(e => e.personModel.personFirstName).ThenBy(e=>e.personModel.personFatherName).ThenBy(e=>e.personModel.personLastName)
                 .Select(e => new { e.employmentID, FullName = e.personModel.personFullName }),
@@ -50,30 +54,43 @@ namespace PIS2.Pages.Department
         // For more information, see https://aka.ms/RazorPagesCRUD.
         public async Task<IActionResult> OnPostAsync()
         {
+            ModelState.Remove("departmentModel.modifiedBy");
+            departmentModel.modifiedBy = User.Identity.Name;
+
             if (!ModelState.IsValid)
             {
+                foreach (var kv in ModelState)
+                {
+                    foreach (var error in kv.Value.Errors)
+                    {
+                        Console.WriteLine($"{kv.Key} --> {error.ErrorMessage}");
+                    }
+                    Console.WriteLine(kv.ToString());
+                }
                 return Page();
             }
-
-            _context.Attach(departmentModel).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!departmentModelExists(departmentModel.departmentID))
+            if (User.IsInRole("MIE\\PMS_HRMANAGER"))
                 {
-                    return NotFound();
-                }
-                else
+
+                _context.Attach(departmentModel).State = EntityState.Modified;
+
+                try
                 {
-                    throw;
+                    await _context.SaveChangesAsync();
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!departmentModelExists(departmentModel.departmentID))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
                 }
             }
-
-            return RedirectToPage("./Index");
+            return RedirectToPage("./Details", new {id = departmentModel.departmentID});
         }
 
         private bool departmentModelExists(int id)

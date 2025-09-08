@@ -6,10 +6,10 @@
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
 
-<h1>Departments</h1>
+<h1 class="fw-bold">Departments</h1>
 
 <p>
-    <a asp-page="Create">Add New Department</a>    
+    <a asp-page="Create" class="btn btn-primary">Add New Department</a>    
 </p>
 @await Html.PartialAsync("filter")
 <table class="table table-striped table-hover" id="dataTable">
@@ -38,7 +38,7 @@
     </thead>
     <tbody>
 @foreach (var item in Model.departmentModel) {
-        <tr>
+        <tr onclick="location.href='@Url.Page("Details", new{id = item.departmentName})'" style="cursor:pointer;">
             <td>
                 @Html.DisplayFor(modelItem => item.departmentShort)
             </td>
@@ -46,7 +46,15 @@
                 @Html.DisplayFor(modelItem => item.departmentName)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.departmentStatus)
+                    @if(item.departmentStatus == Models.mainStatus.Active)
+                    {
+                        <p class="fw-bold text-success">@Html.DisplayFor(modelItem => item.departmentStatus)</p>
+                    }
+                    else
+                    {
+                        <p class="fw-bold text-danger">@Html.DisplayFor(modelItem => item.departmentStatus)</p>
+                    }
+                    
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.subAccountModel.subAccountDescription)
@@ -55,16 +63,19 @@
                 @Html.DisplayFor(modelItem => item.companyModel.companyName)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.employmentID)
+                @Html.DisplayFor(modelItem => item.employmentModel.personModel.personFullName)
             </td>
             <td>
                 <a asp-page="./Edit" asp-route-id="@item.departmentID">Edit</a> |
-                <a asp-page="./Details" asp-route-id="@item.departmentID">Details</a> |
-                <a asp-page="./Delete" asp-route-id="@item.departmentID">Delete</a>
+                <a asp-page="./Details" asp-route-id="@item.departmentID">Details</a>
+                
             </td>
         </tr>
 }
     </tbody>
 </table>
+<div class="d-flex justify-content-end">
+    @await Html.PartialAsync("print")
+</div>
 <script>
    </script>

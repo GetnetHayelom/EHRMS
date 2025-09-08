@@ -23,7 +23,7 @@ namespace PIS2.Pages.Company
         public async Task OnGetAsync()
         {
             companyModel = await _context.Companies
-                .Include(c => c.addressModel).ToListAsync();
+                .Include(c => c.addressModel).OrderBy(c => c.companyName).ToListAsync();
         }
     }
 }

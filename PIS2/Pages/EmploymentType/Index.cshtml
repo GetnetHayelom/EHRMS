@@ -6,10 +6,10 @@
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
 
-<h1>Employment Types</h1>
+<h1 class="fw-bold">Employment Types</h1>
 
 <p>
-    <a asp-page="Create" class="btn-primary rounded-2">Add New Employment Type</a>
+    <a asp-page="Create" class="btn btn-primary">Add New Employment Type</a>
 </p>
 @await Html.PartialAsync("filter")
 <table class="table table-striped table-hover" id="dataTable">
@@ -83,8 +83,8 @@
             </td>
             <td>
                 <a asp-page="./Edit" asp-route-id="@item.employmentTypeID">Edit</a> |
-                <a asp-page="./Details" asp-route-id="@item.employmentTypeID">Details</a> |
-                <a asp-page="./Delete" asp-route-id="@item.employmentTypeID">Delete</a>
+                <a asp-page="./Details" asp-route-id="@item.employmentTypeID">Details</a>
+               
             </td>
         </tr>
 }

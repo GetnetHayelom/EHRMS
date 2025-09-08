@@ -8,13 +8,26 @@
 }
 
 <h1 class="fw-bold">Person</h1>
-
-<p>
-    <a asp-page="Create" class="btn btn-primary">Add New Person</a>
-</p>
-
-
-@await Html.PartialAsync("filter")
+@if(User.IsInRole("MIE\\PMS_HRCLERK"))
+{
+    <p>
+        <a asp-page="Create" class="btn btn-primary d-print-none">Add New Person</a>
+    </p>
+}
+<div class="d-flex justify-content-between">
+    
+    <p class="fw-bold">Male=<u>@Model.personModel.Count(p => p.personGender == Models.Gender.Male)</u></p>
+    <p class="fw-bold">Female=<u>@Model.personModel.Count(p => p.personGender == Models.Gender.Female)</u></p>
+    <p class="fw-bold">Total=<u>@Model.personModel.Count()</u></p>
+    <p class="fw-bold">Active Employee=<u>@Model.Employed</u></p>
+    <p class="fw-bold">Ex-Employee=<u>@Model.xEmployed</u></p>
+    <p class="fw-bold">Others=<u>@(Model.personModel.Count() - Model.Employed - Model.xEmployed)</u></p>
+</div>
+<hr />
+<div class="d-flex justify-content-end">
+    @await Html.PartialAsync("filter")
+    @await Html.PartialAsync("print")
+</div>
 <table class="table table-striped table-hover" id="dataTable">
     <thead>
         <tr class="bg-dark text-white">
@@ -53,7 +66,7 @@
                 @Html.DisplayFor(modelItem => item.personFullName)
             </td>
             <td>
-                @item.personDoB.ToString("MMM dd, yyyy")
+                @item.personDoB.ToString("MM/dd/yyyy")
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.personGender)

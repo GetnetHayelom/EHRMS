@@ -25,7 +25,9 @@ namespace PIS2.Pages.Absentism
         public IList<workSiteModel> WorkLocations { get; set; } = default!;
         public DateTime StartDate {get; set;}
         public DateTime EndDate { get; set; }
-        public async Task OnGetAsync()
+
+        public leaveFilter filter { get; set; }
+        public async Task OnGetAsync(int? id)
         {
             
             Departments = await _context.Departments.Where(d => d.departmentStatus == mainStatus.Active).OrderBy(d => d.departmentName).ToListAsync();
@@ -33,16 +35,24 @@ namespace PIS2.Pages.Absentism
             WorkLocations = await _context.WorkSites.Where(d => d.workSiteStatus == mainStatus.Active).OrderBy(w => w.workSiteName).ToListAsync();
             Companies = await _context.Companies.Where(d => d.companyStatus == mainStatus.Active).OrderBy(c => c.companyName).ToListAsync();
 
-            leaveModel = await _context.Leaves
-                .Include(l => l.employmentModel)
-                .ThenInclude(e => e.JobPlacements)
-                .ThenInclude(j =>j.departmentModel)
-                .ThenInclude(d => d.companyModel)
-                .Include(l => l.leaveTypeModel)
-                .Where(l => l.leaveTypeModel.leaveGroup == leaveGroup.Absentism && l.leaveReaquestDate >= (DateTime.Now.AddMonths(-6))).ToListAsync();
+            leaveModel = await _context.Leaves.ToListAsync();
 
             StartDate = leaveModel.Min(l => l.leaveReaquestDate);
             EndDate = leaveModel.Max(l => l.leaveReaquestDate);
         }
+        
+    }
+
+    public class leaveFilter
+    {
+        public leaveStatus Status { get; set; }
+        public departmentModel Department { get; set; }
+        public companyModel Company { get; set; }
+        public workSiteModel? Site { get; set; }
+        public DateTime From { get; set; }
+        public DateTime To { get; set; }
+
+        public List<leaveModel> leaves { get; set; }
+
     }
 }
