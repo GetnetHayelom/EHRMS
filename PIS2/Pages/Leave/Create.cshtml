@@ -90,7 +90,7 @@
         <!--leave Aggrigate-->
         <div class="collapse show" id="leaveAggrigate" data-bs-parent="#collapseGroup">
              <div class=" d-flex justify-content-between">
-                <h5 class="fw-bold">Leave Summary</h5>
+                <h5 class="fw-bold">Annual Leave Summary</h5>
                 <a role="button" class="btn btn-outline-info text-decoration-none nav-link mb-2" id="leaveHistory" data-bs-toggle="collapse" data-bs-target="#leaveHistoryView" aria-expanded="false">View History</a>
 
             </div>
@@ -121,7 +121,7 @@
                             <td>@item.usedLeaveAmount</td>
                             <td>@item.remainingLeaveAmount</td>
                             <td>@item.rollOverLeave</td>
-                            <td>@item.remainingLeaveCost</td>
+                            <td>@item.remainingLeaveCost.ToString("N2")</td>
                         </tr>
                     }
 
@@ -139,7 +139,7 @@
             else
             {
                 <div class="d-flex justify-content-between">
-                    <h5 class="fw-bold">Leave Hitory</h5>
+                    <h5 class="fw-bold">Leave and Attendance Hitory</h5>
                     <a role="button" class="btn btn-outline-info text-decoration-none nav-link mb-2" id="leaveSummary" data-bs-toggle="collapse" data-bs-target="#leaveAggrigate" aria-expanded="true">View Summary</a>
 
                 </div>

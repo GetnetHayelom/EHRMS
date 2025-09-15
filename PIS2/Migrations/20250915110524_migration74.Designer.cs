@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PIS2.Models;
 
@@ -11,9 +12,11 @@ using PIS2.Models;
 namespace PIS2.Migrations
 {
     [DbContext(typeof(PISContext))]
-    partial class PISContextModelSnapshot : ModelSnapshot
+    [Migration("20250915110524_migration74")]
+    partial class migration74
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -2179,8 +2182,6 @@ namespace PIS2.Migrations
 
                     b.ToTable("Leaves", t =>
                         {
-                            t.HasCheckConstraint("CK_Leave_NumberOfDays", "leaveDays>0 AND leaveDays <= DATEDIFF(DAY, leaveStartDate, leaveEndDate)+1");
-
                             t.HasCheckConstraint("CK_Leave_leaveEndDate", "[leaveEndDate]>=[leaveStartDate]");
                         });
 

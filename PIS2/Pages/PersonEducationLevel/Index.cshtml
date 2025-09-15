@@ -12,15 +12,15 @@
         {
             <a asp-page="Create" class="btn btn-primary d-print-none m-2">Add New Certification</a>   
         }
-        <button data-bs-toggle="collapse d-print-none" data-bs-target="#listView" class="btn btn-primary m-2">List View</button>
-        <button data-bt-toggle="collapse d-print-none" data-bs-target="#summaryView" class="btn btn-primary m-2">Summary View</button>
+        <button data-bs-toggle="collapse" data-bs-target="#listView" class="btn btn-primary m-2 d-print-none">List View</button>
+        <button data-bt-toggle="collapse" data-bs-target="#summaryView" class="btn btn-primary m-2 d-print-none">Summary View</button>
     </div>
 </div>
 
 <hr />
 <div class="print-full-width" id="collapseParent">   
     <div data-bs-parent="#collapseParent" class="collapse show" id="summaryView">
-        <h4 class="fw-bold">Certification Summary</h4>
+        <h4 class="fw-bold">Active Employees Certification Summary</h4>
         <table class="table table-bordered table-striped table-hover">
             <thead class="bg-info text-white">
                 <tr>
@@ -54,61 +54,66 @@
     </div>
 
     <div data-bs-parent="#collapseParent" class="collapse" id="listView">
-    <h4 class="fw-bold">Certification List</h4>
-    <div class="d-flex">
-        @await Html.PartialAsync("filter")
-        @await Html.PartialAsync("print")
-    </div>
+        <h4 class="fw-bold">Certification List</h4>
+        <div class="d-flex">
+            @await Html.PartialAsync("filter")
+            @await Html.PartialAsync("print")
+        </div>
     
-    <table class="table table-striped table-hover" id="dataTable">
-        <thead class="bg-dark text-white">
-        <tr>
-            <th>
-                Full Name
-            </th>
-            <th>
-                Certification Name
-            </th>
-            <th>
-                Issue Date
-            </th>
-            <th>
-                Garde/Commulative
-            </th>
-            <th>
-                Institution Name
-            </th>
-            <th>
-                Certification Number
-            </th>
+        <table class="table table-striped table-hover" id="dataTable">
+            <thead class="bg-dark text-white">
+                <tr>
+                    <th>
+                        Full Name
+                    </th>
+                    <th>
+                        Certification Name
+                    </th>
+                    <th>
+                        Certification Level
+                    </th>
+                    <th>
+                        Issue Date
+                    </th>
+                    <th>
+                        Garde/Commulative
+                    </th>
+                    <th>
+                        Institution Name
+                    </th>
+                    <th>
+                        Certification Number
+                    </th>
             
-        </tr>
-    </thead>
-        <tbody>
-        @foreach (var item in Model.personEducationLevelModel) {
-            <tr onclick="location.href='@Url.Page("Edit", new {id =item.personEducationLevelID})'" style="cursor:pointer;">
-                <td>
-                    @Html.DisplayFor(modelItem => item.personModel.personFullName)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.educationLevelModel.educationLevelCategory)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.educationLevelDate)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.educationLevelMark)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.educationLevelInstitutionName)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.educationLevelNumber)
-                </td>
-            
-            </tr>   
-        }
-        </tbody>
-    </table>
-</div>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.personEducationLevelModel) {
+                    <tr onclick="location.href='@Url.Page("Edit", new {id =item.personEducationLevelID})'" style="cursor:pointer;">
+                        <td>
+                            @Html.DisplayFor(modelItem => item.personModel.personFullName)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.educationLevelModel.educationLevelCategory)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.educationLevelModel.educationLevelName)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.educationLevelDate)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.educationLevelMark)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.educationLevelInstitutionName)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.educationLevelNumber)
+                        </td>            
+                    </tr>   
+                }
+            </tbody>
+        </table>
+    </div>
 </div>

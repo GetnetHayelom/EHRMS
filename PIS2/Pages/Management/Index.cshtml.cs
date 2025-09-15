@@ -175,17 +175,7 @@ namespace PIS2.Pages.Management
                 .OrderByDescending(wl => wl.zCount)
                 .ToList();
 
-            //WorkSiteEmployees = (from jp in _context.JobPlacements
-            //                      join ws in _context.WorkSites on jp.workSiteID equals ws.workSiteID into wsGroup
-            //                      from ws in wsGroup.DefaultIfEmpty() // Left join
-            //                      where jp.jobPlacementStatus == mainStatus.Active
-            //                      group jp by ws.workSiteName into grouped
-            //                     select new NameAndCount
-            //                      {
-            //                          zName = grouped.Key,
-            //                          zCount = grouped.Count()
-            //                      }).ToList().Where(we => we.zCount > 0).OrderByDescending(wl =>wl.zCount).ToList();
-
+            
             WorkSiteEmployees = await _context.SiteAssignments
                 .Include(sa => sa.workSiteModel)
                 .Include(sa => sa.employmentModel).Where(sa => sa.employmentModel.employmentStatus == mainStatus.Active)
@@ -196,46 +186,23 @@ namespace PIS2.Pages.Management
                     zCount =g.Count()
                 }).ToListAsync();
             //edu level summary
-            EduLevelSummary = (from pel in _context.PersonEducationLevels
-                               join el in _context.EducationLevels on pel.educationLevelID equals el.educationLevelID
-                               join e in _context.Employments on pel.personID equals e.personID
-                               where e.employmentStatus == mainStatus.Active
-                               group pel by el.educationLevelCategory into grouped
-                               select new NameAndCount
-                               {
-                                   zName = grouped.Key,
-                                   zCount = grouped.Count()
-                               }).OrderByDescending(el => el.zCount).ToList();
-
-            var companies = _context.Companies.Include(c => c.Departments).ThenInclude(d => d.JobPlacements).ThenInclude(js => js.employmentModel).ThenInclude(e => e.AllowanceAssignments)
-                .Include(c => c.Departments).ThenInclude(d => d.JobPlacements).ThenInclude(js => js.employmentModel).ThenInclude(e => e.OvertimeRecords)
-                .Where(c => c.companyStatus == mainStatus.Active).ToList();
-            CompanySummaries = new List<CompanySummary>();
-            foreach(var comp in companies)
-            {
-                CompanySummaries.Add(new CompanySummary
+            EduLevelSummary = _context.PersonEducationLevels.Include(pel => pel.educationLevelModel)
+                .GroupBy(cs => cs.educationLevelModel.educationLevelCategory)
+                .Select(g => new NameAndCount
                 {
-                    CompanyName = comp.companyName,
-                    CompanyID = comp.companyID,
-                    Employees = _context.Employments.Include(e => e.JobPlacements).ThenInclude(js => js.departmentModel)
-                        .Where(e => e.JobPlacements.FirstOrDefault(js => js.jobPlacementStatus == mainStatus.Active).departmentModel.companyID == comp.companyID).ToList().Count(),
-                    Departments = _context.Departments.Where(d => d.departmentStatus == mainStatus.Active && d.companyID == comp.companyID).Count(),
-                    Salary = comp.Departments.SelectMany(d => d.JobPlacements).Where(jp => jp.jobPlacementStatus == mainStatus.Active).Sum(js => js.jobPlacementSalary),
-                    Allowance = (decimal)comp.Departments.SelectMany(d => d.JobPlacements).Select(js => js.employmentModel).Where(e => e.employmentStatus== mainStatus.Active)
-                        .SelectMany(e => e.AllowanceAssignments).Where(aa => aa.allowanceStatus == mainStatus.Active).Sum(aa => aa.allowanceAssignmentAmount),
-                    Overtime = (decimal)comp.Departments.SelectMany(d => d.JobPlacements).Select(js => js.employmentModel)
-                        .SelectMany(e => e.OvertimeRecords).Where(ot => new[] { overtimeStatus.Hold, overtimeStatus.Approved, overtimeStatus.Posted }.Contains(ot.overtimeRecordStatus))
-                        .Sum(ot => ot.GetOtCost)
-                }
-                );
-            }
-            
-            foreach (var c in CompanySummaries)
+                    zName= g.Key,
+                    zCount = g.Count()
+                }).ToList();
+
+            var companies = _context.CompanySummaryView.ToList();
+            CompanySummaries = _context.CompanySummaryView.ToList();
+
+            foreach (var c in companies)
             {
-                c.Leaves = _core.getAllLeaveSummary("Comp", c.CompanyID);
-                c.Leaves = new leaveDetail();
+                c.payableLeaves = _core.getAllLeaveSummary("Comp", c.CompanyID).leaveCost;
+                //c.payableLeaves = new leaveDetail();
             }
-            
+
 
         }
 

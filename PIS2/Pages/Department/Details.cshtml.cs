@@ -22,9 +22,9 @@ namespace PIS2.Pages.Department
 
         public departmentModel departmentModel { get; set; } = default!;
         public DepartmentSummary DepartmentSummary { get; set; }
-        public double allowedLeave { get; set; }
-        public double leaveCost { get; set; }
-        public double overtimeCost { get; set; }
+        public decimal allowedLeave { get; set; }
+        public decimal leaveCost { get; set; }
+        public decimal overtimeCost { get; set; }
         public List<EducationLevelData> EducationLevels { get; set; }
         public List<NameAndCount> EmploymentTypes { get; set; }
         public List<YearAndCount> EmploymentHireRate { get; set; }
@@ -114,14 +114,14 @@ namespace PIS2.Pages.Department
                 DepartmentSummary.Salary = Jobs.Sum(j => j.jobPlacementSalary);
 
                 DepartmentSummary.Leaves = _core.getAllLeaveSummary("Dep", DepartmentSummary.DepartmentID);
-                DepartmentSummary.Overtime = _core.getAllOvertime("Dep", departmentModel.departmentID).Sum(ot => ot.GetOtCost);
+                DepartmentSummary.Overtime = (decimal)_core.getAllOvertime("Dep", departmentModel.departmentID).Sum(ot => ot.GetOtCost);
                 DepartmentSummary.xEmployees = Employments
                         .Where(e => e.employmentStatus == mainStatus.Inactive).Count();
 
-                allowedLeave = DepartmentSummary.Leaves.AllowedLeave;
-                leaveCost = DepartmentSummary.Leaves.leaveCost;
-                overtimeCost = DepartmentSummary.Overtime;
-                DepartmentSummary.Total = leaveCost + (double) EmploymentView.Where(ev => ev.Job.jobPlacementStatus == mainStatus.Active).Sum(ev => ev.Job.jobPlacementSalary); ;
+                allowedLeave =(decimal) DepartmentSummary.Leaves.AllowedLeave;
+                leaveCost = (decimal)DepartmentSummary.Leaves.leaveCost;
+                overtimeCost = (decimal)DepartmentSummary.Overtime;
+                DepartmentSummary.Total = (decimal) leaveCost + EmploymentView.Where(ev => ev.Job.jobPlacementStatus == mainStatus.Active).Sum(ev => ev.Job.jobPlacementSalary); ;
                 
                 // Education Level Data
                 

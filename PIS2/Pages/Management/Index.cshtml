@@ -99,29 +99,31 @@
             </div>
         </div>
         <hr />
-        <div class="d-flex">
+        <div class="">
+            <h3 class="bg-dark text-white p-2">Current Payable</h3><hr />
             <!--Payables summary-->
-            <div class="d-flex flex-column flex-grow-1 col-3 p-2 m-2">
-                <h3 class="p-2 bg-dark text-white">Current Payable</h3><hr />
-                <div class="">
+            <div class="d-flex flex-grow-1 m-2 justify-content-between">
+                
+                <div class="card m-2 p-4 shadow flex-grow-1" onclick="location.href='@Url.Page("/Report/JobPlacementReport")'" style="cursor:pointer;">
                     <p class="small mb-1">Salary</p>
-                    <h5 class="fw-bold">$@Math.Round((Model.CompanySummaries.Sum(c => c.Salary)), 2).ToString("N0")</h5>
+                    <h5 class="fw-bold">$@Math.Round((decimal)(Model.CompanySummaries.Sum(c => c.Salary)), 2).ToString("N0")</h5>
                 </div>
-                <div>
-                    <p class="small mb-1">Overtime</p>
-                    <h5 class="fw-bold">$@Math.Round((Model.CompanySummaries.Sum(c => c.Overtime)), 2).ToString("N0")</h5>  
-                </div>
-                <div>
-                    <p class="small mb-1">Acc. Leaves</p>
-                    <h5 class="fw-bold">$@Math.Round((Model.CompanySummaries.Sum(c => c.Leaves.leaveCost)), 2).ToString("N0")</h5>
-                </div>
-                <div>
+                
+                <div class="card m-2 p-4 shadow flex-grow-1" onclick="location.href='@Url.Page("/Report/AllowanceAssignmentReport")'" style="cursor:pointer;">
                     <p class="small mb-1">Allowance</p>
-                    <h5 class="fw-bold">$@Math.Round((Model.CompanySummaries.Sum(c => c.Allowance)), 2).ToString("N0")</h5>
+                    <h5 class="fw-bold">$@Math.Round((decimal)(Model.CompanySummaries.Sum(c => c.Allowance)), 2).ToString("N0")</h5>
                 </div>
-                <div>
+                <div class="card m-2 p-4 shadow flex-grow-1" onclick="location.href='@Url.Page("/Report/OvertimeRecordReport")'" style="cursor:pointer;">
+                    <p class="small mb-1">Overtime</p>
+                    <h5 class="fw-bold">$@Math.Round((decimal)(Model.CompanySummaries.Sum(c => c.Overtime)), 2).ToString("N0")</h5>
+                </div>
+                <div class="card m-2 p-4 shadow flex-grow-1" onclick="location.href='@Url.Page("/Report/PayableLeaveReport")'" style="cursor:pointer;">
+                    <p class="small mb-1">Payable Leave</p>
+                    <h5 class="fw-bold">$@Math.Round((decimal)(Model.CompanySummaries.Sum(c => c.payableLeaves)), 2).ToString("N0")</h5>
+                </div>
+                <div class="card m-2 p-4 shadow flex-grow-1">
                     <p class="small mb-1">Total</p>
-                    <h4 class="fw-bold">$@Math.Round((Model.CompanySummaries.Sum(c => c.Salary + c.Allowance + c.Overtime)), 2).ToString("N0")</h4>
+                    <h4 class="fw-bold">$@Math.Round((decimal)(Model.CompanySummaries.Sum(c => c.Salary + c.Allowance + c.Overtime)), 2).ToString("N0")</h4>
                 </div>
 
            </div>
@@ -130,21 +132,21 @@
        <hr />
         <!-- Charts Container1-->
         <div class="container">
-            <h3 class="bg-dark text-white p-2">Metrics</h3>
-            <div class="row p-2">
+            <h3 class="bg-dark text-white p-2">Employe Distribution & Metrics</h3>
+            <div class="d-flex justify-content-between flex-grow-1 p-2">
                 <!-- Education Levels -->
-                <div class="col p-2 border-start border-end border-1 border-dark">
-                    <canvas id="educationLevelPieChart" height="400">
+                <div class="card col p-2 m-2">
+                    <canvas id="educationLevelPieChart" height="300">
                     </canvas>
                 </div>
                 <!-- Work Location -->
-                    <div class="col p-2 border-end border-1 border-dark">
-                    <canvas id="workLocChart" height="400">
+                <div class="card col p-2 m-2">
+                    <canvas id="workLocChart" height="300">
                     </canvas>
                 </div>
                 <!-- Job Category -->
-                    <div class="col p-2 border-end borber-1 border-dark">
-                    <canvas id="jobCategoryChart"  height="400">
+                <div class="card col p-2 m-2">
+                    <canvas id="jobCategoryChart"  height="300">
                     </canvas>
                 </div>
             </div>
@@ -191,11 +193,11 @@
                                 <div class="d-flex justify-content-between border-top border-opacity-25 pt-3">
                                     <div class="text-warning ">
                                         <p class="small mb-1">Acc. Leaves</p>
-                                        <h5 class="fw-bold">@Math.Round(item.Leaves.AllowedLeave, 2).ToString("N0")</h5>
+                                        <h5 class="fw-bold">@Math.Round((decimal) item.payableLeaves, 2).ToString("N0")</h5>
                                     </div>
                                     <div class="text-danger">
                                         <p class="small mb-1">Leave Cost</p>
-                                        <h5 class="fw-bold ">$@Math.Round(item.Leaves.leaveCost, 2).ToString("N0")</h5>
+                                        <h5 class="fw-bold ">$@Math.Round((decimal)item.payableLeaves, 2).ToString("N0")</h5>
                                     </div>
                                 </div>
                                 <div class="mt-4 text-success">
@@ -210,7 +212,8 @@
         </div>
     </div>
 </div>
-@await Html.PartialAsync("print")
+<div class="d-flex justify-content-end">@await Html.PartialAsync("print")</div>
+
 <table class="d-none">
 <thead>
 <tr><th>Year</th><th>Number</th></tr></thead>

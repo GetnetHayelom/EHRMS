@@ -42,10 +42,10 @@ namespace PIS2.Pages.Management
         public CompanySummary CompanySummary { get; set; }
         public List<DepartmentSummary> DepartmentSummaries { get; set; }
         public List<leaveDetail> leaveDetails { get; set; }
-        public double allowedLeave { get; set; }
-        public double leaveCost {  get; set; }
-        public double allowance { get; set; }
-        public double overtime { get; set; }
+        public decimal allowedLeave { get; set; }
+        public decimal leaveCost {  get; set; }
+        public decimal allowance { get; set; }
+        public decimal overtime { get; set; }
         public async Task<IActionResult> OnGetAsync(int? id)
         {
             if (id == null)
@@ -87,7 +87,7 @@ namespace PIS2.Pages.Management
                     CompanySummary.CompanyName = cmp.companyName;
                     CompanySummary.CompanyID = cmp.companyID;
                     CompanySummary.Departments = cmp.Departments.Count();
-                    CompanySummary.Salary = Jobs.Where(j => j.jobPlacementStatus==mainStatus.Active).Sum(j=>j.jobPlacementSalary);
+                    CompanySummary.Salary =(decimal) Jobs.Where(j => j.jobPlacementStatus==mainStatus.Active).Sum(j=>j.jobPlacementSalary);
                     CompanySummary.Employees = Jobs.Where(e => e.jobPlacementStatus == mainStatus.Active).GroupBy(e =>e.employmentID).Select(g => g.First()).Count();
                     CompanySummary.xEmployees = Employments.Count(e => e.employmentStatus == mainStatus.Inactive);
 

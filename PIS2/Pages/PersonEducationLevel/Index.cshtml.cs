@@ -33,7 +33,8 @@ namespace PIS2.Pages.PersonEducationLevel
 
             var Certifications = _context.PersonEducationLevels
                 .Include(pe => pe.educationLevelModel)
-                .Include(pe => pe.personModel)
+                .Include(pe => pe.personModel).ThenInclude(p => p.Employments)
+                .Where(pe => pe.personModel.Employments.Any(e => e.employmentStatus == mainStatus.Active))
                 .GroupBy(pe => pe.educationLevelModel.educationLevelCategory)
                 .Select(g => new CertificationView
                 {

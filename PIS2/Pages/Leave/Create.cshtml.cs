@@ -109,7 +109,7 @@ namespace PIS2.Pages.Leave
         {
            
             ModelState.Clear();
-            double maxWorkingDays = _core.WorkingDays(Leave.leaveStartDate, Leave.leaveEndDate);
+            decimal maxWorkingDays = _core.WorkingDays(Leave.leaveStartDate, Leave.leaveEndDate);
             if (maxWorkingDays < (Leave.leaveEndDate - Leave.leaveStartDate).Days) {
                 ModelState.AddModelError("leaveModel.leaveDays", "Requested date must be less than or equal to maximum working days. " + maxWorkingDays);
                 return Page();

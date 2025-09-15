@@ -24,13 +24,13 @@ namespace PIS2.Pages.AllowanceAssignment
         {
             public string Name { get; set; } = string.Empty;
             public int Count { get; set; }
-            public double Sum { get; set; }
+            public decimal Sum { get; set; }
             public List<allowanceAssignmentModel> Records { get; set; } = new();
         }
         public List<GroupedAllowanceByDep> GroupedAllowance { get; set; }
         public IList<allowanceAssignmentModel> allowanceAssignmentModel { get;set; } = default!;
         public int allowanceCount { get; set; }
-        public double allowanceSum { get; set; }
+        public decimal allowanceSum { get; set; }
         public string Company { get; set; }
         public async Task OnGetAsync()
         {

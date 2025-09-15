@@ -1,9 +1,13 @@
-﻿namespace PIS2.Models
+﻿using Microsoft.EntityFrameworkCore;
+
+namespace PIS2.Models
 {
+    [Keyless]
     public class leaveDetail
     {
+        
         public employmentModel Employee;
-        public double TotalLeave, AllowedLeave, LastAccrualIncrement, leaveCost;
+        public decimal TotalLeave, AllowedLeave, LastAccrualIncrement, leaveCost;
         public DateTime LeaveDetailStartDate, LeaveDetailsEndDate;
         public List<leavePerYear> AnnualLeaveHistory;
         public companyModel company;
@@ -11,7 +15,7 @@
         public personModel person;
        
         public leaveDetail(
-            double totalLeave, double allowedLeave, double lastAccrualIncrement, 
+            decimal totalLeave, decimal allowedLeave, decimal lastAccrualIncrement, 
             DateTime leaveDetailStartDate, DateTime leaveDetailEndDate, 
             List<leavePerYear> annualLeaveHistory) {
 
@@ -25,7 +29,7 @@
             
         }
         public leaveDetail(
-            double totalLeave, double allowedLeave, double lastAccrualIncrement,
+            decimal totalLeave, decimal allowedLeave, decimal lastAccrualIncrement,
             DateTime leaveDetailStartDate, DateTime leaveDetailEndDate)
         {
 
@@ -36,8 +40,8 @@
             LeaveDetailsEndDate = leaveDetailEndDate;
         }
         public leaveDetail(
-           double totalLeave, double allowedLeave, double lastAccrualIncrement,
-           DateTime leaveDetailStartDate, DateTime leaveDetailEndDate, double lCost, departmentModel dep)
+           decimal totalLeave, decimal allowedLeave, decimal lastAccrualIncrement,
+           DateTime leaveDetailStartDate, DateTime leaveDetailEndDate, decimal lCost, departmentModel dep)
         {
 
             TotalLeave = totalLeave;

@@ -9,4 +9,12 @@
         public int TotalCount { get; set; }
         public CertificationView() { }
     }
+
+    public class CertificationSummaryView
+    {
+        public string Gender { get; set; }
+        public string CertificationName { get; set; }
+        public int Count { get; set; }
+
+    }
 }

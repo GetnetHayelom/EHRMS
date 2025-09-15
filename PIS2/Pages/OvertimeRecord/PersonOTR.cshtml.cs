@@ -22,7 +22,7 @@ namespace PIS2.Pages.OvertimeRecord
         public employmentModel employmentModel { get;set; }
         public departmentModel departmentModel { get;set; }
         public int otCount { get; set; }
-        public double TotalOtCost { get; set; }
+        public decimal TotalOtCost { get; set; }
 
         public async Task OnGetAsync(List<int>? otrID, int? empID)
         {

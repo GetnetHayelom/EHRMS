@@ -14,6 +14,8 @@ namespace PIS2.Models
         public virtual leaveGroup leaveGroup { get; set; }
         public string modifiedBy { get; set; }
         public string leaveAvailability { get; set; }
+        public bool leaveJob { get; set; }
+        public bool leaveLegality { get; set; }
         public leaveTypeModel() { }
     }
     public enum leaveGroup
@@ -22,5 +24,7 @@ namespace PIS2.Models
         Absentism,
         AllowedLeave
     }
+
+    
 }
 

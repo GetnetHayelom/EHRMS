@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PIS2.Models;
 
@@ -11,9 +12,11 @@ using PIS2.Models;
 namespace PIS2.Migrations
 {
     [DbContext(typeof(PISContext))]
-    partial class PISContextModelSnapshot : ModelSnapshot
+    [Migration("20250915075331_migration73")]
+    partial class migration73
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -124,8 +127,8 @@ namespace PIS2.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("allowanceAssignmentHistoryID"));
 
-                    b.Property<decimal>("allowanceAssignmentAmount")
-                        .HasColumnType("decimal(18,2)")
+                    b.Property<double>("allowanceAssignmentAmount")
+                        .HasColumnType("float")
                         .HasColumnName("allowanceAssignmentAmount");
 
                     b.Property<DateTime?>("allowanceAssignmentEndDate")
@@ -165,8 +168,8 @@ namespace PIS2.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("allowanceAssignmentID"));
 
-                    b.Property<decimal>("allowanceAssignmentAmount")
-                        .HasColumnType("decimal(18,2)")
+                    b.Property<double>("allowanceAssignmentAmount")
+                        .HasColumnType("float")
                         .HasColumnName("allowanceAssignmentAmount");
 
                     b.Property<DateTime?>("allowanceAssignmentDate")
@@ -1749,8 +1752,8 @@ namespace PIS2.Migrations
                         .HasColumnType("nvarchar(max)")
                         .HasColumnName("jobPlacementReference");
 
-                    b.Property<decimal>("jobPlacementSalary")
-                        .HasColumnType("decimal(18,2)")
+                    b.Property<double>("jobPlacementSalary")
+                        .HasColumnType("float")
                         .HasColumnName("jobPlacementSalary");
 
                     b.Property<int>("jobPlacementStatus")
@@ -2131,8 +2134,8 @@ namespace PIS2.Migrations
                         .HasColumnType("int")
                         .HasColumnName("employmentID");
 
-                    b.Property<decimal>("leaveDays")
-                        .HasColumnType("decimal(18,2)")
+                    b.Property<double>("leaveDays")
+                        .HasColumnType("float")
                         .HasColumnName("leaveDays");
 
                     b.Property<DateTime>("leaveEndDate")
@@ -2164,8 +2167,8 @@ namespace PIS2.Migrations
                         .HasColumnType("int")
                         .HasColumnName("oldBatchNbr");
 
-                    b.Property<decimal>("ratePerHour")
-                        .HasColumnType("decimal(18,2)")
+                    b.Property<double>("ratePerHour")
+                        .HasColumnType("float")
                         .HasColumnName("ratePerHour");
 
                     b.HasKey("leaveID");
@@ -2423,16 +2426,16 @@ namespace PIS2.Migrations
                         .HasColumnType("int")
                         .HasColumnName("overtimeID");
 
-                    b.Property<decimal>("overtimeRate")
-                        .HasColumnType("decimal(18,2)")
+                    b.Property<double>("overtimeRate")
+                        .HasColumnType("float")
                         .HasColumnName("overtimeRate");
 
                     b.Property<DateTime>("overtimeRecordDate")
                         .HasColumnType("datetime2")
                         .HasColumnName("overtimeRecordDate");
 
-                    b.Property<decimal>("overtimeRecordEmploymentRate")
-                        .HasColumnType("decimal(18,2)")
+                    b.Property<double>("overtimeRecordEmploymentRate")
+                        .HasColumnType("float")
                         .HasColumnName("overtimeRecordEmploymentRate");
 
                     b.Property<TimeSpan>("overtimeRecordEndTime")
@@ -3642,45 +3645,6 @@ namespace PIS2.Migrations
                     b.ToView("vw_certification_active", (string)null);
                 });
 
-            modelBuilder.Entity("PIS2.Views.CompanySummary", b =>
-                {
-                    b.Property<decimal>("Allowance")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<int>("CompanyID")
-                        .HasColumnType("int");
-
-                    b.Property<string>("CompanyName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("Departments")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Employees")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Manager")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<decimal>("Overtime")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<decimal>("Salary")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<decimal>("payableLeaves")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<int>("xEmployees")
-                        .HasColumnType("int");
-
-                    b.ToTable((string)null);
-
-                    b.ToView("vw_CompanySummary", (string)null);
-                });
-
             modelBuilder.Entity("PIS2.Views.LeaveReportView", b =>
                 {
                     b.Property<int>("CompanyID")
@@ -3701,8 +3665,8 @@ namespace PIS2.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<decimal?>("LeaveDays")
-                        .HasColumnType("decimal(18,2)");
+                    b.Property<double?>("LeaveDays")
+                        .HasColumnType("float");
 
                     b.Property<DateTime>("LeaveEnd")
                         .HasColumnType("datetime2");

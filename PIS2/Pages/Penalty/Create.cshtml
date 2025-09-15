@@ -61,7 +61,7 @@
                     <input asp-for="penaltyModel.employmentID" value="@Model.Employment.employmentID" type="hidden" />
                     <div class="form-group">
                         <label asp-for="penaltyModel.penaltyIssueDate" class="control-label">Issue Date</label>
-                        <input asp-for="penaltyModel.penaltyIssueDate" class="form-control" type="date" />
+                        <input asp-for="penaltyModel.penaltyIssueDate" class="form-control" value="@DateTime.Now.ToString("MM/dd/yyyy")" type="date" />
                         <span asp-validation-for="penaltyModel.penaltyIssueDate" class="text-danger"></span>
                     </div>
                     <div class="form-group">

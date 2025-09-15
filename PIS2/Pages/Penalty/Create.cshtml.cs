@@ -23,8 +23,10 @@ namespace PIS2.Pages.Penalty
         [BindProperty]
         [ValidateNever]
         public List<employmentModel>? Employments { get; set; } = default!;
+        [ValidateNever]
         public employmentModel Employment { get; set; }
         public int EmployeeID;
+        [ValidateNever]
         public personModel Person { get; set; } = new personModel();
         [BindProperty(SupportsGet = true)]
         public string givenID { get; set; }
@@ -88,8 +90,9 @@ namespace PIS2.Pages.Penalty
         public async Task<IActionResult> OnPostAsync()
         {
             ModelState.Remove("penaltyModel.modifiedBy");
-            penaltyModel.modifiedBy = User.Identity?.Name ?? "N\\A";
-            penaltyModel = new penaltyModel();
+            ModelState.Remove("modifiedBy");
+            penaltyModel.modifiedBy = User.Identity.Name;
+            //penaltyModel = new penaltyModel();
 
             if (!ModelState.IsValid)
             {
@@ -103,7 +106,7 @@ namespace PIS2.Pages.Penalty
                 }
                 return Page();
             }
-
+            
             _context.Penalties.Add(penaltyModel);
             await _context.SaveChangesAsync();
 

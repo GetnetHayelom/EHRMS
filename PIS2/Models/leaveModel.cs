@@ -18,10 +18,10 @@ namespace PIS2.Models
         public DateTime leaveEndDate { get; set; } = DateTime.Now;
         [Required]
         
-        public double leaveDays { get; set; }     
+        public decimal leaveDays { get; set; }     
         public int leaveTypeID { get; set; }
         public int? oldBatchNbr { get; set; }
-        public double ratePerHour { get; set; }
+        public decimal ratePerHour { get; set; }
         public virtual leaveTypeModel? leaveTypeModel { get; set; }
         public leaveStatus leaveStatus { get; set; } = leaveStatus.Hold;
         
@@ -35,9 +35,9 @@ namespace PIS2.Models
                     new[] { nameof(leaveEndDate) });
             }
 
-            var maxDays = (leaveEndDate - leaveStartDate).TotalDays;
+            var maxDays =(decimal) (leaveEndDate - leaveStartDate).TotalDays;
 
-            if (leaveDays < 0.5 || leaveDays > maxDays)
+            if (leaveDays < 0.5m || leaveDays > maxDays)
             {
                 yield return new ValidationResult(
                     $"Leave days must be between 0.5 and {maxDays}.",

@@ -25,10 +25,10 @@ namespace PIS2.Models
 
         public string modifiedBy { get; set; }
         public jobPlacementModel() { }
-        public double getJobRate()
+        public decimal getJobRate()
         {
-            double hourlyRate = 0;
-            hourlyRate =Math.Round( (double) jobPlacementSalary / 208, 2);
+            decimal hourlyRate = 0;
+            hourlyRate =(decimal) Math.Round(jobPlacementSalary / 208, 2);
 
             return hourlyRate;
         }
@@ -44,7 +44,7 @@ namespace PIS2.Models
         public int departmentID { get; set; }
         public virtual departmentModel? departmentModel { get; set; }
         public string? jobPlacementReference { get; set; }
-        public double jobPlacementSalary { get; set; }
+        public decimal jobPlacementSalary { get; set; }
         public mainStatus jobPlacementStatus { get; set; }
         public string jobPlacementReason { get; set; }
         public DateTime jobPlacementDate { get; set; }

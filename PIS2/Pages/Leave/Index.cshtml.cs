@@ -29,6 +29,7 @@ namespace PIS2.Pages.Leave
         {
             public string DepartmentName { get; set; } = string.Empty;
             public int Count { get; set; }
+            public decimal SumDays { get; set; }
             public List<leaveModel> Records { get; set; } = new();
         }
 
@@ -37,9 +38,9 @@ namespace PIS2.Pages.Leave
        
       
         [BindProperty]
-        public double totalUnposted {  get; set; }= default!;
+        public decimal totalUnposted {  get; set; }= default!;
         [BindProperty]
-        public double CountUnposted { get; set; } = default!;
+        public decimal CountUnposted { get; set; } = default!;
 
         public async Task OnGetAsync()
         {
@@ -64,6 +65,7 @@ namespace PIS2.Pages.Leave
                 {
                     DepartmentName = g.Key?.departmentName ?? "Unknown",
                     Count = g.Count(),
+                    SumDays =(decimal)g.Sum(l => l.leaveDays),
                     Records = g.ToList()
                 }).ToList();
 
@@ -72,6 +74,7 @@ namespace PIS2.Pages.Leave
                 {
                     DepartmentName = g.Key?.leaveTypeName ?? "Unknown",
                     Count = g.Count(),
+                    SumDays = (decimal)g.Sum(l => l.leaveDays),
                     Records = g.ToList()
                 }).ToList();
 

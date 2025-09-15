@@ -13,19 +13,20 @@ namespace PIS2.Models
 
         public DateTime startDate { get; set; }
         public DateTime endDate { get; set; } = DateTime.Now;
-        public double startingLeaveAmount { get; set; } = 0;
-        public double accruedLeaveAmount { get; set; } = 0;
-        public double usedLeaveAmount { get; set; } = 0;
-        public double rollOverLeave { get; set; }= 0;
-        public double remainingLeaveAmount{
+        public decimal startingLeaveAmount { get; set; } = 0;
+        public decimal accruedLeaveAmount { get; set; } = 0;
+        public decimal usedLeaveAmount { get; set; } = 0;
+        public decimal rollOverLeave { get; set; }= 0;
+        public decimal remainingLeaveAmount
+        {
             get
             {
                 return (startingLeaveAmount + accruedLeaveAmount) - usedLeaveAmount;
             }
         }
-        public double remainingLeaveCost { get; set; }
+        public decimal remainingLeaveCost { get; set; }
         
-        public double? totalLeaveAmount { get; set; }
+        public decimal? totalLeaveAmount { get; set; }
         public leavePerYear() { }
         
     }

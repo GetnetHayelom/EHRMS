@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using PIS2.Models;
+using PIS2.Views;
 
 namespace PIS2.Models
 {
@@ -243,6 +244,8 @@ namespace PIS2.Models
                 entity.HasMany(d => d.OvertimeRecords).WithOne(or => or.departmentModel).HasForeignKey(d => d.departmentID);
 
                 entity.HasIndex(e => new { e.companyID, e.departmentName}).IsUnique();
+
+                entity.ToTable(tb => tb.UseSqlOutputClause(false));
             });
 
             modelBuilder.Entity<departmentHistoryModel>(entity =>
@@ -732,6 +735,8 @@ namespace PIS2.Models
                 entity.Property(e => e.modifiedBy).HasColumnName("modifiedBy");
                 entity.Property(e => e.leaveAvailability).HasColumnName("leaveAvailability");
                 entity.Property(e => e.leaveGroup).HasColumnName("leaveGroup");
+                entity.Property(e => e.leaveJob).HasColumnName("leaveJob");
+                entity.Property(e => e.leaveLegality).HasColumnName("leaveLegality");
 
                 entity.HasMany(p => p.Leaves).WithOne(e => e.leaveTypeModel).HasForeignKey(p => p.leaveTypeID).OnDelete(DeleteBehavior.Cascade);
 
@@ -1185,7 +1190,158 @@ namespace PIS2.Models
 
                 entity.HasOne(e => e.workSiteModel).WithMany(p => p.WorkSiteHistories).HasForeignKey(d => d.workSiteID).OnDelete(DeleteBehavior.Cascade);
             });
+            //
+            /// <summary>
+            /// Payroll related
+            /// </summary>
+            // payrollModel
+            modelBuilder.Entity<payrollModel>(entity =>
+            {
+                entity.Property(e => e.payrollID).HasColumnName("payrollID");
+                entity.Property(e => e.payrollName).HasColumnName("payrollName");
+                entity.Property(e => e.StartDate).HasColumnName("StartDate");
+                entity.Property(e => e.EndDate).HasColumnName("EndDate");
+                entity.Property(e => e.payrollStatus).HasColumnName("payrollStatus");
+                entity.Property(e => e.modifiedBy).HasColumnName("modifiedBy");
 
+                entity.HasMany(e => e.payrollHistories)
+                      .WithOne(p => p.payrollModel)
+                      .HasForeignKey(p => p.payrollID)
+                      .OnDelete(DeleteBehavior.Cascade);
+            });
+
+            // payrollHistory
+            modelBuilder.Entity<payrollHistory>(entity =>
+            {
+                entity.Property(e => e.payrollHistoryID).HasColumnName("payrollHistoryID");
+                entity.Property(e => e.payrollID).HasColumnName("payrollID");
+                entity.Property(e => e.payrollStatus).HasColumnName("payrollStatus");
+                entity.Property(e => e.modfiedDate).HasColumnName("modfiedDate");
+                entity.Property(e => e.modifiedBy).HasColumnName("modifiedBy");
+
+                entity.HasOne(e => e.payrollModel)
+                      .WithMany(p => p.payrollHistories)
+                      .HasForeignKey(e => e.payrollID)
+                      .OnDelete(DeleteBehavior.Cascade);
+            });
+
+            // payrollPay
+            modelBuilder.Entity<payrollPay>(entity =>
+            {
+                entity.Property(e => e.payrollPayID).HasColumnName("payrollPayID");
+                entity.Property(e => e.payrollID).HasColumnName("payrollID");
+                entity.Property(e => e.employmentID).HasColumnName("employmentID");
+                entity.Property(e => e.GrossPay).HasColumnName("GrossPay");
+                entity.Property(e => e.NetPay).HasColumnName("NetPay");
+                entity.Property(e => e.modifiedBy).HasColumnName("modifiedBy");
+
+                entity.HasOne(e => e.payrollModel)
+                      .WithMany()
+                      .HasForeignKey(e => e.payrollID)
+                      .OnDelete(DeleteBehavior.Cascade);
+
+                entity.HasOne(e => e.EmploymentModel)
+                      .WithMany()
+                      .HasForeignKey(e => e.employmentID)
+                      .OnDelete(DeleteBehavior.Cascade);
+            });
+
+            // earningModel
+            modelBuilder.Entity<earningModel>(entity =>
+            {
+                entity.Property(e => e.earningID).HasColumnName("earningID");
+                entity.Property(e => e.EarningTypeId).HasColumnName("EarningTypeId");
+                entity.Property(e => e.earningReference).HasColumnName("earningReference");
+                entity.Property(e => e.employmentID).HasColumnName("employmentID");
+                entity.Property(e => e.earningAmount).HasColumnName("earningAmount");
+                entity.Property(e => e.payrollID).HasColumnName("payrollID");
+                entity.Property(e => e.earningStatus).HasColumnName("earningStatus");
+                entity.Property(e => e.modifiedBy).HasColumnName("modifiedBy");
+
+                entity.HasOne(e => e.EarningType)
+                      .WithMany(p => p.Earnings)
+                      .HasForeignKey(e => e.EarningTypeId)
+                      .OnDelete(DeleteBehavior.Cascade);
+
+                entity.HasOne(e => e.EmploymentModel)
+                      .WithMany()
+                      .HasForeignKey(e => e.employmentID)
+                      .OnDelete(DeleteBehavior.Cascade);
+
+                entity.HasOne(e => e.PayrollModel)
+                      .WithMany()
+                      .HasForeignKey(e => e.payrollID)
+                      .OnDelete(DeleteBehavior.SetNull); // since payrollID is nullable
+            });
+
+            // earningType
+            modelBuilder.Entity<earningType>(entity =>
+            {
+                entity.Property(e => e.earningTypeID).HasColumnName("earningTypeID");
+                entity.Property(e => e.earningName).HasColumnName("earningName");
+                entity.Property(e => e.isRecurring).HasColumnName("isRecurring");
+                entity.Property(e => e.isTaxable).HasColumnName("isTaxable");
+                entity.Property(e => e.Status).HasColumnName("Status");
+            });
+
+            // deductionModel
+            modelBuilder.Entity<deductionModel>(entity =>
+            {
+                entity.HasKey(e => e.deductionID);
+
+                entity.Property(e => e.deductionID).HasColumnName("deductionID");
+                entity.Property(e => e.deductionTypeID).HasColumnName("deductionTypeID");
+                entity.Property(e => e.deductionReference).HasColumnName("deductionReference");
+                entity.Property(e => e.employmentID).HasColumnName("employmentID");
+                entity.Property(e => e.deductionAmount).HasColumnName("deductionAmount");
+                entity.Property(e => e.payrollID).HasColumnName("payrollID");
+                entity.Property(e => e.deductionStatus).HasColumnName("deductionStatus");
+                entity.Property(e => e.modifiedBy).HasColumnName("modifiedBy");
+
+                entity.HasOne(e => e.DeductionType)
+                      .WithMany(p => p.Deductions)
+                      .HasForeignKey(e => e.deductionTypeID)
+                      .OnDelete(DeleteBehavior.Cascade);
+
+                entity.HasOne(e => e.EmploymentModel)
+                      .WithMany()
+                      .HasForeignKey(e => e.employmentID)
+                      .OnDelete(DeleteBehavior.Cascade);
+
+                entity.HasOne(e => e.payrollModel)
+                      .WithMany()
+                      .HasForeignKey(e => e.payrollID)
+                      .OnDelete(DeleteBehavior.Cascade);
+            });
+
+            // deductionType
+            modelBuilder.Entity<deductionType>(entity =>
+            {
+                entity.Property(e => e.deductionTypeID).HasColumnName("deductionTypeID");
+                entity.Property(e => e.deductionName).HasColumnName("deductionName");
+                entity.Property(e => e.isRecurring).HasColumnName("isRecurring");
+                entity.Property(e => e.Status).HasColumnName("Status");
+            });
+
+
+
+            /// <summary>
+            /// Views
+            ///</summary>
+            // Leave Report View
+            modelBuilder.Entity<LeaveReportView>()
+            .HasNoKey()
+            .ToView("vw_LeaveReport");
+
+            // Certification View
+            modelBuilder.Entity<CertificationSummaryView>()
+            .HasNoKey()
+            .ToView("vw_certification_active");
+
+            // Company Summary View
+            modelBuilder.Entity<CompanySummary>()
+            .HasNoKey()
+            .ToView("vw_CompanySummary");
         }
        
         public DbSet<accountModel> Accounts { get; set; }
@@ -1256,6 +1412,27 @@ namespace PIS2.Models
         public DbSet<workSiteHistoryModel> WorkSitesHistories { get; set; }
         public DbSet<PIS2.Models.loyaltyModel> Loyalties { get; set; } = default!;
         public DbSet<PIS2.Models.loyaltyHistoryModel> LoyaltyHistories { get; set; } = default!;
+        ///<summary>
+        /// Payroll related
+        ///</summary>
+        public DbSet<payrollModel> Payrolls { get; set; }
+        public DbSet<payrollHistory> PayrollHistories { get; set; }
+        public DbSet<payrollPay> PayrollPays { get; set; }
+        public DbSet<earningModel> Earnings { get; set; }
+        public DbSet<earningType> EarningTypes { get; set; }
+        public DbSet<deductionModel> Deductions { get; set; }
+        public DbSet<deductionType> DeductionTypes { get; set; }
+
+
+
+
+        /// <summary>
+        /// ///Views
+        /// </summary>
+
+        public DbSet<LeaveReportView> LeaveReportView { get; set; } = default!;
+        public DbSet<CertificationSummaryView> CertificationReportView { get; set; } = default!;
+        public DbSet<CompanySummary> CompanySummaryView { get; set; } = default!;
 
     }
 }

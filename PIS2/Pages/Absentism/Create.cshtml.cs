@@ -38,7 +38,7 @@ namespace PIS2.Pages.Absentism
         public personModel Person { get; set; }
         public List<leaveTypeModel> AllowedLeaveTypes { get; set; }
         public int aCount {  get; set; }
-        public double aSum { get; set; }
+        public decimal aSum { get; set; }
         [BindProperty]
         public string searchID { get; set; } = default!;
         [BindProperty]

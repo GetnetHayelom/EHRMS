@@ -42,7 +42,7 @@ namespace PIS2.Views
         {
             return Salary + Allowance + Overtime;
         }
-        public leaveDetail Leaves { get; set; }
+        public decimal payableLeaves { get; set; }
     }
     public class DepartmentSummary
     {
@@ -55,9 +55,9 @@ namespace PIS2.Views
         public int xEmployees { get; set; }
         public decimal Salary { get; set; }
         public leaveDetail Leaves { get; set; }
-        public double Overtime { get; set; }
-        public double Allowance { get; set; }
-        public double Total { get; set; }
+        public decimal Overtime { get; set; }
+        public decimal Allowance { get; set; }
+        public decimal Total { get; set; }
     }
     public class EmployeeView
     {
