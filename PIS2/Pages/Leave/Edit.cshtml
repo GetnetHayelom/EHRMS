@@ -6,9 +6,9 @@
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
 
-<h1>Leaves</h1>
+<h1 class="fw-bold">Leaves and Attendance</h1>
 
-<h4>Edit Leave</h4>
+<h4 class="fw-bild">Update Details</h4>
 <hr />
 <div class="row">
     <div class="d-flex">       
@@ -51,7 +51,7 @@
                     Request Date:
                 </dt>
                 <dd class="">
-                    <u> @Model.leaveModel.leaveReaquestDate.ToString("MMM dd, yyyy")</u>
+                    <u> @Model.leaveModel.leaveRequestDate.ToString("MMM dd, yyyy")</u>
                 </dd>
             </div>
                    
@@ -64,7 +64,7 @@
                 <input type="hidden" asp-for="leaveModel.leaveID" />
                 <input type="hidden" asp-for="leaveModel.modifiedBy" value="@User.Identity.Name" />
                 <input type="hidden" asp-for="leaveModel.employmentID" />
-                <input type="hidden" asp-for="leaveModel.leaveReaquestDate" />
+                <input type="hidden" asp-for="leaveModel.leaveRequestDate" />
            
                 <div class="form-group">
                     <label asp-for="leaveModel.leaveStartDate" class="control-label">Leave Start Date</label>
@@ -139,7 +139,7 @@
 </div>
 
 <div>
-    <a asp-page="./Index">Back to List</a>
+    <a asp-page="./Index">View All Attendance Records</a>
 </div>
 
 @section Scripts {

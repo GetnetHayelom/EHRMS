@@ -5,53 +5,44 @@
     ViewData["Title"] = "Index";
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
-
+@await Html.PartialAsync("headerSimple")
 <h1 class="fw-bold">Allowance Assignments</h1>
-<h4 class="fw-bold"><span id="filteredCount"></span> of @Model.totalCount</h4>
+
 <hr />
 <div class="row m-2">
     @if (Model.allowanceAssignmentModel != null)
     {
+        <!--SUMMARY POINTS-->
+        <div class="d-flex justify-content-between">
 
-        <div class="col-3">
-            <label for="filter-status">Filter Status:</label>
-            <select class="form-select" aria-label="Default select example" id="filter-status" onchange="filterAllowance()" asp-items="Html.GetEnumSelectList<Models.mainStatus>()">
-                <option value="">All</option>
-            </select>
+
+            <div class="card m-2 p-2 shadow flex-grow-1">
+                <p>Total Allowances (Records) </p>
+                <h6 class="fw-bold">
+                    <u id="TotalRecords"></u>@Model.GrandCount.ToString("N2")
+                </h6>
+            </div>
+            <div class="card m-2 p-2 shadow flex-grow-1">
+                <p>Total Sum </p>
+                <h6 class="fw-bold">
+                    <u id="TotalSum"></u>@Model.GrandSum.ToString("N2")/ Birr
+                </h6>
+                
+            </div>
+            <div class="card m-2 p-2 shadow flex-grow-1">
+                <p>Employees </p>
+                <h6 class="fw-bold">
+                    <u id="Employees"></u>@Model.Employees.ToString("N2")
+                </h6>
+
+            </div>
+
         </div>
+
+        <!--FILTER CONTROLLS-->
         <div class="col-3">
-            <label for="filter-empType">Filter Employment Type:</label>
-            <select class="form-select" aria-label="Default select example" id="filter-empType" onchange="filterAllowance()">
-                <option value="">All</option>
-                @foreach (var empType in Model.EmploymentTypes)
-                {
-                    <option value="@empType.employmentTypeID">@empType.employmentTypeName</option>
-                }
-            </select>
-        </div>
-        <div class="col-3">
-            <label for="filter-job">Filter Job:</label>
-            <select class="form-select" aria-label="Default select example" id="filter-job" onchange="filterAllowance()">
-                <option value="">All</option>
-                @foreach (var jobTitle in Model.JobTitles)
-                {
-                    <option value="@jobTitle.jobID">@jobTitle.jobTitle</option>
-                }
-            </select>
-        </div>
-        <div class="col-3">
-            <label for="filter-department">Filter Department:</label>
-            <select class="form-select" aria-label="Default select example" id="filter-department" onchange="filterAllowance()">
-                <option value="">All</option>
-                @foreach (var department in Model.Departments)
-                {
-                    <option value="@department.departmentID">@department.departmentName</option>
-                }
-            </select>
-        </div>
-        <div class="col-3">
-            <label for="filter-company">Filter Company:</label>
-            <select class="form-select" aria-label="Default select example" id="filter-company" onchange="filterAllowance()">
+            <label for="filter-company">Company:</label>
+            <select class="form-select" aria-label="Default select example" id="filter-company" >
                 <option value="">All</option>
                 @foreach (var company in Model.Companies)
                 {
@@ -59,24 +50,91 @@
                 }
             </select>
         </div>
+        <div class="col-3">
+            <label for="filter-department">Department:</label>
+            <select class="form-select" aria-label="Default select example" id="filter-department">
+                <option value="">All</option>
+                @foreach (var department in Model.Departments)
+                {
+                    <option value="@department.departmentID">@department.departmentName</option>
+                }
+            </select>
+        </div>
+
+        <div class="col-3">
+            <label for="filter-status">Status:</label>
+            <select class="form-select" aria-label="Default select example" id="filter-status" asp-items="Html.GetEnumSelectList<Models.mainStatus>()">
+                <option value="">All</option>
+            </select>
+        </div>
+        <div class="col-3">
+            <label for="filter-empType">Allowance Type:</label>
+            <select class="form-select" aria-label="Default select example" id="filter-type">
+                <option value="">All</option>
+                @foreach (var Atypes in Model.AllowanceTypes)
+                {
+                    <option value="@Atypes.allowanceID">@Atypes.allowanceName</option>
+                }
+            </select>
+        </div>
+        <div class="col-3">
+            <label for="filter-empType">Job Class:</label>
+            <select class="form-select" aria-label="Default select example" id="filter-jobClass">
+                <option value="">All</option>
+                @foreach (var jcalss in Model.JobClasses)
+                {
+                    <option value="@jcalss.JobClassId">@jcalss.JobClassName</option>
+                }
+            </select>
+        </div>
+        <div class="col-3">
+            <label for="filter-empType">Job Title:</label>
+            <select class="form-select" aria-label="Default select example" id="filter-jobTitle">
+                <option value="">All</option>
+                @foreach (var jtitle in Model.JobTitles)
+                {
+                    <option value="@jtitle.jobID">@jtitle.jobTitle</option>
+                }
+            </select>
+        </div>
+        <div class="col-3">
+            <label for="filter-empType">Allowance Duration:</label>
+            <select class="form-select" aria-label="Default select example" id="filter-duration" asp-items="Html.GetEnumSelectList<Models.allowanceDuration>()">
+                <option value="">All</option>
+            </select>
+        </div>
+        <div class="col-3">
+            <label for="filter-empType">Employment Position:</label>
+            <select class="form-select" aria-label="Default select example" id="filter-positions" asp-items="Html.GetEnumSelectList<Models.EmploymentPositions>()">
+                <option value="">All</option>
+            </select>
+        </div>
         
+
         <div class="col-3">
-            <label for="dateStart">Date of Employment From:</label>
-            <input class="form-control" type="date" id="dateStart" onchange="filterAllowance()" />
+            <label for="dateStart">Assigned From:</label>
+            <input class="form-control" type="date" id="dateStart"/>
         </div>
         <div class="col-3">
-            <label for="dateEnd">Date of Employment Upto:</label>
-            <input class="form-control" type="date" id="dateEnd" onchange="filterAllowance()" />
+            <label for="dateEnd">Assigned Up To:</label>
+            <input class="form-control" type="date" id="dateEnd"/>
         </div>
+       <div class="d-flex justify-content-end d-print-none">
+            <button id="toggle-allowances" class="btn btn-primary m-2">
+                Show/Hide Detail Rows
+            </button>
+
+           <button onclick="filterAllowance()" class="btn btn-primary m-2">Load</button>
+       </div>
     }
 </div>
-<table class="table table-striped table-hover" id="dataTable">
+<table class="table table-bordered table-striped table-hover" id="dataTable">
     <thead class="bg-dark text-white">
         <tr>
             <th>
                 Employment ID
             </th>
-            <th>Employee Name</th>
+            
             <th>
                 Allowance Type
             </th>
@@ -87,46 +145,64 @@
                 Allowance Assignment Date
             </th>
             <th>
-                Modified By
+                Allowance Status
             </th>
         </tr>
     </thead>
-    <tbody>
-        @foreach (var item in Model.allowanceAssignmentModel) {
-            <tr onclick="location.href='@Url.Page("/AllowanceAssignment/Details", new { id = item.allowanceAssignmentID})'" style="cursor:pointer">
-                <td>
-                    @Html.DisplayFor(modelItem => item.employmentModel.givenID)
-                </td>
-                <td>
-                    @item.employmentModel.personModel.personFullName
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.allowanceModel.allowanceName)
-                </td>
-                <td>
-                    @item.allowanceAssignmentAmount
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.allowanceAssignmentDate)
-                </td>@{
-                    string bg_color;
-                    if (item.allowanceStatus == Models.mainStatus.Suspended)
-                    {
-                        bg_color = "bg-warning text-black";
-                    }
-                    else if (item.allowanceStatus == Models.mainStatus.Active)
-                    {
-                        bg_color = "bg-success text-white";
-                    }
-                    else
-                    {
-                        bg_color = "bg-grey text-black";
-                    }
-                }
-                <td class="@bg_color">
-                    @Html.DisplayFor(modelItem => item.modifiedBy)
-                </td>
+    <tbody id="table-body">
+        @foreach (var item in Model.allowanceAssignmentModel.GroupBy(c => c.CompanyID)) {
+            <tr class="table-primary fw-bold bg-secondary">
+                <td colspan="2">@item.FirstOrDefault()?.CompanyName
+                (Total: @item.Count())</td>
+                <td colspan='3'>@item.Sum(c => c.AllowanceAmount)</td>
             </tr>
+            @foreach (var item2 in item.GroupBy(c => c.DepartmentID))
+            {
+                <tr class="table-secondary fw-bold bg-secondary">
+                    <td colspan="2">
+                        @item2.FirstOrDefault()?.DepartmentName
+                        (Total: @item2.Count())
+                    </td>
+                    <td colspan='3'>@item2.Sum(c => c.AllowanceAmount)</td>
+                </tr>
+                @foreach (var item3 in item2)
+                {
+                    <tr onclick="location.href='@Url.Page("/AllowanceAssignment/Details", new { id = item3.AllowanceID})'" style="cursor:pointer" class="allowance-row">
+                        <td>
+                            @Html.DisplayFor(modelItem => item3.EmployeeID)
+                        </td>
+            
+                        <td>
+                            @Html.DisplayFor(modelItem => item3.AllowanceTypeName)
+                        </td>
+                        <td>
+                            @item3.AllowanceAmount
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item3.AllowanceStart)
+                        </td>@{
+                            string bg_color;
+                            if (item3.AllowanceStatus == Models.mainStatus.Suspended)
+                            {
+                                bg_color = "bg-warning text-black";
+                            }
+                            else if (item3.AllowanceStatus == Models.mainStatus.Active)
+                            {
+                                bg_color = "bg-success text-white";
+                            }
+                            else
+                            {
+                                bg_color = "bg-grey text-black";
+                            }
+                        }
+                        <td class="@bg_color">
+                            @Html.DisplayFor(modelItem => item3.AllowanceStatus)
+                        </td>
+                    </tr>
+                }
+            }
+            
+            
         }
     </tbody>
 </table>
@@ -134,51 +210,62 @@
     @await Html.PartialAsync("print")
 </div>
 
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="~/js/filter-department.js"></script>
+
 <!-- JavaScript for Filtering -->
 <script>
-    window.onload = filterAllowance();
     function filterAllowance() {
-
-        var department = document.getElementById("filter-department").value;
-        var allowanceStatus = document.getElementById("filter-status").value;
-        var jobTitle = document.getElementById("filter-job").value;
-        var empType = document.getElementById("filter-empType").value;
-
-        var company = document.getElementById("filter-company").value;
-        var dateStart = document.getElementById("dateStart").value;
-        var dateEnd = document.getElementById("dateEnd").value;
+        var department = $("#filter-department").val();
+        var allowanceStatus = $("#filter-status").val();
+        var allowanceType = $("#filter-type").val();
+        var allowanceDuration = $("#filter-duration").val();
+        var jobTitle = $("#filter-jobTitle").val();
+        var jobClass = $("#filter-jobClass").val();
+        var position = $("#filter-positions").val();
+        var company = $("#filter-company").val();
+        var dateStart = $("#dateStart").val();
+        var dateEnd = $("#dateEnd").val();
 
         // If the "All" option is selected, send null to indicate no filter
         department = (!department || department === "") ? null : department;
         allowanceStatus = (!allowanceStatus || allowanceStatus === "") ? null : allowanceStatus;
         jobTitle = (!jobTitle || jobTitle === "") ? null : jobTitle;
-        empType = (!empType || empType === "") ? null : empType;
-        
+        jobClass = (!jobClass || jobClass === "") ? null : jobClass;
         company = (!company || company === "") ? null : company;
         dateStart = (!dateStart || dateStart === "") ? null : new Date(dateStart).toISOString();
         dateEnd = (!dateEnd || dateEnd === "") ? null : dateEnd;
 
         // Build the URL with multiple filters
-        const url = `/Report/AllowanceAssignmentReport?handler=Filter&department=${encodeURIComponent(department)}&jobTitle=${encodeURIComponent(jobTitle)}&empStatus=${encodeURIComponent(allowanceStatus)}&empType=${encodeURIComponent(empType)}&company=${encodeURIComponent(company)}&workLoc=${encodeURIComponent(workLoc)}&dateStart=${encodeURIComponent(dateStart)}&dateEnd=${encodeURIComponent(dateEnd)}`;
+        var url = `/Report/AllowanceAssignmentReport?handler=Filter`+
+                    `&department=${encodeURIComponent(department)}`+
+                    `&allowanceStatus=${encodeURIComponent(allowanceStatus)}`+
+                    `&allowanceType=${encodeURIComponent(allowanceType)}`+
+                    `&jobTitle=${encodeURIComponent(jobTitle)}`+
+                    `&jobClass=${encodeURIComponent(jobClass)}`+
+                    `&position=${encodeURIComponent(position)}`+
+                    `&company=${encodeURIComponent(company)}`+
+                    `&dateStart=${encodeURIComponent(dateStart)}`+
+                    `&dateEnd=${encodeURIComponent(dateEnd)}`+
+                    `&allowanceDuration=${encodeURIComponent(allowanceDuration)}`;
 
-        fetch(url)
-            //.then(response => response.text())
-            .then(response => response.json())
-            .then(data => {
-                document.getElementById('filteredCount').innerHTML = data.filteredCount;
-                document.getElementById('table-body').innerHTML = data.tableHtml;
-                const selector = document.getElementById('filter-department');
-                document.getElementById('filter-department').innerHTML =
-                    '<option value="">All</option>'
-                data.departs.forEach(function (item) {
-                    const option = document.createElement('option');
-                    option.value = item.id;
-                    option.textContent = item.name;
-                    selector.appendChild(option);
-                });
-                updateRowCount("countID");
-            })
-            .catch(error => console.error('Error:', error));
+        $.getJSON(url, function (data) {
+            $("#TotalRecords").text(data.totalRecords + " of ");
+            $("#table-body").html(data.tableHtml);
+            $("#TotalSum").text(data.totalSum + " of ");
+            $("#Employees").text(data.employees + " of ");
+
+
+        }).fail(function (xhr, status, error) {
+            console.error("Error:", error);
+        });
     }
-    enableTableSorting("dataTable");
+
+       
+
+</script>
+<script> 
+    $(document).on("click", "#toggle-allowances", function () {
+        $(".allowance-row").toggle();  // Show/hide rows
+    });
 </script>

@@ -47,10 +47,30 @@ body {
     .table td, table th, table thead {
         border: 1px solid black !important;
     }
-    * Remove striping effect */
+    /* Remove striping effect */
     .table-striped > tbody > tr:nth-of-type(odd) > * {
         background-color: transparent !important;
     }
+
+    select {
+        border: none !important;
+        background: transparent !important;
+        -webkit-appearance: none;
+        appearance: none;
+        pointer-events: none;
+        text-decoration: underline;
+        font-weight: bold;
+    }
+    input[type="date"] {
+        border: none;
+        background: none;
+        pointer-events: none;
+        -webkit-appearance: none; /* remove calendar icon (Chrome/Safari) */
+        appearance: none;
+        text-decoration: underline;
+        font-weight: bold;
+    }
+
 }
 table select{
     max-width:100px;
@@ -83,3 +103,10 @@ table select{
     .shift-popup.error {
         background: #dc3545;
     }
+
+.app-body {
+    background-color: #f0f0f0; /* a soft gray */
+    /* color: #333; softer text for contrast */
+}
+
+

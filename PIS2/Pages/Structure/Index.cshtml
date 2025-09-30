@@ -5,33 +5,67 @@
 <p>
 <a asp-page="Create" class="btn btn-primary">Create New Structure</a></p>
 @await Html.PartialAsync("filter")
-<table class="table table-bordered table-striped table-hover">
+<table class="table table-bordered table-striped table-hover" id="tableBody">
     <thead class="bg-dark text-white">
         <tr>
-            <th>Department</th>
-            <th>Job</th>
+            
+            <th>S/no</th>
+            <th>Company</th>
+            <th>Job Title\Position</th>
+            <th>Reports To</th>
             <th>Required</th>
             <th>Status</th>
-            <th>Reports To</th>
-            <th>Modified By</th>
-            <th></th>
+            
         </tr>
     </thead>
     <tbody>
-        @foreach (var item in Model.Structures)
+        @{
+            int companyIndex = 1;
+        }
+        @foreach (var companyGroup in Model.Structures.GroupBy(s => s.departmentModel.companyModel.companyName))
         {
-            <tr>
-                <td>@item.departmentModel?.departmentName</td>
-                <td>@item.jobModel?.jobTitle</td>
-                <td>@item.requiredNumber</td>
-                <td>@item.structureStatus</td>
-                <td>@item.ReportsTo?.departmentModel?.departmentName, @item.ReportsTo?.jobModel?.jobTitle</td>
-                <td>@item.modifiedBy</td>
-                <td>
-                    <a asp-page="Edit" asp-route-id="@item.structureID">Edit</a> |
-                    <a asp-page="Details" asp-route-id="@item.structureID">Details</a> 
-                </td>
+            <tr class="table-primary">
+                <td class="fw-bold">@companyIndex</td>
+                <td colspan="3"><strong>@companyGroup.Key</strong></td>
+                <td><strong>@companyGroup.Sum(s => s.requiredNumber)</strong></td>
+                <td></td>
+                
             </tr>
+            int departmentIndex = 1;
+            @foreach (var departmentGroup in companyGroup.GroupBy(s => s.departmentModel.departmentName))
+            {
+                <tr class="table-secondary">
+                    <td>@companyIndex.@departmentIndex</td>
+                    <td colspan="3"><strong>@departmentGroup.Key</strong></td>
+                    <td><strong>@departmentGroup.Sum(s => s.requiredNumber)</strong></td>
+                    <td></td>
+                </tr>
+                @foreach (var item in departmentGroup)
+                {
+                    <tr onclick="location.href='@Url.Page("Edit", new {id = item.structureID})'"  style="cursor:pointer;">
+                    
+                        <td></td>
+                        <td></td>
+                        <td>@item.jobModel?.jobTitle</td>
+                        <td>@item.ReportsTo?.departmentModel?.departmentName, @item.ReportsTo?.jobModel?.jobTitle</td>
+                        <td>@item.requiredNumber</td>
+                        <td>@item.structureStatus</td>
+                        
+                    </tr>
+                }
+                departmentIndex++;
+            }
+            companyIndex++;
         }
     </tbody>
+    <tfoot class="bg-secondary fw-bold">
+        <tr>
+            <td colspan="4">Total Required Man-power</td>
+            <td>@Model.Structures.Sum(s => s.requiredNumber)</td>
+        </tr>
+    </tfoot>
 </table>
+<div class="d-flex justify-content-end">
+    @await Html.PartialAsync("back")
+    @await Html.PartialAsync("print")
+</div>

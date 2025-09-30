@@ -92,7 +92,7 @@ namespace PIS2.Pages
                         //Employment = PersonEmployments.OrderBy(e => e.employmentDate).LastOrDefault();
                         if (Employment != null)
                         {
-                            Leaves = Employment.Leaves.OrderByDescending(l => l.leaveReaquestDate).ToList();
+                            Leaves = Employment.Leaves.OrderByDescending(l => l.leaveRequestDate).ToList();
                             JobPlacements = await _context.JobPlacements.OrderBy(j => j.jobPlacementDate).Where(l => l.employmentID == Employment.employmentID).ToListAsync();
                             LeaveDetail = _core.GetLeaveSummary(Employment.employmentID);
                             Overtimes =await _context.OvertimeRecords.Include(ot=> ot.overtimeModel)
@@ -201,7 +201,7 @@ namespace PIS2.Pages
                         Employment = PersonEmployments.OrderBy(e => e.employmentDate).LastOrDefault();
                         if (Employment != null)
                         {                                        
-                            Leaves = Employment.Leaves.OrderByDescending(l=> l.leaveReaquestDate).ToList();
+                            Leaves = Employment.Leaves.OrderByDescending(l=> l.leaveRequestDate).ToList();
                            
                             LeaveDetail = _core.GetLeaveSummary(Employment.employmentID);
                             Overtimes = await _context.OvertimeRecords.Include(ot => ot.overtimeModel)
@@ -261,7 +261,7 @@ namespace PIS2.Pages
                         if (Employment != null)
                         {
                             JobPlacements = await _context.JobPlacements.Where(l => l.employmentID == Employment.employmentID).ToListAsync();
-                            Leaves = await _context.Leaves.Where(l => l.employmentID == Employment.employmentID).OrderByDescending(l => l.leaveReaquestDate).ToListAsync(); //Employment.Leaves.ToList();
+                            Leaves = await _context.Leaves.Where(l => l.employmentID == Employment.employmentID).OrderByDescending(l => l.leaveRequestDate).ToListAsync(); //Employment.Leaves.ToList();
                             LeaveDetail = _core.GetLeaveSummary(Employment.employmentID);
                             Overtimes = await _context.OvertimeRecords.Include(ot => ot.overtimeModel)
                                 .Include(ot => ot.OvertimeHistories).Where(l => l.employmentID == Employment.employmentID).ToListAsync();

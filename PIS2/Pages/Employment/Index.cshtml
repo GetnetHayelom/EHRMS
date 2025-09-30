@@ -29,7 +29,7 @@
 <hr />
 <div id="parentDiv">
     <!--List View-->
-    <div id="rawView" class="show" data-bs-parent="#parentDiv">
+    <div id="rawView" class="collapse show" data-bs-parent="#parentDiv">
         <div class="d-flex justify-content-end">
             @await Html.PartialAsync("filter")
             @await Html.PartialAsync("print")
@@ -181,7 +181,7 @@
                                     <tbody id="table-body">
                                         @foreach (var item in dep.Records)
                                         {
-                                            <tr onclick="location.href='@Url.Page("Details", new { id = item.employmentID })'" style="cursor:pointer;" )>
+                                            <tr onclick="location.href='@Url.Page("Details", new { id = item.employmentID })'" style="cursor:pointer;">
                                                 <td>
                                                     @Html.DisplayFor(modelItem => item.givenID)
                                                 </td>

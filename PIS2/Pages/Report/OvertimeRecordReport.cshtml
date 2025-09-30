@@ -6,58 +6,364 @@
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
 
-<h1 class="fw-bold">Overtime Records</h1>
+@await Html.PartialAsync("headerSimple")
+<div class="d-flex justify-content-between">
+    <h2 class="fw-bold">Overtime Report</h2>
+    <div class="d-flex d-print-none">
+        <ul class="nav nav-tabs">
 
-<hr/>
+            <li class="nav-item">
+                <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#summaryView">Overtime Summary</button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#customOvertimeReport">Custom Overtime Report</button>
+            </li>
+            <li>@await Html.PartialAsync("print")</li>
+        </ul>
+
+    </div>
+</div>
+<hr />
 @await Html.PartialAsync("filter")
+<div class="tab-content">
+    <!--CUSTOM OVERTIME REPORT-->
+    <div class="tab-pane fade" id="customOvertimeReport">
+        <h4 class="fw-bold">Custom Report</h4>
 
-<table class="table" id="dataTable">
-    <thead class="bg-dark text-white">
-        <tr>
-            <th>
-                Emplopyment ID
-            </th>
-            <th>
-                Overtime Type
-            </th>
-            <th>
-                Date
-            </th>
-            <th>
-                Start Time
-            </th>
-            <th>
-                End Time
-            </th>
-            <th>Status</th>
-            <th>Reason</th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model.overtimeRecordModel) {
-        <tr onclick="location.href='@Url.Page("/OvertimeRecord/Details", new {id = item.overtimeRecordID})'" style="cursor:pointer;">
-            <td>
-                @Html.DisplayFor(modelItem => item.employmentModel.givenID)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.overtimeModel.overtimeName)
-            </td>
-            <td>
-                @item.overtimeRecordDate.ToString("MM/dd/yyyy")
-            </td>
-            <td>
-                @item.overtimeRecordStartTime
-            </td>
-            <td>
-                @item.overtimeRecordEndTime
-            </td>
-            <td>
-                @item.overtimeRecordStatus
-            </td>
-                <td>
-                    @item.overtimeRecordReason
-                </td>
-        </tr>
-}
-    </tbody>
-</table>
+        <!--SUMMARY POINTS-->
+        <div class="d-flex justify-content-between">
+            
+
+            <div class="card m-2 p-2 shadow flex-grow-1">
+                <p>Total Overtime (Records) </p>
+                <h6 class="fw-bold">
+                    <u id="TotalRecords">@Model.TotalRecords.ToString("N2")</u>
+                </h6>
+            </div>
+            <div class="card m-2 p-2 shadow flex-grow-1">
+                <p>Total Overtime </p>
+                <h6 class="fw-bold">
+                    <u id="TotalHours">@Model.TotalHours.ToString("N2") Hrs</u>
+                </h6>
+                <p><u id="TotalDays">@Model.TotalDays.ToString("N2") Days</u> </p>
+            </div>
+            <div class="card m-2 p-2 shadow flex-grow-1">
+                <p>Total Overtime Cost </p>
+                <h6 class="fw-bold">
+                    <u id="TotalCost">@Model.TotalCost.ToString("N2")</u>
+                </h6>
+            </div>
+            <div class="card m-2 p-2 shadow flex-grow-1">
+                <p> Number of Employees</p>
+                <h6 class="fw-bold">
+                <u id="InvolvedEmployees">@Model.InvolvedEmployees.ToString("N2")</u></h6>
+            </div>
+            <div class="card m-2 p-2 shadow flex-grow-1">
+                <p> Days Per Employees</p>
+                <h6 class="fw-bold">
+                <u id="DaysPerEmployees">@Model.DaysPerEmployees.ToString("N2")</u></h6>
+            </div>
+            <div class="card m-2 p-2 shadow flex-grow-1">
+                <p> Cost Per Employees</p>
+                <h6 class="fw-bold">
+                <u id="CostPerEmployees">@Model.CostPerEmployees.ToString("N2")</u></h6>
+            </div>
+        </div>
+
+        <!--FILTER CONTROLS-->
+        <div class="d-flex m-2 justify-content-between flex-wrap">
+            <div class="col-3 m-2 d-print-flex">
+                <label for="filter-company">Company:</label>
+                <select class="form-select" aria-label="Default select example" id="filter-company">
+                    <option value="">All</option>
+                    @foreach (var company in Model.Companies)
+                    {
+                        <option value="@company.companyID">@company.companyName</option>
+                    }
+                </select>
+            </div>
+            <div class="col-3 m-2 d-print-flex">
+                <label for="filter-department">Department:</label>
+                <select class="form-select" aria-label="Default select example" id="filter-department">
+                    <option value="">All</option>
+                    @foreach (var department in Model.Departments)
+                    {
+                        <option value="@department.departmentID">@department.departmentName</option>
+                    }
+                </select>
+            </div>
+            <div class="col-3 m-2 d-print-flex">
+                <label for="filter-department">Overtime Type:</label>
+                <select class="form-select" aria-label="Default select example" id="filter-type">
+                    <option value="">All</option>
+                    @foreach (var overtime in Model.OvertimeTypes)
+                    {
+                        <option value="@overtime.overtimeID">@overtime.overtimeName</option>
+                    }
+                </select>
+            </div>
+            <div class="col-3 m-2 d-print-flex">
+                <label for="filter-status">Status:</label>
+                <select class="form-select" aria-label="Default select example" id="filter-status" asp-items="Html.GetEnumSelectList<Models.overtimeStatus>()">
+                    <option value="">All</option>
+                </select>
+            </div>
+            <div class="col-3 m-2 d-print-flex">
+                <label for="dateStart">Date From:</label>
+                <input class="form-control" type="date" id="dateStart" id="dateEnd" asp-for="SDate" />
+            </div>
+            <div class="col-3 m-2 d-print-flex">
+                <label for="dateEnd">Date Upto:</label>
+                <input class="form-control" type="date" id="dateEnd" asp-for="EDate" />
+            </div>
+            <div class="d-flex align-items-end">
+                <button onclick="filterOvertime()" class="btn btn-primary d-print-none">Load</button>
+            </div>
+        </div>
+
+        <!--CUSTOM REPORT TABLE-->
+        <table class="table table-bordered table-striped table-hover print-full-width" id="dataTable">
+            <thead class="bg-dark text-white">
+                <tr>
+                    <th>
+                        Overtime ID
+                    </th>
+                    <th>
+                        Employee ID 
+                    </th>
+                    <th>
+                        Overtime Type
+                    </th>
+                    <th>
+                        Date
+                    </th>
+                    <th>
+                        Hours
+                    </th>
+                  
+                    <th>Cost</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody id="table-body">
+                
+            </tbody>
+        </table>
+    </div>
+
+    <!--ALL OVERTIME VIEW-->
+    <div class="tab-pane fade show active" id="summaryView">
+        <h4 class="fw-bold">Summary Report</h4>
+
+        <!--SUMMARY POINTS-->
+        <div class="d-flex justify-content-between">
+
+
+            <div class="card m-2 p-2 shadow flex-grow-1">
+                <p>Total Overtime (Records) </p>
+                <h6 class="fw-bold">
+                    <u>@Model.TotalRecords.ToString("N2")</u>
+                </h6>
+            </div>
+            <div class="card m-2 p-2 shadow flex-grow-1">
+                <p>Total Overtime (Days) </p>
+                <h6 class="fw-bold">
+                    <u>@Model.TotalDays.ToString("N2")</u>
+                </h6>
+            </div>
+            <div class="card m-2 p-2 shadow flex-grow-1">
+                <p>Total Overtime Cost </p>
+                <h6 class="fw-bold">
+                    <u>@Model.InvolvedEmployees.ToString("N2")</u>
+                </h6>
+            </div>
+            <div class="card m-2 p-2 shadow flex-grow-1">
+                <p> Days Per Employees</p>
+                <h6 class="fw-bold">
+                    <u>@Model.DaysPerEmployees.ToString("N2")</u>
+                </h6>
+            </div>
+            <div class="card m-2 p-2 shadow flex-grow-1">
+                <p> Cost Per Employees</p>
+                <h6 class="fw-bold">
+                    <u>@Model.CostPerEmployees.ToString("N2")</u>
+                </h6>
+            </div>
+        </div>
+        <!--FILTER CONTROLS-->
+        <form method="get" onsubmit="showLoader()">
+            <div class="d-flex m-2 justify-content-between flex-wrap">
+                <div class="col-3 m-2 d-print-flex">
+                    <label for="filter-company">Company:</label>
+                    <select class="form-select" aria-label="Default select example" asp-for="Company" name="Company">
+                        <option value="">All</option>
+                        @foreach (var company in Model.Companies)
+                        {
+                            <option value="@company.companyID">@company.companyName</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-3 m-2 d-print-flex">
+                    <label for="filter-department">Overtime Type:</label>
+                    <select class="form-select" aria-label="Default select example" asp-for="OtType" name="OtType">
+                        <option value="">All</option>
+                        @foreach (var overtime in Model.OvertimeTypes)
+                        {
+                            <option value="@overtime.overtimeID">@overtime.overtimeName</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-3 m-2 d-print-flex">
+                    <label for="filter-status">Status:</label>
+                    <select class="form-select" aria-label="Default select example" asp-for="OtStatus" name="OtStatus" asp-items="Html.GetEnumSelectList<Models.overtimeStatus>()">
+                        <option value="" selected>All</option>
+                    </select>
+                </div>
+                <div class="col-3 m-2 d-print-flex">
+                    <label for="dateStart">Date From:</label>
+                    <input class="form-control" type="date" id="dateStart" asp-for="SDate" />
+                </div>
+                <div class="col-3 m-2 d-print-flex">
+                    <label for="dateEnd">Date of End Upto:</label>
+                    <input class="form-control" type="date" asp-for="EDate" />
+                </div>
+                <div class="d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary d-print-none">Load</button>
+                </div>
+            </div>
+        </form>
+
+        <!--SUMMARY TABLE-->
+        <table class="table table-bordered table-striped table-hover print-full-width">
+            <thead class="bg-dark text-white">
+                <tr>
+                    <th>S/No</th>
+                    <th>CompanyName</th>
+                    <th>Employees</th>
+                    <th>Total Hours</th>
+                    <th>Total Cost</th>
+                    
+                </tr>
+            </thead>
+            <tbody>
+                @{
+                    int index = 1;
+                    foreach(var item in Model.OvertimeSummary.GroupBy(o => o.CompanyID))
+                    {
+                        <tr class="table-primary fw-bold">
+                            <td>@index</td>
+                            <td>@item.FirstOrDefault().CompanyName</td>
+                            <td>@item.Sum(e => e.EmployeesInvolved)?.ToString("N2")</td>
+                            <td>@item.Sum(e => e.TotalHours)?.ToString("N2")</td>
+                            <td>@item.Sum(e => e.TotalCost)?.ToString("N2")</td>
+                        </tr>
+
+                       
+                        int index2 = 1;
+                        foreach(var item2 in item.GroupBy(o => o.DepartmentID))
+                        {
+                            <tr class="table-secondary fw-bold">
+                                <td>@index.@index2</td>
+                                <td>@item2.FirstOrDefault().DepartmentName</td>
+                                <td>@item2.Sum(e => e.EmployeesInvolved)?.ToString("N2")</td>
+                                <td>@item2.Sum(e => e.TotalHours)?.ToString("N2")</td>
+                                <td>@item2.Sum(e => e.TotalCost)?.ToString("N2")</td>
+                            </tr>
+                            index2++;
+                            foreach(var item3 in item2.GroupBy(o => o.OvertimeID))
+                            {
+                                <tr>
+                                    <td></td>
+                                    <td>@item3.FirstOrDefault().OvertimeName</td>
+                                    <td>@item3.Sum(e => e.EmployeesInvolved)?.ToString("N2")</td>
+                                    <td>@item3.Sum(e => e.TotalHours)?.ToString("N2")</td>
+                                    <td>@item3.Sum(e => e.TotalCost)?.ToString("N2")</td>
+                                </tr>
+                           
+                            }
+                         } index++;
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+    
+    <!--PENDING OVERTIME VIEW-->
+    <div class="tab-pane fade" id="dashboardView"></div>
+    
+</div>
+
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="~/js/filter-department.js"></script>
+
+<script>
+    function filterOvertime() {
+        var department = $("#filter-department").val();
+        var overtimeStatus = $("#filter-status").val();
+        var overtimeType = $("#filter-type").val();
+        var company = $("#filter-company").val();
+        var dateStart = $("#dateStart").val();
+        var dateEnd = $("#dateEnd").val();
+
+        // Normalize empty values to null
+        department = (!department || department === "") ? null : department;
+        overtimeStatus = (!overtimeStatus || overtimeStatus === "") ? null : overtimeStatus;
+        overtimeType = (!overtimeType || overtimeType === "") ? null : overtimeType;
+        company = (!company || company === "") ? null : company;
+        dateStart = (!dateStart || dateStart === "") ? null : new Date(dateStart).toISOString();
+        dateEnd = (!dateEnd || dateEnd === "") ? null : dateEnd;
+
+        // Build the URL with filters
+        var url = `/Report/OvertimeRecordReport?handler=Filter` +
+            `&department=${encodeURIComponent(department)}` +
+            `&overtimeStatus=${encodeURIComponent(overtimeStatus)}` +
+            `&overtimeType=${encodeURIComponent(overtimeType)}` +
+            `&company=${encodeURIComponent(company)}` +
+            `&dateStart=${encodeURIComponent(dateStart)}` +
+            `&dateEnd=${encodeURIComponent(dateEnd)}`;
+
+        // jQuery AJAX
+        $.getJSON(url, function (data) {
+            //console.log("Received Data:", data);
+
+            $("#table-body").html(data.tableHtml);
+            $("#TotalRecords").text(parseFloat(data.totalRecords).toFixed(2));
+            $("#TotalHours").text(parseFloat(data.totalHours).toFixed(2) + " Hrs");
+            $("#TotalDays").text(parseFloat(data.totalDays).toFixed(2) + " Days");
+            $("#InvolvedEmployees").text(parseFloat(data.involvedEmployees).toFixed(2));
+            $("#TotalCost").text(parseFloat(data.totalCost).toFixed(2));
+            $("#DaysPerEmployees").text(parseFloat(data.daysPerEmployees).toFixed(2) + " Days");
+            $("#CostPerEmployees").text(parseFloat(data.costPerEmployees).toFixed(2));
+
+            
+
+            updateRowCount("countID");
+        }).fail(function (jqXHR, textStatus, errorThrown) {
+            console.error("Error:", textStatus, errorThrown);
+        });
+    }
+
+ 
+</script>
+<script>
+    $(document).on("click", ".dept-row", function () {
+        var deptId = $(this).data("deptid");
+        var overtimeStatus = $("#filter-status").val();
+        var overtimeType = $("#filter-type").val();
+        var dateStart = $("#dateStart").val();
+        var dateEnd = $("#dateEnd").val();
+
+        var $row = $(this);
+
+        // Prevent duplicate loading
+        if ($row.hasClass("loaded")) return;
+        $row.addClass("loaded");
+
+        $.get(`/Report/OvertimeRecordReport?handler=DepartmentDetails&deptId=${deptId}&overtimeStatus=${overtimeStatus}&overtimeType=${overtimeType}&dateStart=${dateStart}&dateEnd=${dateEnd}`, function (data) {
+            // Insert after the department row
+            $row.after(data.tableHtml);
+        });
+    });
+</script>
+

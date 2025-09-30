@@ -84,7 +84,7 @@
                             @item.employmentModel?.personModel?.personFullName
                         </td>
                         <td>
-                                @item.leaveReaquestDate.ToString("MM/dd/yyyy")
+                                @item.leaveRequestDate.ToString("MM/dd/yyyy")
                         </td>
                         <td>
                                 @item.leaveStartDate.ToString("MM/dd/yyyy")
@@ -194,7 +194,7 @@
                                             <th>
                                                 Status
                                             </th>
-                                            <th></th>
+                                            <th class =" d-print-none"> </th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -212,7 +212,7 @@
                                                     @item.employmentModel.personModel.personFullName
                                                 </td>
                                                 <td>
-                                                    @item.leaveReaquestDate.ToString("MMM dd, yyyy")
+                                                    @item.leaveRequestDate.ToString("MMM dd, yyyy")
                                                 </td>
                                                 <td>
                                                     @item.leaveStartDate.ToString("MMM dd, yyyy")
@@ -243,7 +243,7 @@
                                                     @if (User.IsInRole("MIE\\PMS_HRCLERK"))
                                                     {
 
-                                                        <button class="btn btn-success post-button" data-id="@item.leaveID">Post</button>
+                                                        <button class="btn btn-success post-button d-print-none" data-id="@item.leaveID">Post</button>
 
                                                     }
 
@@ -328,7 +328,7 @@
                                             <th>
                                                 Status
                                             </th>
-                                            <th></th>
+                                            <th class=" d-print-none"></th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -346,7 +346,7 @@
                                                     @item.employmentModel.personModel.personFullName
                                                 </td>
                                                 <td>
-                                                    @item.leaveReaquestDate.ToString("MMM dd, yyyy")
+                                                    @item.leaveRequestDate.ToString("MMM dd, yyyy")
                                                 </td>
                                                 <td>
                                                     @item.leaveStartDate.ToString("MMM dd, yyyy")
@@ -377,7 +377,7 @@
                                                     @if (User.IsInRole("MIE\\PMS_HRCLERK"))
                                                     {
 
-                                                        <button class="btn btn-success post-button" data-id="@item.leaveID">Post</button>
+                                                        <button class="btn btn-success post-button d-print-none" data-id="@item.leaveID">Post</button>
 
                                                     }
 

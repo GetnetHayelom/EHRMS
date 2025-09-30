@@ -53,8 +53,8 @@ namespace PIS2.Models
             int spareDays = 0;
             //the last amount incremented, initialised to the base rate
             //get the id of 'New Year Balance' Leave Type and use it for selecting parameter
-            decimal lastAnnualLeaveIncrement = leaves.OrderBy(l => l.leaveReaquestDate)
-                .LastOrDefault(l => l.leaveTypeID == 63 && l.leaveStartDate <= DateTime.Now && l.leaveEndDate >= DateTime.Now)?.leaveDays ?? 0;
+            decimal lastAnnualLeaveIncrement = leaves.OrderBy(l => l.leaveRequestDate)
+                .LastOrDefault(l => l.leaveTypeModel.leaveTypeName == "New Year Balance" && l.leaveStartDate <= DateTime.Now && l.leaveEndDate >= DateTime.Now)?.leaveDays ?? 0;
             //daily accrual rate by deviding last annual increment rate to the number of working days
             decimal dailyAccrualRate = DateTime.IsLeapYear(endDate.Year) ? lastAnnualLeaveIncrement / 366 : lastAnnualLeaveIncrement / 365;
             //total amount of leave until the given end time
@@ -172,7 +172,7 @@ namespace PIS2.Models
             int spareDays = 0;
             //the last amount incremented, initialised to the base rate
             //get the id of 'New Year Balance' Leave Type and use it for selecting parameter
-            decimal lastAnnualLeaveIncrement = leaves.OrderBy(l => l.leaveReaquestDate)
+            decimal lastAnnualLeaveIncrement = leaves.OrderBy(l => l.leaveRequestDate)
                 .LastOrDefault(l => l.leaveTypeID == 63)?.leaveDays ?? 0;
             //daily accrual rate by deviding last annual increment rate to the number of working days
             decimal dailyAccrualRate = DateTime.IsLeapYear(endDate.Year)? lastAnnualLeaveIncrement / 366 : lastAnnualLeaveIncrement / 365;
@@ -230,7 +230,7 @@ namespace PIS2.Models
             List<leavePerYear> leavesPerYear = new List<leavePerYear>();
             leavePerYear leavePerYear = new leavePerYear();
 
-            decimal lastIncrement =accrued.IsNullOrEmpty()? 0 : accrued.OrderBy(l => l.leaveReaquestDate)
+            decimal lastIncrement =accrued.IsNullOrEmpty()? 0 : accrued.OrderBy(l => l.leaveRequestDate)
                 .LastOrDefault(l => l.leaveTypeID == 63 && l.leaveStartDate <= endDate && l.leaveEndDate >= endDate)?.leaveDays ?? 0;
             decimal totalUsedLeaves = used.Sum(l => l.leaveDays);
             decimal totalAccruedLeaves = accrued.Sum(l => l.leaveDays);
@@ -245,8 +245,8 @@ namespace PIS2.Models
             for (int i = 0; i < years; i++)
             {
                 
-                usedLeaves = used.Where(l => l.leaveReaquestDate >= dateCounter && l.leaveReaquestDate < dateCounter.AddYears(1)).Sum(l =>l.leaveDays);
-                accruedLeaves = accrued.Where(l => (l.leaveReaquestDate >= dateCounter && l.leaveReaquestDate < dateCounter.AddYears(1))).Sum(l => l.leaveDays);
+                usedLeaves = used.Where(l => l.leaveRequestDate >= dateCounter && l.leaveRequestDate < dateCounter.AddYears(1)).Sum(l =>l.leaveDays);
+                accruedLeaves = accrued.Where(l => (l.leaveRequestDate >= dateCounter && l.leaveRequestDate < dateCounter.AddYears(1))).Sum(l => l.leaveDays);
                
 
                 leavePerYear = new leavePerYear();
@@ -263,7 +263,7 @@ namespace PIS2.Models
 
                 dateCounter = dateCounter.AddYears(1);
                 startingLeavePerYear += (accruedLeaves - usedLeaves);
-                lastIncrement = accrued.OrderByDescending(l => l.leaveReaquestDate).FirstOrDefault()?.leaveDays ?? 0;
+                lastIncrement = accrued.OrderByDescending(l => l.leaveRequestDate).FirstOrDefault()?.leaveDays ?? 0;
                 balance = totalAccruedLeaves - totalUsedLeaves;
             }
             var carryOverTotal = balance;
@@ -290,7 +290,7 @@ namespace PIS2.Models
         {
             List<leaveModel> leaves = new List<leaveModel>();
             leaves = _context.Leaves.Where(l=>l.employmentID == empID).ToList();
-            DateTime startDate = leaves.Min(l => l.leaveReaquestDate);
+            DateTime startDate = leaves.Min(l => l.leaveRequestDate);
             DateTime endDate = DateTime.Now;
             //total number of days between given date
             int days = (endDate - startDate).Days;

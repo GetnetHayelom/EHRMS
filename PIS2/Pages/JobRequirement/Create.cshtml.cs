@@ -18,10 +18,23 @@ namespace PIS2.Pages.JobRequirement
             _context = context;
         }
 
-        public IActionResult OnGet()
+        public IActionResult OnGet(int? id)
         {
-        ViewData["departmentID"] = new SelectList(_context.Departments.Where(d=> d.departmentStatus == mainStatus.Active).OrderBy(d =>d.departmentName), "departmentID", "departmentName");
-        ViewData["jobID"] = new SelectList(_context.Jobs.Where(j => j.jobStatus == mainStatus.Active).OrderBy(j => j.jobTitle), "jobID", "jobTitle");
+            if (id != null)
+            {
+                var selectedDepartment = _context.Departments.FirstOrDefault(d => d.departmentID ==id);
+                if (selectedDepartment != null)
+                {
+                    ViewData["departmentID"] = new SelectList(_context.Departments.Where(d => d.departmentStatus == mainStatus.Active).OrderBy(d => d.departmentName), "departmentID", "departmentName", selectedDepartment);
+                }
+               
+            }
+            else
+            {
+                ViewData["departmentID"] = new SelectList(_context.Departments.Where(d => d.departmentStatus == mainStatus.Active).OrderBy(d => d.departmentName), "departmentID", "departmentName");
+            }
+               
+            ViewData["jobID"] = new SelectList(_context.Jobs.Where(j => j.jobStatus == mainStatus.Active).OrderBy(j => j.jobTitle), "jobID", "jobTitle");
             return Page();
         }
 

@@ -1,0 +1,49 @@
+﻿@page
+@model PIS2.Pages.Management.AnnualLeaveCompanySummaryModel
+@{
+}
+<div>
+    <h1 class="fw-bold">Company Annual Leave Report</h1>
+    <h4 class="fw-bold">@Model.CompanyName</h4>
+    <hr />
+    <table class="table table-bordered table-striped table-hover print-full-width">
+        <thead class="bg-black text-white">
+            <tr>
+                <th>S/No</th>
+                <th>Department</th>
+                <th>Leave Balance(Days)</th>
+                <th>Allowed Leave(Days)</th>
+                <th>Payable(Birr)</th>
+            </tr>
+        </thead>
+        <tbody>
+            @{
+                int index = 1;
+            }
+            @foreach(var item in Model.annualLeaveSummaries)
+            {
+                <tr onclick =" location.href='@Url.Page("AnnualLeaveDepartmentSummary", new { id = item.DepartmentID })' " style="cursor:pointer;">
+                    <td>@index</td>
+                    <td>@item.Department</td>
+                    <td>@item.LeaveBalance.ToString("N2")</td>
+                    <td>@item.AllowedLeave.ToString("N2")</td>
+                    <td>@Math.Round(item.PayableLeave, 2).ToString("N2")</td>
+                </tr>
+                index++;
+            }
+            
+            
+        </tbody>
+        <tfoot class="bg-secondary ">
+            <tr>
+                <th colspan="2">ToTal</th>
+                <th>@Model.annualLeaveSummaries.Sum(als => als.LeaveBalance).ToString("N2")</th>
+                <th>@Model.annualLeaveSummaries.Sum(als => als.AllowedLeave).ToString("N2")</th>
+                <th>@Math.Round(Model.annualLeaveSummaries.Sum(als => als.PayableLeave)).ToString("N2")</th>
+            </tr>
+        </tfoot>
+    </table>
+    <div class="d-flex justify-content-end">
+        @await Html.PartialAsync("print")
+    </div>
+</div>

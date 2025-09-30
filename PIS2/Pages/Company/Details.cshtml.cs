@@ -19,7 +19,7 @@ namespace PIS2.Pages.Company
         }
 
         public companyModel companyModel { get; set; } = default!;
-
+        public List<departmentModel> Departments { get; set; }
         public async Task<IActionResult> OnGetAsync(int? id)
         {
             if (id == null)
@@ -27,7 +27,12 @@ namespace PIS2.Pages.Company
                 return NotFound();
             }
 
-            var companymodel = await _context.Companies.FirstOrDefaultAsync(m => m.companyID == id);
+            var companymodel = await _context.Companies
+                .Include(c => c.Departments)?.ThenInclude(d => d.employmentModel).ThenInclude(e => e.personModel)
+                .Include(c => c.Departments).ThenInclude(d => d.JobPlacements)
+                .Include(c => c.Departments).ThenInclude(d => d.subAccountModel)
+                .FirstOrDefaultAsync(m => m.companyID == id) ?? new companyModel();
+
             if (companymodel == null)
             {
                 return NotFound();
@@ -35,6 +40,7 @@ namespace PIS2.Pages.Company
             else
             {
                 companyModel = companymodel;
+                Departments = companyModel.Departments?.ToList() ?? new List<departmentModel>();
             }
             return Page();
         }

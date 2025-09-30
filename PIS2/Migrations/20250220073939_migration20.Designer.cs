@@ -963,9 +963,9 @@ namespace PIS2.Migrations
                         .HasColumnType("datetime2")
                         .HasColumnName("leaveEndDate");
 
-                    b.Property<DateTime>("leaveReaquestDate")
+                    b.Property<DateTime>("leaveRequestDate")
                         .HasColumnType("datetime2")
-                        .HasColumnName("leaveReaquestDate");
+                        .HasColumnName("leaveRequestDate");
 
                     b.Property<DateTime>("leaveStartDate")
                         .HasColumnType("datetime2")

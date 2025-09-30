@@ -94,7 +94,7 @@ namespace PIS2.Pages.Leave
             TempData["MyNumber"] = EmployeeID;
             
             LeaveDetail = _core.GetLeaveSummary(id) != null? _core.GetLeaveSummary(id): _core.GetLeaveSummary(EmployeeID);
-            Leaves =_context.Leaves.OrderByDescending(l => l.leaveReaquestDate).Where(e => e.employmentID == EmployeeID).ToList();
+            Leaves =_context.Leaves.OrderByDescending(l => l.leaveRequestDate).Where(e => e.employmentID == EmployeeID).ToList();
             Person = _context.Persons.FirstOrDefault(e => e.personID == Employment.personID)?? new personModel();
             ViewData["employmentID"] = new SelectList(_context.Employments, "employmentID", "givenID", id);
             Console.WriteLine("################# Employee ID is " + EmployeeID);

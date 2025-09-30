@@ -102,6 +102,19 @@ namespace PIS2.Models
                 entity.HasOne(e=>e.allowanceAssignmentModel).WithMany(d=>d.AllowanceAssignmentHistories).HasForeignKey(e => e.allowanceAssignmentID);
 
             });
+            modelBuilder.Entity<AuditLog>(entity =>
+            {
+                entity.Property(e => e.AuditID).HasColumnName("AuditID");
+                entity.Property(e => e.TableName).HasColumnName("TableName");
+                entity.Property(e => e.RecordID).HasColumnName("RecordID");
+                entity.Property(e => e.ColumnName).HasColumnName("ColumnName");
+                entity.Property(e => e.OldValue).HasColumnName("OldValue");
+                entity.Property(e => e.NewValue).HasColumnName("NewValue");
+                entity.Property(e => e.ModifiedBy).HasColumnName("ModifiedBy");
+                entity.Property(e => e.ModifiedDate).HasColumnName("ModifiedDate");
+
+            });
+
 
             modelBuilder.Entity<bankInfoModel>(entity =>
             {
@@ -138,6 +151,24 @@ namespace PIS2.Models
                 entity.HasIndex(d => new { d.breakEnd, d.breakStart, d.shiftID }).IsUnique();
             });
 
+            modelBuilder.Entity<businessUnitModel>(entity =>
+            {
+
+                entity.Property(e => e.businessUnitID).HasColumnName("businessUnitID");
+                entity.Property(e => e.addressID).HasColumnName("addressID");
+                entity.Property(e => e.businessUnitName).HasColumnName("businessUnitName");
+                entity.Property(e => e.businessUnitAlias).HasColumnName("businessUnitAlias");
+                entity.Property(e => e.businessUnitStatus).HasColumnName("businessUnitStatus");
+                entity.Property(e => e.employmentID).HasColumnName("employmentID");
+                entity.Property(e => e.modifiedBy).HasColumnName("modifiedBy");
+
+                entity.HasMany(e => e.Departments).WithOne(p => p.businessUnitModel).HasForeignKey(p => p.businessUnitID).OnDelete(DeleteBehavior.NoAction);
+                entity.HasOne(e => e.companyModel).WithMany(p => p.BusinessUnits).HasForeignKey(p => p.companyID).OnDelete(DeleteBehavior.NoAction);
+                entity.HasIndex(e => e.businessUnitName).IsUnique();
+                entity.HasIndex(e => e.businessUnitAlias).IsUnique();
+
+                //entity.HasOne(e => e.employmentModel).WithOne(p => p.companyModel).HasForeignKey<companyModel>(p => p.employmentID).OnDelete(DeleteBehavior.ClientSetNull); ;
+            });
             modelBuilder.Entity<companyModel>(entity =>
             {
                 
@@ -149,7 +180,8 @@ namespace PIS2.Models
                 entity.Property(e => e.employmentID).HasColumnName("employmentID");
                 entity.Property(e => e.modifiedBy).HasColumnName("modifiedBy");
 
-                entity.HasMany(e => e.Departments).WithOne(p => p.companyModel).HasForeignKey(p => p.companyID).OnDelete(DeleteBehavior.Cascade);
+                entity.HasMany(e => e.Departments).WithOne(p => p.companyModel).HasForeignKey(p => p.companyID).OnDelete(DeleteBehavior.Restrict);
+                entity.HasMany(e => e.BusinessUnits).WithOne(p => p.companyModel).HasForeignKey(p => p.companyID);
                 entity.HasOne(e => e.addressModel).WithMany(p => p.Companies).HasForeignKey(p => p.addressID);
 
                 entity.HasIndex(e => e.companyName).IsUnique();
@@ -231,17 +263,20 @@ namespace PIS2.Models
                 entity.Property(e => e.departmentStatus).HasColumnName("departmentStatus");
                 entity.Property(e => e.employmentID).HasColumnName("employmentID");
                 entity.Property(e => e.subAccountID).HasColumnName("subAccountID");
+                entity.Property(e => e.businessUnitID).HasColumnName("businessUnitID");
                 entity.Property(e => e.modifiedBy).HasColumnName("modifiedBy");
 
                 entity.HasOne(d => d.companyModel).WithMany(p => p.Departments).HasForeignKey(d => d.companyID).OnDelete(DeleteBehavior.Cascade);
+                entity.HasOne(d => d.businessUnitModel).WithMany(p => p.Departments).HasForeignKey(d => d.businessUnitID);
 
-               // entity.HasOne(d => d.employmentModel).WithOne(p => p.departmentModel)
+                // entity.HasOne(d => d.employmentModel).WithOne(p => p.departmentModel)
                 //    .HasForeignKey<departmentModel>(d => d.employmentID)
-                  //  .OnDelete(DeleteBehavior.ClientSetNull);
+                //  .OnDelete(DeleteBehavior.ClientSetNull);
 
                 entity.HasOne(d => d.subAccountModel).WithMany(p => p.Departments).HasForeignKey(d => d.subAccountID);
                 entity.HasMany(e =>e.JobPlacements).WithOne(p => p.departmentModel).HasForeignKey(d => d.departmentID);
                 entity.HasMany(d => d.OvertimeRecords).WithOne(or => or.departmentModel).HasForeignKey(d => d.departmentID);
+                entity.HasOne(d => d.businessUnitModel).WithMany(p => p.Departments).HasForeignKey(d => d.businessUnitID).OnDelete(DeleteBehavior.NoAction);
 
                 entity.HasIndex(e => new { e.companyID, e.departmentName}).IsUnique();
 
@@ -692,7 +727,7 @@ namespace PIS2.Models
                 entity.Property(e => e.employmentID).HasColumnName("employmentID");
                 entity.Property(e => e.leaveDays).HasColumnName("leaveDays");
                 entity.Property(e => e.leaveEndDate).HasColumnName("leaveEndDate");
-                entity.Property(e => e.leaveReaquestDate).HasColumnName("leaveReaquestDate");
+                entity.Property(e => e.leaveRequestDate).HasColumnName("leaveRequestDate");
                 entity.Property(e => e.leaveStartDate).HasColumnName("leaveStartDate");
                 entity.Property(e => e.leaveStatus).HasColumnName("leaveStatus");
                 entity.Property(e => e.leaveTypeID).HasColumnName("leaveTypeID");
@@ -708,10 +743,10 @@ namespace PIS2.Models
                 entity.HasCheckConstraint("CK_Leave_leaveEndDate",
                     "[leaveEndDate]>=[leaveStartDate]");
 
-                entity.HasCheckConstraint("CK_Leave_NumberOfDays",
-                    "leaveDays>0 AND leaveDays <= DATEDIFF(DAY, leaveStartDate, leaveEndDate)+1");
+                //entity.HasCheckConstraint("CK_Leave_NumberOfDays",
+                //    "leaveDays>0 AND leaveDays <= DATEDIFF(DAY, leaveStartDate, leaveEndDate)+1");
 
-                entity.HasIndex(d => new { d.employmentID, d.leaveStartDate, d.leaveEndDate }).IsUnique();
+                //entity.HasIndex(d => new { d.employmentID, d.leaveStartDate, d.leaveEndDate}).IsUnique();
 
                 entity.ToTable(tb => tb.UseSqlOutputClause(false));
             });
@@ -943,6 +978,8 @@ namespace PIS2.Models
                 entity.Property(e => e.personID).HasColumnName("personID");
                 entity.Property(e => e.educationLevelInstitutionName).HasColumnName("educationLevelInstitutionName");
                 entity.Property(e => e.educationField).HasColumnName("educationField");
+                entity.Property(e => e.educationDomain).HasColumnName("educationDomain");
+                entity.Property(e => e.educationDiscipline).HasColumnName("educationDiscipline");
                 entity.Property(e => e.modifiedBy).HasColumnName("modifiedBy");
                 entity.Property(e => e.modifiedDate).HasColumnName("modifiedDate");
 
@@ -1342,6 +1379,41 @@ namespace PIS2.Models
             modelBuilder.Entity<CompanySummary>()
             .HasNoKey()
             .ToView("vw_CompanySummary");
+
+            // Annual Leave Summary
+            modelBuilder.Entity<AnnualLeaveSummary>()
+            .HasNoKey()
+            .ToView("vw_LeaveBalance");
+
+            // Employment Yearly Status
+            modelBuilder.Entity<EmploymentYearlyStat>()
+            .HasNoKey()
+            .ToView("vw_EmployeeYearlyStats");
+
+            // Department Employment Stats
+            modelBuilder.Entity<DepartmentEmploymentStats>()
+            .HasNoKey()
+            .ToView("vw_DepartmentEmployeeStats");
+
+            // Employment Details View
+            modelBuilder.Entity<EmployeeDetailView>()
+            .HasNoKey()
+            .ToView("vw_EmploymentDetails");
+
+            //Overtime Detail View
+            modelBuilder.Entity<OvertimeDetailView>()
+            .HasNoKey()
+            .ToView("vw_OvertimeDetailView");
+
+            //Overtime Summary View
+            modelBuilder.Entity<OvertimeSummaryView>()
+            .HasNoKey()
+            .ToView("vw_OvertimeSummaryView");
+
+            //Allowance Detail View
+            modelBuilder.Entity<AllowanceDetailView>()
+            .HasNoKey()
+            .ToView("vw_AllowanceDetailView");
         }
        
         public DbSet<accountModel> Accounts { get; set; }
@@ -1349,7 +1421,9 @@ namespace PIS2.Models
         public DbSet<allowanceAssignmentModel> AllowanceAssignments { get; set; }
         public DbSet<allowanceAssignmentHistoryModel> AllowanceAssignmentsHistories { get; set; }
         public DbSet<allowanceModel> Allowances { get; set; }
+        public DbSet<AuditLog> AuditLogs { get; set; }
         public DbSet<bankInfoModel> BankInfos { get; set; }
+        public DbSet<businessUnitModel> BusinessUnits { get; set; }
         public DbSet<companyModel> Companies { get; set; }
         public DbSet<contractModel> Contracts { get; set; }
         public DbSet<contractHistoryModel> ContractHistories { get; set; }
@@ -1433,6 +1507,13 @@ namespace PIS2.Models
         public DbSet<LeaveReportView> LeaveReportView { get; set; } = default!;
         public DbSet<CertificationSummaryView> CertificationReportView { get; set; } = default!;
         public DbSet<CompanySummary> CompanySummaryView { get; set; } = default!;
+        public DbSet<AnnualLeaveSummary> AnnualLeaveSummary { get; set; } = default!;
+        public DbSet<EmploymentYearlyStat> EmploymentYearlyStats { get; set; } = default!;
+        public DbSet<DepartmentEmploymentStats> DepartmentEmploymentStats { get; set; } = default!;
+        public DbSet<EmployeeDetailView> EmployeeDetailViews { get; set; } = default!;
+        public DbSet<OvertimeDetailView> OvertimeDetailView { get; set; } = default!;
+        public DbSet<OvertimeSummaryView> OvertimeSummaryView { get; set; } = default!;
+        public DbSet<AllowanceDetailView> AllowanceDetailView { get; set; } = default!;
 
     }
 }

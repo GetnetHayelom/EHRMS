@@ -6,10 +6,10 @@
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
 
-<h1>Allowances</h1>
+<h1 class="fw-bold">Allowances Types</h1>
 
 <p>
-    <a asp-page="Create">Add New Allowance</a>
+    <a asp-page="Create" class="btn btn-primary">Add New Allowance</a>
 </p>
 @await Html.PartialAsync("filter")
 <table class="table table-striped table-hover id="dataTable">
@@ -20,6 +20,9 @@
             </th>
             <th>
                 Description
+            </th>
+            <th>
+                Duration
             </th>
             <th>
                 Amount
@@ -33,7 +36,7 @@
             <th>Actions</th>
         </tr>
     </thead>
-    <tbody>
+    <tbody id="table-body">
 @foreach (var item in Model.allowanceModel) {
         <tr>
             <td>
@@ -42,6 +45,9 @@
             <td>
                 @Html.DisplayFor(modelItem => item.allowanceDescription)
             </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.allowanceDuration)
+                </td>
             <td>
                 @Html.DisplayFor(modelItem => item.allowanceAmount)
             </td>
@@ -51,10 +57,13 @@
             <td>
                 @Html.DisplayFor(modelItem => item.allowanceStatus)
             </td>
+                @if(User.IsInRole("MIE\\PMS_HRMANAGER"))
+                {
+                    <a asp-page="./Edit" asp-route-id="@item.allowanceID">Edit</a>
+                }
             <td>
-                <a asp-page="./Edit" asp-route-id="@item.allowanceID">Edit</a> |
-                <a asp-page="./Details" asp-route-id="@item.allowanceID">Details</a> |
-                <a asp-page="./Delete" asp-route-id="@item.allowanceID">Delete</a>
+                
+               
             </td>
         </tr>
 }

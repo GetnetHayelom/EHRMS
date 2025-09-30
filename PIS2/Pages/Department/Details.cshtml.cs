@@ -54,23 +54,20 @@ namespace PIS2.Pages.Department
             WorkSites = await _context.WorkSites.Where(s => s.workSiteStatus == mainStatus.Active).ToListAsync();
 
             int personID = _context.Users.FirstOrDefault(u => u.userName == User.Identity.Name).personID;
-            Console.WriteLine("SELECTED PERSON ID IS________________" + personID);
+            
             int empID = _context.Employments.FirstOrDefault(e => e.personID == personID && e.employmentStatus == mainStatus.Active).employmentID;
-            Console.WriteLine("SELECTED EMPLOYEE ID IS________________" + empID);
+            
             int depID = _context.JobPlacements.FirstOrDefault(jp => jp.employmentID == empID && jp.jobPlacementStatus == mainStatus.Active).departmentID;
             
             if (id == null || id==0)
             {
-                
 
-                id = depID;
-
-                
-                Console.WriteLine("SELECTED DEPARTMENT ID IS________________" + depID);
-                if (id == null || id == 0)
+                if (depID != 0)
                 {
-                    return NotFound();
+                    id = depID;
+                    
                 }
+                else {return NotFound(); }
             }
             
             var departmentmodel = await _context.Departments.Include(d => d.companyModel)
@@ -79,15 +76,15 @@ namespace PIS2.Pages.Department
             
             departmentModel = departmentmodel;
                 isMember = depID== id? true: false;
-                isManager= empID == departmentModel.employmentID? true: false;
+                isManager= empID == departmentModel?.employmentID? true: false;
                 isDelegatee = _context.Delegations
                 .Where(d => d.delegationFrom == departmentModel.employmentID && d.delegationStatus == mainStatus.Active)?
                 .FirstOrDefault()?.delegationTo ==empID ? true: false;
                 
             Jobs = _context.JobPlacements.Where(j => j.departmentID ==departmentModel.departmentID && j.jobPlacementStatus == mainStatus.Active)
-                .Include(j => j.employmentModel).ThenInclude(e => e.personModel)
-                .Include(j => j.employmentModel).ThenInclude(e => e.employmentTypeModel)
-                .Include(j=> j.jobModel).ToList();
+                .Include(j => j.employmentModel)?.ThenInclude(e => e.personModel)
+                .Include(j => j.employmentModel)?.ThenInclude(e => e.employmentTypeModel)
+                .Include(j=> j.jobModel).ToList() ?? new List<jobPlacementModel>(); 
             Employments =Jobs.Select(j => j.employmentModel).Distinct().ToList();
                 //Jobs = _context.JobPlacements.Include(j => j.employmentModel).ThenInclude(e => e.personModel).Where(j => j.departmentID == id).ToList();
                 //Employments = _context.Employments.Include(e => e.employmentTypeModel).Distinct().Where(e => Jobs.Select(j => j.employmentID).Contains(e.employmentID)).ToList();

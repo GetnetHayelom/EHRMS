@@ -35,7 +35,7 @@
     </thead>
     <tbody>
 @foreach (var item in Model.companyModel) {
-        <tr onclick="location.href='@Url.Page("/Management/CompanyP", new {id =item.companyID})'" style="cursor:pointer;">
+        <tr onclick="location.href='@Url.Page("/Company/Details", new {id =item.companyID})'" style="cursor:pointer;">
             <td>
                 @Html.DisplayFor(modelItem => item.companyName)
             </td>

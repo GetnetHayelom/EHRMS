@@ -56,7 +56,7 @@ namespace PIS2.Pages.Leave
                 .Include(l => l.leaveTypeModel)
                 .Where(l => l.employmentModel.JobPlacements.FirstOrDefault(j => j.jobPlacementStatus == mainStatus.Active).departmentModel.companyID == company
                 && l.leaveStatus == leaveStatus.Hold || l.leaveStatus == leaveStatus.Approved)
-                .OrderBy(l => l.leaveReaquestDate)
+                .OrderBy(l => l.leaveRequestDate)
                 .ToList() ?? new List<leaveModel>();
 
             GroupedDepLeaves =leaveModel.GroupBy(l => l.employmentModel.JobPlacements
@@ -117,7 +117,7 @@ namespace PIS2.Pages.Leave
                 .Include(l => l.leaveTypeModel)
                 .Where(l => l.employmentModel.JobPlacements.FirstOrDefault(j => j.jobPlacementStatus == mainStatus.Active).departmentModel.companyID == company
                 && l.leaveStatus == leaveStatus.Hold || l.leaveStatus == leaveStatus.Approved)
-                .OrderBy(l => l.leaveReaquestDate)
+                .OrderBy(l => l.leaveRequestDate)
                 .ToList() ?? new List<leaveModel>();
 
 

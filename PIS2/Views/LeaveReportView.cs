@@ -5,18 +5,25 @@ namespace PIS2.Views
 {
     public class LeaveReportView
     {
-       
-        public string EmployeeId { get; set; }
-        public int CompanyID { get; set; }
-        public string CompanyName { get; set; }
-        public int DepartmentID { get; set; }
-        public string DepartmentName { get; set; }
-        public int LeaveTypeID { get; set; }
-        public string LeaveType { get; set; }
-        public decimal? LeaveDays { get; set; }
-        public DateTime LeaveStart { get; set; }
-        public DateTime LeaveEnd { get; set; }
         
+        public int EmploymentID { get; set; }
+        public string GivenID { get; set; }
+        public string? CompanyName { get; set; }
+        public int? CompanyID { get; set; }
+        public string? DepartmentName { get; set; }
+        public int? DepartmentID { get; set; }
+        
+        public int? LeaveTypeID { get; set; }
+        public leaveStatus LeaveStatus { get; set; }
+        public DateTime LeaveStart { get; set; }
+        public DateTime LeaveEnd { get; set; }       
+        public string? LeaveType { get; set; }
+        public decimal? LeaveDays { get; set; }
+        
+        
+        public int LeaveId { get; set; }
+        public DateTime LeaveRequestDate { get; set; }
+
     }
 
 

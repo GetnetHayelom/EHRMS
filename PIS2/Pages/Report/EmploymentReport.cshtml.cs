@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using PIS2.Models;
+using PIS2.Views;
 
 namespace PIS2.Pages.Report
 {
@@ -22,7 +23,8 @@ namespace PIS2.Pages.Report
             _context = context;
         }
 
-        public IList<employmentModel> employmentModel { get;set; } = default!;
+        public List<EmployeeDetailView> employmentModel { get;set; } = default!;
+        public List<EmployeeDetailView> groupedView { get; set; } = default!;
         public IList<departmentModel> Departments { get; set; } = default!;
         public IList<employmentTypeModel> EmploymentTypes { get; set; } = default!;
         public IList<jobModel> JobTitles { get; set; } = default!;
@@ -32,6 +34,10 @@ namespace PIS2.Pages.Report
         public DateTime EndDate { get; set; } = DateTime.Now;
         public int totalCount { get; set; }
         public int filteredCount { get; set; }
+        public int activeCount { get; set; }
+        public int maleCount { get; set; }
+        public int femaleCount { get; set; }
+        public int managementCount { get; set; }
 
         public async Task OnGetAsync()
         {
@@ -40,126 +46,152 @@ namespace PIS2.Pages.Report
             JobTitles = await _context.Jobs.OrderBy(j => j.jobTitle).ToListAsync();
             WorkLocations = await _context.WorkSites.OrderBy(w => w.workSiteName).ToListAsync();
             Companies = await _context.Companies.OrderBy(c => c.companyName).ToListAsync();
-            employmentModel = await _context.Employments
-                .Include(e => e.personModel)
-                .Include(e => e.employmentTypeModel)
-                .Include(e => e.JobPlacements.OrderByDescending(jp => jp.jobPlacementDate).Take(1)).ThenInclude(jp => jp.departmentModel)
-                .Include(e => e.JobPlacements.OrderByDescending(jp => jp.jobPlacementDate).Take(1)).ThenInclude(jp => jp.jobModel)
+            employmentModel = await _context.EmployeeDetailViews
                 .ToListAsync();
-            StartDate =employmentModel.IsNullOrEmpty()? DateTime.MinValue : employmentModel.Min(e => e.employmentDate);
+            StartDate =employmentModel.IsNullOrEmpty()? DateTime.MinValue : employmentModel.Min(e => e.EmploymentDate);
             totalCount = employmentModel.Count;
             filteredCount = employmentModel.Count;
+                activeCount = employmentModel.Where(e => e.EmploymentStatus == mainStatus.Active).Count();
+            femaleCount = employmentModel.Where(e => e.PersonGender == Gender.Female).Count();
+            maleCount = employmentModel.Where(e => e.PersonGender == Gender.Male).Count();
+            managementCount = employmentModel.Where(e => e.EmploymentPosition == EmploymentPositions.Management).Count();
+
+            groupedView = _context.EmployeeDetailViews.Where(e => e.EmploymentStatus == mainStatus.Active).ToList();
         }
      
-        public IActionResult OnGetFilter(int? department, int? jobTitle, int? empStatus, int? empType, int? company, int? workLoc, DateTime? dateStart, DateTime? dateEnd)
+        public IActionResult OnGetFilter(int? department, int? jobTitle, int? empStatus, int? empType, int? company, int? workLoc, DateTime? dateStart, DateTime? dateEnd,  int? position,int? gender)
         {
             Console.WriteLine("the Date is " + dateStart);
             // Start with the full list of employees
-            var employmentModel = _context.Employments
-                .Select(e => new
-                {
-                    Employee = e,
-                    lastJob = e.JobPlacements.OrderByDescending(j => j.jobPlacementDate).First(),
-                    Department = e.JobPlacements.OrderByDescending(j => j.jobPlacementDate).First().departmentModel,
-                    Company = e.JobPlacements.OrderByDescending(j => j.jobPlacementDate).First().departmentModel.companyModel,
-                    jobTitle = e.JobPlacements.OrderByDescending(j => j.jobPlacementDate).First().jobModel,
-                    WorkSite = _context.SiteAssignments.OrderByDescending(j => j.modifiedDate).First(ws => ws.employmentID == e.employmentID).workSiteModel,
-                    person = e.personModel,
-                    empType = e.employmentTypeModel,
-                })
-                .AsQueryable(); // Using IQueryable to build a dynamic query
-            var departments = _context.Departments.OrderBy(d=>d.departmentName).AsQueryable();
+            var employmentModel = _context.EmployeeDetailViews.AsQueryable(); // Using IQueryable to build a dynamic query
+
+            
             // Apply filters based on the provided query parameters
 
             // Filter by company (if provided)
             if (company.HasValue && company != null)
             {
-                employmentModel = employmentModel.Where(e => e.Company.companyID == company);
-                departments = _context.Departments.Where(d => d.companyID == company.Value).OrderBy(d => d.departmentName).AsQueryable();
+                employmentModel = employmentModel.Where(e => e.CompanyID == company);
+                
             }
-            else
-            {
-                departments = _context.Departments.OrderBy(d => d.departmentName).AsQueryable();
-            }
+            
             // Filter by Department (if provided)
             if (department.HasValue && department !=null)
             { 
-                employmentModel = employmentModel.Where(e => e.Department.departmentID == department);
+                employmentModel = employmentModel.Where(e => e.DepartmentID == department);
                 
             }
 
             // Filter by Status (if provided)
             if (empStatus.HasValue)
             {
+                employmentModel = employmentModel.Where(e => e.EmploymentStatus == (mainStatus) empStatus);
                
-                    employmentModel = employmentModel.Where(e => e.Employee.employmentStatus == (mainStatus) empStatus);
-               
+            }
+
+            // Filter by Gender (if provided)
+            if (gender.HasValue)
+            {
+                employmentModel = employmentModel.Where(e => e.PersonGender == (Gender)gender);
+
+            }
+            // Filter by Status (if provided)
+            if (position.HasValue)
+            {
+                employmentModel = employmentModel.Where(e => e.EmploymentPosition == (EmploymentPositions)position);
+
             }
 
             // Filter by Job Title (if provided)
             if (jobTitle.HasValue)
             {
                
-                employmentModel = employmentModel.Where(e => e.lastJob.jobID == jobTitle);
+                employmentModel = employmentModel.Where(e => e.JobID == jobTitle);
             }
             // Filter by type (if provided)
             if (empType.HasValue && empType != null)
             {
                
-                employmentModel = employmentModel.Where(e => e.Employee.employmentTypeID == empType);
+                employmentModel = employmentModel.Where(e => e.EmploymentTypeID == empType);
             }
             
             
             // Filter by workloc (if provided)
             if (workLoc.HasValue && workLoc != null)
-            {
-               
-                employmentModel = employmentModel.Where(e => e.WorkSite != null && e.WorkSite.workSiteID == workLoc);
+            {              
+                employmentModel = employmentModel.Where(e => e.WorkSiteID == workLoc);
             }
             // Filter by Start TIme (if provided)
             if (dateStart.HasValue && dateStart != null)
             {
                 employmentModel = employmentModel
-                    .Where(e => e.Employee.employmentDate >= dateStart);
+                    .Where(e => e.EmploymentDate >= dateStart);
             }
             // Filter by end TIme (if provided)
             if (dateEnd.HasValue && dateEnd != null)
             {
                 employmentModel = employmentModel
-                    .Where(e => e.Employee.employmentDate <= dateEnd);
+                    .Where(e => e.EmploymentDate <= dateEnd);
             }
 
             // Execute the query and get the filtered results
-            var filteredEmployees = employmentModel.OrderBy(e => e.Employee.givenID).ToList();
+            var filteredEmployees = employmentModel.OrderBy(e => e.GivenID).ToList();
             filteredCount = filteredEmployees.Count;
+            activeCount = filteredEmployees.Where(e => e.EmploymentStatus == mainStatus.Active).Count();
+            femaleCount = filteredEmployees.Where(e => e.PersonGender == Gender.Female).Count();
+            maleCount = filteredEmployees.Where(e => e.PersonGender == Gender.Male).Count();
+            managementCount = filteredEmployees.Where(e => e.EmploymentPosition == EmploymentPositions.Management).Count();
             // Generate the table HTML
-            var tableHtml = string.Join("", filteredEmployees.Select(e =>
-            {
-                var url = Url.Page("Details", new { id = e.Employee.employmentID });
-                
+            var tableHtml = string.Join("",
+    filteredEmployees
+        .GroupBy(e => e.CompanyName) // Group by company
+        .Select(companyGroup =>
+        {
+            // Company row
+            var companyRow = $"<tr class='table-primary fw-bold'>" +
+                             $"<td colspan='7'>Company: {companyGroup.Key} — Total Employees: {companyGroup.Count()}</td></tr>";
 
-                return  $"<tr onclick=\"location.href='{url}'\" style=\"cursor:pointer;\">" +
-                        $"<td><a href='/Employment/Details?id={e.Employee.employmentID}' class='text-decoration-none text-dark'>{e.Employee.givenID}</a></td>" +
-                        $"<td><a href='/Employment/Details?id={e.Employee.employmentID}' class='text-decoration-none text-dark'>{e.person.personFullName}</a></td>" +
-                        $"<td>{e.Employee.employmentDate.ToShortDateString()}</td>" +
-                        $"<td>{e.Employee.employmentStatus}</td>" +
-                        $"<td>{e.empType.employmentTypeName}</td>" +
-                        $"<td>{e?.jobTitle?.jobTitle ?? "N/A"}</td>" +
-                        $"<td>{e.Department?.departmentName ?? "N/A"}</td>";
-            }));
+            // For each department inside this company
+            var departmentRows = string.Join("",
+                companyGroup
+                    .GroupBy(e => e.DepartmentName)
+                    .Select(deptGroup =>
+                    {
+                        // Department row
+                        var deptRow = $"<tr class='table-secondary fw-bold'>" +
+                                      $"<td colspan='7'>Department: {deptGroup.Key} — Total Employees: {deptGroup.Count()}</td></tr>";
 
-            var selectedDeparts = departments.ToList();
-            Departments = departments.ToList();
-            var departs = selectedDeparts.Select(d => new
-            {
-                id = d.departmentID,
-                name = d.departmentName
-            }).ToList();
-            Console.WriteLine($"Departments Count: {departs.Count}");
+                        // Employee rows
+                        var employeeRows = string.Join("",
+                            deptGroup.Select(e =>
+                            {
+                                var url = Url.Page("Details", new { id = e.EmploymentID });
+
+                                return $"<tr onclick=\"location.href='{url}'\" style=\"cursor:pointer;\">" +
+                                       $"<td><a href='/Employment/Details?id={e.EmploymentID}' class='text-decoration-none text-dark'>{e.GivenID}</a></td>" +
+                                       $"<td><a href='/Employment/Details?id={e.EmploymentID}' class='text-decoration-none text-dark'>{e.FullName}</a></td>" +
+                                       $"<td>{e.EmploymentDate.ToShortDateString()}</td>" +
+                                       $"<td>{e.EmploymentStatus}</td>" +
+                                       $"<td>{e.EmploymentTypeName}</td>" +
+                                       $"<td>{e?.JobTitle ?? "N/A"}</td></tr>";
+                            })
+                        );
+
+                        return deptRow + employeeRows;
+                    })
+            );
+
+            return companyRow + departmentRows;
+        })
+);
+
+
+
+
             filteredCount = employmentModel.Count();
             // Return the generated HTML
             //return Content(tableHtml);
-            return new JsonResult(new { tableHtml, departs, filteredCount });
+            return new JsonResult(new { tableHtml, filteredCount, activeCount, femaleCount, maleCount, managementCount });
         }
     }
 }

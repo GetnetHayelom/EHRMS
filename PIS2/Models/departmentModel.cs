@@ -18,6 +18,8 @@ namespace PIS2.Models
         //Manager
         public int? employmentID { get; set; }
         public virtual employmentModel? employmentModel { get; set; }
+        public int? businessUnitID { get; set; }
+        public virtual businessUnitModel? businessUnitModel { get; set; }
         public ICollection<jobPlacementModel>? JobPlacements { get; set; } = null!;
         public ICollection<jobPlacementHistoryModel>? JobPlacementHistories { get; set; } = null!;
         public virtual ICollection<jobRequirementModel>? JobRequirements { get; set; } = null!;
@@ -36,7 +38,7 @@ namespace PIS2.Models
         public virtual departmentModel? departmentModel { get; } = null!;
         public string departmentName { get; set; }
         public mainStatus departmentStatus { get; set; }
-        public int employmentID { get; set; }
+        public int? employmentID { get; set; }
         public virtual employmentModel? employmentModel { get; set; }
         public string modifiedBy { get; set; }
         public DateTime modifiedDate { get; set; }

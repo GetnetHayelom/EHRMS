@@ -1,0 +1,49 @@
+﻿@page
+@model PIS2.Pages.Management.IndexModel
+@{
+}
+<h4 class="fw-bold">Annual Leave Summary</h4>
+<table class="table table-bordered table-striped table-hover">
+    <thead>
+        <tr>
+            <td>Company</td>
+            <td>LeaveBalance</td>
+            <td>Allowed Leave</td>
+            <td>Payable</td>
+        </tr>
+    </thead>
+    <tbody>
+        @{
+            int index = 0;
+        }
+        @if (Model.AnnualLeaveSummaries !=null && Model.AnnualLeaveSummaries.Any())
+        {
+            @foreach(var item in Model.AnnualLeaveSummaries)
+            {
+                var collapseId = $"collapse{index}";
+                <tr class="fw-bold" data-bs-toggle="collapse" data-bs-target="#@collapseId">
+                    <td>@item.Company ?? ""</td>
+                    <td>@item.LeaveBalance ?? 0</td>
+                    <td>@item.AllowedLeave ?? 0</td>
+                    <td>@item.PayableLeave ?? 0</td>
+                </tr>
+                @if (item.DepartmentList != null && item.DepartmentList.Any())
+                {
+                     @foreach(var item2 in item.DepartmentList)
+                    {
+                        <tr class="accordion-collapse collapse" id="@collapseId" data-bs-toggle="collapse">
+                            <td>@item2.Department ?? ""</td>
+                            <td>@item2.LeaveBalance ?? 0</td>
+                            <td>@item2.AllowedLeave ?? 0</td>
+                            <td>@item2.PayableLeave ?? 0</td>
+                        </tr>
+                    }
+                }
+               
+            
+                index++;
+            }
+        }
+        
+    </tbody>
+</table>

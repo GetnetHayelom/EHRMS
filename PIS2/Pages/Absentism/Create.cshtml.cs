@@ -49,8 +49,11 @@ namespace PIS2.Pages.Absentism
         {
 
             //Console.WriteLine($"Search ID on Get: {searchID}");
+            if (!User.IsInRole("MIE\\PMS_HRMANAGER"))
+            {
+                return NotFound();
+            }
 
-            
             if (!string.IsNullOrEmpty(searchID))
             {
                 var leaveTypes = _context.LeaveTypes.Where(lt => lt.leaveGroup == leaveGroup.Absentism && lt.leaveTypeStatus == mainStatus.Active).ToList();

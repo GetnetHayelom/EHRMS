@@ -125,7 +125,7 @@ namespace PIS2.Pages.HRClerck
                         string department = activeJobPlacement?.departmentModel?.departmentName ?? "N/A";
 
                         return $"<tr onclick=\"location.href='{url}'\" style='cursor:pointer'><td>{l.employmentModel.givenID}</td>" +
-                        $"<td>{l.leaveReaquestDate.ToString("MMM dd, yyyy")}</td><td>{department}</td><td>{l.leaveStatus}</td></tr>";
+                        $"<td>{l.leaveRequestDate.ToString("MMM dd, yyyy")}</td><td>{department}</td><td>{l.leaveStatus}</td></tr>";
                     }));
 
                     break;

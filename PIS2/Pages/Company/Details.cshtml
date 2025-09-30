@@ -6,45 +6,126 @@
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
 
-<h1>Companies</h1>
+<h1 class="fw-bold">Companies</h1>
 
 <div>
-    <h4>Company Details</h4>
+    <h4 class="fw-bold">Company Details</h4>
     <hr />
-    <dl class="row">
-        <dt class="col-sm-2">
-            Company Name:
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.companyModel.companyName)
-        </dd>
-        <dt class="col-sm-2">
-            Company Alias:
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.companyModel.companyAlias)
-        </dd>
-        <dt class="col-sm-2">
-            Manager:
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.companyModel.employmentID)
-        </dd>
-        <dt class="col-sm-2">
-            Address:
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.companyModel.addressModel.addressFormatted)
-        </dd>
-        <dt class="col-sm-2">
-            Status:
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.companyModel.companyStatus)
-        </dd>
+    <dl class="d-flex">
+        <div class="d-flex m-2">
+            <dt class="m-2">
+                Company Name:
+            </dt>
+            <dd class=" m-2">
+                <u>@Html.DisplayFor(model => model.companyModel.companyName)</u>
+            </dd>
+        </div>
+        
+        <div class="d-flex m-2">
+            <dt class="m-2">
+                Company Alias:
+            </dt>
+            <dd class=" m-2">
+                <u>@Html.DisplayFor(model => model.companyModel.companyAlias)</u>
+            </dd>
+        </div>
+        
+        <div class="d-flex m-2">
+            <dt class="m-2">
+                Manager:
+            </dt>
+            <dd class=" m-2">
+                <u>@Html.DisplayFor(model => model.companyModel.employmentID)</u>
+            </dd>
+        </div>
+        
+        
+        <div class="d-flex m-2">
+            <dt class="m-2">
+                Address:
+            </dt>
+            <dd class=" m-2">
+                <u>@Html.DisplayFor(model => model.companyModel.addressModel.addressFormatted)</u>
+            </dd>
+        </div>
+   
+        <div class="d-flex m-2">
+            <dt class="m-2">
+                Status:
+            </dt>
+            <dd class=" m-2">
+                <u>@Html.DisplayFor(model => model.companyModel.companyStatus)</u>
+            </dd>
+        </div>
+    
     </dl>
 </div>
-<div>
-    <a asp-page="./Edit" asp-route-id="@Model.companyModel.companyID">Edit</a> |
-    <a asp-page="./Index">Back to List</a>
+<div class="flex-grow-1">
+    <table class="table table-boredered table-striped table-hover">
+        <thead class="bg-dark text-white">
+            <tr>
+                <th>S/No</th>
+                <th>Department Name</th>
+                <th>Alias</th>
+                <th>SubAccount</th>
+                <th>Manager</th>
+                <th>Employees</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            @{
+                int index = 1;
+
+                foreach(var item in Model.Departments)
+                {
+                    <tr onclick="location.href='@Url.Page("/Department/Details", new{id=item.departmentID})'" style="cursor:pointer;">
+                        <td>@index</td>
+                        <td>@item.departmentName</td>
+                        <td>@item.departmentShort</td>
+                        <td>@item.subAccountModel?.subAccountName</td>
+                        <td>@item.employmentModel?.personModel?.personFullName</td>
+                        <td>@item.JobPlacements.Where(jp => jp.jobPlacementStatus == Models.mainStatus.Active).Count()</td>
+                        <td>
+                            @if (item.departmentStatus != Models.mainStatus.Active)
+                            {
+                                <p class="fw-bold text-danger">
+                                    @Html.DisplayFor(modelItem => item.departmentStatus)
+                                </p>
+                            }
+                            else
+                            {
+                                <p class="fw-bold text-success">
+                                    @Html.DisplayFor(modelItem => item.departmentStatus)
+                                </p>
+                            }
+                        </td>
+                    </tr>
+                    index++;
+                }
+               
+            }
+            
+        </tbody>
+        <tfoot class="bg-secondary fw-bold">
+            <tr>
+                
+                <td colspan="5">Total</td>
+                <td>@Model.Departments.SelectMany(d => d.JobPlacements).Where(jp => jp.jobPlacementStatus ==Models.mainStatus.Active)?.Count()</td>
+                <td>@Model.Departments.Where(d => d.departmentStatus == Models.mainStatus.Active).Count()</td>
+                
+            </tr>
+        </tfoot>
+
+    </table>
 </div>
+<div class="d-flex justify-content-end">
+    @if(Model.companyModel.companyStatus == Models.mainStatus.Active)
+    {
+        <a class="btn btn-warning m-2" asp-page="/Department/Create" asp-route-id="@Model.companyModel.companyID">Add Department</a>
+    }
+    
+    <a class="btn btn-primary m-2" asp-page="./Edit" asp-route-id="@Model.companyModel.companyID">Edit</a>
+    @await Html.PartialAsync("print")
+</div>
+<a asp-page="./Index">View All Companies</a>

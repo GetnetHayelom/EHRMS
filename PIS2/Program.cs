@@ -20,6 +20,8 @@ builder.Services.AddScoped<Core>();
 builder.Services.AddDbContext<PISContext> (options => 
 options.UseSqlServer(builder.Configuration.GetConnectionString("Default")));
 
+builder.Services.AddControllers();  // <--- needed for API controllers
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -35,9 +37,11 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+
 app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapRazorPages();
+app.MapControllers();   // <--- maps API controllers
 
 app.Run();

@@ -50,8 +50,8 @@
         <h5 class="fw-bold">Personal Information</h5>
         <hr />
         <div class="d-flex flex-wrap">
-            <dl class="d-flex flex-column gap-3 d-print-flex flex-grow-1">
-                <div class="d-flex me-3">
+            <dl class="d-flex d-print-flex ">
+                <div class="d-flex m-2">
                     <dt class="me-1">
                         Full Name:
                     </dt>
@@ -59,7 +59,7 @@
                         <u onclick="location.href='@Url.Page("/Person/Details", new {id = Model.employmentModel.personID})'" style="cursor:pointer;">@Html.DisplayFor(model => model.employmentModel.personModel.personFullName)</u>
                     </dd>
                 </div>
-                <div class="d-flex me-3">
+                <div class="d-flex m-2">
                     <dt class="me-1">
                         Phone Number:
                     </dt>
@@ -67,7 +67,7 @@
                         <u>@Html.DisplayFor(model => model.employmentModel.personModel.personPhoneNumber)</u>
                     </dd>
                 </div>
-                <div class="d-flex me-3">
+                <div class="d-flex m-2">
                     <dt class="me-1">
                         Email:
                     </dt>
@@ -75,7 +75,7 @@
                         <u>@Html.DisplayFor(model => model.employmentModel.personModel.personEmailAddress)</u>
                     </dd>
                 </div>
-                <div class="d-flex me-3">
+                <div class="d-flex m-2">
                     <dt class="me-1">
                         Date Of Birth:
                     </dt>
@@ -83,7 +83,7 @@
                         <u>@Model.employmentModel.personModel.personDoB.ToString("MMM dd, yyyy")</u>
                     </dd>
                 </div>
-                <div class="d-flex me-3">
+                <div class="d-flex m-2">
                     <dt class="me-1">
                         Address:
                     </dt>
@@ -94,38 +94,38 @@
             
             </dl>
 
-            @if (Model.employmentModel.personModel.PersonEducationLevels.Any() || Model.employmentModel.personModel.PersonEducationLevels != null)
+            @if (Model.employmentModel.personModel.PersonEducationLevels?.Any() != null)
             {
-                <div class="flex-grow-1">
-                <h5 class="fw-bold">Education Background and Certification</h5>
-                <table class="table table-striped table-hover flex-grow-1">
-                <thead class="bg-dark text-white">
-                    <tr>
-                        <th>Name</th>
-                        <th>Grade</th>
-                        <th>Category</th>
-                        <th>Field of Study</th>
-                        <th>GPA</th>
-                        <th>Institution</th>
-                        <th>Date</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var item in Model.employmentModel.personModel.PersonEducationLevels)
-                    {
-                        <tr>
-                            <td>@item.educationLevelModel.educationLevelName</td>
-                            <td>@item.educationLevelModel.educationLevelGrade</td>
-                            <td>@item.educationLevelModel.educationLevelCategory</td>
-                            <td>@item.educationField</td>
-                            <td>@item.educationLevelMark</td>
-                            <td>@item.educationLevelInstitutionName</td>
-                            <td>@item.educationLevelDate.ToString("MMM dd, yyyy")</td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
-            </div>
+                <div class="flex-grow-1 print-full-width">
+                    <h5 class="fw-bold">Education Background and Certification</h5>
+                    <table class="table table-striped table-hover flex-grow-1">
+                        <thead class="bg-dark text-white">
+                            <tr>
+                                <th>Name</th>
+                                <th>Grade</th>
+                                <th>Category</th>
+                                <th>Field of Study</th>
+                                <th>GPA</th>
+                                <th>Institution</th>
+                                <th>Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.employmentModel.personModel.PersonEducationLevels)
+                            {
+                                <tr>
+                                    <td>@item.educationLevelModel.educationLevelName</td>
+                                    <td>@item.educationLevelModel.educationLevelGrade</td>
+                                    <td>@item.educationLevelModel.educationLevelCategory</td>
+                                    <td>@item.educationField</td>
+                                    <td>@item.educationLevelMark</td>
+                                    <td>@item.educationLevelInstitutionName</td>
+                                    <td>@item.educationLevelDate.ToString("MMM dd, yyyy")</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
             }
         </div>
     </div>

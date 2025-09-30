@@ -48,6 +48,11 @@
                 <input asp-for="personEducationLevelModel.educationLevelNumber" class="form-control" />
                 <span asp-validation-for="personEducationLevelModel.educationLevelNumber" class="text-danger"></span>
             </div>
+            <div class="form-group">
+                <label asp-for="personEducationLevelModel.educationDiscipline" class="control-label">Discipline</label>
+                <input asp-for="personEducationLevelModel.educationDiscipline" class="form-control" />
+                <span asp-validation-for="personEducationLevelModel.educationDiscipline" class="text-danger"></span>
+            </div>
             <div class="form-group d-flex justify-content-end">
                 <input type="submit" value="Save" class="btn btn-success m-2" />
             </div>

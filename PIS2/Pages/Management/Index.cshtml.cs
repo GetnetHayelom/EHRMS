@@ -33,7 +33,7 @@ namespace PIS2.Pages.Management
         public int OldDepartments { get; set; }
         public int leaveEmployments { get; set; }
         public int permanentEmployments { get; set; }
-        public int contractEmployments  { get; set; }
+        public int contractEmployments { get; set; }
         public int contractEnding { get; set; }
         public int pensionEmployments { get; set; }
         public List<EducationLevelData> EducationLevels { get; set; }
@@ -47,6 +47,9 @@ namespace PIS2.Pages.Management
         public List<NameAndCount> JobClassSummary { get; set; }
         public List<CompanySummary> CompanySummaries { get; set; }
         public List<leaveDetail> LeaveSummary { get; set; }
+        public List<AnnuallLeaveSummaryCompanyView> AnnualLeaveSummaries { get; set; }
+        public List<EmploymentYearlyStat> EmploymentYearlyStats { get; set; }
+        public List<DepartmentEmploymentStats> DepartmentEmploymentStats { get; set; }
         public async Task OnGetAsync()
         {
             //check if user is employee
@@ -60,7 +63,7 @@ namespace PIS2.Pages.Management
             Companies = await _context.Companies.ToListAsync();
             Departments = await _context.Departments.ToListAsync();
             Employments = await _context.Employments.ToListAsync();
-            exEmployments =  _context.Employments.Where(e => e.employmentStatus == mainStatus.Inactive).Count();
+            exEmployments = _context.Employments.Where(e => e.employmentStatus == mainStatus.Inactive).Count();
             ActiveEmployments = _context.Employments.Where(e => e.employmentStatus == mainStatus.Active).Count();
             ActiveCompanies = _context.Companies.Where(c => c.companyStatus == mainStatus.Active).Count();
             OldCompanies = _context.Companies.Where(c => c.companyStatus == mainStatus.Inactive).Count();
@@ -137,25 +140,28 @@ namespace PIS2.Pages.Management
                     zName = g.Key,
                     zCount = g.Count()
                 }).ToList();
-            //Number of Active Employment per Year
-            ActiveEmployeeRate =
-            (from y in (
-                (from e in _context.Employments select e.employmentDate.Year)
-                .Union(from t in _context.Terminations select t.terminationDate.Year)
-                .Distinct())
-             from e in _context.Employments
-             where e.employmentDate.Year <= y // Employees hired before or in the given year
-             join t in _context.Terminations on e.employmentID equals t.employmentID into termGroup
-             from t in termGroup.DefaultIfEmpty()
-             where t == null || t.terminationDate.Year > y // Exclude employees terminated in or before the given year
 
-             group e by y into grouped
-             orderby grouped.Key
-             select new YearAndCount
-             {
-                 zYear = grouped.Key,
-                 zCount = grouped.Count()
-             }).ToList();
+            //Employment Yearly Stats
+            EmploymentYearlyStats = _context.EmploymentYearlyStats.OrderBy(eys => eys.Year).ToList();
+
+            //Department Employee Stats
+            DepartmentEmploymentStats = _context.DepartmentEmploymentStats
+                .GroupBy(des => des.companyID)
+                .Select(d => new DepartmentEmploymentStats
+                {
+                    companyName = d.FirstOrDefault().companyName ?? "N\\A",
+                    TotalEmployees =d.Sum(des => des.TotalEmployees ?? 0) ,
+                    ActiveEmployees = d.Sum(des => des.ActiveEmployees ?? 0) ,
+                    TerminatedEmployees = d.Sum(des => des.TerminatedEmployees ?? 0),
+                    TerminationRatePercent = d.Sum(des => des.TerminationRatePercent ?? 0) /d.Count(),
+                }).OrderByDescending(des => des.TerminationRatePercent).ToList();
+            //Number of Active Employment per Year
+            ActiveEmployeeRate = _context.EmploymentYearlyStats
+                .Select(a => new YearAndCount
+                 {
+                     zYear = a.Year ?? 0,
+                     zCount = a.ActiveEmployees ?? 0
+                 }).OrderBy(ac => ac.zYear).ToList();
 
             //WorkSite Employee Distribution
             WorkSiteEmployees = _context.SiteAssignments
@@ -175,36 +181,66 @@ namespace PIS2.Pages.Management
                 .OrderByDescending(wl => wl.zCount)
                 .ToList();
 
-            
+
             WorkSiteEmployees = await _context.SiteAssignments
                 .Include(sa => sa.workSiteModel)
                 .Include(sa => sa.employmentModel).Where(sa => sa.employmentModel.employmentStatus == mainStatus.Active)
                 .GroupBy(sa => sa.workSiteModel.workSiteName)
                 .Select(g => new NameAndCount
                 {
-                    zName =g.Key,
-                    zCount =g.Count()
+                    zName = g.Key,
+                    zCount = g.Count()
                 }).ToListAsync();
             //edu level summary
             EduLevelSummary = _context.PersonEducationLevels.Include(pel => pel.educationLevelModel)
                 .GroupBy(cs => cs.educationLevelModel.educationLevelCategory)
                 .Select(g => new NameAndCount
                 {
-                    zName= g.Key,
+                    zName = g.Key,
                     zCount = g.Count()
                 }).ToList();
 
             var companies = _context.CompanySummaryView.ToList();
             CompanySummaries = _context.CompanySummaryView.ToList();
 
+            var annualLeaveSummary = _context.AnnualLeaveSummary.ToList();
+            AnnualLeaveSummaries = new List<AnnuallLeaveSummaryCompanyView>();
+            AnnualLeaveSummaries = annualLeaveSummary
+                .GroupBy(als => als.companyID)
+                .Select(g => new AnnuallLeaveSummaryCompanyView
+                {
+                    CompanyID = g.Key,
+                    Company = g.First().companyName,
+                    LeaveBalance = g.Sum(lb => lb.leaveBalance),
+                    AllowedLeave = g.Sum(lb => lb.adjustedLeaveBalance),
+                    PayableLeave =g.Sum(lb => lb.adjustedLeaveBalanceCost),
+                    DepartmentList = g.GroupBy(als => als.departmentID).Select(dv => new AnnuallLeaveSummaryDepartmentView
+                    {
+                        DepartmentID = dv.Key,
+                        Department = dv.First().departmentName,
+                        LeaveBalance = dv.Sum(lb => lb.leaveBalance),
+                        AllowedLeave = dv.Sum(lb => lb.adjustedLeaveBalance),
+                        PayableLeave = dv.Sum(lb => lb.adjustedLeaveBalanceCost) 
+                    }).OrderByDescending(d => d.PayableLeave).ToList() ?? new List<AnnuallLeaveSummaryDepartmentView>()
+                }).OrderByDescending(d => d.PayableLeave).ToList();
             foreach (var c in companies)
             {
-                c.payableLeaves = _core.getAllLeaveSummary("Comp", c.CompanyID).leaveCost;
+                c.payableLeaves = annualLeaveSummary.Where(als => als.companyID == c.CompanyID).Sum(als => als.adjustedLeaveBalanceCost);
                 //c.payableLeaves = new leaveDetail();
             }
 
 
         }
 
+    }
+
+    public class AnnuallLeaveSummaryDepartmentView
+    {
+        public int DepartmentID { get; set; } = 0;
+        public string Department { get; set; } = "";
+        public decimal LeaveBalance { get; set; } = 0;
+        public decimal AllowedLeave { get; set; } = 0;
+        public decimal PayableLeave { get; set; } = 0;
+        //public List<AnnualLeaveSummary> EmployeeList { get; set; }
     }
 }

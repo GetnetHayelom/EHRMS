@@ -37,8 +37,8 @@ namespace PIS2.Pages.Absentism
 
             leaveModel = await _context.Leaves.ToListAsync();
 
-            StartDate = leaveModel.Min(l => l.leaveReaquestDate);
-            EndDate = leaveModel.Max(l => l.leaveReaquestDate);
+            StartDate = leaveModel.Min(l => l.leaveRequestDate);
+            EndDate = leaveModel.Max(l => l.leaveRequestDate);
         }
         
     }

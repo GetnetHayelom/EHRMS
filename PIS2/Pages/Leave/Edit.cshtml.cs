@@ -43,11 +43,20 @@ namespace PIS2.Pages.Leave
         // For more information, see https://aka.ms/RazorPagesCRUD.
         public async Task<IActionResult> OnPostAsync()
         {
-            
+            ModelState.Remove("leaveModel.modifiedBy");
+            leaveModel.modifiedBy = User.Identity.Name;
+
             if (!ModelState.IsValid)
             {
+                foreach (var kv in ModelState)
+                {
+                    foreach (var error in kv.Value.Errors)
+                    {
+                        Console.WriteLine($"{kv.Key} --> {error.ErrorMessage}");
+                    }
+                    Console.WriteLine(kv.ToString());
+                }
                 return Page();
-                
             }
 
             _context.Attach(leaveModel).State = EntityState.Modified;
@@ -90,7 +99,7 @@ namespace PIS2.Pages.Leave
             {
                 leaveTypes = _context.LeaveTypes.Where(lt => lt.leaveAvailability == "Clinic" || lt.leaveAvailability == "Everyone").ToList();
             }
-            else if (User.IsInRole("MIE\\PMS_HRCLERK"))
+            else if (User.IsInRole("MIE\\PMS_HRCLERK") )
             {
                 leaveTypes = _context.LeaveTypes.Where(lt => lt.leaveAvailability == "HR" || lt.leaveAvailability == "Everyone").ToList();
             }

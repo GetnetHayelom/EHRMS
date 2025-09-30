@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using PIS2.Models;
 
 namespace PIS2.Pages.BankInfo
@@ -18,12 +19,20 @@ namespace PIS2.Pages.BankInfo
             _context = context;
         }
 
+        [BindProperty(SupportsGet = true)]
+        public string? Bank { get; set; }
         public IList<bankInfoModel> bankInfoModel { get;set; } = default!;
+        [BindProperty(SupportsGet = true)]
+        public bool EmployeeOnly { get; set; } = false;
 
         public async Task OnGetAsync()
         {
-            bankInfoModel = await _context.BankInfos
-                .Include(b => b.personModel).ToListAsync();
+            var bankInfos = _context.BankInfos
+                .Include(b => b.personModel).ThenInclude(p => p.Employments).AsQueryable();
+
+            if (!Bank.IsNullOrEmpty()) bankInfos.Where(b => b.bankName == Bank);
+
+            bankInfoModel = bankInfos.ToList();
         }
     }
 }

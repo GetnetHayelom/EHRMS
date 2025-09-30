@@ -1,230 +1,415 @@
 ﻿@page
 @model PIS2.Pages.Management.IndexModel
 @{
-    ViewData["Title"] = "Welcome";
+    ViewData["Title"] = "Management Dashboard";
     var successMessage = TempData["SuccessMessage"] as string ?? string.Empty;
 }
-<h1 class="d-flex justify-content-center">
-    <b class="d-print-none">Management Dashboard</b>
-    <b class="d-none d-print-block">Management Report</b>
-</h1>
-
-<div class="d-flex w-100">
-    <div class="col-2 bg-dark text-white d-none d-print-none">
-        <div>
-        <img />
-        </div>
-        <div class="d-flex flex-column mt-6">
-            <a role="button" class="text-white nav-link p-3" asp-page="/Company/Index" asp-asp-area="Management">Companies</a>
-            <a role="button" class="text-white nav-link p-3" asp-page="/Department/Index" asp-asp-area="Management">Departments</a>
-            <a role="button" class="text-white nav-link p-3" asp-page="/Employment/Index" asp-asp-area="Management">Employments</a>
-            <a role="button" class="text-white nav-link p-3" asp-page="/Job/Index" asp-asp-area="Management">Jobs</a>
-            <a role="button" class="text-white nav-link p-3" asp-page="/Worksite/Index" asp-asp-area="Management">Work Loactions</a>
-        </div>
+@await Html.PartialAsync("headerSimple")
+<div class="d-flex justify-content-between">
+    <h2 class="d-flex">
+        <b class="d-print-none">Management Dashboard</b>
+        <b class="d-none d-print-block">Management Report</b>
+    </h2>
+    <div class="d-flex d-print-none">
+        <ul class="nav nav-tabs">
+            <li class="nav-item">
+                <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#dashboardView">Dashboard</button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#annualLeaveView">Annual Leave Summary</button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#employmentStats">Employment Stats</button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#terminationStats">Termination Stats</button>
+            </li>
+            <li>@await Html.PartialAsync("print")</li>
+        </ul>
+        
     </div>
-    <div class="col d-flex flex-column">
-    <hr />
-    <!-- Summary Points -->
-        <div class="d-flex">
-            <div class="p-2 flex-grow-1 m-2">
+</div>
+<div class="tab-content mt-3">
+    <div class="tab-pane fade show active" id="dashboardView">
+        <div class="col-2 bg-dark text-white d-none d-print-none">
+            <div>
+            <img />
+            </div>
+            <div class="d-flex flex-column mt-6">
+                <a role="button" class="text-white nav-link p-3" asp-page="/Company/Index" asp-asp-area="Management">Companies</a>
+                <a role="button" class="text-white nav-link p-3" asp-page="/Department/Index" asp-asp-area="Management">Departments</a>
+                <a role="button" class="text-white nav-link p-3" asp-page="/Employment/Index" asp-asp-area="Management">Employments</a>
+                <a role="button" class="text-white nav-link p-3" asp-page="/Job/Index" asp-asp-area="Management">Jobs</a>
+                <a role="button" class="text-white nav-link p-3" asp-page="/Worksite/Index" asp-asp-area="Management">Work Loactions</a>
+            </div>
+        </div>
+        <div class="col d-flex flex-column">
+            <hr />
+            <!-- Summary Points -->
+            <div class="d-flex">
+                <div class="p-2 flex-grow-1 m-2">
 
-                <div class="w-100 shadow">
-                    <h3 class="bg-dark text-white p-2"><b>Companies\Industies</b></h3>
-                    <div class="d-flex">
-                        <h5 class="flex-grow-1 border border-success border-1 text-success p-1">Active Companies</h5>
-                        <h2 class="bg-success text-white rounded-end p-1">@Model.ActiveCompanies</h2>
-                    </div>
-                    <div class="d-flex">
-                        <h6 class="flex-grow-1 border border-danger border-1 text-danger p-1">Old Companies</h6>
-                        <h4 class="bg-danger text-white rounded-end p-1">@Model.OldCompanies</h4>
-                    </div>
-                    <div class="d-flex">
-                        <h6 class="flex-grow-1 border border-info border-1 text-info p-1">Companies Upto Now</h6>
-                        <h4 class="bg-info text-white rounded-end p-1">@Model.Companies.Count()</h4>
-                    </div>
-                </div>
-            </div>
-            <div class="p-2 flex-grow-1 m-2 shadow">
-                <div class="w-100">
-                    <h3 class="bg-dark text-white p-2"><b>Departments</b></h3>
-                    <div class="d-flex">
-                        <h5 class="flex-grow-1 border border-success border-1 text-success p-1">Active Departments</h5>
-                        <h2 class="bg-success text-white rounded-end p-1">@Model.ActiveDepartments</h2>
-                    </div>
-                    <div class="d-flex">
-                        <h6 class="flex-grow-1 border border-danger border-1 text-danger p-1">Old Departments</h6>
-                        <h4 class="bg-danger text-white rounded-end p-1">@Model.OldDepartments</h4>
-                    </div>
-                    <div class="d-flex">
-                        <h6 class="flex-grow-1 border border-info border-1 text-info p-1">Departments Upto Now</h6>
-                        <h4 class="bg-info text-white rounded-end p-1">@Model.Departments.Count()</h4>
-                    </div>
-                </div>
-            </div>
-            <div class="p-2 flex-grow-1 m-2 shadow">
-                <div class="w-100">
-                    <h3 class="bg-dark text-white p-2"><b>Employment</b></h3>
-                    <div class="d-flex">
-                        <h5 class="flex-grow-1 border border-success border-1 text-success p-1">Active Employees</h5>
-                        <h2 class="bg-success text-white rounded-end p-1">@Model.ActiveEmployments</h2>
-                    </div>
-                    <div class="d-flex">
-                        <h6 class="flex-grow-1 border border-warning border-1 text-warning p-1">Employees On Leave</h6>
-                        <h4 class="bg-warning text-white rounded-end p-1">@Model.leaveEmployments</h4>
-                    </div>
-                    <div class="d-flex">
-                        <h6 class="flex-grow-1 border border-danger border-1 text-danger p-1">Former Employees</h6>
-                        <h4 class="bg-danger text-white rounded-end p-1">@Model.exEmployments</h4>
-                    </div>
-                    <div class="d-flex">
-                        <h6 class="flex-grow-1 border border-info border-1 text-info p-1">Employments Upto Now</h6>
-                        <h4 class="bg-info text-white rounded-end p-1">@Model.Employments.Count()</h4>
-                    </div>
-                </div>
-            </div>
-            <!--Employment Types-->
-            <div class="p-2 flex-grow-1 m-2 shadow">
-                <div class="w-100">
-                    <h3 class="bg-dark text-white p-2"><b>Employment Types</b></h3>
-                    @foreach (var item in Model.EmploymentTypes)
-                    {
+                    <div class="w-100 shadow p-2">
+                        <h3 class="bg-dark text-white p-2"><b>Companies\Industies</b></h3>
                         <div class="d-flex">
-                            <h5 class="flex-grow-1 border border-success border-1 text-success p-1">@item.zName</h5>
-                            <h2 class="bg-success text-white rounded-end p-1">@item.zCount</h2>
+                            <h5 class="flex-grow-1 border border-success border-1 text-success p-1">Active Companies</h5>
+                            <h2 class="bg-success text-white rounded-end p-1">@Model.ActiveCompanies</h2>
                         </div>
+                        <div class="d-flex">
+                            <h6 class="flex-grow-1 border border-danger border-1 text-danger p-1">Closed Companies</h6>
+                            <h4 class="bg-danger text-white rounded-end p-1">@Model.OldCompanies</h4>
+                        </div>
+                      
+                    </div>
+                </div>
+                <div class="p-2 flex-grow-1 m-2 shadow">
+                    <div class="w-100">
+                        <h3 class="bg-dark text-white p-2"><b>Departments</b></h3>
+                        <div class="d-flex">
+                            <h5 class="flex-grow-1 border border-success border-1 text-success p-1">Active Departments</h5>
+                            <h2 class="bg-success text-white rounded-end p-1">@Model.ActiveDepartments</h2>
+                        </div>
+                        <div class="d-flex">
+                            <h6 class="flex-grow-1 border border-danger border-1 text-danger p-1">Closed Departments</h6>
+                            <h4 class="bg-danger text-white rounded-end p-1">@Model.OldDepartments</h4>
+                        </div>
+                        
+                    </div>
+                </div>
+                <div class="p-2 flex-grow-1 m-2 shadow">
+                    <div class="w-100">
+                        <h3 class="bg-dark text-white p-2"><b>Employment</b></h3>
+                        <div class="d-flex">
+                            <h5 class="flex-grow-1 border border-success border-1 text-success p-1">Active Employees</h5>
+                            <h2 class="bg-success text-white rounded-end p-1">@Model.ActiveEmployments</h2>
+                        </div>
+                        <div class="d-flex">
+                            <h6 class="flex-grow-1 border border-warning border-1 text-warning p-1">Employees On Leave</h6>
+                            <h4 class="bg-warning text-white rounded-end p-1">@Model.leaveEmployments</h4>
+                        </div>
+                        <div class="d-flex">
+                            <h6 class="flex-grow-1 border border-danger border-1 text-danger p-1">Ex-Employees</h6>
+                            <h4 class="bg-danger text-white rounded-end p-1">@Model.exEmployments</h4>
+                        </div>
+                        <div class="d-flex">
+                            <h6 class="flex-grow-1 border border-info border-1 text-info p-1">Total Employment Created</h6>
+                            <h4 class="bg-info text-white rounded-end p-1">@Model.Employments.Count()</h4>
+                        </div>
+                    </div>
+                </div>
+                <!--Employment Types-->
+                <div class="p-2 flex-grow-1 m-2 shadow">
+                    <div class="w-100">
+                        <h3 class="bg-dark text-white p-2"><b>Employment Types</b></h3>
+                        @foreach (var item in Model.EmploymentTypes)
+                        {
+                            <div class="d-flex">
+                                <h5 class="flex-grow-1 border border-success border-1 text-success p-1">@item.zName</h5>
+                                <h2 class="bg-success text-white rounded-end p-1">@item.zCount</h2>
+                            </div>
                 
-                    }
+                        }
                     
+                    </div>
                 </div>
             </div>
-        </div>
-        <hr />
-        <div class="">
-            <h3 class="bg-dark text-white p-2">Current Payable</h3><hr />
-            <!--Payables summary-->
-            <div class="d-flex flex-grow-1 m-2 justify-content-between">
+            <hr />
+            <div class="">
+                <h3 class="bg-dark text-white p-2">Current Payable</h3><hr />
+                <!--Payables summary-->
+                <div class="d-flex flex-grow-1 m-2 justify-content-between">
                 
-                <div class="card m-2 p-4 shadow flex-grow-1" onclick="location.href='@Url.Page("/Report/JobPlacementReport")'" style="cursor:pointer;">
-                    <p class="small mb-1">Salary</p>
-                    <h5 class="fw-bold">$@Math.Round((decimal)(Model.CompanySummaries.Sum(c => c.Salary)), 2).ToString("N0")</h5>
-                </div>
+                    <div class="card m-2 p-4 shadow flex-grow-1" onclick="location.href='@Url.Page("/Report/JobPlacementReport")'" style="cursor:pointer;">
+                        <p class="small mb-1">Salary</p>
+                        <h5 class="fw-bold">$@Math.Round((decimal)(Model.CompanySummaries.Sum(c => c.Salary)), 2).ToString("N0")</h5>
+                    </div>
                 
-                <div class="card m-2 p-4 shadow flex-grow-1" onclick="location.href='@Url.Page("/Report/AllowanceAssignmentReport")'" style="cursor:pointer;">
-                    <p class="small mb-1">Allowance</p>
-                    <h5 class="fw-bold">$@Math.Round((decimal)(Model.CompanySummaries.Sum(c => c.Allowance)), 2).ToString("N0")</h5>
-                </div>
-                <div class="card m-2 p-4 shadow flex-grow-1" onclick="location.href='@Url.Page("/Report/OvertimeRecordReport")'" style="cursor:pointer;">
-                    <p class="small mb-1">Overtime</p>
-                    <h5 class="fw-bold">$@Math.Round((decimal)(Model.CompanySummaries.Sum(c => c.Overtime)), 2).ToString("N0")</h5>
-                </div>
-                <div class="card m-2 p-4 shadow flex-grow-1" onclick="location.href='@Url.Page("/Report/PayableLeaveReport")'" style="cursor:pointer;">
-                    <p class="small mb-1">Payable Leave</p>
-                    <h5 class="fw-bold">$@Math.Round((decimal)(Model.CompanySummaries.Sum(c => c.payableLeaves)), 2).ToString("N0")</h5>
-                </div>
-                <div class="card m-2 p-4 shadow flex-grow-1">
-                    <p class="small mb-1">Total</p>
-                    <h4 class="fw-bold">$@Math.Round((decimal)(Model.CompanySummaries.Sum(c => c.Salary + c.Allowance + c.Overtime)), 2).ToString("N0")</h4>
-                </div>
+                    <div class="card m-2 p-4 shadow flex-grow-1" onclick="location.href='@Url.Page("/Report/AllowanceAssignmentReport")'" style="cursor:pointer;">
+                        <p class="small mb-1">Allowance</p>
+                        <h5 class="fw-bold">$@Math.Round((decimal)(Model.CompanySummaries.Sum(c => c.Allowance)), 2).ToString("N0")</h5>
+                    </div>
+                    <div class="card m-2 p-4 shadow flex-grow-1" onclick="location.href='@Url.Page("/Report/OvertimeRecordReport")'" style="cursor:pointer;">
+                        <p class="small mb-1">Overtime</p>
+                        <h5 class="fw-bold">$@Math.Round((decimal)(Model.CompanySummaries.Sum(c => c.Overtime)), 2).ToString("N0")</h5>
+                    </div>
+                    <div class="card m-2 p-4 shadow flex-grow-1" onclick="location.href='@Url.Page("/Report/PayableLeaveReport")'" style="cursor:pointer;">
+                        <p class="small mb-1">Payable Leave</p>
+                        <h5 class="fw-bold">$@Math.Round((decimal)(Model.CompanySummaries.Sum(c => c.payableLeaves)), 2).ToString("N0")</h5>
+                    </div>
+                    <div class="card m-2 p-4 shadow flex-grow-1">
+                        <p class="small mb-1">Total</p>
+                        <h4 class="fw-bold">$@Math.Round((decimal)(Model.CompanySummaries.Sum(c => c.Salary + c.Allowance + c.Overtime)), 2).ToString("N0")</h4>
+                    </div>
 
-           </div>
+               </div>
             
-        </div>
-       <hr />
-        <!-- Charts Container1-->
-        <div class="container">
-            <h3 class="bg-dark text-white p-2">Employe Distribution & Metrics</h3>
-            <div class="d-flex justify-content-between flex-grow-1 p-2">
-                <!-- Education Levels -->
-                <div class="card col p-2 m-2">
-                    <canvas id="educationLevelPieChart" height="300">
-                    </canvas>
+            </div>
+           <hr />
+            <!-- Charts Container1-->
+            <div class="container">
+                <h3 class="bg-dark text-white p-2">Employe Distribution & Metrics</h3>
+                <div class="d-flex flex-grow-1 m-2 justify-content-between p-2">
+                    <!-- Education Levels -->
+                    <div class="card m-2 p-4 shadow flex-grow-1">
+                        <canvas id="educationLevelPieChart" height="300">
+                        </canvas>
+                    </div>
+                    <!-- Work Location -->
+                    <div class="card m-2 p-4 shadow flex-grow-1">
+                        <canvas id="workLocChart" height="300">
+                        </canvas>
+                    </div>
+                    <!-- Job Category -->
+                    <div class="card m-2 p-4 shadow flex-grow-1">
+                        <canvas id="jobCategoryChart"  height="300">
+                        </canvas>
+                    </div>
                 </div>
-                <!-- Work Location -->
-                <div class="card col p-2 m-2">
-                    <canvas id="workLocChart" height="300">
-                    </canvas>
-                </div>
-                <!-- Job Category -->
-                <div class="card col p-2 m-2">
-                    <canvas id="jobCategoryChart"  height="300">
+            </div>
+            <!-- Charts Container1-->
+            <hr />
+            <!--Charts Container2 -->
+            <div class="row d-flex  justify-content-center">
+                <!-- Employment Trends --> 
+                <div class="p-2 m-2">
+                    <canvas id="employmentHireChart" class="w-100">
                     </canvas>
                 </div>
             </div>
-        </div>
-        <!-- Charts Container1-->
-        <hr />
-        <!--Charts Container2 -->
-        <div class="row d-flex  justify-content-center">
-            <!-- Employment Trends --> 
-            <div class="p-2 m-2">
-                <canvas id="employmentHireChart" class="w-100">
-                </canvas>
-            </div>
-        </div>
-        <!--COMPANY CARDS-->
-        <div class="container py-5">
-            <a class="text-center mb-4 text-decoration-none">
-                <h2 class="bg-dark text-white p-2"><b asp-page="./Company/Index" asp-area="Management" role="button">Companies</b></h2>
-            </a>
-            <div class="row g-4">
-                @foreach (var item in Model.CompanySummaries)
-                {
+            <!--COMPANY CARDS-->
+            <div class="container py-5">
+                <a class="text-center mb-4 text-decoration-none">
+                    <h2 class="bg-dark text-white p-2"><b asp-page="./Company/Index" asp-area="Management" role="button">Companies</b></h2>
+                </a>
+                <div class="d-flex flex-wrap">
+                    @foreach (var item in Model.CompanySummaries)
+                    {
                     
-                    <div class="col-md-3 col-lg-3 ">
-                        <div class="card h-100 shadow">
-                            <div class="card-body p-4">
-                                <div class="d-flex justify-content-between align-items-start">
-                                    <a asp-page="Companyp" asp-route-id="@item.CompanyID" asp-area="Management" role="button" class="text-decoration-none">
-                                        <h5 class="card-title fw-bold text-dark">@item.CompanyName</h5>
-                                        <h6 class="card-subtitle mb-3 opacity-75 text-dark">Manager: @(item.Manager ?? "N\\A")</h6>
-                                    </a>
+                        <div class="col-md-3 col-lg-3 flex-grow-1 m-2 ">
+                            <div class="card h-100 shadow">
+                                <div class="card-body p-4">
+                                    <div class="d-flex justify-content-between align-items-start">
+                                        <a asp-page="Companyp" asp-route-id="@item.CompanyID" asp-area="Management" role="button" class="text-decoration-none">
+                                            <h5 class="card-title fw-bold text-dark">@item.CompanyName</h5>
+                                            <h6 class="card-subtitle mb-3 opacity-75 text-dark">Manager: @(item.Manager ?? "N\\A")</h6>
+                                        </a>
 
-                                </div>
-                                <div class="d-flex justify-content-between border-top border-opacity-25 pt-3 text-primary">
-                                    <div>
-                                        <p class="small mb-1">Employees</p>
-                                        <h3 class="fw-bold">@item.Employees.ToString("N0")</h3>
                                     </div>
-                                    <div>
-                                        <p class="small mb-1">Departments</p>
-                                        <h3 class="fw-bold">@item.Departments</h3>
+                                    <div class="d-flex justify-content-between border-top border-opacity-25 pt-3 text-primary">
+                                        <div>
+                                            <p class="small mb-1">Employees</p>
+                                            <h3 class="fw-bold">@item.Employees.ToString("N0")</h3>
+                                        </div>
+                                        <div>
+                                            <p class="small mb-1">Departments</p>
+                                            <h3 class="fw-bold">@item.Departments</h3>
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="d-flex justify-content-between border-top border-opacity-25 pt-3">
-                                    <div class="text-warning ">
-                                        <p class="small mb-1">Acc. Leaves</p>
-                                        <h5 class="fw-bold">@Math.Round((decimal) item.payableLeaves, 2).ToString("N0")</h5>
+                                    <div class="d-flex justify-content-between border-top border-opacity-25 pt-3">
+                                        <div class="text-warning ">
+                                            <p class="small mb-1">Acc. Leaves</p>
+                                            <h5 class="fw-bold">@Math.Round((decimal) item.payableLeaves, 2).ToString("N0")</h5>
+                                        </div>
+                                        <div class="text-danger">
+                                            <p class="small mb-1">Leave Cost</p>
+                                            <h5 class="fw-bold ">$@Math.Round((decimal)item.payableLeaves, 2).ToString("N0")</h5>
+                                        </div>
                                     </div>
-                                    <div class="text-danger">
-                                        <p class="small mb-1">Leave Cost</p>
-                                        <h5 class="fw-bold ">$@Math.Round((decimal)item.payableLeaves, 2).ToString("N0")</h5>
+                                    <div class="mt-4 text-success">
+                                        <h4 class="display-8 fw-bold text-end">$@(item.Salary.ToString("N0"))</h4>
+                                        <p class="small text-end mb-0">Total Monthly Payroll</p>
                                     </div>
-                                </div>
-                                <div class="mt-4 text-success">
-                                    <h4 class="display-8 fw-bold text-end">$@(item.Salary.ToString("N0"))</h4>
-                                    <p class="small text-end mb-0">Total Monthly Payroll</p>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                }
+                    }
+                </div>
             </div>
         </div>
+    </div>
+    <div class="tab-pane fade" id="annualLeaveView">
+        <h4 class="fw-bold">Annual Leave Summary</h4>
+        <table class="table table-bordered table-striped table-hover print-full-width">
+            <thead class="bg-dark text-white">
+                <tr>
+                    <th>S/No</th>
+                    <th colspan="2">Company</th>
+                    <th>LeaveBalance</th>
+                    <th>Allowed Leave</th>
+                    <th>Payable</th>
+                </tr>
+            </thead>
+            <tbody>
+                @{
+                    int index = 1;
+                }
+                @if (Model.AnnualLeaveSummaries != null && Model.AnnualLeaveSummaries.Any())
+                {
+                    @foreach (var item in Model.AnnualLeaveSummaries)
+                    {
+                        var collapseId = $"collapse{index}";
+                        <tr class="fw-bold bg-secondary">
+                            <td>@index</td>
+                            <td colspan="2">
+                                <div class="d-flex justify-content-between">
+                                    <span data-bs-toggle="collapse" data-bs-target="#@collapseId" style="cursor:pointer;">@item.Company</span>
+                                    <a style="cursor:pointer;"
+                                       onclick=" location.href='@Url.Page("AnnualLeaveCompanySummary", new { id = item.CompanyID })' ">View more</a>
+                                </div>
+                            </td>
+            
+                                
+                            <td>@item.LeaveBalance.ToString("N2")</td>
+                            <td>@item.AllowedLeave.ToString("N2")</td>
+                            <td>@Math.Round(item.PayableLeave, 2).ToString("N2")</td>
+                        </tr>
+                        int index2 = 1;
+               
+                        @if (item.DepartmentList != null && item.DepartmentList.Any())
+                        {
+                            @foreach (var item2 in item.DepartmentList)
+                            {
+                                <tr class="accordion-collapse collapse" id="@collapseId" style="cursor:pointer;"
+                                    onclick=" location.href='@Url.Page("AnnualLeaveDepartmentSummary", new { id =  item2.DepartmentID})' ">
+                                    <td>@index.@index2</td>
+                                    
+                                    
+                                    <td colspan="2">@item2.Department</td>
+                                    <td>@item2.LeaveBalance.ToString("N2")</td>
+                                    <td>@item2.AllowedLeave.ToString("N2")</td>
+                                    <td>@Math.Round(item2.PayableLeave,2).ToString("N2")</td>
+                                </tr>
+                                index2++;
+                            }
+                        }
+
+                        index++;
+                    }
+                    <tr class="bg-info text-white fw-bold">
+                        <td colspan="3">Total</td>
+                        <td>@Model.AnnualLeaveSummaries.Sum(als => als.LeaveBalance).ToString("N2") (Days)</td>
+                        <td>@Model.AnnualLeaveSummaries.Sum(als => als.AllowedLeave).ToString("N2") (Days)</td>
+                        <td>@Math.Round(Model.AnnualLeaveSummaries.Sum(als => als.PayableLeave), 2).ToString("N2") Br</td>
+                    </tr>
+                }
+                
+            </tbody>
+        </table>
+    </div>
+    <div class="tab-pane fade" id="employmentStats">
+        <h4 class="fw-bold">Employment Stats</h4>
+        <table class="table table-bordered table-striped table-hover">
+            <thead class="bg-dark text-white">
+                <tr>
+                    <th>S/No</th>
+                    <th>Year</th>
+                    <th>New Employee</th>
+                    <th>Terminated Employee</th>
+                    <th>Active Employee</th>
+                    <th>Hire Rate</th>
+                    <th>Turn Over Rate</th>
+                    <th>Employee Retention Rate</th>
+                </tr>
+            </thead>
+            <tbody>
+                @{
+                    int indexStats = 1;
+                }
+                @foreach (var item in Model.EmploymentYearlyStats)
+                {
+                    <tr>
+                        <td>@indexStats</td>
+                        <td>@item.Year</td>
+                        <td>@((item.NewEmployees ??0).ToString("N2"))</td>
+                        <td>@((item.TerminatedEmployees ??0).ToString("N2"))</td>
+                        <td>@((item.ActiveEmployees ?? 0).ToString("N2"))</td>
+                        <td>@((item.HireRatePercent ?? 0).ToString("N2"))%</td>
+                        <td>@((item.TerminationRatePercent ?? 0).ToString("N2"))%</td>
+                        <td>@((100-item.TerminationRatePercent ?? 0).ToString("N2"))%</td>
+                    </tr>
+                    indexStats++;
+                }
+                
+            </tbody>
+            <tfoot class="fw-bold bg-secondary">
+                <tr>
+                
+                    <td colspan="2">Summary</td>
+                    <td>@Model.EmploymentYearlyStats.Sum(eys => eys.NewEmployees ?? 0).ToString("N2") (Total)
+                        @((Model.EmploymentYearlyStats?.Sum(eys => eys.NewEmployees) / Model.EmploymentYearlyStats.Count())) (Avg)
+                    </td>
+                    <td>
+                        @Model.EmploymentYearlyStats.Sum(eys => eys.TerminatedEmployees ?? 0).ToString("N2") (Total)
+                        @((Model.EmploymentYearlyStats.Sum(eys => eys.TerminatedEmployees)/ Model.EmploymentYearlyStats.Count())) (Avg)
+                    </td>
+                    <td>
+                        @Model.EmploymentYearlyStats.Sum(eys => eys.TerminatedEmployees ?? 0).ToString("N2") (Total)
+                        @((Model.EmploymentYearlyStats.Sum(eys => eys.TerminatedEmployees) / Model.EmploymentYearlyStats.Count())) (Avg)
+                    </td>
+                    <td>@((Model.EmploymentYearlyStats.Sum(eys => eys.HireRatePercent ?? 0) / Model.EmploymentYearlyStats.Count()).ToString("N2"))% (Avg)</td>
+                    <td>@((Model.EmploymentYearlyStats.Sum(eys => eys.TerminationRatePercent ?? 0) / Model.EmploymentYearlyStats.Count()).ToString("N2"))% (Avg)</td>
+                    <td>@((100-Model.EmploymentYearlyStats.Sum(eys => eys.TerminationRatePercent ?? 0) / Model.EmploymentYearlyStats.Count()).ToString("N2"))% (Avg)</td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+    <div class="tab-pane fade" id="terminationStats">
+        <h4 class="fw-bold">Termination Stats (Active Companies)</h4>
+        <table class="table table-bordered table-striped table-hover">
+            <thead class="bg-dark text-white">
+                <tr>
+                    <th>S/No</th>
+                    <th>Company</th>
+                    <th>Total Employee</th>
+                    <th>Terminated Employee</th>
+                    <th>Active Employee</th>                   
+                    <th>Turn Over Rate</th>
+                </tr>
+            </thead>
+            <tbody>
+                @{
+                    int indexDepStats = 1;
+                }
+                @foreach (var item in Model.DepartmentEmploymentStats)
+                {
+                    <tr>
+                        <td>@indexDepStats</td>
+                        <td>@item.companyName</td>
+                        <td>@((item.TotalEmployees ??0).ToString("N2"))</td>
+                        <td>@((item.TerminatedEmployees ??0).ToString("N2"))</td>
+                        <td>@((item.ActiveEmployees ??0).ToString("N2"))</td>
+                        <td>@((item.TerminationRatePercent ??0).ToString("N2"))%</td>
+                    </tr>
+                    indexDepStats++;
+                }
+
+            </tbody>
+            <tfoot class="fw-bold bg-secondary">
+                <tr>
+
+                    <td colspan="2">Summary</td>
+                    <td>
+                        @Model.DepartmentEmploymentStats.Sum(eys => eys.TotalEmployees ??0).ToString("N2") (Total)
+                        @((Model.DepartmentEmploymentStats.Sum(eys => eys.TotalEmployees) / Model.DepartmentEmploymentStats.Count())) (Avg)
+                    </td>
+                    <td>
+                        @Model.DepartmentEmploymentStats.Sum(eys => eys.TerminatedEmployees ?? 0).ToString("N2") (Total)
+                        @((Model.DepartmentEmploymentStats.Sum(eys => eys.TerminatedEmployees) / Model.DepartmentEmploymentStats.Count())) (Avg)
+                    </td>
+                    <td>
+                        @Model.DepartmentEmploymentStats.Sum(eys => eys.ActiveEmployees ?? 0).ToString("N2") (Total)
+                        @((Model.DepartmentEmploymentStats.Sum(eys => eys.ActiveEmployees) / Model.DepartmentEmploymentStats.Count())) (Avg)
+                    </td>
+                    <td>@((Model.DepartmentEmploymentStats.Sum(eys => eys.TerminationRatePercent ?? 0) / Model.DepartmentEmploymentStats.Count()).ToString("N2"))% (Avg)</td>
+                </tr>
+            </tfoot>
+        </table>
+
     </div>
 </div>
 <div class="d-flex justify-content-end">@await Html.PartialAsync("print")</div>
 
-<table class="d-none">
-<thead>
-<tr><th>Year</th><th>Number</th></tr></thead>
-<tbody>
-        @foreach (var item in Model.ActiveEmployeeRate)
-        {
-            <tr> <td>@item.zYear</td>
-                <td>@item.zCount</td>
-            </tr>}
-        </tbody>
-    </table>
+
 <!--EDUCATION LEVEL CHART SCRIPT-->
 <script>
     var educationLevelData = @Html.Raw(Json.Serialize(Model.EduLevelSummary));
@@ -484,55 +669,7 @@
             }
         });
 </script>
-<!--PAYABLE PIE CHART SCRIPT-->
-<script>
-    var ctx = document.getElementById("non").getContext("2d");
-    var workSiteEmployees = @Html.Raw(Json.Serialize(Model.JobCategorySummary));
-    const worksite = workSiteEmployees.map(item => item.zName);
-    const employees = workSiteEmployees.map(item => item.zCount);
 
-    new Chart(ctx, {
-        type: 'pie',
-        data: {
-            labels: worksite,
-            datasets: [{
-                data: employees,
-                backgroundColor: [
-                    '#3f51b5', '#2196f3', '#00bcd4', '#009688',
-                    '#4caf50', '#8bc34a', '#cddc39', '#ffc107'
-                ],
-                borderWidth: 1
-            }]
-        },
-        options: {
-            responsive: true,
-            plugins: {
-                title: {
-                    display: true,
-                    text: 'Employment Distribution by Work Location',
-                    font: {
-                        size: 18,
-                        weight: 'bold'
-                    },
-                    padding: {
-                        top: 10,
-                        bottom: 20
-                    }
-                },
-                legend: { position: 'bottom' },
-                tooltip: {
-                    callbacks: {
-                        label: function (context) {
-                            const total = context.dataset.data.reduce((a, b) => a + b);
-                            const percentage = Math.round((context.raw / total) * 100);
-                            return `${context.label}: ${context.raw} (${percentage}%)`;
-                        }
-                    }
-                }
-            }
-        }
-    });
-</script>
 <!--JOB CATEGORY CHART SCRIPT-->
 <script>
     var jobCategoryData = @Html.Raw(Json.Serialize(Model.JobCategorySummary));

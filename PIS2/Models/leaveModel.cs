@@ -11,7 +11,7 @@ namespace PIS2.Models
         public int employmentID { get; set; }
         public virtual employmentModel? employmentModel { get; set; }
         [Required]
-        public DateTime leaveReaquestDate { get; set; } = DateTime.Now;
+        public DateTime leaveRequestDate { get; set; } = DateTime.Now;
         [Required]
         public DateTime leaveStartDate { get; set; }=DateTime.Now;
         [Required]

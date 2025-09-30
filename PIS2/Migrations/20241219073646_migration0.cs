@@ -572,7 +572,7 @@ namespace PIS2.Migrations
                     leaveID = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     employmentID = table.Column<int>(type: "int", nullable: false),
-                    leaveReaquestDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    leaveRequestDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     leaveStartDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     leaveEndDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     leaveDays = table.Column<double>(type: "float", nullable: false),

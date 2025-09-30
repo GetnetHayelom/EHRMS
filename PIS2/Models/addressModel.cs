@@ -19,7 +19,7 @@ namespace PIS2.Models
         public string addressTabya { get; set; }
         [Required]
         public mainStatus addressStatus { get; set; }
-        public string addressFormatted => $"{addressTabya}, {addressWoreda}, {addressZone}, {addressRegion}, {addressCountry}";
+        public string addressFormatted => $"{addressRegion}, {addressZone}, {addressWoreda},{addressTabya}, {addressCountry} ";
         public string getAddressTitle()
         { 
             string addressTitle;

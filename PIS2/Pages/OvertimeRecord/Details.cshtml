@@ -103,7 +103,8 @@
                 <h4 class="fw-bold"><u>Overtime Record History</u></h4>
                 <div class="d-flex">
                     <input id="overtimeRecordID" class="form-control m-2" placeholder="Enter OT Batch Number" name="id" />
-                    <button type="submit" class="btn btn-primary" id="goButton">Go</button>
+
+                    <button type="submit" class="btn btn-primary m-2" id="goButton">Go</button>
                 </div>
             </div>
         </form>
@@ -152,8 +153,8 @@
     @if(Model.overtimeRecordModel.overtimeRecordStatus == Models.overtimeStatus.Hold && User.IsInRole("MIE\\PMS_HRCLERK"))
     {
         <a class="btn btn-primary m-2 d-print-none" asp-page="./Edit" asp-route-id="@Model.overtimeRecordModel.overtimeRecordID">Edit</a>
-    }   
-    <a class="btn btn-secondary m-2 d-print-none" asp-page="./Index">Back to List</a>
+    } 
+    @await Html.PartialAsync("back")
     @await Html.PartialAsync("print")
 </div>
 

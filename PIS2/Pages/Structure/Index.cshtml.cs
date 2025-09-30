@@ -18,9 +18,8 @@ namespace PIS2.Pages.Structure
 
         public async Task OnGetAsync()
         {
-            Structures = await _context.Structures.Include(s => s.departmentModel)
-                .Include(s => s.jobModel)
-                .ToListAsync();
+            Structures = await _context.Structures.Include(s => s.departmentModel)?.ThenInclude(d => d.companyModel)
+                .Include(s => s.jobModel).ToListAsync();
         }
     }
 }

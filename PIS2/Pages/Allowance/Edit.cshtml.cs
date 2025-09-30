@@ -24,6 +24,10 @@ namespace PIS2.Pages.Allowance
 
         public async Task<IActionResult> OnGetAsync(int? id)
         {
+            if (!User.IsInRole("MIE\\PMS_HRMANAGER"))
+            {
+                return NotFound();
+            }
             if (id == null)
             {
                 return NotFound();
@@ -42,11 +46,25 @@ namespace PIS2.Pages.Allowance
         // For more information, see https://aka.ms/RazorPagesCRUD.
         public async Task<IActionResult> OnPostAsync()
         {
+            if (!User.IsInRole("MIE\\PMS_HRMANAGER"))
+            {
+                return NotFound();
+            }
+            ModelState.Remove("allowanceModel.modifiedBy");
+            allowanceModel.modifiedBy = User.Identity.Name;
+
             if (!ModelState.IsValid)
             {
+                foreach (var kv in ModelState)
+                {
+                    foreach (var error in kv.Value.Errors)
+                    {
+                        Console.WriteLine($"{kv.Key} --> {error.ErrorMessage}");
+                    }
+                    Console.WriteLine(kv.ToString());
+                }
                 return Page();
             }
-
             _context.Attach(allowanceModel).State = EntityState.Modified;
 
             try
