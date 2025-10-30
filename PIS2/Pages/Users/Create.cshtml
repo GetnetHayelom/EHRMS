@@ -12,11 +12,23 @@
 <hr />
 <div class="row">
     <div class="col-md-4">
+        <!-- Search by Employee ID -->
+        <form method="post" id="SearchID" class="input-group mb-3">
+            <div class="input-group">
+                <input type="text" class="form-control" id="EmployeeID" required placeholder="Enter ID" name="givenID" />
+                <button class="btn btn-outline-secondary d-print-none" type="button" id="lookupButton"
+                        onclick="fetchEmployeeData($('#EmployeeID').val())">
+                    <i class="bi bi-search"></i>
+                </button>
+            </div>
+
+        </form>
         <form method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            
             <div class="form-group">
                 <label asp-for="userModel.personID" class="control-label">Full Name</label>
-                <select asp-for="userModel.personID" class="form-control select2" asp-items="ViewBag.personID">
+                <select asp-for="userModel.personID" class="form-control select2" asp-items="ViewBag.personID" id="personID">
                     <option value="">-- Select a Person --</option>
                 </select>
             </div>
@@ -43,6 +55,31 @@
 <div>
     <a asp-page="Index">View All Users</a>
 </div>
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script>
+    function fetchEmployeeData(empID){
+
+        $.ajax({
+            url:'@Url.Page("Create", "FetchEmp")',
+            type:'Get',
+            data:{
+                givenID: empID
+            },
+            success:function(response){
+                if(response.success){
+                    $('#personID').val(response.message);
+                }else{
+                    alert(response.message);
+                }
+               
+            },
+            error: function (xhr) {
+                alert("Error: " + xhr.responseText);
+            }
+        })
+    }
+</script>
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}

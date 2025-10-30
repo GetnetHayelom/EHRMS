@@ -102,29 +102,14 @@ namespace PIS2.Pages.Users
         {
             return new JsonResult(new { message = "Handler reached!" });
         }
+        [ValidateAntiForgeryToken]
         public IActionResult OnPostSaveAccess()
         {
-            var accessInput = new AccessInputDto();
-            // Bind manually from Request.Form
-            accessInput.accessID = int.Parse(Request.Form["accessID"]);
-            accessInput.userGroups = int.Parse(Request.Form["userGroups"]);
-            accessInput.companyID = int.Parse(Request.Form["companyID"]);
-            accessInput.accessStatus = int.Parse(Request.Form["accessStatus"]);
-            accessInput.userID = int.Parse(Request.Form["userID"]);
-
-            Console.WriteLine("=== Access Form Received ===");
-            Console.WriteLine(JsonSerializer.Serialize(accessInput, new JsonSerializerOptions { WriteIndented = true }));
-
-            if (accessInput == null)
-                return new JsonResult(new { success = false, message = "No data received." });
-
-            if (accessInput.userID <= 0)
-                return new JsonResult(new { success = false, message = "Invalid user ID." });
 
             try
             {
                 // Update existing
-                if (accessInput.accessID > 0)
+                if (AccessInput.accessID > 0)
                 {
                     var existing = _context.Accesses.Find(AccessInput.accessID);
                     if (existing == null)
@@ -140,10 +125,10 @@ namespace PIS2.Pages.Users
                     // Create new
                     var newAccess = new accessModel
                     {
-                        userID = accessInput.userID,
-                        userGroups = (UserGroups) accessInput.userGroups,
-                        companyID = accessInput.companyID >0? accessInput.companyID : null,
-                        accessStatus = (mainStatus) accessInput.accessStatus,
+                        userID = AccessInput.userID,
+                        userGroups = (UserGroups) AccessInput.userGroups,
+                        companyID = AccessInput.companyID >0? AccessInput.companyID : null,
+                        accessStatus = (mainStatus) AccessInput.accessStatus,
                         modifiedBy = User.Identity?.Name ?? "SYSTEM"
                     };
 
@@ -151,7 +136,13 @@ namespace PIS2.Pages.Users
                 }
 
                 _context.SaveChanges();
-                return new JsonResult(new { success = true });
+                // Return success + redirect URL
+                return new JsonResult(new
+                {
+                    success = true,
+                    message = "Access saved successfully.",
+                    redirectUrl = Url.Page("Edit", new { id = AccessInput.userID })
+                });
             }
             catch (Exception ex)
             {

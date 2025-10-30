@@ -96,8 +96,8 @@
                     <div class="card card-body bg-light">
                         <form id="accessForm" method="POST">
                             @Html.AntiForgeryToken()
-                            <input type="hidden" id="accessID" name="AccessInput.accessID" value="0" />
                             
+                            <input type="hidden" asp-for="AccessInput.userID" value="@Model.userModel.userID" />
 
                             <div class="mb-3">
                                 <label class="form-label">User Group</label>
@@ -205,13 +205,7 @@
             $('#accessID').val(0);
         }
 
-        // Reload Access Table
-        function reloadAccessTable() {
-            const userID = @Model.userModel.userID;
-            $.get('@Url.Page("", "AccessTablePartial")', { userID: userID }, function (data) {
-                $('#accessSection').html(data);
-            });
-        }
+        
 
     </script>
 

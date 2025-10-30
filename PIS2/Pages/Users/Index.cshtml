@@ -33,7 +33,7 @@
             
         </tr>
     </thead>
-    <tbody>
+    <tbody id="dataTable">
 @foreach (var item in Model.userModel) {
         <tr onclick="location.href='@Url.Page("Details", new {id = item.userID})'" style="cursor:pointer;">
             <td>
