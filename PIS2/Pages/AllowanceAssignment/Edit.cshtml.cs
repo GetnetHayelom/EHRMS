@@ -24,6 +24,11 @@ namespace PIS2.Pages.AllowanceAssignment
 
         public async Task<IActionResult> OnGetAsync(int? id)
         {
+            if (!User.IsInRole("MIE\\PMS_HRMANAGER") || !User.IsInRole("MIE\\PMS_HRCLERK"))
+            {
+                return RedirectToPage("/Shared/AccessDenied");
+            }
+
             if (id == null)
             {
                 return NotFound();
@@ -46,6 +51,10 @@ namespace PIS2.Pages.AllowanceAssignment
         // For more information, see https://aka.ms/RazorPagesCRUD.
         public async Task<IActionResult> OnPostAsync()
         {
+            if (!User.IsInRole("MIE\\PMS_HRMANAGER") || !User.IsInRole("MIE\\PMS_HRCLERK"))
+            {
+                return RedirectToPage("/Shared/AccessDenied");
+            }
             ModelState.Remove("allowanceAssignmentModel.modifiedBy");
             allowanceAssignmentModel.modifiedBy = User.Identity.Name;
 

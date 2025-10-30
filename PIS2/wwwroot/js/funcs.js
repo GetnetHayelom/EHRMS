@@ -240,3 +240,6 @@ function updateSortingIcons(table, columnIndex, direction) {
         icon.innerText = index === columnIndex ? (direction === 1 ? " 🔼" : " 🔽") : "";
     });
 }
+
+
+

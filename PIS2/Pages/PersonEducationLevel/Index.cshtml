@@ -5,21 +5,36 @@
     ViewData["Title"] = "Index";
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
+
+@await Html.PartialAsync("headerSimple")
 <div class="d-flex justify-content-between">
     <h1 class="fw-bold">Education and Certification</h1>
-    <div class="d-flex justify-content-end">
+    <div class="d-flex d-print-none">
         @if (User.IsInRole("MIE\\PMS_HRCLERK"))
         {
             <a asp-page="Create" class="btn btn-primary d-print-none m-2">Add New Certification</a>   
         }
-        <button data-bs-toggle="collapse" data-bs-target="#listView" class="btn btn-primary m-2 d-print-none">List View</button>
-        <button data-bt-toggle="collapse" data-bs-target="#summaryView" class="btn btn-primary m-2 d-print-none">Summary View</button>
+        <ul class="nav nav-tabs">
+
+            <li class="nav-item">
+                <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#summaryView">Certification Summary</button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#companyView">Company Report</button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#talentPool">Talent Pool</button>
+            </li>
+            <li>@await Html.PartialAsync("print")</li>
+        </ul>
+        
     </div>
 </div>
 
 <hr />
-<div class="print-full-width" id="collapseParent">   
-    <div data-bs-parent="#collapseParent" class="collapse show" id="summaryView">
+<div class="tab-content">
+    <!--Certification Summary-->
+    <div class="tab-pane fade show active" id="summaryView">
         <h4 class="fw-bold">Active Employees Certification Summary</h4>
         <table class="table table-bordered table-striped table-hover">
             <thead class="bg-info text-white">
@@ -34,17 +49,17 @@
                 @foreach(var item in Model.CertificationSummary)
                 {
                     <tr>
-                        <td>@item.CertificationType</td>
-                        <td>@item.MaleCount</td>
-                        <td>@item.FemaleCount</td>
-                        <td>@item.TotalCount</td>
+                        <td>@item.CertificationCategory</td>
+                        <td>@item.Male</td>
+                        <td>@item.Female</td>
+                        <td>@item.Total</td>
                     </tr>
                 }
                 <tr>
                     <td class="fw-bold">Total</td>
-                    <td class="fw-bold">@Model.CertificationSummary.Sum(cs => cs.MaleCount)</td>
-                    <td class="fw-bold">@Model.CertificationSummary.Sum(cs => cs.FemaleCount)</td>
-                    <td class="fw-bold">@Model.CertificationSummary.Sum(cs => cs.TotalCount)</td>
+                    <td class="fw-bold">@Model.CertificationSummary.Sum(cs => cs.Male)</td>
+                    <td class="fw-bold">@Model.CertificationSummary.Sum(cs => cs.Female)</td>
+                    <td class="fw-bold">@Model.CertificationSummary.Sum(cs => cs.Total)</td>
                 </tr>
             </tbody>
         </table>
@@ -53,73 +68,409 @@
         </div>
     </div>
 
-    <div data-bs-parent="#collapseParent" class="collapse" id="listView">
-        <h4 class="fw-bold">Certification List</h4>
+    <!--Talent View Based on Certification-->
+    <div class="tab-pane fade" id="companyView">
+        <h4 class="fw-bold">Certification By Company</h4>
+        <!--SUMMARY POINTS-->
+        <div class="d-flex justify-content-between">
+
+            <div class="card m-2 p-2 shadow flex-grow-1">
+                <p>Total</p>
+                <h6 class="fw-bold">
+                    <u id="TotalRecords">@Model.TotalRecords</u>
+                </h6>
+            </div>
+
+            <div class="card m-2 p-2 shadow flex-grow-1">
+                <p>Male</p>
+                <h6 class="fw-bold">
+                    <u id="TotalRecords">@Model.Male</u>
+                </h6>
+            </div>
+            <div class="card m-2 p-2 shadow flex-grow-1">
+                <p>Female </p>
+                <h6 class="fw-bold">
+                    <u id="TotalHours">@Model.Female</u>
+                </h6>
+                
+            </div>
+        </div>
+
+        <!--FILTER CONTROLS-->
+        <div class="d-flex m-2 justify-content-between flex-wrap">
+            <div class="col-3 m-2 d-print-flex">
+                <label for="filter-company">Company:</label>
+                <select class="form-select" aria-label="Default select example" id="filter-company1">
+                    <option value="">All</option>
+                    @foreach (var company in Model.Companies)
+                    {
+                        <option value="@company.companyID">@company.companyName</option>
+                    }
+                </select>
+            </div>
+            <div class="col-3 m-2 d-print-flex">
+                <label for="filter-department">Department:</label>
+                <select class="form-select" aria-label="Default select example" id="filter-department1">
+                    <option value="">All</option>
+                    @foreach (var department in Model.Departments)
+                    {
+                        <option value="@department.departmentID">@department.departmentName</option>
+                    }
+                </select>
+            </div>
+            <div class="col-3 m-2 d-print-flex">
+                <label for="filter-category">Category:</label>
+                <select class="form-select" aria-label="Default select example" id="filter-category1">
+                    <option value="">All</option>
+                    @foreach (var cat in Model.EducationLevels)
+                    {
+                        <option value="@cat.educationLevelCategory">@cat.educationLevelCategory</option>
+                    }
+                </select>
+            </div>
+            <div class="col-3 m-2 d-print-flex">
+                <label for="filter-discipline">Discipline:</label>
+                <select class="form-select" aria-label="Default select example" id="filter-discipline1">
+                    <option value="">All</option>
+                    @foreach (var edu in Model.EducationDescipline)
+                    {
+                        <option value="@edu">@edu</option>
+                    }
+                </select>
+            </div>
+            <div class="col-3 d-print-none">
+                <label for="filter-field">Field of Study:</label>
+                <input list="CertificationFieldOptions" class="form-control" id="filter-field1" placeholder="Type or select Field of Study" />
+                    <datalist id="CertificationFieldOptions">
+                        <option value="">All</option>
+                        @foreach (var job in Model.Jobs)
+                        {
+                            <option value="@job.jobTitle">@job.jobTitle</option>
+                        }
+                    </datalist>
+            </div>
+            <div class="col-3 m-2 d-print-flex">
+                <label for="dateStart">Date From:</label>
+                <input class="form-control" type="date" id="dateStart1" asp-for="SDate" />
+            </div>
+            <div class="col-3 m-2 d-print-flex">
+                <label for="dateEnd">Date of End Upto:</label>
+                <input class="form-control" type="date" asp-for="EDate" />
+            </div>
+            <div class="d-flex align-items-end">
+                <button class="btn btn-primary d-print-none" onclick="filterCertification()">Load</button>
+            </div>
+        </div>
         <div class="d-flex">
             @await Html.PartialAsync("filter")
             @await Html.PartialAsync("print")
         </div>
-    
-        <table class="table table-striped table-hover" id="dataTable">
+
+        <!--LIST TABLE-->
+        <table class="table table-striped table-hover" id="dataTable1">
+            <thead class="bg-dark text-white">
+                <tr>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th>
+                        Employee ID
+                    </th>
+                    <th>
+                        Full Name
+                    </th>
+                    <th>
+                        Certification Title
+                    </th>
+                    <th>
+                        Issue Date
+                    </th>
+                    <th>
+                        Grade/Commulative
+                    </th>
+                    <th>Employees</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var comp in Model.personEducationLevelModel.OrderBy(c => c.CompanyName).GroupBy(c => c.CompanyID))
+                {
+                    <tr class="table-primary fw-bold">
+                        <td colspan="8">@comp.FirstOrDefault().CompanyName</td>
+                        <td>@comp.Select(c => c.PersonID).Distinct().Count()</td>
+                        <td>@comp.Count()</td>
+                    </tr>
+                    @foreach(var dept in comp.GroupBy(c => c.DepartmentID).ToList())
+                    {
+                        <tr class="table-secondary fw-bold">
+                            <td></td>
+                            <td colspan="7">@dept.FirstOrDefault().DepartmentName</td>
+                            <td>@dept.Select(c => c.PersonID).Distinct().Count()</td>
+                            <td>@dept.Count()</td>
+                        </tr>
+                        @foreach (var el in dept.GroupBy(c => c.EducationLevelCategory).ToList())
+                        {
+                            <tr class="table-secondary fw-bold">
+                                <td colspan="2"></td>
+                                <td colspan="6">@el.FirstOrDefault().EducationLevelCategory</td>
+                                <td>@el.Select(c => c.PersonID).Distinct().Count()</td>
+                                <td>@el.Count()</td>
+                            </tr>
+                            @foreach (var gender in el.GroupBy(c => c.PersonGender).ToList())
+                            {
+                                <tr class="fw-bold">
+                                    <td colspan="3"></td>
+                                    <td colspan="5">@gender.FirstOrDefault().PersonGender</td>
+                                    <td>@gender.Select(c => c.PersonID).Distinct().Count()</td>
+                                    <td>@gender.Count()</td>
+                                </tr>
+
+                                @foreach (var d in gender.OrderBy(e => e.GivenID))
+                                {
+                                    <tr class="">
+                                        <td colspan="3"></td>
+                                        <td>@d.GivenID</td>
+                                        <td>@d.FullName</td>
+                                        <td>@d.EducationField</td>
+                                        <td>@d.EducationLevelDate.Value.ToString("MM/dd/yyyy")</td>
+                                        <td>@d.EducationLevelMark</td>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+                                }
+                            }
+                            
+                        }
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+
+
+    <!--Talent pool based on experience-->
+    <div class="tab-pane fade" id="talentPool">
+        <h4 class="fw-bold">Talent Pool</h4>
+        <!--SUMMARY POINTS-->
+        <div class="d-flex justify-content-between">
+
+            <div class="card m-2 p-2 shadow flex-grow-1">
+                <p>Total </p>
+                <h6 class="fw-bold">
+                    <u id="totalRecords">@Model.TotalRecords.ToString("N2")</u>
+                </h6>
+            </div>
+            <div class="card m-2 p-2 shadow flex-grow-1">
+                <p>Male </p>
+                <h6 class="fw-bold">
+                    <u id="maleCount">@Model.Male</u>
+                </h6>
+            </div>
+            <div class="card m-2 p-2 shadow flex-grow-1">
+                <p>Female </p>
+                <h6 class="fw-bold">
+                    <u id="femaleCount">@Model.Female</u>
+                </h6>
+                
+            </div>
+            <div class="card m-2 p-2 shadow flex-grow-1">
+                <p>Active Employees </p>
+                <h6 class="fw-bold">
+                    <u id="activeEmps">@Model.ActiveEmp</u>
+                </h6>
+
+            </div>
+        </div>
+
+        <!--FILTER CONTROLS-->
+        <div class="d-flex m-2 justify-content-between flex-wrap">
+            <div class="col-3 m-2 d-print-flex">
+                <label for="filter-company">Job Class:</label>
+                <select class="form-select" aria-label="Default select example" id="filter-jobClassID">
+                    <option value="">All</option>
+                    @foreach (var jc in Model.JobClasses)
+                    {
+                        <option value="@jc.JobClassId">@jc.JobClassName</option>
+                    }
+                </select>
+            </div>
+            <div class="col-3 m-2 d-print-flex">
+                <label for="filter-jobTitle">Job Title:</label>
+                <input list="jobTitleOptions" class="form-control" id="filter-jobTitle" placeholder="Type or select a job title" />
+                <datalist id="jobTitleOptions">
+                    <option value="">All</option>
+                    @foreach (var job in Model.Jobs)
+                    {
+                        <option value="@job.jobTitle">@job.jobTitle</option>
+                    }
+                </datalist>
+            </div>
+
+            <div class="col-3 m-2 d-print-flex">
+                <label for="filter-status">Employment Status:</label>
+                <select class="form-select" aria-label="Default select example" id="filter-status" asp-items="Html.GetEnumSelectList<Models.mainStatus>()">
+                    <option value="">All</option>
+                </select>
+            </div>
+            <div class="col-3 m-2 d-print-flex">
+                <label for="filter-status">Gender:</label>
+                <select class="form-select" aria-label="Default select example" id="filter-gender" asp-items="Html.GetEnumSelectList<Models.Gender>()">
+                    <option value="">All</option>
+                </select>
+            </div>
+            <div class="col-3 m-2 d-print-flex">
+                <label for="filter-duration">Min Experience in Months:</label>
+                <input class="form-select" id="filter-duration" type="number" value="0"/>
+               
+            </div>
+            <div class="d-flex align-items-end">
+                <button onclick="filterTalent()" class="btn btn-primary d-print-none">Load</button>
+            </div>
+ 
+        </div>
+        
+        <!--LIST TABLE-->
+        <table class="table table-striped table-hover">
             <thead class="bg-dark text-white">
                 <tr>
                     <th>
                         Full Name
                     </th>
                     <th>
-                        Certification Name
+                        Job Title
                     </th>
                     <th>
-                        Certification Level
+                        Employment Status
                     </th>
                     <th>
-                        Issue Date
+                        Gender
                     </th>
                     <th>
-                        Garde/Commulative
+                        Duration
                     </th>
-                    <th>
-                        Institution Name
-                    </th>
-                    <th>
-                        Certification Number
-                    </th>
-                    <th>
-                        Discipline
-                    </th>
-            
+                    
                 </tr>
             </thead>
-            <tbody>
-                @foreach (var item in Model.personEducationLevelModel) {
-                    <tr onclick="location.href='@Url.Page("Edit", new {id =item.personEducationLevelID})'" style="cursor:pointer;">
-                        <td>
-                            @Html.DisplayFor(modelItem => item.personModel.personFullName)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.educationLevelModel.educationLevelCategory)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.educationLevelModel.educationLevelName)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.educationLevelDate)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.educationLevelMark)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.educationLevelInstitutionName)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.educationLevelNumber)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.educationDiscipline)
-                        </td>
-                    </tr>   
-                }
-            </tbody>
+            <tbody id="table-body">
+                
         </table>
     </div>
 </div>
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="~/js/filter-department.js"></script>
+
+
+<script>
+    function filterTalent() {
+        var jobClassID = $("#filter-jobClassID").val();
+        var EmploymentStatus = $("#filter-status").val();
+        var JobTitle = $("#filter-jobTitle").val();
+        var Gender = $("#filter-gender").val();
+        var Duration = $("#filter-duration").val();
+       
+
+        // Normalize empty values to null
+        jobClassID = (!jobClassID || jobClassID === "") ? null : jobClassID;
+        EmploymentStatus = (!EmploymentStatus || EmploymentStatus === "") ? null : EmploymentStatus;
+        JobTitle = (!JobTitle || JobTitle === "") ? null : JobTitle;
+        Gender = (!Gender || Gender === "") ? null : Gender;
+        Duration = (!Duration || Duration === "") ? null : Duration;
+
+
+            var filters = {
+                jobClassID: jobClassID,
+                jobTitle: JobTitle,
+                empStatus: EmploymentStatus,
+                duration: Duration,
+                gender: Gender
+            };
+
+    var url = "?handler=TalentExperienceFilter&" + $.param(filters);
+
+        // jQuery AJAX
+        $.getJSON(url, function (data) {
+            
+
+                //$("#table-body").html(data.tableHtml);
+                $("#table-body").html(
+                    data.tableHtml.map(e => `
+                        <tr onclick="location.href='${e.detailsUrl}'" style="cursor:pointer;">
+                        <td>${e.fullName}</td>
+                        <td>${e.jobTitle}</td>
+                        <td>${e.employmentStatus}</td>
+                        <td>${e.gender}</td>
+                        <td>${e.durationText}</td>
+                    </tr>
+                    `).join('')
+                );
+
+                $("#totalRecords").text(data.totalRecords);
+                $("#maleCount").text(data.male);
+                $("#femaleCount").text(data.female);
+                $("#activeEmps").text(data.activeEmp);
+
+            
+     
+        }).fail(function (jqXHR, textStatus, errorThrown) {
+            console.error("Error:", textStatus, errorThrown);
+        });
+    }
+
+    function filterCertification() {
+        var CompanyID = $("#filter-company1").val();
+        var DepartmentID = $("#filter-department1").val();
+        var DepartmentID = $("#filter-department1").val();
+        var EmploymentStatus = $("#filter-status").val();
+        var JobTitle = $("#filter-jobTitle").val();
+        var Gender = $("#filter-gender").val();
+        var Duration = $("#filter-duration").val();
+
+
+        // Normalize empty values to null
+        jobClassID = (!jobClassID || jobClassID === "") ? null : jobClassID;
+        EmploymentStatus = (!EmploymentStatus || EmploymentStatus === "") ? null : EmploymentStatus;
+        JobTitle = (!JobTitle || JobTitle === "") ? null : JobTitle;
+        Gender = (!Gender || Gender === "") ? null : Gender;
+        Duration = (!Duration || Duration === "") ? null : Duration;
+
+
+            var filters = {
+                jobClassID: jobClassID,
+                jobTitle: JobTitle,
+                empStatus: EmploymentStatus,
+                duration: Duration,
+                gender: Gender
+            };
+
+    var url = "?handler=TalentExperienceFilter&" + $.param(filters);
+
+        // jQuery AJAX
+        $.getJSON(url, function (data) {
+
+
+                //$("#table-body").html(data.tableHtml);
+                $("#table-body").html(
+                    data.tableHtml.map(e => `
+                        <tr onclick="location.href='${e.detailsUrl}'" style="cursor:pointer;">
+                        <td>${e.fullName}</td>
+                        <td>${e.jobTitle}</td>
+                        <td>${e.employmentStatus}</td>
+                        <td>${e.gender}</td>
+                        <td>${e.durationText}</td>
+                    </tr>
+                    `).join('')
+                );
+
+                $("#totalRecords").text(data.totalRecords);
+                $("#maleCount").text(data.male);
+                $("#femaleCount").text(data.female);
+                $("#activeEmps").text(data.activeEmp);
+
+
+
+        }).fail(function (jqXHR, textStatus, errorThrown) {
+            console.error("Error:", textStatus, errorThrown);
+        });
+    }
+</script>

@@ -14,6 +14,7 @@ namespace PIS2.Models
         public string modifiedBy { get; set; }
         public DateTime modifiedDate { get; set; } = DateTime.Now;
         public virtual ICollection<userHistoryModel>? UserHistories { get; set; }
+        public virtual ICollection<accessModel>? Accesses { get; set; }
          public userModel() { }
     }
     public class userHistoryModel

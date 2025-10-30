@@ -2,7 +2,7 @@
 @model PIS2.Pages.Leave.IndexModel
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Leave and Attendance";
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
 
@@ -10,423 +10,289 @@
 
 <input type="hidden" name="__RequestVerificationToken" value="@Antiforgery.GetAndStoreTokens(HttpContext).RequestToken" />
 
-
-<div class="d-flex justify-content-between">
-    <div>
-        <h1 class="fw-bold">Leave and Attendance </h1>
-        <h4 class="fw-bold">Unposted Leaves and Attendance </h4>
+<div class="container-fluid print-full-width">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+            <h1 class="fw-bold text-dark mb-0">Leave & Attendance</h1>
+            <h5 class="text-secondary fw-bold">Unposted Leaves and Attendance</h5>
+            <a asp-page="Create" class="btn btn-primary m-1 d-print-none">Add New Overtime Record</a>
+        </div>
+        <div class="">
+ 
+            <ul class="nav nav-tabs">
+                <li class="nav-item"><h5 class="fw-bold text-light bg-dark p-2 rounded">Pending Requests: @Model.CountUnposted</h5></li>
+                <li class="nav-item"><button class="nav-link active d-print-none" data-bs-toggle="tab" data-bs-target="#rawView">List View</button></li>
+                <li class="nav-item"><button class="nav-link d-print-none" data-bs-toggle="tab" data-bs-target="#groupDepView">Department View</button></li>
+                <li class="nav-item"><button class="nav-link m-1 d-print-none" data-bs-toggle="tab" data-bs-target="#groupTypeView">Types View</button></li>
+            </ul>
+        </div>
     </div>
-    <!--Unposted leaves-->
-    <div>
-        <div class="d-flex justify-content-end">
-            <h4 class="fw-bold">Pending Requests:@Model.CountUnposted</h4>
-        </div>
-        <div class="d-flex">
-            <a asp-page="Create" class="btn btn-primary m-2 d-print-none">Add New Overtime Record</a>
-            <a asp-page="Create" class="btn btn-primary m-2 d-print-none" data-bs-toggle="collapse" data-bs-target="#rawView">List View</a>
-            <a asp-page="Create" class="btn btn-primary m-2 d-print-none" data-bs-toggle="collapse" data-bs-target="#groupDepView">Department View</a>
-            <a asp-page="Create" class="btn btn-primary m-2 d-print-none" data-bs-toggle="collapse" data-bs-target="#groupTypeView">Types View</a>
-        </div>
 
-        
-    </div>
-    
-</div>
+    <hr class="border border-secondary" />
 
-<hr />
-<div id="parentDiv" class="print-full-width">
-    <!--List View-->
-    <div id="rawView" class="show" data-bs-parent="#parentDiv">
-        <div class="d-inline-flex">
-            @await Html.PartialAsync("filter")
-            @await Html.PartialAsync("print")
-        </div>
+    <!-- Parent container -->
+    <div id="parentDiv" class="tab-content print-full-width">
+        <!-- List View -->
+        <div id="rawView" class="tab-pane active" data-bs-parent="#parentDiv">
+            <div class="d-flex justify-content-between m-2">
+                @await Html.PartialAsync("filter")
+                @await Html.PartialAsync("print")
+            </div>
 
-        <table class="table table-bordered table-striped table-hover" id="dataTable">
-            <thead class="bg-dark text-white">
-                <tr>
-                    <th>Leave No</th>
-                    <th>
-                        Employee ID
-                    </th>
-                    <th>Name</th>
-                    <th>
-                       Date
-                    </th>
-                    <th>
-                        From
-                    </th>
-                    <th>
-                        To
-                    </th>
-                    <th>
-                        Days
-                    </th>
-                    <th>
-                        Type
-                    </th>
-                    <th>
-                        Status
-                    </th>
-                    <th class=" d-print-none"></th>
-                </tr>
-            </thead>
-            <tbody id="table-body">
-                @foreach (var item in Model.leaveModel) {
-                    <tr>
-                        <td onclick="location.href='@Url.Page("Details", new { id = item.leaveID })'" style="cursor:pointer;">
-                            @item.leaveID
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.employmentModel.givenID)
-                        </td>
-                        <td>
-                            @item.employmentModel?.personModel?.personFullName
-                        </td>
-                        <td>
-                                @item.leaveRequestDate.ToString("MM/dd/yyyy")
-                        </td>
-                        <td>
-                                @item.leaveStartDate.ToString("MM/dd/yyyy")
-                        </td>
-                        <td>
-                                @item.leaveEndDate.ToString("MM/dd/yyyy")
-                        </td>
-                        <td>
-                                @Html.DisplayFor(modelItem => item.leaveDays)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.leaveTypeModel.leaveTypeName)
-                        </td>
-                            @if(@item.leaveStatus == Models.leaveStatus.Approved)
-                            {
-                                <td>
-                                    <p class="border-success p-1">@Html.DisplayFor(modelItem => item.leaveStatus)</p>
+            <div class="table-responsive shadow-sm rounded">
+                <table class="table table-bordered table-hover align-middle">
+                    <thead class="bg-dark text-white">
+                        <tr>
+                            <th>Leave No</th>
+                            <th>Employee ID</th>
+                            <th>Name</th>
+                            <th>Date</th>
+                            <th>From</th>
+                            <th>To</th>
+                            <th>Days</th>
+                            <th>Type</th>
+                            <th>Status</th>
+                            <th class="d-print-none text-center"></th>
+                        </tr>
+                    </thead>
+                    <tbody id="table-body">
+                        @foreach (var item in Model.leaveModel)
+                        {
+                            <tr>
+                                <td onclick="location.href='@Url.Page("Details", new { id = item.leaveID })'" style="cursor:pointer;">
+                                    <strong>@item.leaveID</strong>
                                 </td>
-                            }
-                            else
-                            {
+                                <td>@item.employmentModel.givenID</td>
+                                <td>@item.employmentModel?.personModel?.personFullName</td>
+                                <td>@item.leaveRequestDate.ToString("MMM dd, yyyy")</td>
+                                <td>@item.leaveStartDate.ToString("MMM dd, yyyy")</td>
+                                <td>@item.leaveEndDate.ToString("MMM dd, yyyy")</td>
+                                <td>@item.leaveDays</td>
+                                <td>@item.leaveTypeModel.leaveTypeName</td>
                                 <td>
-                                    @Html.DisplayFor(modelItem => item.leaveStatus)
+                                    @if (item.leaveStatus == Models.leaveStatus.Approved)
+                                    {
+                                        <span class="badge bg-success">@item.leaveStatus</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-warning text-dark">@item.leaveStatus</span>
+                                    }
                                 </td>
-                            }
-                
-                            <td class="d-flex flex-grow-1">
-                            @if(User.IsInRole("MIE\\PMS_HRCLERK"))
-                            {
+                                <td class="text-center d-print-none">
+                                    @if (User.IsInRole("MIE\\PMS_HRCLERK"))
+                                    {
+                                        <button class="btn btn-success btn-sm post-button" data-id="@item.leaveID">Post</button>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
 
-                                    <button class="btn btn-success post-button d-print-none" data-id="@item.leaveID">Post</button>
+        <!-- Department Group View -->
+        <div id="groupDepView" class="tab-pane" data-bs-parent="#parentDiv">
+            <h4 class="fw-bold mt-3 text-primary">Department Unposted Leave</h4>
+            <div class="table-responsive shadow-sm rounded">
+                <table class="table table-striped table-hover align-middle">
+                    <thead class="bg-dark text-white">
+                        <tr>
+                            <th>S/No</th>
+                            <th>Department</th>
+                            <th>Requests</th>
+                            <th>Sum of Days</th>
+                        </tr>
+                    </thead>
+                    <tbody id="departmentsAccordion">
+                        @{
+                            int index = 1;
+                        }
+                        @foreach (var dep in Model.GroupedDepLeaves)
+                        {
+                            var collapseId = $"collapse{index}";
+                            <tr class="fw-bold table-active" data-bs-toggle="collapse" data-bs-target="#@collapseId" style="cursor:pointer;">
+                                <td>@index</td>
+                                <td>@dep.DepartmentName</td>
+                                <td>@dep.Count (@Math.Round((@dep.Count * 100) / @Model.CountUnposted, 2)%)</td>
+                                <td>@Math.Round(dep.SumDays, 2)</td>
+                            </tr>
+                            <tr>
+                                <td colspan="4" class="p-0">
+                                    <div id="@collapseId" class="accordion-collapse collapse bg-light" data-bs-parent="#departmentsAccordion">
+                                        <table class="table table-hover mb-0">
+                                            <thead class="bg-info text-white">
+                                                <tr>
+                                                    <th>Leave No</th>
+                                                    <th>Employee ID</th>
+                                                    <th>Name</th>
+                                                    <th>Date</th>
+                                                    <th>From</th>
+                                                    <th>To</th>
+                                                    <th>Days</th>
+                                                    <th>Type</th>
+                                                    <th>Status</th>
+                                                    <th class="d-print-none text-center"></th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach (var item in dep.Records)
+                                                {
+                                                    <tr>
+                                                        <td onclick="location.href='@Url.Page("Details", new { id = item.leaveID })'" style="cursor:pointer;">@item.leaveID</td>
+                                                        <td>@item.employmentModel.givenID</td>
+                                                        <td>@item.employmentModel.personModel.personFullName</td>
+                                                        <td>@item.leaveRequestDate.ToString("MMM dd, yyyy")</td>
+                                                        <td>@item.leaveStartDate.ToString("MMM dd, yyyy")</td>
+                                                        <td>@item.leaveEndDate.ToString("MMM dd, yyyy")</td>
+                                                        <td>@item.leaveDays</td>
+                                                        <td>@item.leaveTypeModel.leaveTypeName</td>
+                                                        <td>
+                                                            @if (item.leaveStatus == Models.leaveStatus.Approved)
+                                                            {
+                                                                <span class="badge bg-success">@item.leaveStatus</span>
+                                                            }
+                                                            else
+                                                            {
+                                                                <span class="badge bg-warning text-dark">@item.leaveStatus</span>
+                                                            }
+                                                        </td>
+                                                        <td class="text-center d-print-none">
+                                                            @if (User.IsInRole("MIE\\PMS_HRCLERK"))
+                                                            {
+                                                                <button class="btn btn-success btn-sm post-button" data-id="@item.leaveID">Post</button>
+                                                            }
+                                                        </td>
+                                                    </tr>
+                                                }
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </td>
+                            </tr>
+                            index++;
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
 
-                            }
-                   
-                
-                        </td>
-                    </tr>
-                }
-            </tbody>
-        </table>
+        <!-- Type Group View -->
+        <div id="groupTypeView" class="tab-pane" data-bs-parent="#parentDiv">
+            <h4 class="fw-bold mt-3 text-primary">Unposted Leave By Type</h4>
+            <div class="table-responsive shadow-sm rounded">
+                <table class="table table-striped table-hover align-middle">
+                    <thead class="bg-dark text-white">
+                        <tr>
+                            <th>S/No</th>
+                            <th>Leave Type</th>
+                            <th>Requests</th>
+                            <th>Sum of Days</th>
+                        </tr>
+                    </thead>
+                    <tbody id="typesAccordion">
+                        @{
+                            int index1 = 1;
+                        }
+                        @foreach (var dep in Model.GroupedTypeLeaves)
+                        {
+                            var collapseId = $"leaveType{index1}";
+                            <tr class="fw-bold table-active" data-bs-toggle="collapse" data-bs-target="#@collapseId" style="cursor:pointer;">
+                                <td>@index1</td>
+                                <td>@dep.DepartmentName</td>
+                                <td>@dep.Count (@Math.Round((@dep.Count * 100) / Model.CountUnposted, 2)%)</td>
+                                <td>@Math.Round(dep.SumDays, 2)</td>
+                            </tr>
+                            <tr>
+                                <td colspan="4" class="p-0">
+                                    <div id="@collapseId" class="accordion-collapse collapse bg-light" data-bs-parent="#typesAccordion">
+                                        <table class="table table-hover mb-0">
+                                            <thead class="bg-info text-white">
+                                                <tr>
+                                                    <th>Leave No</th>
+                                                    <th>Employee ID</th>
+                                                    <th>Name</th>
+                                                    <th>Date</th>
+                                                    <th>From</th>
+                                                    <th>To</th>
+                                                    <th>Days</th>
+                                                    <th>Type</th>
+                                                    <th>Status</th>
+                                                    <th class="d-print-none text-center"></th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach (var item in dep.Records)
+                                                {
+                                                    <tr>
+                                                        <td onclick="location.href='@Url.Page("Details", new { id = item.leaveID })'" style="cursor:pointer;">@item.leaveID</td>
+                                                        <td>@item.employmentModel.givenID</td>
+                                                        <td>@item.employmentModel.personModel.personFullName</td>
+                                                        <td>@item.leaveRequestDate.ToString("MMM dd, yyyy")</td>
+                                                        <td>@item.leaveStartDate.ToString("MMM dd, yyyy")</td>
+                                                        <td>@item.leaveEndDate.ToString("MMM dd, yyyy")</td>
+                                                        <td>@item.leaveDays</td>
+                                                        <td>@item.leaveTypeModel.leaveTypeName</td>
+                                                        <td>
+                                                            @if (item.leaveStatus == Models.leaveStatus.Approved)
+                                                            {
+                                                                <span class="badge bg-success">@item.leaveStatus</span>
+                                                            }
+                                                            else
+                                                            {
+                                                                <span class="badge bg-warning text-dark">@item.leaveStatus</span>
+                                                            }
+                                                        </td>
+                                                        <td class="text-center d-print-none">
+                                                            @if (User.IsInRole("MIE\\PMS_HRCLERK"))
+                                                            {
+                                                                <button class="btn btn-success btn-sm post-button" data-id="@item.leaveID">Post</button>
+                                                            }
+                                                        </td>
+                                                    </tr>
+                                                }
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </td>
+                            </tr>
+                            index1++;
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
 
-    <!--Grouped Department View-->
-    <div id="groupDepView" class="show print-full-width" data-bs-parent="#parentDiv">
-        <h4 class="fw-bold">Department Uposted Leave</h4>
-        <table class="table table-striped table-hover">
-            <thead class="bg-dark text-white">
-                <tr>
-                    <th>S/No</th>
-                    <th>Department</th>
-                    <th>Number of Requests</th>
-                    <th>Sum of Days</th>
-                </tr>
-            </thead>
-            <tbody id="departmentsAccordion">
-                @{
-                    int index = 1;
-                }
-                @foreach (var dep in Model.GroupedDepLeaves)
-                {
-                    var collapseId = $"collapse{index}";
-                    <tr class="fw-bold" data-bs-toggle="collapse"
-                        data-bs-target="#@collapseId"
-                        style="cursor:pointer;">
-                        <td>
-                            @index
-                        </td>
-                        <td>
-                            @dep.DepartmentName 
-                        </td>
-                        <td>
-                            @dep.Count (@Math.Round((@dep.Count * 100)/ @Model.CountUnposted, 2)%)
-                        </td>
-                        <td>
-                            @Math.Round(dep.SumDays,2)
-                        </td>
-
-                    </tr>
-
-                    <tr>
-                        <td colspan="4" class="p-0">
-                            <div id="@collapseId" class="accordion-collapse collapse"
-                                 data-bs-parent="#departmentsAccordion">
-                                <table class="table table-striped table-hover mb-0">
-                                    <thead class="bg-info text-white">
-                                        <tr>
-                                            <th>Leave No</th>
-                                            <th>
-                                                Employee ID
-                                            </th>
-                                            <th>Name</th>
-                                            <th>
-                                                Date
-                                            </th>
-                                            <th>
-                                                From
-                                            </th>
-                                            <th>
-                                                To
-                                            </th>
-                                            <th>
-                                                Days
-                                            </th>
-                                            <th>
-                                                Type
-                                            </th>
-                                            <th>
-                                                Status
-                                            </th>
-                                            <th class =" d-print-none"> </th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-
-                                        @foreach (var item in dep.Records)
-                                        {
-                                            <tr>
-                                                <td onclick="location.href='@Url.Page("Details", new { id = item.leaveID })'" style="cursor:pointer;">
-                                                    @item.leaveID
-                                                </td>
-                                                <td>
-                                                    @Html.DisplayFor(modelItem => item.employmentModel.givenID)
-                                                </td>
-                                                <td>
-                                                    @item.employmentModel.personModel.personFullName
-                                                </td>
-                                                <td>
-                                                    @item.leaveRequestDate.ToString("MMM dd, yyyy")
-                                                </td>
-                                                <td>
-                                                    @item.leaveStartDate.ToString("MMM dd, yyyy")
-                                                </td>
-                                                <td>
-                                                    @item.leaveEndDate.ToString("MMM dd, yyyy")
-                                                </td>
-                                                <td>
-                                                    @Html.DisplayFor(modelItem => item.leaveDays)
-                                                </td>
-                                                <td>
-                                                    @Html.DisplayFor(modelItem => item.leaveTypeModel.leaveTypeName)
-                                                </td>
-                                                @if (@item.leaveStatus == Models.leaveStatus.Approved)
-                                                {
-                                                    <td>
-                                                        <p class="border-success p-1">@Html.DisplayFor(modelItem => item.leaveStatus)</p>
-                                                    </td>
-                                                }
-                                                else
-                                                {
-                                                    <td>
-                                                        @Html.DisplayFor(modelItem => item.leaveStatus)
-                                                    </td>
-                                                }
-
-                                                <td class="d-flex flex-grow-1">
-                                                    @if (User.IsInRole("MIE\\PMS_HRCLERK"))
-                                                    {
-
-                                                        <button class="btn btn-success post-button d-print-none" data-id="@item.leaveID">Post</button>
-
-                                                    }
-
-
-                                                </td>
-                                            </tr>
-                                        }
-                                    </tbody>
-                                </table>
-                            </div>
-                        </td>
-                    </tr>
-                    index++;
-
-                }
-            </tbody>
-        </table>
-    </div>
-    <!--Grouped by Type View-->
-    <div id="groupTypeView" class="show" data-bs-parent="#parentDiv">
-        <h4 class="fw-bold">Uposted Leave By Type</h4>
-        <table class="table table-striped table-hover">
-            <thead class="bg-dark text-white">
-                <tr>
-                    <th>S/No</th>
-                    <th>Type of Requests</th>
-                    <th>Number of Requests</th>
-                    <th>Sum In Days</th>
-                </tr>
-            </thead>
-            <tbody id="typesAccordion">
-                @{
-                    int index1 = 1;
-                }
-                @foreach (var dep in Model.GroupedTypeLeaves)
-                {
-                    var collapseId = $"leaveType{index1}";
-                    <tr class="" data-bs-toggle="collapse"
-                        data-bs-target="#@collapseId"
-                        style="cursor:pointer;">
-                        <td class="fw-bold">
-                            @index1
-                        </td>
-                        <td class ="fw-bold"> 
-                            @dep.DepartmentName
-                        </td>
-                        <td class="fw-bold">
-                            @dep.Count (@Math.Round((@dep.Count * 100)/Model.CountUnposted, 2)%)
-                        </td>
-                        <td class="fw-bold">
-                            @Math.Round(dep.SumDays, 2)
-                        </td>
-                    </tr>
-
-                    <tr>
-                        <td colspan="4" class="p-0">
-                            <div id="@collapseId" class="accordion-collapse collapse"
-                                 data-bs-parent="#typesAccordion">
-                                <table class="table table-striped table-hover mb-0">
-                                    <thead class="bg-info text-white">
-                                        <tr>
-                                            <th>Leave No</th>
-                                            <th>
-                                                Employee ID
-                                            </th>
-                                            <th>Name</th>
-                                            <th>
-                                                Date
-                                            </th>
-                                            <th>
-                                                From
-                                            </th>
-                                            <th>
-                                                To
-                                            </th>
-                                            <th>
-                                                Days
-                                            </th>
-                                            <th>
-                                                Type
-                                            </th>
-                                            <th>
-                                                Status
-                                            </th>
-                                            <th class=" d-print-none"></th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-
-                                        @foreach (var item in dep.Records)
-                                        {
-                                            <tr>
-                                                <td onclick="location.href='@Url.Page("Details", new { id = item.leaveID })'" style="cursor:pointer;">
-                                                    @item.leaveID
-                                                </td>
-                                                <td>
-                                                    @Html.DisplayFor(modelItem => item.employmentModel.givenID)
-                                                </td>
-                                                <td>
-                                                    @item.employmentModel.personModel.personFullName
-                                                </td>
-                                                <td>
-                                                    @item.leaveRequestDate.ToString("MMM dd, yyyy")
-                                                </td>
-                                                <td>
-                                                    @item.leaveStartDate.ToString("MMM dd, yyyy")
-                                                </td>
-                                                <td>
-                                                    @item.leaveEndDate.ToString("MMM dd, yyyy")
-                                                </td>
-                                                <td>
-                                                    @Html.DisplayFor(modelItem => item.leaveDays)
-                                                </td>
-                                                <td>
-                                                    @Html.DisplayFor(modelItem => item.leaveTypeModel.leaveTypeName)
-                                                </td>
-                                                @if (@item.leaveStatus == Models.leaveStatus.Approved)
-                                                {
-                                                    <td>
-                                                        <p class="border-success p-1">@Html.DisplayFor(modelItem => item.leaveStatus)</p>
-                                                    </td>
-                                                }
-                                                else
-                                                {
-                                                    <td>
-                                                        @Html.DisplayFor(modelItem => item.leaveStatus)
-                                                    </td>
-                                                }
-
-                                                <td class="d-flex flex-grow-1">
-                                                    @if (User.IsInRole("MIE\\PMS_HRCLERK"))
-                                                    {
-
-                                                        <button class="btn btn-success post-button d-print-none" data-id="@item.leaveID">Post</button>
-
-                                                    }
-
-
-                                                </td>
-                                            </tr>
-                                        }
-                                    </tbody>
-                                </table>
-                            </div>
-                        </td>
-                    </tr>
-                    index1++;
-
-                }
-            </tbody>
-        </table>
+    <div class="d-flex justify-content-end mt-3">
+        @await Html.PartialAsync("print")
     </div>
 </div>
 
-    <div class="d-flex justify-content-end">@await Html.PartialAsync("print")</div>
-    
+<!-- Scripts -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
-    $(document).ready(function () {
+    $(function () {
         $('.post-button').click(function (e) {
             e.preventDefault();
-
-            var leaveId = $(this).data('id');
-            var button = $(this);
-            var token = $('input[name="__RequestVerificationToken"]').val(); // get CSRF token
+            const leaveId = $(this).data('id');
+            const token = $('input[name="__RequestVerificationToken"]').val();
+            const button = $(this);
 
             $.ajax({
-                url: '@Url.Page("Index", "Approve")', // your Razor Page & handler
+                url: '@Url.Page("Index", "Approve")',
                 type: 'POST',
-                data: {
-                    leaveId: leaveId,
-                    __RequestVerificationToken: token
-                },
-                success: function (response) {
-                    if (response.success) {
+                data: { leaveId, __RequestVerificationToken: token },
+                success: function (res) {
+                    if (res.success) {
                         button.prop('disabled', true).text('Posted');
-                        alert(response.message);
-                    } else {
-                        alert("Error: " + response.message);
-                    }
+                        alert(res.message);
+                    } else alert("Error: " + res.message);
                 },
-                error: function (xhr, status, error) {
-                    alert('Error: ' + error);
+                error: function (xhr, status, err) {
+                    alert('Error: ' + err);
                 }
             });
         });

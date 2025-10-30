@@ -33,6 +33,7 @@ namespace PIS2.Pages.Leave
         [HttpPost]
         public async Task<IActionResult> OnPostApprove(int leaveId)
         {
+
             Console.WriteLine($"Received ID: {leaveId}");
             var leave = await _context.Leaves.FindAsync(leaveId);
             if (leave == null)

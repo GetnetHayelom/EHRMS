@@ -44,12 +44,27 @@ namespace PIS2.Pages.Absentism
         // For more information, see https://aka.ms/RazorPagesCRUD.
         public async Task<IActionResult> OnPostAsync()
         {
+            if (!User.IsInRole("MIE\\PMS_HRMANAGER"))
+            {
+                return RedirectToPage("/Shared/AccessDenied");
+            }
+
             if (!ModelState.IsValid)
             {
+                foreach (var kv in ModelState)
+                {
+                    foreach (var error in kv.Value.Errors)
+                    {
+                        Console.WriteLine($"{kv.Key} --> {error.ErrorMessage}");
+                    }
+                    Console.WriteLine(kv.ToString());
+                }
                 return Page();
             }
 
             _context.Attach(leaveModel).State = EntityState.Modified;
+
+
 
             try
             {

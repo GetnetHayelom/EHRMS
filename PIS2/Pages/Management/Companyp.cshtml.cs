@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
@@ -10,6 +11,7 @@ using static System.Formats.Asn1.AsnWriter;
 
 namespace PIS2.Pages.Management
 {
+    [Authorize(Roles = "MIE\\PMS_HRMANAGER,MIE\\PMS_MANAGEMENT")]
     public class Companyp : PageModel
     {
         private readonly PIS2.Models.PISContext _context;

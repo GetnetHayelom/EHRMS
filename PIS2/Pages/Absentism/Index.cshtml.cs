@@ -35,7 +35,8 @@ namespace PIS2.Pages.Absentism
             WorkLocations = await _context.WorkSites.Where(d => d.workSiteStatus == mainStatus.Active).OrderBy(w => w.workSiteName).ToListAsync();
             Companies = await _context.Companies.Where(d => d.companyStatus == mainStatus.Active).OrderBy(c => c.companyName).ToListAsync();
 
-            leaveModel = await _context.Leaves.ToListAsync();
+            leaveModel = await _context.Leaves
+                .Include(l => l.employmentModel).Where(l => l.leaveTypeModel.leaveGroup == leaveGroup.Absentism).ToListAsync();
 
             StartDate = leaveModel.Min(l => l.leaveRequestDate);
             EndDate = leaveModel.Max(l => l.leaveRequestDate);

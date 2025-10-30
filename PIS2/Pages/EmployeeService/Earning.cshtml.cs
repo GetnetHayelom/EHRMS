@@ -95,7 +95,7 @@ namespace PIS2.Pages.EmployeeService
         {
             var empID = 0;
             empID = _context.Employments.FirstOrDefault(e => e.personID == personID && e.employmentStatus == mainStatus.Active).employmentID;
-            if (empID == 0 || empID == null)
+            if (empID == 0)
             {
                 empID = _context.Employments.OrderBy(e => e.employmentDate).FirstOrDefault(e => e.personID == personID).employmentID;
             }

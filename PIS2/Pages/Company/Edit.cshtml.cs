@@ -24,6 +24,11 @@ namespace PIS2.Pages.Company
 
         public async Task<IActionResult> OnGetAsync(int? id)
         {
+            if (!User.IsInRole("MIE\\PMS_HRMANAGER"))
+            {
+                return RedirectToPage("/Shared/AccessDenied");
+            }
+
             if (id == null)
             {
                 return NotFound();
@@ -50,6 +55,11 @@ namespace PIS2.Pages.Company
         // For more information, see https://aka.ms/RazorPagesCRUD.
         public async Task<IActionResult> OnPostAsync()
         {
+            if (!User.IsInRole("MIE\\PMS_HRMANAGER"))
+            {
+                return RedirectToPage("/Shared/AccessDenied");
+            }
+
             ModelState.Remove("companyModel.modifiedBy");
             companyModel.modifiedBy = User.Identity.Name;
 

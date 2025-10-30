@@ -1,0 +1,123 @@
+﻿@page
+@model PIS2.Pages.Notice.CreateModel
+@{
+    ViewData["Title"] = "Create New Notice";
+}
+
+<div class="container mt-5">
+    <div class="card shadow-lg border-0">
+        <div class="card-header bg-dark text-white">
+            <h3 class="mb-0 fw-bold">Create New Announcement / Notice</h3>
+        </div>
+        <div class="card-body p-4">
+
+            @if (!string.IsNullOrEmpty(Model.StatusMessage))
+            {
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    @Model.StatusMessage
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            }
+
+            <form method="post">
+                <div asp-validation-summary="ModelOnly" class="text-danger mb-4"></div>
+
+                <!-- Title & Sub-Title -->
+                <div class="row mb-3">
+                    <div class="col-md-7">
+                        <label asp-for="Notice.noticeTitle" class="form-label"></label>
+                        <input asp-for="Notice.noticeTitle" class="form-control" />
+                        <span asp-validation-for="Notice.noticeTitle" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-5">
+                        <label asp-for="Notice.noticeSubTitle" class="form-label"></label>
+                        <input asp-for="Notice.noticeSubTitle" class="form-control" />
+                        <span asp-validation-for="Notice.noticeSubTitle" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <!-- Content (Main Section) -->
+                <div class="row mb-3">
+                    <div class="col-12">
+                        <label asp-for="Notice.noticeContent" class="form-label"></label>
+                        <textarea asp-for="Notice.noticeContent" class="form-control" rows="8"></textarea>
+                        <span asp-validation-for="Notice.noticeContent" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <!-- Priority, Date Posted, Expiry Date -->
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <label asp-for="Notice.noticePriority" class="form-label"></label>
+                        <select asp-for="Notice.noticePriority" asp-items="Html.GetEnumSelectList<Models.Priority>()" class="form-control">
+                            <option value="">Select Priority</option>
+                        </select>
+                        <span asp-validation-for="Notice.noticePriority" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label asp-for="Notice.DatePosted" class="form-label"></label>
+                        <input asp-for="Notice.DatePosted" class="form-control" type="date" readonly />
+                        <span asp-validation-for="Notice.DatePosted" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label asp-for="Notice.ExpiryDate" class="form-label"></label>
+                        <input asp-for="Notice.ExpiryDate" class="form-control" type="date" />
+                        <span asp-validation-for="Notice.ExpiryDate" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <!-- Posted By, Approved By, Notice From -->
+                <div class="row mb-4">
+                    <div class="col-md-4">
+                        <label asp-for="Notice.noticePostedBy" class="form-label"></label>
+                        <input asp-for="Notice.noticePostedBy" class="form-control" readonly />
+                    </div>
+
+                    <div class="col-md-4">
+                        <label asp-for="Notice.noticeApprovedBy" class="form-label"></label>
+                        <input asp-for="Notice.noticeApprovedBy" class="form-control" />
+                    </div>
+
+                    <div class="col-md-4">
+                        <label asp-for="Notice.noticeFrom" class="form-label"></label>
+                        <input asp-for="Notice.noticeFrom" class="form-control" />
+                    </div>
+                </div>
+
+                <hr />
+
+                <!-- Is Active & Attachment Path (Optional) -->
+                <div class="row mb-4 align-items-center">
+                    <div class="col-md-6">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="isActiveSwitch" asp-for="Notice.IsActive">
+                            <label class="form-check-label" for="isActiveSwitch" asp-for="Notice.IsActive"></label>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="Notice.AttachmentPath" class="form-label"></label>
+                        <input asp-for="Notice.AttachmentPath" class="form-control" placeholder="e.g., /attachments/policy-update.pdf" />
+                    </div>
+                </div>
+
+                <!-- Submission Button -->
+                <div class="d-grid gap-2 mt-4">
+                    <button type="submit" class="btn btn-success btn-lg">
+                        <i class="fas fa-bullhorn me-2"></i> Post Notice
+                    </button>
+                    <a asp-page="/Index" class="btn btn-outline-secondary">Cancel</a>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        // Assuming you have _ValidationScriptsPartial for client-side validation
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

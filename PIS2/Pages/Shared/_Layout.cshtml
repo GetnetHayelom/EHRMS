@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - MMEC-HRMS</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link href="~/icons/bootstrap-icons.css" rel="stylesheet" />
     <link rel="stylesheet" href="css/select2.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/PIS2.styles.css" asp-append-version="true" />
@@ -32,7 +33,7 @@
 
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-dark border-bottom box-shadow mb-3 d-print-none">
             <div class="container">
-                <a class="navbar-brand text-white" asp-area="" asp-page="/Index"><b>MMEC-HRMS</b></a>
+                <a class="navbar-brand text-white" asp-area="" asp-page="/Index"><b>Mesfin-HRMS</b></a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
@@ -103,6 +104,7 @@
                                     <a class="dropdown-item" asp-page="/EmployeeService/Index">Earnings</a>
                                     <a class="dropdown-item" asp-page="/Penalty/Index">Penalties</a>
                                     <a class="dropdown-item" asp-page="/BankInfo/Index">Bank Information</a>
+                                    <a class="dropdown-item" asp-page="/Notice/Index">Notice Board</a>
                             </div>
                         </li>
                         }
@@ -167,12 +169,10 @@
     </div>
 
     <footer class="border-top footer text-muted d-print-none">
-        <div class="container">
-            &copy; 2024 MMEC-HRMS <a asp-area="" asp-page="/Privacy">Privacy</a>
+        <div class="container justify-content-center">
+            Developed By Getnet Hayelom &copy; 2025 Mesfin-HRMS
         </div>
-        <div class="d-flex justify-content-center">
-            <p>Developed By Getnet Hayelom</p>
-        </div>
+        
     </footer>
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
@@ -202,6 +202,18 @@
 
         // Show loader before navigating away
         window.addEventListener("beforeunload", showLoader);
+
+        // Handle browser back/forward navigation (bfcache restore)
+        window.addEventListener("pageshow", function (event) {
+            // If loaded from cache, make sure loader is hidden
+            if (event.persisted) {
+                hideLoader();
+            }
+        });
+
+        // Show loader before navigating away
+        window.addEventListener("beforeunload", showLoader);
+
     </script>
     <script>
         $(document).ajaxStart(function () {

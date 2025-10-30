@@ -6,53 +6,86 @@
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
 
-<h1 class="fw-bold">Jobs</h1>
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="fw-bold text-dark mb-1">Jobs</h1>
+            <h5 class="text-muted">New Job Setup</h5>
+        </div>
+        <a asp-page="Index" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left-circle"></i> Back to List
+        </a>
+    </div>
 
-<h4 class="fw-bold">New Job Setup</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form method="post">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="jobModel.jobTitle" class="control-label">Job Title</label>
-                <input asp-for="jobModel.jobTitle" class="form-control" />
-                <span asp-validation-for="jobModel.jobTitle" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="jobModel.jobGradeID" class="control-label">Job Grade</label>
-                <select asp-for="jobModel.jobGradeID" class ="form-control" asp-items="ViewBag.jobGradeID"></select>
-            </div>
-            <div class="form-group">
-                <label asp-for="jobModel.jobCategoryID" class="control-label">Job Category</label>
-                <select asp-for="jobModel.jobCategoryID" class ="form-control" asp-items="ViewBag.jobCategoryID"></select>
-            </div>
-            <div class="form-group">
-                <label asp-for="jobModel.jobClassID" class="control-label">Job Class</label>
-                <select asp-for="jobModel.jobClassID" class ="form-control" asp-items="ViewBag.jobClassID"></select>
-            </div>
-            <div class="form-group">
-                <label asp-for="jobModel.jobDescription" class="control-label">Description</label>
-                <input asp-for="jobModel.jobDescription" class="form-control" />
-                <span asp-validation-for="jobModel.jobDescription" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="jobModel.jobStatus" class="control-label">Status</label>
-                <select asp-for="jobModel.jobStatus" class="form-control" asp-items="Html.GetEnumSelectList<Models.mainStatus>()"></select>
-                <span asp-validation-for="jobModel.jobStatus" class="text-danger"></span>
-            </div>
-            <div class="form-group d-flex justify-content-end">
-                <input type="submit" value="Save" class="btn btn-success m-2" />
-                <a asp-page="Index" class="btn btn-secondary m-2">Cancel</a>
-            </div>
-        </form>
+    <div class="card shadow-sm border-0">
+        <div class="card-body">
+            <form method="post" class="needs-validation" novalidate>
+                <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                <div class="mb-3">
+                    <label asp-for="jobModel.jobTitle" class="form-label fw-semibold">Job Title</label>
+                    <input asp-for="jobModel.jobTitle" class="form-control" placeholder="Enter job title" />
+                    <span asp-validation-for="jobModel.jobTitle" class="text-danger"></span>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <label asp-for="jobModel.jobGradeID" class="form-label fw-semibold">Job Grade</label>
+                        <select asp-for="jobModel.jobGradeID" class="form-select" asp-items="ViewBag.jobGradeID"></select>
+                    </div>
+
+                    <div class="col-md-4 mb-3">
+                        <label asp-for="jobModel.jobCategoryID" class="form-label fw-semibold">Job Category</label>
+                        <select asp-for="jobModel.jobCategoryID" class="form-select" asp-items="ViewBag.jobCategoryID"></select>
+                    </div>
+
+                    <div class="col-md-4 mb-3">
+                        <label asp-for="jobModel.jobClassID" class="form-label fw-semibold">Job Class</label>
+                        <select asp-for="jobModel.jobClassID" class="form-select" asp-items="ViewBag.jobClassID"></select>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="jobModel.jobDescription" class="form-label fw-semibold">Description</label>
+                    <textarea asp-for="jobModel.jobDescription" class="form-control" rows="3" placeholder="Describe the job role"></textarea>
+                    <span asp-validation-for="jobModel.jobDescription" class="text-danger"></span>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="jobModel.jobQualifications" class="form-label fw-semibold">Qualification</label>
+                        <input asp-for="jobModel.jobQualifications" class="form-control" placeholder="Enter required qualifications" />
+                        <span asp-validation-for="jobModel.jobQualifications" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="jobModel.jobExperience" class="form-label fw-semibold">Experience</label>
+                        <input asp-for="jobModel.jobExperience" class="form-control" placeholder="Enter required experience" />
+                        <span asp-validation-for="jobModel.jobExperience" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <label asp-for="jobModel.jobStatus" class="form-label fw-semibold">Status</label>
+                    <select asp-for="jobModel.jobStatus" class="form-select" asp-items="Html.GetEnumSelectList<Models.mainStatus>()"></select>
+                    <span asp-validation-for="jobModel.jobStatus" class="text-danger"></span>
+                </div>
+
+                <div class="d-flex justify-content-end">
+                    <button type="submit" class="btn btn-success px-4 me-2">
+                        <i class="bi bi-check-circle"></i> Save
+                    </button>
+                    <a asp-page="Index" class="btn btn-outline-secondary px-4">
+                        <i class="bi bi-x-circle"></i> Cancel
+                    </a>
+                </div>
+            </form>
+        </div>
     </div>
 </div>
 
-<div>
-    
-</div>
-
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }

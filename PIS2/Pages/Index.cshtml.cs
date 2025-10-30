@@ -18,7 +18,7 @@ namespace PIS2.Pages
         
     {
        
-        private readonly ILogger<IndexModel> _logger;
+        
         private readonly PISContext _context;
         private readonly Core _core;
         private readonly IWebHostEnvironment _environment;
@@ -51,7 +51,7 @@ namespace PIS2.Pages
         public bool IsLeaveAllow { get; set; } = true;
         public bool IsOvertimeAllow { get; set; } = true;
         public bool IsGuarantyAllow { get; set; } = true;
-
+        public List<NoticeModel> ActiveNoticesForCarousel { get; set; } = new List<NoticeModel>();
         public IndexModel(PISContext ctx, Core methods, IWebHostEnvironment environment)
         {
             _context = ctx;
@@ -65,7 +65,13 @@ namespace PIS2.Pages
             //Person = new personModel();
             People = await _context.Persons.OrderBy(p => p.personFirstName).ThenBy(p => p.personFatherName).ThenBy(p => p.personLastName).ToListAsync();
             Employments = await _context.Employments.ToListAsync();
-            
+
+            ActiveNoticesForCarousel = await _context.Notices
+                .Where(n => n.IsActive &&
+                            (!n.ExpiryDate.HasValue || n.ExpiryDate.Value.Date >= DateTime.Now.Date))
+                .OrderByDescending(n => n.noticePriority)
+                .ThenByDescending(n => n.DatePosted)
+                .ToListAsync();
 
             if (!searchID.IsNullOrEmpty() || !searchName.IsNullOrEmpty())
             {
@@ -123,7 +129,11 @@ namespace PIS2.Pages
                         
 
                     }
-                    PhotoExists = checkPic(Person.personID);
+                    else
+                    {
+                        PersonEmployments = new List<employmentModel>();
+                    }
+                        PhotoExists = checkPic(Person.personID);
 
                 }
             }
@@ -172,6 +182,12 @@ namespace PIS2.Pages
         public string Department { get; set; } = default!;
         public async Task<IActionResult> OnPostSearchID()
         {
+            ActiveNoticesForCarousel = await _context.Notices
+                .Where(n => n.IsActive &&
+                            (!n.ExpiryDate.HasValue || n.ExpiryDate.Value.Date >= DateTime.Now.Date))
+                .OrderByDescending(n => n.noticePriority)
+                .ThenByDescending(n => n.DatePosted)
+                .ToListAsync();
             Console.WriteLine($"Search ID: {searchID}");
             
 
@@ -188,6 +204,12 @@ namespace PIS2.Pages
                 }
                 else
                 {
+                    //Check if photo is available
+                    var imagesFolder = Path.Combine(_environment.WebRootPath, "images");
+                    var fileName = $"{Person.personID}.jpg";
+                    var filePath = Path.Combine(imagesFolder, fileName);
+
+                    PhotoExists = System.IO.File.Exists(filePath);
                     TempData["PersonID"] = Person.personID;
                     isSelf = _context.Users.FirstOrDefault(u => u.userName == User.Identity.Name)?.personID == Person.personID ? true : false;
                     PersonEmployments = await _context.Employments
@@ -227,7 +249,13 @@ namespace PIS2.Pages
         [BindProperty]
         public string searchName { get; set; } = default!;
         public async Task<IActionResult> OnPostSearchName()
-        {           
+        {
+            ActiveNoticesForCarousel = await _context.Notices
+                .Where(n => n.IsActive &&
+                            (!n.ExpiryDate.HasValue || n.ExpiryDate.Value.Date >= DateTime.Now.Date))
+                .OrderByDescending(n => n.noticePriority)
+                .ThenByDescending(n => n.DatePosted)
+                .ToListAsync();
 
             if (!searchName.IsNullOrEmpty())
             {

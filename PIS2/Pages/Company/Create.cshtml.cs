@@ -20,6 +20,11 @@ namespace PIS2.Pages.Company
 
         public IActionResult OnGet()
         {
+            if (!User.IsInRole("MIE\\PMS_HRMANAGER"))
+            {
+                return RedirectToPage("/Shared/AccessDenied");
+            }
+
             ViewData["employmentID"] = new SelectList(
                 _context.Employments.OrderBy(e => e.personModel.personFirstName).ThenBy(e => e.personModel.personFatherName).ThenBy(e => e.personModel.personLastName)
                 .Select(e => new { e.employmentID, FullName = e.personModel.personFullName }),
@@ -36,6 +41,11 @@ namespace PIS2.Pages.Company
         // For more information, see https://aka.ms/RazorPagesCRUD.
         public async Task<IActionResult> OnPostAsync()
         {
+            if (!User.IsInRole("MIE\\PMS_HRMANAGER"))
+            {
+                return RedirectToPage("/Shared/AccessDenied");
+            }
+
             ModelState.Remove("companyModel.modifiedBy");
             companyModel.modifiedBy = User.Identity.Name;
 

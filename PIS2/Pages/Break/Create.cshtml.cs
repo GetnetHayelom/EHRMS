@@ -20,7 +20,11 @@ namespace PIS2.Pages.Break
 
         public IActionResult OnGet()
         {
-        ViewData["shiftID"] = new SelectList(_context.Shifts, "shiftID", "shiftName");
+            if (!User.IsInRole("MIE\\PMS_HRMANAGER") || !User.IsInRole("MIE\\PMS_HRCLERK"))
+            {
+                return RedirectToPage("/Shared/AccessDenied");
+            }
+            ViewData["shiftID"] = new SelectList(_context.Shifts, "shiftID", "shiftName");
             return Page();
         }
 
@@ -30,6 +34,10 @@ namespace PIS2.Pages.Break
         // For more information, see https://aka.ms/RazorPagesCRUD.
         public async Task<IActionResult> OnPostAsync()
         {
+            if (!User.IsInRole("MIE\\PMS_HRMANAGER") || !User.IsInRole("MIE\\PMS_HRCLERK"))
+            {
+                return RedirectToPage("/Shared/AccessDenied");
+            }
             if (!ModelState.IsValid)
             {
                 return Page();

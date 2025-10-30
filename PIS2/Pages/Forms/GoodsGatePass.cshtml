@@ -1,0 +1,91 @@
+﻿@page
+@model PIS2.Pages.Forms.GoodsGatePassModel
+@{
+    ViewData["Title"] = "Goods Gate Pass Form";
+}
+@{
+    string formNo = "WF/SP/13";
+}
+<partial name="headerSimple" model="formNo" />
+<div class="container my-4">
+    <div class="card p-4 ">
+        <h3 class="fw-bold text-center text-dark mb-3">ኣቐሑ በሪ መውፅኢ ፎርም (Goods Gate Pass)</h3>
+        
+
+        <form id="gatePassForm">
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label class="form-label fw-bold">To:</label>
+                    <input asp-for="GatePass.To" class="form-control" placeholder="Enter recipient" />
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label fw-bold">From:</label>
+                    <input asp-for="GatePass.From" class="form-control" placeholder="Enter sender" />
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-4">
+                    <label class="form-label fw-bold">Date:</label>
+                    <input asp-for="GatePass.Date" type="date" class="form-control" value="@DateTime.Now.ToString("yyyy-MM-dd")" />
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label fw-bold">Requested By:</label>
+                    <input asp-for="GatePass.RequestedBy" class="form-control" />
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label fw-bold">Signature:</label>
+                    <input asp-for="GatePass.Signature" class="form-control" />
+                </div>
+            </div>
+
+            <hr />
+
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label class="form-label fw-bold">Item(s) / Product(s):</label>
+                    <textarea asp-for="GatePass.Items" class="form-control" rows="4" placeholder="List of items"></textarea>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label fw-bold">Purpose / Reason:</label>
+                    <textarea asp-for="GatePass.Reason" class="form-control" rows="4" placeholder="Reason for issuing"></textarea>
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label class="form-label fw-bold">Approved By:</label>
+                    <input asp-for="GatePass.ApprovedBy" class="form-control" />
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label fw-bold">Title:</label>
+                    <input asp-for="GatePass.Title" class="form-control" />
+                </div>
+            </div>
+
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <label class="form-label fw-bold">Vehicle Plate No:</label>
+                    <input asp-for="GatePass.VehicleNo" class="form-control" />
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label fw-bold">Destination:</label>
+                    <input asp-for="GatePass.Destination" class="form-control" />
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-center gap-3">
+                
+                    @await Html.PartialAsync("print")
+                    @await Html.PartialAsync("back")
+               
+                <div><button type="reset" class="btn btn-outline-secondary px-4 m-2 d-print-none">Reset</button></div>
+                
+            </div>
+        </form>
+    </div>
+</div>
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="~/js/employeeLookup.js"></script>
+

@@ -1,0 +1,93 @@
+﻿@model List<PIS2.Models.NoticeModel>
+
+@* This partial renders a compact, sliding view of notices using only Bootstrap utility classes. *@
+
+
+
+<div class="bg-white shadow-sm border border-secondary-subtle rounded position-relative m-2">
+    @if (Model == null || !Model.Any())
+    {
+
+        <div class="text-center p-2 d-flex flex-column justify-content-center">
+            <h6 class="text-muted">No Active Notices</h6>
+            <p class="small text-secondary mb-0">Check back later for important announcements.</p>
+        </div>
+    }
+    else
+    {
+        <div id="demoCarousel" class="carousel slide shadow-sm border rounded bg-white" data-bs-ride="carousel" data-bs-interval="6000">
+            <div class="carousel-inner">
+                @for (int i = 0; i < Model.Count; i++)
+                {
+                    var notice = Model[i];
+                    <!-- ✅ Slide 1 -->
+                    <div class="carousel-item @(i == 0 ? "active" : "") p-4" style="min-height: 180px;">
+                        <div>
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <h5 class="fw-bold mb-0 text-dark">@notice.noticeTitle</h5>
+                                @* Using standard badge classes for the indicator *@
+                                <span class="badge rounded-pill bg-@GetPriorityColor(notice.noticePriority)">
+                                    @notice.noticePriority
+                                </span>
+                            </div>
+                            @if (!string.IsNullOrWhiteSpace(notice.noticeSubTitle))
+                            {
+                                <p class="text-muted small mb-2">@notice.noticeSubTitle</p>
+                            }
+                            @* Line clamping is removed, content flow is controlled by parent height/overflow. *@
+                            <div class="text-secondary small">
+                                @notice.noticeContent
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-end pt-2 border-top mt-2">
+                            <small class="text-muted">
+                                Posted: @notice.DatePosted.ToString("dd MMM yyyy")
+                            </small>
+                            @* --- VIEW MORE OPTION --- *@
+                            <a asp-page="/Notice/Index" class="btn btn-sm btn-outline-primary">
+                                View More <i class="bi bi-arrow-right"></i>
+                            </a>
+                        </div>
+
+                    </div>
+                }
+
+
+
+            </div>
+
+            <!-- ✅ Controls -->
+            <button class="btn btn-outline-primary rounded-circle position-absolute top-50 start-0 translate-middle-y ms-3"
+                    type="button" data-bs-target="#demoCarousel" data-bs-slide="prev">
+                <i class="bi bi-arrow-left"></i>
+                <span class="visually-hidden">Previous</span>
+            </button>
+
+            <button class="btn btn-outline-primary rounded-circle position-absolute top-50 end-0 translate-middle-y me-3"
+                    type="button" data-bs-target="#demoCarousel" data-bs-slide="next">
+                <i class="bi bi-arrow-right"></i>
+                <span class="visually-hidden">Next</span>
+            </button>
+        </div>
+
+    }
+    
+</div>
+
+@functions {
+    // Helper function to map Priority enum to Bootstrap color class
+    string GetPriorityColor(PIS2.Models.Priority priority)
+    {
+        // Using the same switch logic as your original Razor View logic
+        return priority switch
+        {
+            PIS2.Models.Priority.Low => "success",
+            PIS2.Models.Priority.Medium => "warning",
+            PIS2.Models.Priority.High => "danger",
+            _ => "secondary"
+        };
+    }
+}
+
+
+

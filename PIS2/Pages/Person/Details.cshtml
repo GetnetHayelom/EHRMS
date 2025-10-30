@@ -8,260 +8,201 @@
 
 <h1 class="fw-bold d-print-none">Person View</h1>
 
-<div>
-    <div><h4 class="fw-bold">Person Details</h4></div>
-    
-    <hr />
-    <div class="d-flex flex-column mt-2 mb-1 p-2">
-        <div class="d-flex d-print-d-flex">
-            <div class="d-flex flex-column justify-content-center align-items-center col-4">
-                @{
-                    var imagePath = $"~/images/{Model.personModel.personID}.jpg";
-                    if (!Model.PhotoExists)
-                    {
-                        imagePath = Model.personModel.personGender == Models.Gender.Female ? "~/images/female-default.png" : "~/images/male-default.png";
-                    }
+<div class="mb-3">
+    <div class="d-flex flex-column flex-md-row mt-2 mb-1 p-2">
+        <!-- Photo -->
+        <div class="d-flex flex-column justify-content-center align-items-center col-md-4">
+            @{
+                var imagePath = $"~/images/{Model.personModel.personID}.jpg";
+                if (!Model.PhotoExists)
+                {
+                    imagePath = Model.personModel.personGender == Models.Gender.Female ? "~/images/female-default.png" : "~/images/male-default.png";
                 }
-                <img src="@Url.Content(imagePath)" class="rounded-circle mb-4 print-small-image normal-image" />
-                <h4 class="fw-bold"><u>@Model.personModel.personFullName</u></h4>
-                
-            </div>
-            <div class="d-flex d-print-block col-8">
-                <div class="col-6 print-full-width">
+            }
+            <img src="@Url.Content(imagePath)" class="rounded-circle mb-4 print-small-image normal-image" />
+            <h4 class="fw-bold"><u>@Model.personModel.personFullName</u></h4>
+        </div>
+
+        <!-- Personal & Contact Info -->
+        <div class="col-md-8">
+            <div class="row">
+                <div class="col-md-6">
                     <h4 class="fw-bold"><u>Personal Info</u></h4>
-                    <dl>                   
-                        <div class="d-flex me-2">
-                            <dt class=" me-2">
-                                Date of Birth:
-                            </dt>
-                            <dd class="">
-                                <u>@Model.personModel.personDoB.ToString("MMM dd, yyyy")</u>
-                            </dd>
-                        </div>
-                        <div class="d-flex me-2">
-                            <dt class=" me-2">
-                                Gender:
-                            </dt>
-                            <dd class="">
-                                <u>@Html.DisplayFor(model => model.personModel.personGender)</u>
-                            </dd>
-                        </div>
-                        <div class="d-flex me-2">
-                            <dt class=" me-2">
-                                Provided ID:
-                            </dt>
-                            <dd class="">
-                                <u>@Html.DisplayFor(model => model.personModel.personIDType)</u>
-                            </dd>
-                        </div>
-                        <div class="d-flex me-2">
-                            <dt class=" me-2">
-                                ID Number:
-                            </dt>
-                            <dd class="">
-                                <u>@Html.DisplayFor(model => model.personModel.personIDNumber)</u>
-                            </dd>
-                        </div>
-                        <div class="d-flex me-2">
-                            <dt class=" me-2">
-                                Record Number:
-                            </dt>
-                            <dd class="">
-                                <u>@Html.DisplayFor(model => model.personModel.personRecordNumber)</u>
-                            </dd>
-                        </div>
-                
+                    <dl>
+                        <dt>Date of Birth:</dt>
+                        <dd>@Model.personModel.personDoB.ToString("MMM dd, yyyy")</dd>
+
+                        <dt>Gender:</dt>
+                        <dd>@Html.DisplayFor(model => model.personModel.personGender)</dd>
+
+                        <dt>Provided ID:</dt>
+                        <dd>@Html.DisplayFor(model => model.personModel.personIDType)</dd>
+
+                        <dt>ID Number:</dt>
+                        <dd>@Html.DisplayFor(model => model.personModel.personIDNumber)</dd>
+
+                        <dt>Record Number:</dt>
+                        <dd>@Html.DisplayFor(model => model.personModel.personRecordNumber)</dd>
                     </dl>
                 </div>
-        
-                <div class="col-6 print-full-width">
+                <div class="col-md-6">
                     <h4 class="fw-bold"><u>Contact & Address Info</u></h4>
                     <dl>
-                        <div class="d-flex me-2">
-                            <dt class="">
-                                Phone Number:
-                            </dt>
-                            <dd class="">
-                                <u>@Html.DisplayFor(model => model.personModel.personPhoneNumber)</u>
-                            </dd>
-                        </div>
-                        <div class="d-flex me-2">
-                            <dt class=" me-2">
-                                Email:
-                            </dt>
-                            <dd class="">
-                                <u>@Html.DisplayFor(model => model.personModel.personEmailAddress)</u>
-                            </dd>
-                        </div>
-                        <div class="d-flex me-2">
-                            <dt class=" me-2">
-                                Address:
-                            </dt>
-                            <dd class="">
-                                <u>@Model.personModel.addressModel?.addressFormatted</u>
-                            </dd>
-                        </div>
-                
+                        <dt>Phone Number:</dt>
+                        <dd>@Html.DisplayFor(model => model.personModel.personPhoneNumber)</dd>
+
+                        <dt>Email:</dt>
+                        <dd>@Html.DisplayFor(model => model.personModel.personEmailAddress)</dd>
+
+                        <dt>Address:</dt>
+                        <dd>@Model.personModel.addressModel?.addressFormatted</dd>
                     </dl>
                 </div>
             </div>
         </div>
     </div>
-
 </div>
-    
-<div class="d-flex justify-content-end">
-    <a asp-page="./Edit" asp-route-id="@Model.personModel.personID" class="btn btn-success m-2 d-print-none">Edit</a>
-    <a asp-page="./Index" class="btn btn-secondary m-2 d-print-none">Back to List</a>
+
+<!-- Action Buttons -->
+<div class="d-flex justify-content-end d-print-none mb-3">
+    <a asp-page="./Edit" asp-route-id="@Model.personModel.personID" class="btn btn-success me-2">Edit</a>
+    <a asp-page="./Index" class="btn btn-secondary me-2">Back to List</a>
     @if (Model.isPersonActiveEmployee)
     {
-        <a asp-page="/Termination/Create" asp-route-id="@Model.personModel.Employments.FirstOrDefault(e => e.employmentStatus == Models.mainStatus.Active).employmentID" class="btn btn-danger m-2 d-print-none">Terminate Employment</a>
-        <a asp-page="/Employment/Details" asp-route-id="@Model.personModel.Employments.FirstOrDefault().employmentID" class="btn btn-info m-2 d-print-none">Employment Info</a>
+        <a asp-page="/Termination/Create" asp-route-id="@Model.personModel.Employments.FirstOrDefault(e => e.employmentStatus == Models.mainStatus.Active).employmentID" class="btn btn-danger me-2">Terminate Employment</a>
+        <a asp-page="/Employment/Details" asp-route-id="@Model.personModel.Employments.FirstOrDefault().employmentID" class="btn btn-info me-2">Employment Info</a>
     }
     else
     {
-        <a asp-page="/Employment/Create" asp-route-id="@Model.personModel.personID" class="btn btn-primary m-2 d-print-none">Add To employment</a>
+        <a asp-page="/Employment/Create" asp-route-id="@Model.personModel.personID" class="btn btn-primary me-2">Add To Employment</a>
     }
-    @await Html.PartialAsync("print")
+    <button class="btn btn-warning" onclick="printEmployeeID()">Print Employee ID</button>
 </div>
-<div class="accordion d-print-none" id="accordion">
-  <!--Person Certification -->  
+
+<!-- Accordion Sections -->
+<div class="accordion" id="accordion">
+    <!-- Person Certifications -->
     @if (Model.personCertifications != null && Model.personCertifications.Any())
     {
-        <div class="collapse-item">
-            <h4 class="collapse-header" id="header3">
-                <button class="accordion-button fw-bold text-dark" type="button" data-bs-toggle="collapse" data-bs-target="#collapse3" aria-expanded="false" aria-controls="collapse3">
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="certHeader">
+                <button class="accordion-button fw-bold text-dark" type="button" data-bs-toggle="collapse" data-bs-target="#collapseCert" aria-expanded="false" aria-controls="collapseCert">
                     Person Certifications
                 </button>
-            </h4>
-            <div id="collapse3" class="accordion-collapse collapse" aria-labelledby="header3" data-bs-parent="#collapse">
-                <div class="collapse-body">
+            </h2>
+            <div id="collapseCert" class="accordion-collapse collapse" aria-labelledby="certHeader" data-bs-parent="#accordion">
+                <div class="accordion-body">
                     <table class="table table-striped table-hover">
                         <thead class="bg-info text-white">
                             <tr>
-                                <td>Certification Type</td>
-                                <td>Date</td>
-                                <td>CGPA</td>
-                                <td>Title</td>
-                                <td>School</td>
-                                <td>Certificate Number</td>
-
+                                <th>Certification Type</th>
+                                <th>Date</th>
+                                <th>CGPA</th>
+                                <th>Title</th>
+                                <th>School</th>
+                                <th>Certificate Number</th>
                             </tr>
                         </thead>
                         <tbody>
                             @foreach (var item in Model.personCertifications)
                             {
-                                <tr onclick="location.href='@Url.Page("/PersonEducationLevel/Edit", new {id = item.personEducationLevelID})'" style="cursor:pointer">
+                                <tr onclick="location.href='@Url.Page("/PersonEducationLevel/Edit", new { id = item.personEducationLevelID })'" style="cursor:pointer">
                                     <td>@item.educationLevelModel?.educationLevelCategory</td>
                                     <td>@item.educationLevelDate.ToString("MMM dd, yyyy")</td>
                                     <td>@item.educationLevelMark</td>
                                     <td>@item.educationField</td>
                                     <td>@item.educationLevelInstitutionName</td>
                                     <td>@item.educationLevelNumber</td>
-
                                 </tr>
                             }
                         </tbody>
                     </table>
                     <div class="d-flex justify-content-end">
-                        <a asp-page="/PersonEducationLevel/Create"
-                           asp-route-id="@Model.personModel.personID"
-                           class="btn btn-primary m-2">
-                            Add New Certification
-                        </a>
+                        <a asp-page="/PersonEducationLevel/Create" asp-route-id="@Model.personModel.personID" class="btn btn-primary">Add New Certification</a>
                     </div>
-
                 </div>
             </div>
         </div>
-        
     }
 
-    <!--Person Experiences -->
+    <!-- Person Experiences -->
     @if (Model.personExperiences != null && Model.personExperiences.Any())
     {
-        <div class="collapse-item">
-            <h4 class="collapse-header" id="header4">
-                <button class="accordion-button fw-bold text-dark" type="button" data-bs-toggle="collapse" data-bs-target="#collapse4" aria-expanded="false" aria-controls="collapse4">
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="expHeader">
+                <button class="accordion-button fw-bold text-dark" type="button" data-bs-toggle="collapse" data-bs-target="#collapseExp" aria-expanded="false" aria-controls="collapseExp">
                     Person Experience
                 </button>
-            </h4>
-            <div id="collapse4" class="accordion-collapse collapse" aria-labelledby="header4" data-bs-parent="#collapse">
-                <div class="collapse-body">
+            </h2>
+            <div id="collapseExp" class="accordion-collapse collapse" aria-labelledby="expHeader" data-bs-parent="#accordion">
+                <div class="accordion-body">
                     <table class="table table-striped table-hover">
                         <thead class="bg-info text-white">
                             <tr>
-                                <td>From-To</td>
-                                <td>Job Title</td>
-                                <td>Salary</td>
-
-                                <td>Type</td>
-                                <td>Company</td>
-                                <td>Duration</td>
-
+                                <th>From-To</th>
+                                <th>Job Title</th>
+                                <th>Salary</th>
+                                <th>Type</th>
+                                <th>Company</th>
+                                <th>Duration (Years)</th>
                             </tr>
                         </thead>
                         <tbody>
                             @foreach (var item in Model.personExperiences)
                             {
-                                <tr onclick="location.href='@Url.Page("/Experience/Edit", new {id = item.experienceID})'" style="cursor:pointer">
+                                <tr onclick="location.href='@Url.Page("/Experience/Edit", new { id = item.experienceID })'" style="cursor:pointer">
                                     <td>@item.experienceStartDate.ToString("MM/dd/yyyy") - @item.experienceEndDate.ToString("MM/dd/yyyy")</td>
                                     <td>@item.jobTitle</td>
                                     <td>@item.jobSalary</td>
-
                                     <td>@item.experienceType</td>
                                     <td>@item.jobDepartment</td>
                                     <td>@(item.experienceEndDate.Year - item.experienceStartDate.Year)</td>
-
                                 </tr>
                             }
                         </tbody>
                     </table>
                     <div class="d-flex justify-content-end">
-                        <button class="btn btn-primary m-2">Add New Experiences</button>
+                        <button class="btn btn-primary">Add New Experience</button>
                     </div>
                 </div>
             </div>
         </div>
-
     }
 
-    <!--Person Employments -->
+    <!-- Person Employments -->
     @if (Model.personEmployments != null && Model.personEmployments.Any())
     {
-        <div class="accordio-item">
-            <h4 class="accordion-header" id="header2">
-                <button class="accordion-button fw-bold text-dark" type="button" data-bs-toggle="collapse" data-bs-target="#collapse2" aria-expanded="false" aria-controls="collapse2">Person Employment History History</button>
-            </h4>
-            <div id="collapse2" class="accordion-collapse collapse" aria-labelledby="header2" data-bs-parent="#collapse">
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="empHeader">
+                <button class="accordion-button fw-bold text-dark" type="button" data-bs-toggle="collapse" data-bs-target="#collapseEmp" aria-expanded="false" aria-controls="collapseEmp">
+                    Person Employment History
+                </button>
+            </h2>
+            <div id="collapseEmp" class="accordion-collapse collapse" aria-labelledby="empHeader" data-bs-parent="#accordion">
                 <div class="accordion-body">
                     <table class="table table-striped table-hover">
                         <thead class="bg-info text-white">
                             <tr>
-                                <td>Given ID</td>
-                                <td>Employment Type</td>
-                                <td>Hire Date</td>
-                                <td>Termination Date</td>
-                                <td>Termination Reason</td>
-                                <td>Employment Status</td>
-                
+                                <th>Given ID</th>
+                                <th>Employment Type</th>
+                                <th>Hire Date</th>
+                                <th>Termination Date</th>
+                                <th>Termination Reason</th>
+                                <th>Status</th>
                             </tr>
                         </thead>
                         <tbody>
-
                             @foreach (var item in Model.personEmployments)
                             {
-                                <tr onclick="location.href='@Url.Page("/Employment/Details", new {id = item.employmentID})'" style="cursor:pointer;">
+                                <tr onclick="location.href='@Url.Page("/Employment/Details", new { id = item.employmentID })'" style="cursor:pointer;">
                                     <td>@item.givenID</td>
                                     <td>@item.employmentTypeModel?.employmentTypeName</td>
                                     <td>@item.employmentDate.ToString("yyyy-MM-dd")</td>
                                     <td>@item.employmentTerminationDate</td>
                                     <td>@item.TerminationModel?.terminationReason</td>
                                     <td>@item.employmentStatus</td>
-                    
                                 </tr>
                             }
-            
                         </tbody>
                     </table>
                 </div>
@@ -269,34 +210,35 @@
         </div>
     }
 
-    <!--Person Record History -->
+    <!-- Person Record History -->
     @if (Model.personModel.PersonHistories != null && Model.personModel.PersonHistories.Any())
     {
         <div class="accordion-item">
-            <h4 class="accordion-header" id="header1">
-                <button class="accordion-button fw-bold text-dark" type="button" data-bs-toggle="collapse" data-bs-target="#collapse1" aria-expanded="false" aria-controls="collapse1">Person Record History</button>
-            </h4>
-            <div id="collapse1" class="accordion-collapse collapse" aria-labelledby="header1" data-bs-parent="#collapse">
+            <h2 class="accordion-header" id="historyHeader">
+                <button class="accordion-button fw-bold text-dark" type="button" data-bs-toggle="collapse" data-bs-target="#collapseHistory" aria-expanded="false" aria-controls="collapseHistory">
+                    Person Record History
+                </button>
+            </h2>
+            <div id="collapseHistory" class="accordion-collapse collapse" aria-labelledby="historyHeader" data-bs-parent="#accordion">
                 <div class="accordion-body">
-                    <table class="table table-striped table-hover historyTable">
+                    <table class="table table-striped table-hover">
                         <thead class="bg-info text-white">
                             <tr>
-                                <td>Record ID</td>
-                                <td>First Name</td>
-                                <td>Fathers Name</td>
-                                <td>Last Name</td>
-                                <td>Date of Birth</td>
-                                <td>ID Type</td>
-                                <td>ID Number</td>
-                                <td>Phone Number</td>
-                                <td>Email</td>
-                                <td>Address</td>
-                                <td>Modified By</td>
-                                <td>Modified Date</td>
+                                <th>Record ID</th>
+                                <th>First Name</th>
+                                <th>Father's Name</th>
+                                <th>Last Name</th>
+                                <th>DOB</th>
+                                <th>ID Type</th>
+                                <th>ID Number</th>
+                                <th>Phone</th>
+                                <th>Email</th>
+                                <th>Address</th>
+                                <th>Modified By</th>
+                                <th>Modified Date</th>
                             </tr>
                         </thead>
                         <tbody>
-
                             @foreach (var item in Model.personModel.PersonHistories)
                             {
                                 <tr>
@@ -314,7 +256,6 @@
                                     <td>@item.modifiedDate</td>
                                 </tr>
                             }
-
                         </tbody>
                     </table>
                 </div>
@@ -322,6 +263,47 @@
         </div>
     }
 </div>
-<script src="~/js/highlightChange.js"></script>
 
+<!-- Employee ID Card Print Section -->
+<div id="printID" class="d-none">
+    <div class="card p-3 shadow" style="width: 400px; border:2px solid #333; margin:auto; page-break-inside: avoid; font-family: Arial, sans-serif;">
+        <!-- Company Header -->
+        <div class="text-center mb-3">
+            <img src="~/assets/MesfinIDHeader.png" alt="Company Logo" style="height:50px; object-fit:contain;" />
+            
+            <p class="mb-0"><small>Employee ID Card</small></p>
+        </div>
 
+        <!-- Employee Info -->
+        <div class="d-flex align-items-center mb-3">
+            <img src="@Url.Content(imagePath)" class="me-3" style="width:80px; height:80px; object-fit:cover;" />
+            <div class="text-start">
+                <p class="mb-1"><strong>Name:</strong> @Model.personModel.personFullName</p>
+                <p class="mb-1"><strong>ID:</strong> @Model.personModel.personID</p>
+                @if (Model.isPersonActiveEmployee)
+                {
+                    <p class="mb-1"><strong>Position:</strong> @Model.personModel.Employments.FirstOrDefault()?.employmentTypeModel?.employmentTypeName</p>
+                    
+                    <p class="mb-1"><strong>Hire Date:</strong> @Model.personModel.Employments.FirstOrDefault()?.employmentDate.ToString("MMM dd, yyyy")</p>
+                }
+            </div>
+        </div>
+
+        <div class="text-center mt-2">
+            <p class="mb-0"><small>Authorized Signature: _______________</small></p>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function printEmployeeID() {
+            var originalContent = document.body.innerHTML;
+            var printContent = document.getElementById('printID').innerHTML;
+            document.body.innerHTML = printContent;
+            window.print();
+            document.body.innerHTML = originalContent;
+            location.reload(); // restore page functionality
+        }
+    </script>
+}

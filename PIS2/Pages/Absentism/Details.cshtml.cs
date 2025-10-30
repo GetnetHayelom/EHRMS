@@ -23,6 +23,7 @@ namespace PIS2.Pages.Absentism
 
         public async Task<IActionResult> OnGetAsync(int? id)
         {
+           
             if (id == null)
             {
                 return NotFound();
@@ -54,6 +55,10 @@ namespace PIS2.Pages.Absentism
         [HttpPost]
         public async Task<IActionResult> OnPost(int leaveId)
         {
+            if (!User.IsInRole("MIE\\PMS_HRMANAGER"))
+            {
+                return RedirectToPage("/Shared/AccessDenied");
+            }
             Console.WriteLine($"Received ID: {leaveId}");
             var leave = await _context.Leaves.FindAsync(leaveId);
             if (leave == null)

@@ -22,6 +22,10 @@ namespace PIS2.Pages.Break
 
         public async Task<IActionResult> OnGetAsync(int? id)
         {
+            if (!User.IsInRole("MIE\\PMS_HRMANAGER") || !User.IsInRole("MIE\\PMS_HRCLERK"))
+            {
+                return RedirectToPage("/Shared/AccessDenied");
+            }
             if (id == null)
             {
                 return NotFound();

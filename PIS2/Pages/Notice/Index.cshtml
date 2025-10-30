@@ -1,0 +1,106 @@
+﻿@page
+@model PIS2.Pages.Notices.IndexModel
+@{
+    ViewData["Title"] = "Notice Board";
+}
+<script src="~/lib/tinymce/tinymce.min.js"></script>
+<script src="~/js/tinymce-initializer.js"></script>
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 class="fw-bold text-dark">
+            <i class="bi bi-megaphone-fill me-2"></i> Notice Board
+        </h2>
+        <a asp-page="/Notice/Create" class="btn btn-sm btn-primary">
+            <i class="bi bi-file-plus-fill me-2"></i>New Notice
+        </a>
+    </div>
+
+    @if (Model.Notices == null || !Model.Notices.Any())
+    {
+        <div class="alert alert-info text-center shadow-sm">
+            No active notices at the moment.
+        </div>
+    }
+    else
+    {
+        <div class="row row-cols-1 row-cols-md-2 g-4">
+            @foreach (var notice in Model.Notices)
+            {
+                <div class="col">
+                    <div class="card shadow-sm border-0 h-100 notice-card">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <h4 class="card-title text-dark fw-bold mb-0">@notice.noticeTitle</h4>
+                                <span class="badge bg-@GetPriorityColor(notice.noticePriority)">
+                                    @notice.noticePriority
+                                </span>
+                            </div>
+                            @if (!string.IsNullOrWhiteSpace(notice.noticeSubTitle))
+                            {
+                                <h5 class="text-muted small mb-2 fw-bold">@notice.noticeSubTitle</h5>
+                            }
+                            <p class="card-text">@notice.noticeContent</p>
+
+                            <div class="mt-3">
+                                <small class="text-secondary">
+                                    <strong>From:</strong> @notice.noticeFrom
+                                    <br />
+                                    <strong>Posted by:</strong> @notice.noticePostedBy
+                                    <br />
+                                    <strong>Approved by:</strong> @notice.noticeApprovedBy
+                                </small>
+                            </div>
+                        </div>
+
+                        <div class="card-footer bg-light border-0 d-flex justify-content-between align-items-center">
+                            <small class="text-muted">
+                                Posted: @notice.DatePosted.ToString("dd MMM yyyy")
+                                @if (notice.ExpiryDate.HasValue)
+                                {
+                                <br />
+                                Expires: @notice.ExpiryDate?.ToString("dd MMM yyyy");
+                                }
+                            </small>
+
+                            @if (!string.IsNullOrWhiteSpace(notice.AttachmentPath))
+                            {
+                                <a href="@notice.AttachmentPath" class="btn btn-sm btn-outline-primary" target="_blank">
+                                    <i class="bi bi-paperclip"></i> View Attachment
+                                </a>
+                            }
+                            <a href="/Notice/Details/@notice.noticeID" class="btn btn-sm btn-primary">Open</a>
+
+                            @if (User.IsInRole("MIE\\PMS_HRCLERK"))
+                            {
+                                <a href="/Notice/Edit?id=@notice.noticeID" class="btn btn-sm btn-primary">
+                                    <i class="bi bi-pencil-fill me-2"></i>Edit</a>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+
+
+
+@functions {
+    string GetPriorityColor(PIS2.Models.Priority priority)
+    {
+        return priority switch
+        {
+            PIS2.Models.Priority.Low => "success",
+            PIS2.Models.Priority.Medium => "warning",
+            PIS2.Models.Priority.High => "danger",
+            _ => "secondary"
+        };
+    }
+}
+
+<script>
+
+    initializeTinyMCE('#textArea', 400);
+</script>

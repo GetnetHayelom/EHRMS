@@ -15,6 +15,7 @@ namespace PIS2.Pages.Allowance
 
         public DeleteModel(PIS2.Models.PISContext context)
         {
+
             _context = context;
         }
 
@@ -23,6 +24,10 @@ namespace PIS2.Pages.Allowance
 
         public async Task<IActionResult> OnGetAsync(int? id)
         {
+            if (!User.IsInRole("MIE\\PMS_HRMANAGER"))
+            {
+                return RedirectToPage("/Shared/AccessDenied");
+            }
             if (id == null)
             {
                 return NotFound();
@@ -43,6 +48,10 @@ namespace PIS2.Pages.Allowance
 
         public async Task<IActionResult> OnPostAsync(int? id)
         {
+            if (!User.IsInRole("MIE\\PMS_HRMANAGER"))
+            {
+                return RedirectToPage("/Shared/AccessDenied");
+            }
             if (id == null)
             {
                 return NotFound();

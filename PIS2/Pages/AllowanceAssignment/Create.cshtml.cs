@@ -29,6 +29,11 @@ namespace PIS2.Pages.AllowanceAssignment
         
         public IActionResult OnGet(int? id)
         {
+
+            if (!User.IsInRole("MIE\\PMS_HRCLERK"))
+            {
+                return RedirectToPage("/Shared/AccessDenied");
+            }
             Employment = new employmentModel();
             
             
@@ -74,6 +79,10 @@ namespace PIS2.Pages.AllowanceAssignment
         // For more information, see https://aka.ms/RazorPagesCRUD.
         public async Task<IActionResult> OnPostAsync()
         {
+            if (!User.IsInRole("MIE\\PMS_HRCLERK"))
+            {
+                return RedirectToPage("/Shared/AccessDenied");
+            }
             ModelState.Remove("allowanceAssignmentModel.modifiedBy");
             
             allowanceAssignmentModel.modifiedBy = User.Identity.Name;

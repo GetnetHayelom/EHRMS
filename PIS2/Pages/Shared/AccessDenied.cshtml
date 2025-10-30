@@ -1,0 +1,18 @@
+﻿@page
+@model PIS2.Pages.Shared.AccessDeniedModel
+
+@{
+    Layout = "_Layout";
+    ViewData["Title"] = "Access Denied";
+}
+
+<div class="text-center mt-5">
+    <h1 class="display-4 text-danger">🚫 Access Denied</h1>
+    <p class="lead">You do not have permission to view this page.</p>
+    <div class="d-flex justify-content-center">
+        <a asp-page="/Index" class="btn btn-primary m-2">Return to Home</a>
+        @await Html.PartialAsync("back")
+    </div>
+    
+</div>
+

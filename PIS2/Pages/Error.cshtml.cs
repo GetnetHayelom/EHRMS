@@ -22,6 +22,7 @@ namespace PIS2.Pages
         public void OnGet()
         {
             RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier;
+            _logger.LogError("An unhandled error occurred. Request ID: {RequestId}", RequestId);
         }
     }
 }

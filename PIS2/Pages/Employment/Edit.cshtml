@@ -5,241 +5,234 @@
     ViewData["Title"] = "Edit Employment";
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
+
 <h1 class="fw-bold">Employments</h1>
-<h3 class="fw-bold">Employment Master Data </h3>
+<h3 class="fw-bold">Employment Master Data</h3>
 <hr />
-<div class="">
-    <form method="get" class="d-print-none">
-        <div class="d-flex justify-content-between">
-            @if(Model.EmpSelected){
-                <h4 class="fw-bold" onclick="location.href='@Url.Page("/Person/Details", new { id = Model.personModel.personID })'" style="cursor:pointer;"><u>@Model.personModel.personFullName</u></h4>
-            }
-            <div class="d-flex m-2">
-                <input asp-for="employmentModel.givenID" id="givenID" class="form-control me-2" placeholder="Enter Given ID" name="givenID" />
-                <button type="submit" class="btn btn-primary" id="goButton">Go</button>
-            </div>
+
+<div class="mb-3">
+    <form method="get" class="d-flex justify-content-between align-items-center mb-3">
+        @if (Model.EmpSelected)
+        {
+            <h4 class="fw-bold text-primary" style="cursor:pointer;" onclick="location.href='@Url.Page("/Person/Details", new { id = Model.personModel.personID })'">
+                <u>@Model.personModel.personFullName</u>
+            </h4>
+        }
+        <div class="d-flex">
+            <input asp-for="employmentModel.givenID" id="givenID" class="form-control me-2" placeholder="Enter Given ID" name="givenID" />
+            <button type="submit" class="btn btn-primary">Go</button>
         </div>
     </form>
 </div>
 
-@if(Model.EmpSelected){
-<div class="container">
+@if (Model.EmpSelected)
+{
+    <div class="container">
 
-    <!--personal info-->
-    <div class="row">
-        <h4 class="bg-dark text-white fw-bold p-2">Person Information / @Model.personModel.personID</h4>
-        <form method="post" asp-page-handler="UpdatePerson">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="personModel.personID" />
-           
-            <div class="d-flex flex-wrap">
-                <div class="form-group pe-4 pt-2">
-                    <label asp-for="personModel.personFirstName" class="control-label">First Name</label>
-                    <input asp-for="personModel.personFirstName" class="form-control" />
-                    <span asp-validation-for="personModel.personFirstName" class="text-danger"></span>
-                </div>
-                <div class="form-group pe-4 pt-2">
-                    <label asp-for="personModel.personFatherName" class="control-label">Fathers Name</label>
-                    <input asp-for="personModel.personFatherName" class="form-control" />
-                    <span asp-validation-for="personModel.personFatherName" class="text-danger"></span>
-                </div>
-                <div class="form-group pe-4 pt-2">
-                    <label asp-for="personModel.personLastName" class="control-label">Last Name</label>
-                    <input asp-for="personModel.personLastName" class="form-control" />
-                    <span asp-validation-for="personModel.personLastName" class="text-danger"></span>
-                </div>
-                <div class="form-group pe-4 pt-2">
-                    <label asp-for="personModel.personDoB" class="control-label">Date of Birth</label>
-                    <input asp-for="personModel.personDoB" class="form-control" type="date" />
-                    <span asp-validation-for="personModel.personDoB" class="text-danger"></span>
-                </div>
-                <div class="form-group pe-4 pt-2">
-                    <label asp-for="personModel.personGender" class="control-label">Gender</label>
-                    <select asp-for="personModel.personGender" class="form-control" asp-items="Html.GetEnumSelectList<Models.Gender>()"></select>
-                    <span asp-validation-for="personModel.personGender" class="text-danger"></span>
-                </div>
-                <div class="form-group pe-4 pt-2">
-                    <label asp-for="personModel.personIDType" class="control-label">ID Type</label>
-                    <input asp-for="personModel.personIDType" class="form-control" />
-                    <span asp-validation-for="personModel.personIDType" class="text-danger"></span>
-                </div>
-                <div class="form-group pe-4 pt-2">
-                    <label asp-for="personModel.personIDNumber" class="control-label">ID Number</label>
-                    <input asp-for="personModel.personIDNumber" class="form-control" />
-                    <span asp-validation-for="personModel.personIDNumber" class="text-danger"></span>
-                </div>
-                <div class="form-group pe-4 pt-2">
-                    <label asp-for="personModel.personPhoneNumber" class="control-label">Phone</label>
-                    <input asp-for="personModel.personPhoneNumber" class="form-control" />
-                    <span asp-validation-for="personModel.personPhoneNumber" class="text-danger"></span>
-                </div>
-                <div class="form-group pe-4 pt-2">
-                    <label asp-for="personModel.personRecordNumber" class="control-label">Record Number</label>
-                    <input asp-for="personModel.personRecordNumber" class="form-control" />
-                    <span asp-validation-for="personModel.personRecordNumber" class="text-danger"></span>
-                </div>
-                <div class="form-group pe-4 pt-2">
-                    <label asp-for="personModel.addressID" class="control-label">Address</label>
-                    <select asp-for="personModel.addressID" class="form-control" asp-items="ViewBag.addressID"></select>
-                    <span asp-validation-for="personModel.addressID" class="text-danger"></span>
-                </div>
-                <div class="form-group pe-4 pt-2">
-                    <label asp-for="personModel.personEmailAddress" class="control-label">Email</label>
-                    <input asp-for="personModel.personEmailAddress" class="form-control" />
-                    <span asp-validation-for="personModel.personEmailAddress" class="text-danger"></span>
-                </div>
+        <!-- Personal Info -->
+        <div class="card mb-4 shadow-sm">
+            <div class="card-header bg-dark text-white fw-bold">Person Information / @Model.personModel.personID</div>
+            <div class="card-body">
+                <form method="post" asp-page-handler="UpdatePerson">
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-2"></div>
+                    <input type="hidden" asp-for="personModel.personID" />
+
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <label asp-for="personModel.personFirstName" class="form-label">First Name</label>
+                            <input asp-for="personModel.personFirstName" class="form-control" />
+                            <span asp-validation-for="personModel.personFirstName" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-4">
+                            <label asp-for="personModel.personFatherName" class="form-label">Father's Name</label>
+                            <input asp-for="personModel.personFatherName" class="form-control" />
+                            <span asp-validation-for="personModel.personFatherName" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-4">
+                            <label asp-for="personModel.personLastName" class="form-label">Last Name</label>
+                            <input asp-for="personModel.personLastName" class="form-control" />
+                            <span asp-validation-for="personModel.personLastName" class="text-danger"></span>
+                        </div>
+
+                        <div class="col-md-3">
+                            <label asp-for="personModel.personDoB" class="form-label">Date of Birth</label>
+                            <input asp-for="personModel.personDoB" class="form-control" type="date" />
+                            <span asp-validation-for="personModel.personDoB" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-3">
+                            <label asp-for="personModel.personGender" class="form-label">Gender</label>
+                            <select asp-for="personModel.personGender" class="form-select" asp-items="Html.GetEnumSelectList<Models.Gender>()"></select>
+                            <span asp-validation-for="personModel.personGender" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-3">
+                            <label asp-for="personModel.personIDType" class="form-label">ID Type</label>
+                            <input asp-for="personModel.personIDType" class="form-control" />
+                            <span asp-validation-for="personModel.personIDType" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-3">
+                            <label asp-for="personModel.personIDNumber" class="form-label">ID Number</label>
+                            <input asp-for="personModel.personIDNumber" class="form-control" />
+                            <span asp-validation-for="personModel.personIDNumber" class="text-danger"></span>
+                        </div>
+
+                        <div class="col-md-3">
+                            <label asp-for="personModel.personPhoneNumber" class="form-label">Phone</label>
+                            <input asp-for="personModel.personPhoneNumber" class="form-control" />
+                            <span asp-validation-for="personModel.personPhoneNumber" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-3">
+                            <label asp-for="personModel.personRecordNumber" class="form-label">Record Number</label>
+                            <input asp-for="personModel.personRecordNumber" class="form-control" />
+                            <span asp-validation-for="personModel.personRecordNumber" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-3">
+                            <label asp-for="personModel.addressID" class="form-label">Address</label>
+                            <select asp-for="personModel.addressID" class="form-select" asp-items="ViewBag.addressID"></select>
+                            <span asp-validation-for="personModel.addressID" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-3">
+                            <label asp-for="personModel.personEmailAddress" class="form-label">Email</label>
+                            <input asp-for="personModel.personEmailAddress" class="form-control" />
+                            <span asp-validation-for="personModel.personEmailAddress" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="mt-3 text-end">
+                        <input type="submit" value="Save" class="btn btn-success me-2" />
+                        <a asp-page="/Person/Details" asp-route-id="@Model.personModel.personID" class="btn btn-info">More...</a>
+                    </div>
+                </form>
             </div>
-            <div class="form-group d-flex justify-content-end">
-                <input type="submit" value="Save" class="btn btn-success m-2" />
-                <a asp-page="/Person/Details" asp-route-id="@Model.personModel.personID" class="btn btn-Info m-2">More...</a>
-            </div>
-        </form>
-    </div>
-    
-    <!--job info-->
-    <div class="row">
-        <div class="col-md-6">
-            <!--employment info-->
-            <div class="row">
-                <h4 class="bg-dark text-white fw-bold p-2">Employment Information/@Model.employmentModel.employmentID</h4>
+        </div>
+
+        <!-- Employment Info -->
+        <div class="card mb-4 shadow-sm">
+            <div class="card-header bg-dark text-white fw-bold">Employment Information / @Model.employmentModel.employmentID</div>
+            <div class="card-body">
                 <form method="post" asp-page-handler="UpdateEmployment">
-                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-2"></div>
                     <input type="hidden" asp-for="employmentModel.employmentID" />
                     <input type="hidden" asp-for="employmentModel.personID" value="@Model.personModel.personID" />
-                    <div class="d-flex flex-wrap">
-                        <div class="form-group pe-4 pt-2">
-                            <span class="text-danger">*</span>
-                            <label asp-for="employmentModel.givenID" class="control-label">Employee ID</label>
+
+                    <div class="row g-3">
+                        <div class="col-md-3">
+                            <label asp-for="employmentModel.givenID" class="form-label">Employee ID</label>
                             <input asp-for="employmentModel.givenID" class="form-control" readonly />
                             <span asp-validation-for="employmentModel.givenID" class="text-danger"></span>
                         </div>
-
-                        <div class="form-group pe-4 pt-2">
-                            <label asp-for="employmentModel.employmentTypeID" class="control-label">Employment Type</label>
-                            <select asp-for="employmentModel.employmentTypeID" class="form-control" asp-items="ViewBag.employmentTypeID"></select>
+                        <div class="col-md-3">
+                            <label asp-for="employmentModel.employmentTypeID" class="form-label">Employment Type</label>
+                            <select asp-for="employmentModel.employmentTypeID" class="form-select" asp-items="ViewBag.employmentTypeID"></select>
                         </div>
-                        <div class="form-group pe-4 pt-2">
-                            <span class="text-danger">*</span>
-                            <label asp-for="employmentModel.employmentDate" class="control-label"> Hire Date</label>
+                        <div class="col-md-3">
+                            <label asp-for="employmentModel.employmentDate" class="form-label">Hire Date</label>
                             <input asp-for="employmentModel.employmentDate" class="form-control" type="date" />
                             <span asp-validation-for="employmentModel.employmentDate" class="text-danger"></span>
                         </div>
-                        <div class="form-group pe-4 pt-2">
-                            <label asp-for="employmentModel.employmentStatus" class="control-label">Employment Status</label>
-                            <input asp-for="employmentModel.employmentStatus" class="form-control"  readonly />
+                        <div class="col-md-3">
+                            <label asp-for="employmentModel.employmentStatus" class="form-label">Status</label>
+                            <input asp-for="employmentModel.employmentStatus" class="form-control" readonly />
                             <span asp-validation-for="employmentModel.employmentStatus" class="text-danger"></span>
                         </div>
-                        <div class="form-group pe-4 pt-2">
-                            <label asp-for="employmentModel.employmentPosition" class="control-label">Employment Position</label>
-                            <select asp-for="employmentModel.employmentPosition" class="form-control" asp-items="Html.GetEnumSelectList<Models.EmploymentPositions>()"></select>
-                            <span asp-validation-for="employmentModel.employmentPosition" class="text-danger"></span>
+                        <div class="col-md-3">
+                            <label asp-for="employmentModel.employmentPosition" class="form-label">Position</label>
+                            <select asp-for="employmentModel.employmentPosition" class="form-select" asp-items="Html.GetEnumSelectList<Models.EmploymentPositions>()"></select>
                         </div>
-                        <div class="form-group pe-4 pt-2">
-                            <label asp-for="employmentModel.employmentReference" class="control-label">Reference No</label>
+                        <div class="col-md-3">
+                            <label asp-for="employmentModel.employmentReference" class="form-label">Reference No</label>
                             <input asp-for="employmentModel.employmentReference" class="form-control" />
-                            <span asp-validation-for="employmentModel.employmentReference" class="text-danger"></span>
                         </div>
-                        
-                    </div>
-                    <div class="form-group pe-4 m-2 d-flex justify-content-end">
-                        <input type="submit" value="Save" class="btn btn-success m-2" />
-                        @if(Model.employmentModel.employmentStatus != Models.mainStatus.Inactive)
-                        {
-                            <a asp-page="/Termination/Create" asp-route-id="@Model.employmentModel.employmentID" class="btn btn-danger m-2">Terminate Employment</a>
-                        }
-                            <a asp-page="/Employment/Details" asp-route-id="@Model.employmentModel.employmentID" class="btn btn-Info m-2">More...</a>
                     </div>
 
+                    <div class="mt-3 text-end">
+                        <input type="submit" value="Save" class="btn btn-success me-2" />
+                        @if (Model.employmentModel.employmentStatus != Models.mainStatus.Inactive)
+                        {
+                            <a asp-page="/Termination/Create" asp-route-id="@Model.employmentModel.employmentID" class="btn btn-danger me-2">Terminate Employment</a>
+                        }
+                        <a asp-page="/Employment/Details" asp-route-id="@Model.employmentModel.employmentID" class="btn btn-info">More...</a>
+                    </div>
                 </form>
             </div>
-            <!--Job Placement-->
-            @if (Model.employmentModel.employmentStatus != Models.mainStatus.Inactive)
-            {
-                            
-                <h4 class="bg-dark text-white fw-bold p-2">Job Information</h4>
-                @if(Model.jobPlacementModel.jobPlacementID != 0)
-                {
-               
-                    <form method="post" asp-page-handler="SaveJobPlacement">
-                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                        <input type="hidden" asp-for="jobPlacementModel.jobPlacementID"/>
-                        <input type="hidden" asp-for="jobPlacementModel.employmentID" value="@Model.employmentModel.employmentID" />
-                        <div class="d-flex flex-wrap">
-                            <div class="form-group pe-4 pt-2">
-                                <label asp-for="jobPlacementModel.departmentID" class="control-label">Department</label>
-                                <select asp-for="jobPlacementModel.departmentID" class="form-control" asp-items="ViewBag.departmentID"></select>
-                                <span asp-validation-for="jobPlacementModel.departmentID" class="text-danger"></span>
-                            </div>
-                            <div class="form-group pe-4 pt-2">
-                                <label asp-for="jobPlacementModel.jobID" class="control-label">Job Title</label>
-                                <select asp-for="jobPlacementModel.jobID" class="form-control" asp-items="ViewBag.jobID"></select>
-                                <span asp-validation-for="jobPlacementModel.jobID" class="text-danger"></span>
-                            </div>
-                            <div class="form-group pe-4 pt-2">
-                                <label asp-for="jobPlacementModel.jobStepID" class="control-label">Job Grade And Step</label>
-                                <select asp-for="jobPlacementModel.jobStepID" class="form-control" asp-items="ViewBag.jobStepID"></select>
-                                <span asp-validation-for="jobPlacementModel.jobStepID" class="text-danger"></span>
-                            </div>
-                            
-                            <div class="form-group pe-4 pt-2">
-                                <span class="text-danger">*</span>
-                                <label asp-for="jobPlacementModel.jobPlacementSalary" class="control-label">Basic Salary</label>
-                                <input asp-for="jobPlacementModel.jobPlacementSalary" class="form-control" type="number"/>
-                                <span asp-validation-for="jobPlacementModel.jobPlacementSalary" class="text-danger"></span>
-                            </div>
-                            <div class="form-group pe-4 pt-2">
-                                <label asp-for="jobPlacementModel.jobPlacementDate" class="control-label">Date</label>
-                                <input asp-for="jobPlacementModel.jobPlacementDate" class="form-control" type="date"/>
-                                <span asp-validation-for="jobPlacementModel.jobPlacementDate" class="text-danger"></span>
-                            </div>
-                            <div class="form-group pe-4 pt-2">
-                                <span class="text-danger">*</span>
-                                <label asp-for="jobPlacementModel.jobPlacementReference" class="control-label">Reference Number</label>
-                                <input asp-for="jobPlacementModel.jobPlacementReference" class="form-control" />
-                                <span asp-validation-for="jobPlacementModel.jobPlacementReference" class="text-danger"></span>
-                            </div>
-                            <div class="form-group pe-4 pt-2">
-                                <label asp-for="jobPlacementModel.jobPlacementStatus" class="control-label">Status</label>
-                                <select asp-for="jobPlacementModel.jobPlacementStatus" class="form-control" asp-items="Html.GetEnumSelectList<Models.mainStatus>()"></select>
-                                <span asp-validation-for="jobPlacementModel.jobPlacementStatus" class="text-danger"></span>
-                            </div>
-                            <div class="form-group">
-                                <span class="text-danger">*</span>
-                                <label asp-for="jobPlacementModel.jobPlacementReason" class="control-label">Reason</label>
-                                <select asp-for="jobPlacementModel.jobPlacementReason" class="form-control">
-                                    <option value=""> -- Select Reason--</option>
-                                    <option value="New Hire"> New Hire</option>
-                                    <option value="Promotion"> Promotion</option>
-                                    <option value="Transfer"> Transfer</option>
-                                    <option value="Demotion"> Demotion</option>
-                                    <option value="Temporary Assignment"> Temporary Assignment</option>
-                                    <option value="Other"> Other</option>
-                                </select>
-                                <span asp-validation-for="jobPlacementModel.jobPlacementReason" class="text-danger"></span>
-                            </div>
-                        </div>
-                        <div class="form-group d-flex justify-content-end">
-                            <input type="submit" value="Save" class="btn btn-success align-items-baseline m-2" />
-                            <a asp-page="/JobPlacement/Create" asp-route-id="@Model.employmentModel.employmentID" class="btn btn-primary m-2">Assign a new job</a>
-                            <a asp-page="/JobPlacement/Details" asp-route-id="@Model.jobPlacementModel.jobPlacementID" class="btn btn-Info m-2">More...</a>
-                        </div>
-                    </form>
-                }
-                else
-                {
-                    <a asp-page="/JobPlacement/Create" asp-route-id="@Model.employmentModel.employmentID" class="btn btn-primary m-2">Assign a job</a>
-                   
-                }
-            }
         </div>
-        <div class="col-md-6">
-            <div class="row">
-            <!--Experience -->
-                <h4 class="bg-dark text-white fw-bold p-2">Experience</h4>
+        @* Job Placement *@
+        @if (Model.employmentModel.employmentStatus != Models.mainStatus.Inactive)
+        {
+            <div class="card mb-4 shadow-sm">
+                <div class="card-header bg-dark text-white fw-bold">Job Information</div>
+                <div class="card-body">
+                    @if (Model.jobPlacementModel.jobPlacementID != 0)
+                    {
+                        <form method="post" asp-page-handler="SaveJobPlacement">
+                            <div asp-validation-summary="ModelOnly" class="text-danger mb-2"></div>
+                            <input type="hidden" asp-for="jobPlacementModel.jobPlacementID" />
+                            <input type="hidden" asp-for="jobPlacementModel.employmentID" value="@Model.employmentModel.employmentID" />
+
+                            <div class="row g-3">
+                                <div class="col-md-3">
+                                    <label asp-for="jobPlacementModel.departmentID" class="form-label">Department</label>
+                                    <select asp-for="jobPlacementModel.departmentID" class="form-select" asp-items="ViewBag.departmentID"></select>
+                                </div>
+                                <div class="col-md-3">
+                                    <label asp-for="jobPlacementModel.jobID" class="form-label">Job Title</label>
+                                    <select asp-for="jobPlacementModel.jobID" class="form-select" asp-items="ViewBag.jobID"></select>
+                                </div>
+                                <div class="col-md-3">
+                                    <label asp-for="jobPlacementModel.jobStepID" class="form-label">Grade & Step</label>
+                                    <select asp-for="jobPlacementModel.jobStepID" class="form-select" asp-items="ViewBag.jobStepID"></select>
+                                </div>
+                                <div class="col-md-3">
+                                    <label asp-for="jobPlacementModel.jobPlacementSalary" class="form-label">Basic Salary</label>
+                                    <input asp-for="jobPlacementModel.jobPlacementSalary" class="form-control" type="number" />
+                                </div>
+                                <div class="col-md-3">
+                                    <label asp-for="jobPlacementModel.jobPlacementDate" class="form-label">Date</label>
+                                    <input asp-for="jobPlacementModel.jobPlacementDate" class="form-control" type="date" />
+                                </div>
+                                <div class="col-md-3">
+                                    <label asp-for="jobPlacementModel.jobPlacementReference" class="form-label">Reference No</label>
+                                    <input asp-for="jobPlacementModel.jobPlacementReference" class="form-control" />
+                                </div>
+                                <div class="col-md-3">
+                                    <label asp-for="jobPlacementModel.jobPlacementStatus" class="form-label">Status</label>
+                                    <select asp-for="jobPlacementModel.jobPlacementStatus" class="form-select" asp-items="Html.GetEnumSelectList<Models.mainStatus>()"></select>
+                                </div>
+                                <div class="col-md-3">
+                                    <label asp-for="jobPlacementModel.jobPlacementReason" class="form-label">Reason</label>
+                                    <select asp-for="jobPlacementModel.jobPlacementReason" class="form-select">
+                                        <option value="">-- Select Reason --</option>
+                                        <option>New Hire</option>
+                                        <option>Promotion</option>
+                                        <option>Transfer</option>
+                                        <option>Demotion</option>
+                                        <option>Temporary Assignment</option>
+                                        <option>Other</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="mt-3 text-end">
+                                <input type="submit" value="Save" class="btn btn-success me-2" />
+                                <a asp-page="/JobPlacement/Create" asp-route-id="@Model.employmentModel.employmentID" class="btn btn-primary me-2">Assign a new job</a>
+                                <a asp-page="/JobPlacement/Details" asp-route-id="@Model.jobPlacementModel.jobPlacementID" class="btn btn-info">More...</a>
+                            </div>
+                        </form>
+                    }
+                    else
+                    {
+                        <a asp-page="/JobPlacement/Create" asp-route-id="@Model.employmentModel.employmentID" class="btn btn-primary">Assign a job</a>
+                    }
+                </div>
+            </div>
+        }
+        <!--Experience -->
+        <div class="card mb-4 shadow-sm">
+            <div class="card-header bg-dark text-white fw-bold">Experience</div>
+            <div class="card-body">
                 <form method="post" asp-page-handler="AddExperience" class="">
                     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                     <input type="hidden" asp-for="experienceModel.personID" value="@Model.personModel.personID" />
-                    
+
                     <div class="d-flex flex-wrap">
                         <div class="form-group pe-4 pt-2">
                             <label asp-for="experienceModel.experienceType" class="control-label">Experience Type</label>
@@ -273,7 +266,7 @@
                                 <label asp-for="experienceModel.jobSalary" class="control-label">Salary</label>
                                 <input asp-for="experienceModel.jobSalary" class="form-control" />
                             </div>
-                            <div class="form-group pe-4 pt-2">                           
+                            <div class="form-group pe-4 pt-2">
                                 <label asp-for="experienceModel.jobGrade" class="control-label">Job Grade</label>
                                 <input asp-for="experienceModel.jobGrade" class="form-control" />
                             </div>
@@ -282,7 +275,7 @@
                                 <input asp-for="experienceModel.jobStep" class="form-control" />
                             </div>
                         </div>
-                   
+
                     </div>
                     <div class="form-group d-flex justify-content-end">
                         <input type="submit" value="Save" class="btn btn-success align-items-baseline m-2" />
@@ -296,35 +289,39 @@
                             <td>From-To</td>
                             <td>Job Title</td>
                             <td>Salary</td>
-                            
+
                             <td>Type</td>
                             <td>Company</td>
                             <td>Duration</td>
-                            
+
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach(var item in Model.Experiences)
+                        @foreach (var item in Model.Experiences)
                         {
                             <tr onclick="location.href='@Url.Page("/Experience/Edit", new {id = item.experienceID})'" style="cursor:pointer">
                                 <td>@item.experienceStartDate.ToString("dd/MM/yyyy") - @item.experienceEndDate.ToString("dd/MM/yyyy")</td>
                                 <td>@item.jobTitle</td>
                                 <td>@item.jobSalary</td>
- 
+
                                 <td>@item.experienceType</td>
                                 <td>@item.jobDepartment</td>
                                 <td>@(item.experienceEndDate.Year - item.experienceStartDate.Year)</td>
-                               
+
                             </tr>
                         }
                     </tbody>
                 </table>
-                <!--Education and Certification-->
-                <h4 class="bg-dark text-white fw-bold p-2">Certification</h4>
+            </div>
+         </div>
+        <!--Education and Certification-->
+        <div class="card mb-4 shadow-sm">
+            <div class="card-header bg-dark text-white fw-bold">Certification</div>
+            <div class="card-body">
                 <form method="post" asp-page-handler="AddEducation" class="">
                     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                     <input type="hidden" asp-for="personEducationLevelModel.personID" value="@Model.personModel.personID" />
-                    
+
                     <div class="d-flex flex-wrap">
                         <div class="form-group pe-4 pt-2">
                             <label asp-for="personEducationLevelModel.educationLevelID" class="control-label">Level Name</label>
@@ -371,7 +368,7 @@
                             <td>Title</td>
                             <td>School</td>
                             <td>Certificate Number</td>
-                           
+
                         </tr>
                     </thead>
                     <tbody>
@@ -384,7 +381,7 @@
                                 <td>@item.educationField</td>
                                 <td>@item.educationLevelInstitutionName</td>
                                 <td>@item.educationLevelNumber</td>
-                                                               
+
                             </tr>
                         }
                     </tbody>
@@ -392,11 +389,10 @@
             </div>
         </div>
     </div>
-
-</div>
+        
 }
-<div>
-    <a asp-page="./Index">View All Employees List</a>
+<div class="mt-3">
+    <a asp-page="./Index" class="btn btn-secondary">View All Employees List</a>
 </div>
 
 @section Scripts {

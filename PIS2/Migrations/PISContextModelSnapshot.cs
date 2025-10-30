@@ -67,7 +67,140 @@ namespace PIS2.Migrations
 
                     b.HasKey("AuditID");
 
-                    b.ToTable("AuditLogs");
+                    b.ToTable("AuditLogs", (string)null);
+                });
+
+            modelBuilder.Entity("PIS2.Models.NoticeModel", b =>
+                {
+                    b.Property<int>("noticeID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("noticeID");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("noticeID"));
+
+                    b.Property<string>("AttachmentPath")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)")
+                        .HasColumnName("AttachmentPath");
+
+                    b.Property<DateTime>("DatePosted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime")
+                        .HasColumnName("DatePosted")
+                        .HasDefaultValueSql("GETDATE()");
+
+                    b.Property<DateTime?>("ExpiryDate")
+                        .HasColumnType("datetime")
+                        .HasColumnName("ExpiryDate");
+
+                    b.Property<bool>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true)
+                        .HasColumnName("IsActive");
+
+                    b.Property<string>("noticeApprovedBy")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)")
+                        .HasColumnName("noticeApprovedBy");
+
+                    b.Property<string>("noticeContent")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("noticeContent");
+
+                    b.Property<string>("noticeFrom")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("noticePostedBy")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)")
+                        .HasColumnName("noticePostedBy");
+
+                    b.Property<int>("noticePriority")
+                        .HasColumnType("int");
+
+                    b.Property<string>("noticeSubTitle")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("noticeTitle")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)")
+                        .HasColumnName("noticeTitle");
+
+                    b.HasKey("noticeID");
+
+                    b.ToTable("Notices", (string)null);
+                });
+
+            modelBuilder.Entity("PIS2.Models.accessHistoryModel", b =>
+                {
+                    b.Property<int>("accessHistoryID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("accessHistoryID"));
+
+                    b.Property<int>("accessID")
+                        .HasColumnType("int");
+
+                    b.Property<int>("accessStatus")
+                        .HasColumnType("int");
+
+                    b.Property<string>("modifiedBy")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<DateTime>("modifiedDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("accessHistoryID");
+
+                    b.HasIndex("accessID");
+
+                    b.ToTable("AccessHistories", (string)null);
+                });
+
+            modelBuilder.Entity("PIS2.Models.accessModel", b =>
+                {
+                    b.Property<int>("accessID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("accessID"));
+
+                    b.Property<int>("accessStatus")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("companyID")
+                        .HasColumnType("int");
+
+                    b.Property<string>("modifiedBy")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<int>("userGroups")
+                        .HasColumnType("int");
+
+                    b.Property<int>("userID")
+                        .HasColumnType("int");
+
+                    b.HasKey("accessID");
+
+                    b.HasIndex("companyID");
+
+                    b.HasIndex("userID");
+
+                    b.ToTable("Accesses", (string)null);
                 });
 
             modelBuilder.Entity("PIS2.Models.accountModel", b =>
@@ -110,7 +243,7 @@ namespace PIS2.Migrations
                     b.HasIndex("accountNumber")
                         .IsUnique();
 
-                    b.ToTable("Accounts");
+                    b.ToTable("Accounts", (string)null);
                 });
 
             modelBuilder.Entity("PIS2.Models.addressModel", b =>
@@ -160,7 +293,7 @@ namespace PIS2.Migrations
                     b.HasIndex("addressCountry", "addressRegion", "addressZone", "addressWoreda", "addressTabya")
                         .IsUnique();
 
-                    b.ToTable("Addresses");
+                    b.ToTable("Addresses", (string)null);
                 });
 
             modelBuilder.Entity("PIS2.Models.allowanceAssignmentHistoryModel", b =>
@@ -201,7 +334,7 @@ namespace PIS2.Migrations
 
                     b.HasIndex("allowanceAssignmentID");
 
-                    b.ToTable("AllowanceAssignmentsHistories");
+                    b.ToTable("AllowanceAssignmentsHistories", (string)null);
                 });
 
             modelBuilder.Entity("PIS2.Models.allowanceAssignmentModel", b =>
@@ -251,7 +384,7 @@ namespace PIS2.Migrations
 
                     b.HasIndex(new[] { "allowanceID" }, "IX_AllowanceAssignments_allowanceModelallowanceID");
 
-                    b.ToTable("AllowanceAssignments");
+                    b.ToTable("AllowanceAssignments", (string)null);
 
                     b.HasAnnotation("SqlServer:UseSqlOutputClause", false);
                 });
@@ -300,7 +433,7 @@ namespace PIS2.Migrations
                     b.HasIndex("allowanceName")
                         .IsUnique();
 
-                    b.ToTable("Allowances");
+                    b.ToTable("Allowances", (string)null);
                 });
 
             modelBuilder.Entity("PIS2.Models.bankInfoModel", b =>
@@ -343,7 +476,7 @@ namespace PIS2.Migrations
 
                     b.HasIndex(new[] { "personID" }, "IX_BankInfos_personModelpersonID");
 
-                    b.ToTable("BankInfos");
+                    b.ToTable("BankInfos", (string)null);
                 });
 
             modelBuilder.Entity("PIS2.Models.breakModel", b =>
@@ -388,7 +521,7 @@ namespace PIS2.Migrations
 
                     b.HasIndex(new[] { "shiftID" }, "IX_Breaks_shiftModelshiftID");
 
-                    b.ToTable("Breaks");
+                    b.ToTable("Breaks", (string)null);
                 });
 
             modelBuilder.Entity("PIS2.Models.businessUnitModel", b =>
@@ -450,7 +583,7 @@ namespace PIS2.Migrations
 
                     b.HasIndex("employmentModelemploymentID");
 
-                    b.ToTable("BusinessUnits");
+                    b.ToTable("BusinessUnits", (string)null);
                 });
 
             modelBuilder.Entity("PIS2.Models.companyModel", b =>
@@ -500,7 +633,7 @@ namespace PIS2.Migrations
 
                     b.HasIndex("employmentModelemploymentID");
 
-                    b.ToTable("Companies");
+                    b.ToTable("Companies", (string)null);
                 });
 
             modelBuilder.Entity("PIS2.Models.contractHistoryModel", b =>
@@ -542,7 +675,7 @@ namespace PIS2.Migrations
 
                     b.HasIndex("contractID");
 
-                    b.ToTable("ContractHistories");
+                    b.ToTable("ContractHistories", (string)null);
                 });
 
             modelBuilder.Entity("PIS2.Models.contractModel", b =>
@@ -585,7 +718,7 @@ namespace PIS2.Migrations
                     b.HasIndex("employmentID")
                         .IsUnique();
 
-                    b.ToTable("Contracts");
+                    b.ToTable("Contracts", (string)null);
 
                     b.HasAnnotation("SqlServer:UseSqlOutputClause", false);
                 });
@@ -641,7 +774,7 @@ namespace PIS2.Migrations
 
                     b.HasIndex("payrollPayID");
 
-                    b.ToTable("Deductions");
+                    b.ToTable("Deductions", (string)null);
                 });
 
             modelBuilder.Entity("PIS2.Models.deductionType", b =>
@@ -668,7 +801,7 @@ namespace PIS2.Migrations
 
                     b.HasKey("deductionTypeID");
 
-                    b.ToTable("DeductionTypes");
+                    b.ToTable("DeductionTypes", (string)null);
                 });
 
             modelBuilder.Entity("PIS2.Models.delegationHistoryModel", b =>
@@ -709,7 +842,7 @@ namespace PIS2.Migrations
 
                     b.HasIndex("delegationID");
 
-                    b.ToTable("DelegationHistories");
+                    b.ToTable("DelegationHistories", (string)null);
                 });
 
             modelBuilder.Entity("PIS2.Models.delegationModel", b =>
@@ -760,7 +893,7 @@ namespace PIS2.Migrations
 
                     b.HasIndex("delegationTo");
 
-                    b.ToTable("Delegations");
+                    b.ToTable("Delegations", (string)null);
                 });
 
             modelBuilder.Entity("PIS2.Models.departmentHistoryModel", b =>
@@ -807,7 +940,7 @@ namespace PIS2.Migrations
 
                     b.HasIndex("employmentModelemploymentID");
 
-                    b.ToTable("DepartmentHistories");
+                    b.ToTable("DepartmentHistories", (string)null);
                 });
 
             modelBuilder.Entity("PIS2.Models.departmentModel", b =>
@@ -870,9 +1003,46 @@ namespace PIS2.Migrations
 
                     b.HasIndex(new[] { "subAccountID" }, "IX_Departments_subAccountModelsubAccountID");
 
-                    b.ToTable("Departments");
+                    b.ToTable("Departments", (string)null);
 
                     b.HasAnnotation("SqlServer:UseSqlOutputClause", false);
+                });
+
+            modelBuilder.Entity("PIS2.Models.disciplineModel", b =>
+                {
+                    b.Property<int>("disciplineID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("disciplineID"));
+
+                    b.Property<string>("createdBy")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("createdDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("disciplineDescription")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("disciplineName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("modifiedBy")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("modifiedDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("disciplineID");
+
+                    b.ToTable("Disciplines", (string)null);
                 });
 
             modelBuilder.Entity("PIS2.Models.earningModel", b =>
@@ -926,7 +1096,7 @@ namespace PIS2.Migrations
 
                     b.HasIndex("payrollPayID");
 
-                    b.ToTable("Earnings");
+                    b.ToTable("Earnings", (string)null);
                 });
 
             modelBuilder.Entity("PIS2.Models.earningType", b =>
@@ -957,7 +1127,7 @@ namespace PIS2.Migrations
 
                     b.HasKey("earningTypeID");
 
-                    b.ToTable("EarningTypes");
+                    b.ToTable("EarningTypes", (string)null);
                 });
 
             modelBuilder.Entity("PIS2.Models.educationLevelModel", b =>
@@ -1005,7 +1175,7 @@ namespace PIS2.Migrations
                     b.HasIndex(new[] { "educationLevelName" }, "IX_EducationLevels_personModelpersonID")
                         .IsUnique();
 
-                    b.ToTable("EducationLevels");
+                    b.ToTable("EducationLevels", (string)null);
                 });
 
             modelBuilder.Entity("PIS2.Models.employmentHistoryModel", b =>
@@ -1056,7 +1226,7 @@ namespace PIS2.Migrations
 
                     b.HasIndex("employmentTypeID");
 
-                    b.ToTable("EmploymentHistories");
+                    b.ToTable("EmploymentHistories", (string)null);
                 });
 
             modelBuilder.Entity("PIS2.Models.employmentMethodHistoryModel", b =>
@@ -1099,7 +1269,7 @@ namespace PIS2.Migrations
 
                     b.HasIndex("employmentMethodID");
 
-                    b.ToTable("EmploymentMethodHistories");
+                    b.ToTable("EmploymentMethodHistories", (string)null);
                 });
 
             modelBuilder.Entity("PIS2.Models.employmentMethodModel", b =>
@@ -1139,7 +1309,7 @@ namespace PIS2.Migrations
                     b.HasIndex("employmentMethodName")
                         .IsUnique();
 
-                    b.ToTable("EmploymentMethods");
+                    b.ToTable("EmploymentMethods", (string)null);
 
                     b.HasAnnotation("SqlServer:UseSqlOutputClause", false);
                 });
@@ -1217,7 +1387,7 @@ namespace PIS2.Migrations
                         .IsUnique()
                         .HasFilter("[employmentStatus] = 1");
 
-                    b.ToTable("Employments");
+                    b.ToTable("Employments", (string)null);
 
                     b.HasAnnotation("SqlServer:UseSqlOutputClause", false);
                 });
@@ -1270,7 +1440,7 @@ namespace PIS2.Migrations
 
                     b.HasIndex("jobModeljobID");
 
-                    b.ToTable("EmploymentRequestHistories");
+                    b.ToTable("EmploymentRequestHistories", (string)null);
                 });
 
             modelBuilder.Entity("PIS2.Models.employmentRequestModel", b =>
@@ -1318,7 +1488,7 @@ namespace PIS2.Migrations
 
                     b.HasIndex("jobID");
 
-                    b.ToTable("EmploymentRequests");
+                    b.ToTable("EmploymentRequests", (string)null);
 
                     b.HasAnnotation("SqlServer:UseSqlOutputClause", false);
                 });
@@ -1407,7 +1577,7 @@ namespace PIS2.Migrations
                     b.HasIndex("employmentTypeName")
                         .IsUnique();
 
-                    b.ToTable("EmploymentTypes");
+                    b.ToTable("EmploymentTypes", (string)null);
                 });
 
             modelBuilder.Entity("PIS2.Models.experienceModel", b =>
@@ -1471,7 +1641,7 @@ namespace PIS2.Migrations
 
                     b.HasIndex("personModelpersonID");
 
-                    b.ToTable("Experiences");
+                    b.ToTable("Experiences", (string)null);
                 });
 
             modelBuilder.Entity("PIS2.Models.familyModel", b =>
@@ -1514,7 +1684,7 @@ namespace PIS2.Migrations
                     b.HasIndex("personID", "personID2")
                         .IsUnique();
 
-                    b.ToTable("Families");
+                    b.ToTable("Families", (string)null);
                 });
 
             modelBuilder.Entity("PIS2.Models.guarantyHistoryModel", b =>
@@ -1547,7 +1717,7 @@ namespace PIS2.Migrations
 
                     b.HasIndex("guarantyID");
 
-                    b.ToTable("GuarantyHistories");
+                    b.ToTable("GuarantyHistories", (string)null);
                 });
 
             modelBuilder.Entity("PIS2.Models.guarantyModel", b =>
@@ -1614,7 +1784,7 @@ namespace PIS2.Migrations
                         .IsUnique()
                         .HasFilter("guarantyStatus = 1");
 
-                    b.ToTable("Guaranties");
+                    b.ToTable("Guaranties", (string)null);
 
                     b.HasAnnotation("SqlServer:UseSqlOutputClause", false);
                 });
@@ -1664,7 +1834,7 @@ namespace PIS2.Migrations
                     b.HasIndex("holidayName")
                         .IsUnique();
 
-                    b.ToTable("Holidays");
+                    b.ToTable("Holidays", (string)null);
                 });
 
             modelBuilder.Entity("PIS2.Models.jobCategoryModel", b =>
@@ -1698,7 +1868,7 @@ namespace PIS2.Migrations
                     b.HasIndex("jobCategoryName")
                         .IsUnique();
 
-                    b.ToTable("JobCategories");
+                    b.ToTable("JobCategories", (string)null);
                 });
 
             modelBuilder.Entity("PIS2.Models.jobClassModel", b =>
@@ -1726,7 +1896,7 @@ namespace PIS2.Migrations
 
                     b.HasKey("JobClassId");
 
-                    b.ToTable("JobClasses");
+                    b.ToTable("JobClasses", (string)null);
                 });
 
             modelBuilder.Entity("PIS2.Models.jobGradeModel", b =>
@@ -1773,7 +1943,7 @@ namespace PIS2.Migrations
                     b.HasIndex("jobGradeName")
                         .IsUnique();
 
-                    b.ToTable("JobGrades");
+                    b.ToTable("JobGrades", (string)null);
                 });
 
             modelBuilder.Entity("PIS2.Models.jobModel", b =>
@@ -1801,9 +1971,17 @@ namespace PIS2.Migrations
                         .HasColumnType("nvarchar(max)")
                         .HasColumnName("jobDescription");
 
+                    b.Property<decimal?>("jobExperience")
+                        .HasColumnType("decimal(18,2)")
+                        .HasColumnName("jobExperience");
+
                     b.Property<int>("jobGradeID")
                         .HasColumnType("int")
                         .HasColumnName("jobGradeID");
+
+                    b.Property<string>("jobQualifications")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("jobQualifications");
 
                     b.Property<int>("jobStatus")
                         .HasColumnType("int")
@@ -1831,7 +2009,7 @@ namespace PIS2.Migrations
 
                     b.HasIndex(new[] { "jobClassID" }, "IX_Jobs_jobClassModelJobClassId");
 
-                    b.ToTable("Jobs");
+                    b.ToTable("Jobs", (string)null);
                 });
 
             modelBuilder.Entity("PIS2.Models.jobPlacementHistoryModel", b =>
@@ -1893,7 +2071,7 @@ namespace PIS2.Migrations
 
                     b.HasIndex("jobStepID");
 
-                    b.ToTable("JobPlacementHistories");
+                    b.ToTable("JobPlacementHistories", (string)null);
                 });
 
             modelBuilder.Entity("PIS2.Models.jobPlacementModel", b =>
@@ -1965,7 +2143,7 @@ namespace PIS2.Migrations
 
                     b.HasIndex(new[] { "jobID" }, "IX_JobPlacements_jobModeljobID");
 
-                    b.ToTable("JobPlacements");
+                    b.ToTable("JobPlacements", (string)null);
 
                     b.HasAnnotation("SqlServer:UseSqlOutputClause", false);
                 });
@@ -2017,7 +2195,7 @@ namespace PIS2.Migrations
 
                     b.HasIndex("jobRequirementID");
 
-                    b.ToTable("JobReqCosts");
+                    b.ToTable("JobReqCosts", (string)null);
                 });
 
             modelBuilder.Entity("PIS2.Models.jobRequirementHistoryModel", b =>
@@ -2054,7 +2232,7 @@ namespace PIS2.Migrations
 
                     b.HasIndex("jobRequirementID");
 
-                    b.ToTable("JobRequirementHistories");
+                    b.ToTable("JobRequirementHistories", (string)null);
                 });
 
             modelBuilder.Entity("PIS2.Models.jobRequirementModel", b =>
@@ -2105,7 +2283,7 @@ namespace PIS2.Migrations
 
                     b.HasIndex("jobID");
 
-                    b.ToTable("JobRequirements");
+                    b.ToTable("JobRequirements", (string)null);
 
                     b.HasAnnotation("SqlServer:UseSqlOutputClause", false);
                 });
@@ -2149,7 +2327,7 @@ namespace PIS2.Migrations
 
                     b.HasIndex("jobStepID");
 
-                    b.ToTable("JobStepHistories");
+                    b.ToTable("JobStepHistories", (string)null);
                 });
 
             modelBuilder.Entity("PIS2.Models.jobStepModel", b =>
@@ -2195,7 +2373,7 @@ namespace PIS2.Migrations
                     b.HasIndex("jobGradeID", "jobStepNumber", "jobStepStatus")
                         .IsUnique();
 
-                    b.ToTable("JobSteps");
+                    b.ToTable("JobSteps", (string)null);
 
                     b.HasAnnotation("SqlServer:UseSqlOutputClause", false);
                 });
@@ -2230,7 +2408,7 @@ namespace PIS2.Migrations
 
                     b.HasIndex("leaveID");
 
-                    b.ToTable("LeaveHistories");
+                    b.ToTable("LeaveHistories", (string)null);
                 });
 
             modelBuilder.Entity("PIS2.Models.leaveModel", b =>
@@ -2289,10 +2467,7 @@ namespace PIS2.Migrations
 
                     b.HasIndex(new[] { "leaveTypeID" }, "IX_Leaves_leaveTypeModelleaveTypeID");
 
-                    b.ToTable("Leaves", t =>
-                        {
-                            t.HasCheckConstraint("CK_Leave_leaveEndDate", "[leaveEndDate]>=[leaveStartDate]");
-                        });
+                    b.ToTable("Leaves", (string)null);
 
                     b.HasAnnotation("SqlServer:UseSqlOutputClause", false);
                 });
@@ -2346,7 +2521,7 @@ namespace PIS2.Migrations
                     b.HasIndex("leaveTypeName")
                         .IsUnique();
 
-                    b.ToTable("LeaveTypes");
+                    b.ToTable("LeaveTypes", (string)null);
                 });
 
             modelBuilder.Entity("PIS2.Models.loyaltyHistoryModel", b =>
@@ -2390,7 +2565,7 @@ namespace PIS2.Migrations
                     b.HasIndex("loyaltyID", "employmentID")
                         .IsUnique();
 
-                    b.ToTable("LoyaltyHistories");
+                    b.ToTable("LoyaltyHistories", (string)null);
                 });
 
             modelBuilder.Entity("PIS2.Models.loyaltyModel", b =>
@@ -2429,7 +2604,7 @@ namespace PIS2.Migrations
                     b.HasIndex("loyaltyName")
                         .IsUnique();
 
-                    b.ToTable("Loyalties");
+                    b.ToTable("Loyalties", (string)null);
                 });
 
             modelBuilder.Entity("PIS2.Models.overtimeHistoryModel", b =>
@@ -2462,7 +2637,7 @@ namespace PIS2.Migrations
 
                     b.HasIndex("overtimeRecordID");
 
-                    b.ToTable("OvertimeHistories");
+                    b.ToTable("OvertimeHistories", (string)null);
                 });
 
             modelBuilder.Entity("PIS2.Models.overtimeModel", b =>
@@ -2501,7 +2676,7 @@ namespace PIS2.Migrations
                     b.HasIndex("overtimeName")
                         .IsUnique();
 
-                    b.ToTable("Overtimes");
+                    b.ToTable("Overtimes", (string)null);
                 });
 
             modelBuilder.Entity("PIS2.Models.overtimeRecordModel", b =>
@@ -2573,7 +2748,7 @@ namespace PIS2.Migrations
 
                     b.HasIndex(new[] { "overtimeID" }, "IX_OvertimeRecords_overtimeModelovertimeID");
 
-                    b.ToTable("OvertimeRecords");
+                    b.ToTable("OvertimeRecords", (string)null);
 
                     b.HasAnnotation("SqlServer:UseSqlOutputClause", false);
                 });
@@ -2608,7 +2783,7 @@ namespace PIS2.Migrations
 
                     b.HasIndex("payrollID");
 
-                    b.ToTable("PayrollHistories");
+                    b.ToTable("PayrollHistories", (string)null);
                 });
 
             modelBuilder.Entity("PIS2.Models.payrollModel", b =>
@@ -2644,7 +2819,7 @@ namespace PIS2.Migrations
 
                     b.HasKey("payrollID");
 
-                    b.ToTable("Payrolls");
+                    b.ToTable("Payrolls", (string)null);
                 });
 
             modelBuilder.Entity("PIS2.Models.payrollPay", b =>
@@ -2683,7 +2858,7 @@ namespace PIS2.Migrations
 
                     b.HasIndex("payrollID");
 
-                    b.ToTable("PayrollPays");
+                    b.ToTable("PayrollPays", (string)null);
                 });
 
             modelBuilder.Entity("PIS2.Models.penaltyHistoryModel", b =>
@@ -2716,7 +2891,7 @@ namespace PIS2.Migrations
 
                     b.HasIndex("penaltyID");
 
-                    b.ToTable("PenaltyHistories");
+                    b.ToTable("PenaltyHistories", (string)null);
                 });
 
             modelBuilder.Entity("PIS2.Models.penaltyModel", b =>
@@ -2777,7 +2952,7 @@ namespace PIS2.Migrations
 
                     b.HasIndex("penaltyTypeID");
 
-                    b.ToTable("Penalties");
+                    b.ToTable("Penalties", (string)null);
 
                     b.HasAnnotation("SqlServer:UseSqlOutputClause", false);
                 });
@@ -2826,7 +3001,7 @@ namespace PIS2.Migrations
 
                     b.HasKey("penaltyTypeID");
 
-                    b.ToTable("PenaltyTypes");
+                    b.ToTable("PenaltyTypes", (string)null);
                 });
 
             modelBuilder.Entity("PIS2.Models.personEducationLevelModel", b =>
@@ -2895,7 +3070,7 @@ namespace PIS2.Migrations
 
                     b.HasIndex(new[] { "personID" }, "IX_PersonEducationLevels_personModelpersonID");
 
-                    b.ToTable("PersonEducationLevels");
+                    b.ToTable("PersonEducationLevels", (string)null);
                 });
 
             modelBuilder.Entity("PIS2.Models.personHistoryModel", b =>
@@ -2982,7 +3157,7 @@ namespace PIS2.Migrations
 
                     b.HasIndex("userModeluserID");
 
-                    b.ToTable("PersonHistories");
+                    b.ToTable("PersonHistories", (string)null);
                 });
 
             modelBuilder.Entity("PIS2.Models.personModel", b =>
@@ -3062,7 +3237,7 @@ namespace PIS2.Migrations
 
                     b.HasIndex(new[] { "addressID" }, "IX_Persons_addressModeladdressID");
 
-                    b.ToTable("Persons");
+                    b.ToTable("Persons", (string)null);
 
                     b.HasAnnotation("SqlServer:UseSqlOutputClause", false);
                 });
@@ -3119,7 +3294,7 @@ namespace PIS2.Migrations
 
                     b.HasIndex("prohibitionID");
 
-                    b.ToTable("prohibitionHistories");
+                    b.ToTable("prohibitionHistories", (string)null);
                 });
 
             modelBuilder.Entity("PIS2.Models.prohibitionModel", b =>
@@ -3171,7 +3346,7 @@ namespace PIS2.Migrations
                         .IsUnique()
                         .HasFilter("prohibitionStatus=1");
 
-                    b.ToTable("Prohibitions");
+                    b.ToTable("Prohibitions", (string)null);
 
                     b.HasAnnotation("SqlServer:UseSqlOutputClause", false);
                 });
@@ -3206,7 +3381,7 @@ namespace PIS2.Migrations
 
                     b.HasIndex("serviceRequestID");
 
-                    b.ToTable("ServiceRequestHistories");
+                    b.ToTable("ServiceRequestHistories", (string)null);
                 });
 
             modelBuilder.Entity("PIS2.Models.serviceRequestModel", b =>
@@ -3244,7 +3419,7 @@ namespace PIS2.Migrations
                     b.HasIndex("employmentID", "requestedService")
                         .HasFilter("serviceRequestStatus =1");
 
-                    b.ToTable("ServiceRequests");
+                    b.ToTable("ServiceRequests", (string)null);
 
                     b.HasAnnotation("SqlServer:UseSqlOutputClause", false);
                 });
@@ -3281,7 +3456,7 @@ namespace PIS2.Migrations
 
                     b.HasIndex("shiftID");
 
-                    b.ToTable("ShiftAssignments");
+                    b.ToTable("ShiftAssignments", (string)null);
                 });
 
             modelBuilder.Entity("PIS2.Models.shiftModel", b =>
@@ -3323,7 +3498,7 @@ namespace PIS2.Migrations
                     b.HasIndex("shiftStart", "shiftEnd")
                         .IsUnique();
 
-                    b.ToTable("Shifts");
+                    b.ToTable("Shifts", (string)null);
                 });
 
             modelBuilder.Entity("PIS2.Models.siteAssignmentModel", b =>
@@ -3358,7 +3533,7 @@ namespace PIS2.Migrations
 
                     b.HasIndex("workSiteID");
 
-                    b.ToTable("SiteAssignments");
+                    b.ToTable("SiteAssignments", (string)null);
                 });
 
             modelBuilder.Entity("PIS2.Models.structureHistoryModel", b =>
@@ -3399,7 +3574,7 @@ namespace PIS2.Migrations
 
                     b.HasIndex("structureID");
 
-                    b.ToTable("StructureHistories");
+                    b.ToTable("StructureHistories", (string)null);
                 });
 
             modelBuilder.Entity("PIS2.Models.structureModel", b =>
@@ -3444,7 +3619,7 @@ namespace PIS2.Migrations
 
                     b.HasIndex("reportsTo");
 
-                    b.ToTable("Structures");
+                    b.ToTable("Structures", (string)null);
 
                     b.HasAnnotation("SqlServer:UseSqlOutputClause", false);
                 });
@@ -3490,7 +3665,7 @@ namespace PIS2.Migrations
 
                     b.HasIndex(new[] { "subAccountID" }, "IX_SubAccounts_accountModelaccountID");
 
-                    b.ToTable("SubAccounts");
+                    b.ToTable("SubAccounts", (string)null);
                 });
 
             modelBuilder.Entity("PIS2.Models.terminationModel", b =>
@@ -3533,7 +3708,7 @@ namespace PIS2.Migrations
                     b.HasIndex("employmentID")
                         .IsUnique();
 
-                    b.ToTable("Terminations");
+                    b.ToTable("Terminations", (string)null);
 
                     b.HasAnnotation("SqlServer:UseSqlOutputClause", false);
                 });
@@ -3573,7 +3748,7 @@ namespace PIS2.Migrations
 
                     b.HasIndex("userID");
 
-                    b.ToTable("UserHistories");
+                    b.ToTable("UserHistories", (string)null);
                 });
 
             modelBuilder.Entity("PIS2.Models.userModel", b =>
@@ -3615,7 +3790,7 @@ namespace PIS2.Migrations
                     b.HasIndex("userName")
                         .IsUnique();
 
-                    b.ToTable("Users");
+                    b.ToTable("Users", (string)null);
 
                     b.HasAnnotation("SqlServer:UseSqlOutputClause", false);
                 });
@@ -3671,7 +3846,7 @@ namespace PIS2.Migrations
 
                     b.HasIndex("workSiteID");
 
-                    b.ToTable("WorkSitesHistories");
+                    b.ToTable("WorkSitesHistories", (string)null);
                 });
 
             modelBuilder.Entity("PIS2.Models.workSiteModel", b =>
@@ -3742,6 +3917,69 @@ namespace PIS2.Migrations
                     b.HasAnnotation("SqlServer:UseSqlOutputClause", false);
                 });
 
+            modelBuilder.Entity("PIS2.Views.AllowanceDetailView", b =>
+                {
+                    b.Property<decimal>("AllowanceAmount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("AllowanceDuration")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("AllowanceEnd")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("AllowanceID")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("AllowanceStart")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("AllowanceStatus")
+                        .HasColumnType("int");
+
+                    b.Property<int>("AllowanceTypeID")
+                        .HasColumnType("int");
+
+                    b.Property<string>("AllowanceTypeName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("CompanyID")
+                        .HasColumnType("int");
+
+                    b.Property<string>("CompanyName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("DepartmentID")
+                        .HasColumnType("int");
+
+                    b.Property<string>("DepartmentName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("EmployeeID")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("JobClass")
+                        .HasColumnType("int");
+
+                    b.Property<string>("JobClassName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("JobID")
+                        .HasColumnType("int");
+
+                    b.Property<string>("JobTitle")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Position")
+                        .HasColumnType("int");
+
+                    b.ToTable((string)null);
+
+                    b.ToView("vw_AllowanceDetailView", (string)null);
+                });
+
             modelBuilder.Entity("PIS2.Views.AnnualLeaveSummary", b =>
                 {
                     b.Property<decimal>("Incremented")
@@ -3785,22 +4023,86 @@ namespace PIS2.Migrations
                     b.ToView("vw_LeaveBalance", (string)null);
                 });
 
-            modelBuilder.Entity("PIS2.Views.CertificationSummaryView", b =>
+            modelBuilder.Entity("PIS2.Views.CertificationDetailsView", b =>
                 {
-                    b.Property<string>("CertificationName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("Count")
+                    b.Property<int?>("CompanyID")
                         .HasColumnType("int");
 
-                    b.Property<string>("Gender")
+                    b.Property<string>("CompanyName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("DepartmentID")
+                        .HasColumnType("int");
+
+                    b.Property<string>("DepartmentName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("EducationDiscipline")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("EducationDomain")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("EducationField")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("EducationLevelCategory")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("EducationLevelDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("EducationLevelID")
+                        .HasColumnType("int");
+
+                    b.Property<string>("EducationLevelInstitutionName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("EducationLevelMark")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("EmploymentPosition")
+                        .HasColumnType("int");
+
+                    b.Property<int>("EmploymentStatus")
+                        .HasColumnType("int");
+
+                    b.Property<string>("FullName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("GivenID")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("PersonGender")
+                        .HasColumnType("int");
+
+                    b.Property<int>("PersonID")
+                        .HasColumnType("int");
 
                     b.ToTable((string)null);
 
-                    b.ToView("vw_certification_active", (string)null);
+                    b.ToView("vw_CertificationDetails", (string)null);
+                });
+
+            modelBuilder.Entity("PIS2.Views.CertificationSummaryView", b =>
+                {
+                    b.Property<string>("CertificationCategory")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Female")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Male")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Total")
+                        .HasColumnType("int");
+
+                    b.ToTable((string)null);
+
+                    b.ToView("vw_CertificationSummary_Active", (string)null);
                 });
 
             modelBuilder.Entity("PIS2.Views.CompanySummary", b =>
@@ -4009,6 +4311,137 @@ namespace PIS2.Migrations
                     b.ToView("vw_LeaveReport", (string)null);
                 });
 
+            modelBuilder.Entity("PIS2.Views.OvertimeDetailView", b =>
+                {
+                    b.Property<int?>("CompanyID")
+                        .HasColumnType("int");
+
+                    b.Property<string>("CompanyName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("DepartmentID")
+                        .HasColumnType("int");
+
+                    b.Property<string>("DepartmentName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal?>("EmployeeRate")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int?>("EmploymentID")
+                        .HasColumnType("int");
+
+                    b.Property<string>("GivenID")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal?>("OvertimeCost")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<DateTime?>("OvertimeDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("OvertimeID")
+                        .HasColumnType("int");
+
+                    b.Property<string>("OvertimeName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal?>("OvertimeRate")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int?>("OvertimeRecordID")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("OvertimeStatus")
+                        .HasColumnType("int");
+
+                    b.Property<decimal?>("TimeElapsed")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.ToTable((string)null);
+
+                    b.ToView("vw_OvertimeDetailView", (string)null);
+                });
+
+            modelBuilder.Entity("PIS2.Views.OvertimeSummaryView", b =>
+                {
+                    b.Property<int?>("CompanyID")
+                        .HasColumnType("int");
+
+                    b.Property<string>("CompanyName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal?>("CostPerEmployee")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal?>("DaysPerEmployee")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int?>("DepartmentID")
+                        .HasColumnType("int");
+
+                    b.Property<string>("DepartmentName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("EmployeesInvolved")
+                        .HasColumnType("int");
+
+                    b.Property<decimal?>("HoursPerEmployee")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int?>("OvertimeID")
+                        .HasColumnType("int");
+
+                    b.Property<string>("OvertimeName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("Records")
+                        .HasColumnType("int");
+
+                    b.Property<decimal?>("TotalCost")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal?>("TotalDays")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal?>("TotalHours")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.ToTable((string)null);
+
+                    b.ToView("vw_OvertimeSummaryView", (string)null);
+                });
+
+            modelBuilder.Entity("PIS2.Views.TalentExperienceView", b =>
+                {
+                    b.Property<int>("Duration")
+                        .HasColumnType("int");
+
+                    b.Property<int>("EmploymentStatus")
+                        .HasColumnType("int");
+
+                    b.Property<string>("FullName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("PersonGender")
+                        .HasColumnType("int");
+
+                    b.Property<int>("jobClassID")
+                        .HasColumnType("int");
+
+                    b.Property<string>("jobTitle")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("personID")
+                        .HasColumnType("int");
+
+                    b.ToTable((string)null);
+
+                    b.ToView("vw_TalentPoolExperience", (string)null);
+                });
+
             modelBuilder.Entity("educationLevelModeljobModel", b =>
                 {
                     b.Property<int>("EducationLevelseducationLevelID")
@@ -4021,7 +4454,36 @@ namespace PIS2.Migrations
 
                     b.HasIndex("JobsjobID");
 
-                    b.ToTable("educationLevelModeljobModel");
+                    b.ToTable("educationLevelModeljobModel", (string)null);
+                });
+
+            modelBuilder.Entity("PIS2.Models.accessHistoryModel", b =>
+                {
+                    b.HasOne("PIS2.Models.accessModel", "accessModel")
+                        .WithMany("AccessHistories")
+                        .HasForeignKey("accessID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("accessModel");
+                });
+
+            modelBuilder.Entity("PIS2.Models.accessModel", b =>
+                {
+                    b.HasOne("PIS2.Models.companyModel", "CompanyModel")
+                        .WithMany("Accesses")
+                        .HasForeignKey("companyID")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("PIS2.Models.userModel", "userModel")
+                        .WithMany("Accesses")
+                        .HasForeignKey("userID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("CompanyModel");
+
+                    b.Navigation("userModel");
                 });
 
             modelBuilder.Entity("PIS2.Models.allowanceAssignmentHistoryModel", b =>
@@ -4999,6 +5461,11 @@ namespace PIS2.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("PIS2.Models.accessModel", b =>
+                {
+                    b.Navigation("AccessHistories");
+                });
+
             modelBuilder.Entity("PIS2.Models.accountModel", b =>
                 {
                     b.Navigation("SubAccounts");
@@ -5032,6 +5499,8 @@ namespace PIS2.Migrations
 
             modelBuilder.Entity("PIS2.Models.companyModel", b =>
                 {
+                    b.Navigation("Accesses");
+
                     b.Navigation("BusinessUnits");
 
                     b.Navigation("Departments");
@@ -5288,6 +5757,8 @@ namespace PIS2.Migrations
 
             modelBuilder.Entity("PIS2.Models.userModel", b =>
                 {
+                    b.Navigation("Accesses");
+
                     b.Navigation("UserHistories");
                 });
 

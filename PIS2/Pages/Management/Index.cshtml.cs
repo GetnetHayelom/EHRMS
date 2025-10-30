@@ -1,17 +1,19 @@
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.EntityFrameworkCore;
+using PIS2.Models;
+using PIS2.Views;
 using System;
 using System.CodeDom;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.EntityFrameworkCore;
-using PIS2.Models;
-using PIS2.Views;
 
 namespace PIS2.Pages.Management
 {
+    [Authorize(Roles = "MIE\\PMS_HRMANAGER,MIE\\PMS_MANAGEMENT")]
     public class IndexModel : PageModel
     {
         private readonly PIS2.Models.PISContext _context;

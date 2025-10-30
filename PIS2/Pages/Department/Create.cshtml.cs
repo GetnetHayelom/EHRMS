@@ -20,13 +20,12 @@ namespace PIS2.Pages.Department
 
         public IActionResult OnGet(int? id)
         {
-      
-            //ViewData["employmentID"] = new SelectList(
-            //    _context.Employments.OrderBy(e => e.personModel.personFirstName).ThenBy(e => e.personModel.personFatherName).ThenBy(e => e.personModel.personLastName)
-            //    .Select(e => new { e.employmentID, FullName = e.personModel.personFullName }),
-            //    "employmentID",
-            //    "FullName"
-            //);
+
+            if (!User.IsInRole("MIE\\PMS_HRMANAGER"))
+            {
+                return RedirectToPage("/Shared/AccessDenied");
+            }
+
             ViewData["employmentID"] = new SelectList(_context.Employments.Where(e => e.employmentStatus == mainStatus.Active).OrderBy(e => e.givenID),"employmentID","givenID");
 
             if (id != null)
@@ -48,6 +47,11 @@ namespace PIS2.Pages.Department
         // For more information, see https://aka.ms/RazorPagesCRUD.
         public async Task<IActionResult> OnPostAsync()
         {
+            if (!User.IsInRole("MIE\\PMS_HRMANAGER"))
+            {
+                return RedirectToPage("/Shared/AccessDenied");
+            }
+
             ModelState.Remove("departmentModel.modifiedBy");
             departmentModel.modifiedBy = User.Identity.Name;
 

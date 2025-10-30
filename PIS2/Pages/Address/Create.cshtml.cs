@@ -21,6 +21,10 @@ namespace PIS2.Pages.Address
 
         public IActionResult OnGet()
         {
+            if (!User.IsInRole("MIE\\PMS_HRCLERK"))
+            {
+                return RedirectToPage("/Shared/AccessDenied");
+            }
             return Page();
         }
 
@@ -30,6 +34,10 @@ namespace PIS2.Pages.Address
         // For more information, see https://aka.ms/RazorPagesCRUD.
         public async Task<IActionResult> OnPostAsync()
         {
+            if (!User.IsInRole("MIE\\PMS_HRCLERK"))
+            {
+                return RedirectToPage("/Shared/AccessDenied");
+            }
             ModelState.Remove("addressModel.modifiedBy");
             
             addressModel.modifiedBy = User.Identity.Name;

@@ -4,229 +4,231 @@
     ViewData["Title"] = "Management Dashboard";
     var successMessage = TempData["SuccessMessage"] as string ?? string.Empty;
 }
-@await Html.PartialAsync("headerSimple")
-<div class="d-flex justify-content-between">
-    <h2 class="d-flex">
-        <b class="d-print-none">Management Dashboard</b>
-        <b class="d-none d-print-block">Management Report</b>
+@await Html.PartialAsync("headerSimple", "")
+<div class="d-flex justify-content-between align-items-center flex-wrap">
+    <h2 class="fw-bold text-primary mb-2 d-flex align-items-center">
+        <i class="bi bi-speedometer2 me-2"></i>
+        <span class="d-print-none text-dark">Management Dashboard</span>
+        <span class="d-none d-print-block">Management Report</span>
     </h2>
-    <div class="d-flex d-print-none">
-        <ul class="nav nav-tabs">
-            <li class="nav-item">
-                <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#dashboardView">Dashboard</button>
-            </li>
-            <li class="nav-item">
-                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#annualLeaveView">Annual Leave Summary</button>
-            </li>
-            <li class="nav-item">
-                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#employmentStats">Employment Stats</button>
-            </li>
-            <li class="nav-item">
-                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#terminationStats">Termination Stats</button>
-            </li>
-            <li>@await Html.PartialAsync("print")</li>
-        </ul>
-        
-    </div>
-</div>
-<div class="tab-content mt-3">
-    <div class="tab-pane fade show active" id="dashboardView">
-        <div class="col-2 bg-dark text-white d-none d-print-none">
-            <div>
-            <img />
-            </div>
-            <div class="d-flex flex-column mt-6">
-                <a role="button" class="text-white nav-link p-3" asp-page="/Company/Index" asp-asp-area="Management">Companies</a>
-                <a role="button" class="text-white nav-link p-3" asp-page="/Department/Index" asp-asp-area="Management">Departments</a>
-                <a role="button" class="text-white nav-link p-3" asp-page="/Employment/Index" asp-asp-area="Management">Employments</a>
-                <a role="button" class="text-white nav-link p-3" asp-page="/Job/Index" asp-asp-area="Management">Jobs</a>
-                <a role="button" class="text-white nav-link p-3" asp-page="/Worksite/Index" asp-asp-area="Management">Work Loactions</a>
-            </div>
-        </div>
-        <div class="col d-flex flex-column">
-            <hr />
-            <!-- Summary Points -->
-            <div class="d-flex">
-                <div class="p-2 flex-grow-1 m-2">
 
-                    <div class="w-100 shadow p-2">
-                        <h3 class="bg-dark text-white p-2"><b>Companies\Industies</b></h3>
-                        <div class="d-flex">
-                            <h5 class="flex-grow-1 border border-success border-1 text-success p-1">Active Companies</h5>
-                            <h2 class="bg-success text-white rounded-end p-1">@Model.ActiveCompanies</h2>
+    <ul class="nav nav-pills shadow-sm rounded-3 d-print-none mb-2">
+        <li class="nav-item">
+            <button class="nav-link active fw-semibold" data-bs-toggle="tab" data-bs-target="#dashboardView">
+                <i class="bi bi-grid-1x2 me-1"></i> Dashboard
+            </button>
+        </li>
+        <li class="nav-item">
+            <button class="nav-link fw-semibold" data-bs-toggle="tab" data-bs-target="#annualLeaveView">
+                <i class="bi bi-calendar-week me-1"></i> Annual Leave
+            </button>
+        </li>
+        <li class="nav-item">
+            <button class="nav-link fw-semibold" data-bs-toggle="tab" data-bs-target="#employmentStats">
+                <i class="bi bi-bar-chart-line me-1"></i> Employment Stats
+            </button>
+        </li>
+        <li class="nav-item">
+            <button class="nav-link fw-semibold" data-bs-toggle="tab" data-bs-target="#terminationStats">
+                <i class="bi bi-person-x me-1"></i> Terminations
+            </button>
+        </li>
+        <li class="nav-item">
+            @await Html.PartialAsync("print")
+        </li>
+    </ul>
+</div>
+
+<div class="tab-content mt-3">
+    <!-- DASHBOARD TAB -->
+    <div class="tab-pane fade show active" id="dashboardView">
+        <!-- SUMMARY SECTION -->
+        <div class="row g-4">
+            <div class="col-md-3">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-header bg-primary text-white fw-bold">
+                        <i class="bi bi-building me-2"></i> Companies / Industries
+                    </div>
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span class="text-success fw-semibold">Active Companies</span>
+                            <span class="badge bg-success fs-5">@Model.ActiveCompanies</span>
                         </div>
-                        <div class="d-flex">
-                            <h6 class="flex-grow-1 border border-danger border-1 text-danger p-1">Closed Companies</h6>
-                            <h4 class="bg-danger text-white rounded-end p-1">@Model.OldCompanies</h4>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="text-danger fw-semibold">Closed Companies</span>
+                            <span class="badge bg-danger fs-6">@Model.OldCompanies</span>
                         </div>
-                      
                     </div>
                 </div>
-                <div class="p-2 flex-grow-1 m-2 shadow">
-                    <div class="w-100">
-                        <h3 class="bg-dark text-white p-2"><b>Departments</b></h3>
-                        <div class="d-flex">
-                            <h5 class="flex-grow-1 border border-success border-1 text-success p-1">Active Departments</h5>
-                            <h2 class="bg-success text-white rounded-end p-1">@Model.ActiveDepartments</h2>
-                        </div>
-                        <div class="d-flex">
-                            <h6 class="flex-grow-1 border border-danger border-1 text-danger p-1">Closed Departments</h6>
-                            <h4 class="bg-danger text-white rounded-end p-1">@Model.OldDepartments</h4>
-                        </div>
-                        
+            </div>
+
+            <div class="col-md-3">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-header bg-secondary text-white fw-bold">
+                        <i class="bi bi-diagram-3 me-2"></i> Departments
                     </div>
-                </div>
-                <div class="p-2 flex-grow-1 m-2 shadow">
-                    <div class="w-100">
-                        <h3 class="bg-dark text-white p-2"><b>Employment</b></h3>
-                        <div class="d-flex">
-                            <h5 class="flex-grow-1 border border-success border-1 text-success p-1">Active Employees</h5>
-                            <h2 class="bg-success text-white rounded-end p-1">@Model.ActiveEmployments</h2>
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span class="text-success fw-semibold">Active Departments</span>
+                            <span class="badge bg-success fs-5">@Model.ActiveDepartments</span>
                         </div>
-                        <div class="d-flex">
-                            <h6 class="flex-grow-1 border border-warning border-1 text-warning p-1">Employees On Leave</h6>
-                            <h4 class="bg-warning text-white rounded-end p-1">@Model.leaveEmployments</h4>
-                        </div>
-                        <div class="d-flex">
-                            <h6 class="flex-grow-1 border border-danger border-1 text-danger p-1">Ex-Employees</h6>
-                            <h4 class="bg-danger text-white rounded-end p-1">@Model.exEmployments</h4>
-                        </div>
-                        <div class="d-flex">
-                            <h6 class="flex-grow-1 border border-info border-1 text-info p-1">Total Employment Created</h6>
-                            <h4 class="bg-info text-white rounded-end p-1">@Model.Employments.Count()</h4>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="text-danger fw-semibold">Closed Departments</span>
+                            <span class="badge bg-danger fs-6">@Model.OldDepartments</span>
                         </div>
                     </div>
                 </div>
-                <!--Employment Types-->
-                <div class="p-2 flex-grow-1 m-2 shadow">
-                    <div class="w-100">
-                        <h3 class="bg-dark text-white p-2"><b>Employment Types</b></h3>
+            </div>
+
+            <div class="col-md-3">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-header bg-info text-white fw-bold">
+                        <i class="bi bi-people-fill me-2"></i> Employment
+                    </div>
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="text-success fw-semibold">Active Employees</span>
+                            <span class="badge bg-success fs-5">@Model.ActiveEmployments</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="text-warning fw-semibold">Employees On Leave</span>
+                            <span class="badge bg-warning text-dark fs-6">@Model.leaveEmployments</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="text-danger fw-semibold">Ex-Employees</span>
+                            <span class="badge bg-danger fs-6">@Model.exEmployments</span>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <span class="text-info fw-semibold">Total Created</span>
+                            <span class="badge bg-info fs-6">@Model.Employments.Count()</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-header bg-dark text-white fw-bold">
+                        <i class="bi bi-briefcase me-2"></i> Employment Types
+                    </div>
+                    <div class="card-body">
                         @foreach (var item in Model.EmploymentTypes)
                         {
-                            <div class="d-flex">
-                                <h5 class="flex-grow-1 border border-success border-1 text-success p-1">@item.zName</h5>
-                                <h2 class="bg-success text-white rounded-end p-1">@item.zCount</h2>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span class="text-success fw-semibold">@item.zName</span>
+                                <span class="badge bg-success fs-6">@item.zCount</span>
                             </div>
-                
                         }
-                    
                     </div>
                 </div>
             </div>
-            <hr />
-            <div class="">
-                <h3 class="bg-dark text-white p-2">Current Payable</h3><hr />
-                <!--Payables summary-->
-                <div class="d-flex flex-grow-1 m-2 justify-content-between">
-                
-                    <div class="card m-2 p-4 shadow flex-grow-1" onclick="location.href='@Url.Page("/Report/JobPlacementReport")'" style="cursor:pointer;">
-                        <p class="small mb-1">Salary</p>
-                        <h5 class="fw-bold">$@Math.Round((decimal)(Model.CompanySummaries.Sum(c => c.Salary)), 2).ToString("N0")</h5>
+        </div>
+
+        <!-- PAYABLE SUMMARY -->
+        <div class="mt-5">
+            <h4 class="fw-bold text-secondary border-bottom pb-2 mb-3">
+                <i class="bi bi-cash-stack me-2"></i> Current Payable Summary
+            </h4>
+
+            <div class="row g-3">
+                <div class="col-md-2">
+                    <div class="card text-center shadow-sm p-3 clickable" onclick="location.href='@Url.Page("/Report/JobPlacementReport")'">
+                        <p class="small mb-1 text-muted">Salary</p>
+                        <h5 class="fw-bold text-dark">$@Math.Round((decimal)(Model.CompanySummaries.Sum(c => c.Salary)), 2).ToString("N0")</h5>
                     </div>
-                
-                    <div class="card m-2 p-4 shadow flex-grow-1" onclick="location.href='@Url.Page("/Report/AllowanceAssignmentReport")'" style="cursor:pointer;">
-                        <p class="small mb-1">Allowance</p>
-                        <h5 class="fw-bold">$@Math.Round((decimal)(Model.CompanySummaries.Sum(c => c.Allowance)), 2).ToString("N0")</h5>
+                </div>
+
+                <div class="col-md-2">
+                    <div class="card text-center shadow-sm p-3 clickable" onclick="location.href='@Url.Page("/Report/AllowanceAssignmentReport")'">
+                        <p class="small mb-1 text-muted">Allowance</p>
+                        <h5 class="fw-bold text-dark">$@Math.Round((decimal)(Model.CompanySummaries.Sum(c => c.Allowance)), 2).ToString("N0")</h5>
                     </div>
-                    <div class="card m-2 p-4 shadow flex-grow-1" onclick="location.href='@Url.Page("/Report/OvertimeRecordReport")'" style="cursor:pointer;">
-                        <p class="small mb-1">Overtime</p>
-                        <h5 class="fw-bold">$@Math.Round((decimal)(Model.CompanySummaries.Sum(c => c.Overtime)), 2).ToString("N0")</h5>
+                </div>
+
+                <div class="col-md-2">
+                    <div class="card text-center shadow-sm p-3 clickable" onclick="location.href='@Url.Page("/Report/OvertimeRecordReport")'">
+                        <p class="small mb-1 text-muted">Overtime</p>
+                        <h5 class="fw-bold text-dark">$@Math.Round((decimal)(Model.CompanySummaries.Sum(c => c.Overtime)), 2).ToString("N0")</h5>
                     </div>
-                    <div class="card m-2 p-4 shadow flex-grow-1" onclick="location.href='@Url.Page("/Report/PayableLeaveReport")'" style="cursor:pointer;">
-                        <p class="small mb-1">Payable Leave</p>
-                        <h5 class="fw-bold">$@Math.Round((decimal)(Model.CompanySummaries.Sum(c => c.payableLeaves)), 2).ToString("N0")</h5>
+                </div>
+
+                <div class="col-md-2">
+                    <div class="card text-center shadow-sm p-3 clickable" onclick="location.href='@Url.Page("/Report/PayableLeaveReport")'">
+                        <p class="small mb-1 text-muted">Payable Leave</p>
+                        <h5 class="fw-bold text-dark">$@Math.Round((decimal)(Model.CompanySummaries.Sum(c => c.payableLeaves)), 2).ToString("N0")</h5>
                     </div>
-                    <div class="card m-2 p-4 shadow flex-grow-1">
+                </div>
+
+                <div class="col-md-3">
+                    <div class="card text-center shadow-sm bg-success text-white p-3">
                         <p class="small mb-1">Total</p>
                         <h4 class="fw-bold">$@Math.Round((decimal)(Model.CompanySummaries.Sum(c => c.Salary + c.Allowance + c.Overtime)), 2).ToString("N0")</h4>
                     </div>
-
-               </div>
-            
-            </div>
-           <hr />
-            <!-- Charts Container1-->
-            <div class="container">
-                <h3 class="bg-dark text-white p-2">Employe Distribution & Metrics</h3>
-                <div class="d-flex flex-grow-1 m-2 justify-content-between p-2">
-                    <!-- Education Levels -->
-                    <div class="card m-2 p-4 shadow flex-grow-1">
-                        <canvas id="educationLevelPieChart" height="300">
-                        </canvas>
-                    </div>
-                    <!-- Work Location -->
-                    <div class="card m-2 p-4 shadow flex-grow-1">
-                        <canvas id="workLocChart" height="300">
-                        </canvas>
-                    </div>
-                    <!-- Job Category -->
-                    <div class="card m-2 p-4 shadow flex-grow-1">
-                        <canvas id="jobCategoryChart"  height="300">
-                        </canvas>
-                    </div>
-                </div>
-            </div>
-            <!-- Charts Container1-->
-            <hr />
-            <!--Charts Container2 -->
-            <div class="row d-flex  justify-content-center">
-                <!-- Employment Trends --> 
-                <div class="p-2 m-2">
-                    <canvas id="employmentHireChart" class="w-100">
-                    </canvas>
-                </div>
-            </div>
-            <!--COMPANY CARDS-->
-            <div class="container py-5">
-                <a class="text-center mb-4 text-decoration-none">
-                    <h2 class="bg-dark text-white p-2"><b asp-page="./Company/Index" asp-area="Management" role="button">Companies</b></h2>
-                </a>
-                <div class="d-flex flex-wrap">
-                    @foreach (var item in Model.CompanySummaries)
-                    {
-                    
-                        <div class="col-md-3 col-lg-3 flex-grow-1 m-2 ">
-                            <div class="card h-100 shadow">
-                                <div class="card-body p-4">
-                                    <div class="d-flex justify-content-between align-items-start">
-                                        <a asp-page="Companyp" asp-route-id="@item.CompanyID" asp-area="Management" role="button" class="text-decoration-none">
-                                            <h5 class="card-title fw-bold text-dark">@item.CompanyName</h5>
-                                            <h6 class="card-subtitle mb-3 opacity-75 text-dark">Manager: @(item.Manager ?? "N\\A")</h6>
-                                        </a>
-
-                                    </div>
-                                    <div class="d-flex justify-content-between border-top border-opacity-25 pt-3 text-primary">
-                                        <div>
-                                            <p class="small mb-1">Employees</p>
-                                            <h3 class="fw-bold">@item.Employees.ToString("N0")</h3>
-                                        </div>
-                                        <div>
-                                            <p class="small mb-1">Departments</p>
-                                            <h3 class="fw-bold">@item.Departments</h3>
-                                        </div>
-                                    </div>
-                                    <div class="d-flex justify-content-between border-top border-opacity-25 pt-3">
-                                        <div class="text-warning ">
-                                            <p class="small mb-1">Acc. Leaves</p>
-                                            <h5 class="fw-bold">@Math.Round((decimal) item.payableLeaves, 2).ToString("N0")</h5>
-                                        </div>
-                                        <div class="text-danger">
-                                            <p class="small mb-1">Leave Cost</p>
-                                            <h5 class="fw-bold ">$@Math.Round((decimal)item.payableLeaves, 2).ToString("N0")</h5>
-                                        </div>
-                                    </div>
-                                    <div class="mt-4 text-success">
-                                        <h4 class="display-8 fw-bold text-end">$@(item.Salary.ToString("N0"))</h4>
-                                        <p class="small text-end mb-0">Total Monthly Payroll</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    }
                 </div>
             </div>
         </div>
+
+        <!-- CHART SECTION -->
+        <div class="mt-5">
+            <h4 class="fw-bold text-secondary border-bottom pb-2 mb-3">
+                <i class="bi bi-pie-chart-fill me-2"></i> Employee Distribution & Metrics
+            </h4>
+
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="card shadow-sm p-3">
+                        <canvas id="educationLevelPieChart" height="300"></canvas>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card shadow-sm p-3">
+                        <canvas id="workLocChart" height="300"></canvas>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card shadow-sm p-3">
+                        <canvas id="jobCategoryChart" height="300"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+
+        <!-- COMPANY CARDS -->
+        <div class="mt-5">
+            <h4 class="fw-bold text-secondary border-bottom pb-2 mb-4 text-center">
+                <i class="bi bi-buildings me-2"></i> Company Overview
+            </h4>
+
+            <div class="row g-4">
+                @foreach (var item in Model.CompanySummaries)
+                {
+                    <div class="col-md-4 col-lg-3">
+                        <div class="card shadow-sm h-100 border-0 hover-shadow">
+                            <div class="card-body">
+                                <h5 class="fw-bold text-primary">@item.CompanyName</h5>
+                                <h6 class="text-muted mb-3">Manager: @(item.Manager ?? "N\\A")</h6>
+                                <div class="d-flex justify-content-between text-secondary border-top pt-2">
+                                    <span>Employees:</span>
+                                    <strong>@item.Employees.ToString("N0")</strong>
+                                </div>
+                                <div class="d-flex justify-content-between text-secondary border-top pt-2">
+                                    <span>Departments:</span>
+                                    <strong>@item.Departments</strong>
+                                </div>
+                                <div class="text-end mt-3">
+                                    <h5 class="fw-bold text-success">$@item.Salary.ToString("N0")</h5>
+                                    <small>Total Monthly Payroll</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
     </div>
+
+    <!--ANNUAL LEAVE SUMMARY-->
     <div class="tab-pane fade" id="annualLeaveView">
         <h4 class="fw-bold">Annual Leave Summary</h4>
         <table class="table table-bordered table-striped table-hover print-full-width">
@@ -296,8 +298,18 @@
             </tbody>
         </table>
     </div>
+
+    <!--EMPLOYMENT STATS TABLE-->
     <div class="tab-pane fade" id="employmentStats">
         <h4 class="fw-bold">Employment Stats</h4>
+        <!--ENPLOYMENT STATS-->
+        <div class="row d-flex  justify-content-center">
+            <!-- Employment Trends -->
+            <div class="p-2 m-2">
+                <canvas id="employmentHireChart" class="w-100">
+                </canvas>
+            </div>
+        </div>
         <table class="table table-bordered table-striped table-hover">
             <thead class="bg-dark text-white">
                 <tr>
@@ -332,8 +344,7 @@
                 
             </tbody>
             <tfoot class="fw-bold bg-secondary">
-                <tr>
-                
+                <tr>               
                     <td colspan="2">Summary</td>
                     <td>@Model.EmploymentYearlyStats.Sum(eys => eys.NewEmployees ?? 0).ToString("N2") (Total)
                         @((Model.EmploymentYearlyStats?.Sum(eys => eys.NewEmployees) / Model.EmploymentYearlyStats.Count())) (Avg)
@@ -353,6 +364,8 @@
             </tfoot>
         </table>
     </div>
+
+    <!--TERMINATION STATS-->
     <div class="tab-pane fade" id="terminationStats">
         <h4 class="fw-bold">Termination Stats (Active Companies)</h4>
         <table class="table table-bordered table-striped table-hover">
@@ -406,9 +419,96 @@
         </table>
 
     </div>
+
 </div>
 <div class="d-flex justify-content-end">@await Html.PartialAsync("print")</div>
 
+<style>
+    .clickable:hover {
+        transform: scale(1.03);
+        transition: all 0.2s ease-in-out;
+        box-shadow: 0 0 10px rgba(0,0,0,0.15);
+    }
+
+    .hover-shadow:hover {
+        transform: translateY(-3px);
+        transition: all 0.25s ease-in-out;
+        box-shadow: 0 0 15px rgba(0,0,0,0.2);
+    }
+
+    table thead {
+        background: linear-gradient(90deg, #0d6efd, #6610f2);
+    }
+
+    .nav-pills .nav-link.active {
+        background: linear-gradient(90deg, #0d6efd, #20c997);
+        color: white !important;
+    }
+</style>
+<style>
+    /* --- General Aesthetic Upgrades --- */
+    canvas {
+        background: #fff;
+        border-radius: 16px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        padding: 15px;
+        transition: transform 0.2s ease, box-shadow 0.3s ease;
+    }
+
+        canvas:hover {
+            transform: scale(1.01);
+            box-shadow: 0 6px 18px rgba(0,0,0,0.15);
+        }
+
+    /* Chart containers for layout */
+    .chart-card {
+        background: #f9fafb;
+        border-radius: 18px;
+        padding: 20px;
+        margin-bottom: 25px;
+        transition: all 0.3s ease;
+        border: 1px solid #e6e9ef;
+    }
+
+        .chart-card:hover {
+            background: #ffffff;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+        }
+
+    /* Titles and Nav */
+    .nav-pills .nav-link.active {
+        background: linear-gradient(90deg, #0d6efd, #20c997);
+        color: white !important;
+        box-shadow: 0 3px 10px rgba(13, 110, 253, 0.4);
+    }
+
+    table thead {
+        background: linear-gradient(90deg, #0d6efd, #6610f2);
+        color: white;
+    }
+
+    .clickable:hover, .hover-shadow:hover {
+        transform: translateY(-3px) scale(1.03);
+        transition: all 0.25s ease-in-out;
+        box-shadow: 0 6px 15px rgba(0,0,0,0.2);
+    }
+</style>
+
+<script>
+    // Global Chart.js defaults for a consistent modern style
+    Chart.defaults.font.family = "'Inter', 'Helvetica Neue', 'Arial', sans-serif";
+    Chart.defaults.font.size = 13;
+    Chart.defaults.color = "#333";
+    Chart.defaults.plugins.legend.labels.usePointStyle = true;
+    Chart.defaults.plugins.legend.labels.boxWidth = 8;
+    Chart.defaults.plugins.title.font.weight = 'bold';
+    Chart.defaults.plugins.title.font.size = 18;
+    Chart.defaults.plugins.tooltip.backgroundColor = 'rgba(0, 0, 0, 0.8)';
+    Chart.defaults.plugins.tooltip.titleFont = { weight: 'bold', size: 14 };
+    Chart.defaults.plugins.tooltip.bodyFont = { size: 13 };
+    Chart.defaults.plugins.tooltip.cornerRadius = 6;
+    Chart.defaults.plugins.tooltip.padding = 12;
+</script>
 
 <!--EDUCATION LEVEL CHART SCRIPT-->
 <script>
@@ -430,9 +530,9 @@
             datasets: [{
                 data: educationLevelCounts,
                 backgroundColor: [
-                    '#FF6B6B', '#FF8E72', '#FFB74D', '#FFD54F', '#DCE775',
-                    '#A3E635', '#4CAF50', '#81C784', '#64B5F6', '#2196F3',
-                    '#1565C0', '#9575CD', '#BA68C8', '#F06292', '#EC407A'
+                    '#3B82F6', '#60A5FA', '#34D399', '#10B981', '#FBBF24',
+                    '#F59E0B', '#EF4444', '#EC4899', '#8B5CF6', '#6366F1',
+                    '#14B8A6', '#0EA5E9', '#F472B6', '#84CC16', '#EAB308'
                 ],
                 borderColor: '#fff',
                 borderWidth: 2,
@@ -440,89 +540,68 @@
                 hoverBorderColor: '#333'
             }]
         },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            cutout: '50%', // This makes it a doughnut instead of pie
-            plugins: {
-                legend: {
-                    position: 'bottom',
-                    labels: {
-                        padding: 10,
-                        usePointStyle: true,
-                        pointStyle: 'circle',
-                        font: {
-                            size: 12,
-                            family: "'Helvetica Neue', 'Helvetica', 'Arial', sans-serif"
-                        },
-                        generateLabels: function (chart) {
-                            const data = chart.data;
-                            if (data.labels.length && data.datasets.length) {
-                                return data.labels.map(function (label, i) {
-                                    const meta = chart.getDatasetMeta(0);
-                                    const style = meta.controller.getStyle(i);
-
-                                    return {
-                                        text: label,
-                                        fillStyle: style.backgroundColor,
-                                        strokeStyle: style.borderColor,
-                                        lineWidth: style.borderWidth,
-                                        hidden: !chart.getDataVisibility(i),
-                                        index: i
-                                    };
-                                });
-                            }
-                            return [];
-                        }
-                    },
-                    onClick: function (e, legendItem, legend) {
-                        const index = legendItem.index;
-                        const chart = legend.chart;
-                        chart.toggleDataVisibility(index);
-                        chart.update();
+            options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        cutout: '60%', // more modern thin-ring look
+        plugins: {
+            title: {
+                display: true,
+                text: "Education Level",
+                color: "#111827",
+                padding: { top: 10, bottom: 25 }
+            },
+            legend: {
+                position: 'bottom',
+                labels: {
+                    color: "#374151",
+                    padding: 15,
+                    font: { size: 13, weight: '500' },
+                    generateLabels: function (chart) {
+                        const data = chart.data;
+                        return data.labels.map(function (label, i) {
+                            const meta = chart.getDatasetMeta(0);
+                            const style = meta.controller.getStyle(i);
+                            return {
+                                text: label,
+                                fillStyle: style.backgroundColor,
+                                strokeStyle: style.borderColor,
+                                lineWidth: 2,
+                                index: i
+                            };
+                        });
                     }
                 },
-                tooltip: {
-                    callbacks: {
-                        label: function (context) {
-                            const label = context.label || '';
-                            const value = context.raw || 0;
-                            const total = context.dataset.data.reduce((a, b) => a + b, 0);
-                            const percentage = Math.round((value / total) * 100);
-
-                            return `${label}: ${value} people (${percentage}%)`;
-                        }
-                    },
-                    displayColors: true,
-                    usePointStyle: true,
-                    bodyFont: {
-                        size: 14
-                    },
-                    padding: 12
-                },
-                title: {
-                    display: true,
-                    text: "Education Level",
-                    font: {
-                        size: 18,
-                        weight: "bold",
-                        family: "'Helvetica Neue', 'Helvetica', 'Arial', sans-serif"
-                    },
-                    
-                    padding: {
-                        top: 10,
-                        bottom: 30
-                    },
-                    align: 'center'
+                onClick: (e, legendItem, legend) => {
+                    const index = legendItem.index;
+                    const chart = legend.chart;
+                    chart.toggleDataVisibility(index);
+                    chart.update();
                 }
             },
-            animation: {
-                animateScale: true,
-                animateRotate: true
+            tooltip: {
+                usePointStyle: true,
+                callbacks: {
+                    label: (context) => {
+                        const label = context.label || '';
+                        const value = context.raw || 0;
+                        const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                        const percentage = Math.round((value / total) * 100);
+                        return `${label}: ${value} (${percentage}%)`;
+                    }
+                }
             }
+        },
+        animation: {
+            duration: 1200,
+            easing: 'easeOutQuart'
         }
+    }
+
     });
 </script>
+
+
 <!--EMPLOYMENT RATES SCRIPT-->
 <script>
     var ctx = document.getElementById("employmentHireChart").getContext("2d");
@@ -593,80 +672,71 @@
                 }
                 ]
             },
-       
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    title: {
-                        display: true,
-                        text: 'Employment Trends',
-                        font: {
-                            size: 18,
-                            weight: 'bold'
-                        },
-                        padding: {
-                            top: 10,
-                            bottom: 20
-                        }
-                    },
-                    legend: {
-                        position: 'top',
-                        labels: {
-                            boxWidth: 12,
-                            padding: 20,
-                            font: {
-                                size: 12
-                            }
-                        }
-                    },
-                    tooltip: {
-                        mode: 'index',
-                        intersect: false,
-                        callbacks: {
-                            title: function (context) {
-                                return 'Year: ' + context[0].label;
-                            },
-                            label: function (context) {
-                            return context.dataset.label + context.parsed.y.toLocaleString();
-                            }
-                        }
-                    }
-                },
-                scales: {
-                    x: {
-                        title: {
-                            display: true,
-                            text: 'Year',
-                            font: {
-                                weight: 'bold'
-                            }
-                        },
-                        grid: {
-                            display: false
-                        }
-                    },
-                    y: {
-                        title: {
-                            display: true,
-                            text: 'Amount',
-                            font: {
-                                weight: 'bold'
-                            }
-                        },
-                        min: Math.max(0, Math.min(...counts) - Math.max(...counts) * 0.1),
-                        ticks: {
-                            callback: function (value) {
-                                return value.toLocaleString();
-                            }
-                        }
-                    }
-                },
-                interaction: {
-                    intersect: false,
-                    mode: 'nearest'
+
+                options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            title: {
+                display: true,
+                text: 'Employment Trends',
+                color: '#111827'
+            },
+            legend: {
+                position: 'top',
+                labels: {
+                    color: '#374151',
+                    padding: 20,
+                    font: { size: 13, weight: '500' }
+                }
+            },
+            tooltip: {
+                mode: 'index',
+                intersect: false,
+                callbacks: {
+                    title: (context) => `Year: ${context[0].label}`,
+                    label: (context) => `${context.dataset.label}: ${context.parsed.y.toLocaleString()}`
                 }
             }
+        },
+        scales: {
+            x: {
+                title: {
+                    display: true,
+                    text: 'Year',
+                    color: '#111827',
+                    font: { weight: 'bold' }
+                },
+                grid: {
+                    display: false
+                }
+            },
+            y: {
+                title: {
+                    display: true,
+                    text: 'Number of Employees',
+                    color: '#111827',
+                    font: { weight: 'bold' }
+                },
+                ticks: {
+                    callback: (value) => value.toLocaleString(),
+                    color: '#6B7280'
+                },
+                grid: {
+                    color: 'rgba(209, 213, 219, 0.3)'
+                }
+            }
+        },
+        interaction: {
+            intersect: false,
+            mode: 'nearest'
+        },
+        animation: {
+            duration: 1500,
+            easing: 'easeOutQuart'
+        }
+    }
+
         });
 </script>
 
@@ -690,9 +760,9 @@
             datasets: [{
                 data: jobCategoryCounts,
                 backgroundColor: [
-                    '#FF6B6B', '#FF8E72', '#FFB74D', '#FFD54F', '#DCE775',
-                    '#A3E635', '#4CAF50', '#81C784', '#64B5F6', '#2196F3',
-                    '#1565C0', '#9575CD', '#BA68C8', '#F06292', '#EC407A'
+                    '#3B82F6', '#60A5FA', '#34D399', '#10B981', '#FBBF24',
+                    '#F59E0B', '#EF4444', '#EC4899', '#8B5CF6', '#6366F1',
+                    '#14B8A6', '#0EA5E9', '#F472B6', '#84CC16', '#EAB308'
                 ],
                 borderColor: '#fff',
                 borderWidth: 2,
@@ -700,87 +770,64 @@
                 hoverBorderColor: '#333'
             }]
         },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            cutout: '50%', // This makes it a doughnut instead of pie
-            plugins: {
-                legend: {
-                    position: 'bottom',
-                    labels: {
-                        padding: 10,
-                        usePointStyle: true,
-                        pointStyle: 'circle',
-                        font: {
-                            size: 12,
-                            family: "'Helvetica Neue', 'Helvetica', 'Arial', sans-serif"
-                        },
-                        generateLabels: function (chart) {
-                            const data = chart.data;
-                            if (data.labels.length && data.datasets.length) {
-                                return data.labels.map(function (label, i) {
-                                    const meta = chart.getDatasetMeta(0);
-                                    const style = meta.controller.getStyle(i);
-
-                                    return {
-                                        text: label,
-                                        fillStyle: style.backgroundColor,
-                                        strokeStyle: style.borderColor,
-                                        lineWidth: style.borderWidth,
-                                        hidden: !chart.getDataVisibility(i),
-                                        index: i
-                                    };
-                                });
-                            }
-                            return [];
-                        }
-                    },
-                    onClick: function (e, legendItem, legend) {
-                        const index = legendItem.index;
-                        const chart = legend.chart;
-                        chart.toggleDataVisibility(index);
-                        chart.update();
+            options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        cutout: '60%', // more modern thin-ring look
+        plugins: {
+            title: {
+                display: true,
+                text: "Job Category",
+                color: "#111827",
+                padding: { top: 10, bottom: 25 }
+            },
+            legend: {
+                position: 'bottom',
+                labels: {
+                    color: "#374151",
+                    padding: 15,
+                    font: { size: 13, weight: '500' },
+                    generateLabels: function (chart) {
+                        const data = chart.data;
+                        return data.labels.map(function (label, i) {
+                            const meta = chart.getDatasetMeta(0);
+                            const style = meta.controller.getStyle(i);
+                            return {
+                                text: label,
+                                fillStyle: style.backgroundColor,
+                                strokeStyle: style.borderColor,
+                                lineWidth: 2,
+                                index: i
+                            };
+                        });
                     }
                 },
-                tooltip: {
-                    callbacks: {
-                        label: function (context) {
-                            const label = context.label || '';
-                            const value = context.raw || 0;
-                            const total = context.dataset.data.reduce((a, b) => a + b, 0);
-                            const percentage = Math.round((value / total) * 100);
-
-                            return `${label}: ${value} people (${percentage}%)`;
-                        }
-                    },
-                    displayColors: true,
-                    usePointStyle: true,
-                    bodyFont: {
-                        size: 14
-                    },
-                    padding: 12
-                },
-                title: {
-                    display: true,
-                    text: "Job Category",
-                    font: {
-                        size: 18,
-                        weight: "bold",
-                        family: "'Helvetica Neue', 'Helvetica', 'Arial', sans-serif"
-                    },
-                   
-                    padding: {
-                        top: 10,
-                        bottom: 30
-                    },
-                    align: 'center'
+                onClick: (e, legendItem, legend) => {
+                    const index = legendItem.index;
+                    const chart = legend.chart;
+                    chart.toggleDataVisibility(index);
+                    chart.update();
                 }
             },
-            animation: {
-                animateScale: true,
-                animateRotate: true
+            tooltip: {
+                usePointStyle: true,
+                callbacks: {
+                    label: (context) => {
+                        const label = context.label || '';
+                        const value = context.raw || 0;
+                        const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                        const percentage = Math.round((value / total) * 100);
+                        return `${label}: ${value} (${percentage}%)`;
+                    }
+                }
             }
+        },
+        animation: {
+            duration: 1200,
+            easing: 'easeOutQuart'
         }
+    }
+
     });
 </script>
 <!--WORKLOC CHART -->
@@ -803,9 +850,9 @@
             datasets: [{
                 data: jobCategoryCounts,
                 backgroundColor: [
-                    '#FF6B6B', '#FF8E72', '#FFB74D', '#FFD54F', '#DCE775',
-                    '#A3E635', '#4CAF50', '#81C784', '#64B5F6', '#2196F3',
-                    '#1565C0', '#9575CD', '#BA68C8', '#F06292', '#EC407A'
+                    '#3B82F6', '#60A5FA', '#34D399', '#10B981', '#FBBF24',
+                    '#F59E0B', '#EF4444', '#EC4899', '#8B5CF6', '#6366F1',
+                    '#14B8A6', '#0EA5E9', '#F472B6', '#84CC16', '#EAB308'
                 ],
                 borderColor: '#fff',
                 borderWidth: 2,
@@ -813,87 +860,64 @@
                 hoverBorderColor: '#333'
             }]
         },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            cutout: '50%', // This makes it a doughnut instead of pie
-            plugins: {
-                legend: {
-                    position: 'bottom',
-                    labels: {
-                        padding: 10,
-                        usePointStyle: true,
-                        pointStyle: 'circle',
-                        font: {
-                            size: 12,
-                            family: "'Helvetica Neue', 'Helvetica', 'Arial', sans-serif"
-                        },
-                        generateLabels: function (chart) {
-                            const data = chart.data;
-                            if (data.labels.length && data.datasets.length) {
-                                return data.labels.map(function (label, i) {
-                                    const meta = chart.getDatasetMeta(0);
-                                    const style = meta.controller.getStyle(i);
-
-                                    return {
-                                        text: label,
-                                        fillStyle: style.backgroundColor,
-                                        strokeStyle: style.borderColor,
-                                        lineWidth: style.borderWidth,
-                                        hidden: !chart.getDataVisibility(i),
-                                        index: i
-                                    };
-                                });
-                            }
-                            return [];
-                        }
-                    },
-                    onClick: function (e, legendItem, legend) {
-                        const index = legendItem.index;
-                        const chart = legend.chart;
-                        chart.toggleDataVisibility(index);
-                        chart.update();
+            options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        cutout: '60%', // more modern thin-ring look
+        plugins: {
+            title: {
+                display: true,
+                text: "Worksite Employee Distribution",
+                color: "#111827",
+                padding: { top: 10, bottom: 25 }
+            },
+            legend: {
+                position: 'bottom',
+                labels: {
+                    color: "#374151",
+                    padding: 15,
+                    font: { size: 13, weight: '500' },
+                    generateLabels: function (chart) {
+                        const data = chart.data;
+                        return data.labels.map(function (label, i) {
+                            const meta = chart.getDatasetMeta(0);
+                            const style = meta.controller.getStyle(i);
+                            return {
+                                text: label,
+                                fillStyle: style.backgroundColor,
+                                strokeStyle: style.borderColor,
+                                lineWidth: 2,
+                                index: i
+                            };
+                        });
                     }
                 },
-                tooltip: {
-                    callbacks: {
-                        label: function (context) {
-                            const label = context.label || '';
-                            const value = context.raw || 0;
-                            const total = context.dataset.data.reduce((a, b) => a + b, 0);
-                            const percentage = Math.round((value / total) * 100);
-
-                            return `${label}: ${value} people (${percentage}%)`;
-                        }
-                    },
-                    displayColors: true,
-                    usePointStyle: true,
-                    bodyFont: {
-                        size: 14
-                    },
-                    padding: 12
-                },
-                title: {
-                    display: true,
-                    text: "Work Loaction",
-                    font: {
-                        size: 18,
-                        weight: "bold",
-                        family: "'Helvetica Neue', 'Helvetica', 'Arial', sans-serif"
-                    },
-                  
-                    padding: {
-                        top: 10,
-                        bottom: 30
-                    },
-                    align: 'center'
+                onClick: (e, legendItem, legend) => {
+                    const index = legendItem.index;
+                    const chart = legend.chart;
+                    chart.toggleDataVisibility(index);
+                    chart.update();
                 }
             },
-            animation: {
-                animateScale: true,
-                animateRotate: true
+            tooltip: {
+                usePointStyle: true,
+                callbacks: {
+                    label: (context) => {
+                        const label = context.label || '';
+                        const value = context.raw || 0;
+                        const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                        const percentage = Math.round((value / total) * 100);
+                        return `${label}: ${value} (${percentage}%)`;
+                    }
+                }
             }
+        },
+        animation: {
+            duration: 1200,
+            easing: 'easeOutQuart'
         }
+    }
+
     });
 </script>
 <!--JOB CLASS CHART -->

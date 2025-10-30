@@ -18,6 +18,8 @@ namespace PIS2.Models
         public virtual jobClassModel? jobClassModel { get; set; }
         public string? jobDescription { get; set; }
         public mainStatus jobStatus { get; set; }
+        public string? jobQualifications { get; set; }
+        public decimal? jobExperience { get; set; }
 
         public virtual ICollection<educationLevelModel>? EducationLevels {get; set; }
         public virtual ICollection<jobPlacementModel>? JobPlacements { get; set; }

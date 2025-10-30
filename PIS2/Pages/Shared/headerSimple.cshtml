@@ -1,23 +1,29 @@
-﻿<div class="d-none d-print-flex align-items-center justify-content-between mb-2 w-100">
+﻿@model string
+<div class="d-none d-print-flex align-items-center justify-content-between w-100">
     <!-- Left Logo -->
     <div style="width: 15%; text-align: left;">
-        <img src="/assets/mie_logo.png" alt="Logo" style="width: 100%; max-height: 60px;">
+        <img src="/assets/logo_full.png" alt="Logo" style="width: 100%; max-height: 60px;">
        
     </div>
 
     <!-- Centered Company Info -->
-    <div style="width: 70%; text-align: center;">
-        <h3 style="margin: 0;" class="fw-bold">መስፍን ብረታ ብረትና ኢንጂነሪንግ ሓ/የተ/የግ/ማህበር</h3>
-        <h2 style="margin: 0;" class="fw-bold">Mefin Metals & Engineering PLC</h2>
+    <div style="width: 70%; text-align: center;" class="flex-grow-1">
+        <h3 style="margin: 0;" class="fw-bold">መስፍን ብረታ ብረትና ኢንጂነሪንግ <small>ሓ/የተ/የግ/ኩ</small></h3>
+        <h2 style="margin: 0;" class="fw-bold">Mefin Metals & Engineering <small>PLC</small></h2>
         
     </div>
 
     <!-- Right Logo -->
     <div style="width: 15%; text-align: right;">
-        <img src="/assets/mie_logo.png" alt="Logo" style="width: 100%; max-height: 60px;">
-        <p style="margin: 0;" class="fw-bold">Date:</p>
-        <p style="margin: 0;">@DateTime.Now.ToString("MMM dd, yyyy")</p>
+        <img src="/assets/logo_full.png" alt="Logo" style="width: 100%; max-height: 60px;">
+        
     </div>
-    <hr class="border-5 border-dark" />
+    
+   
 
 </div>
+
+<div class="d-none d-print-flex justify-content-between">
+    <p style="margin: 0;"><span class="fw-bold">Form No:</span><u>@Model</u></p>
+    <p style="margin: 0;"><span class="fw-bold">Date:</span><u>@DateTime.Now.ToString("MMM dd, yyyy")</u></p></div>
+<hr class="d-none d-print-block" />

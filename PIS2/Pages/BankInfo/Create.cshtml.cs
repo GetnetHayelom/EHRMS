@@ -20,7 +20,11 @@ namespace PIS2.Pages.BankInfo
 
         public IActionResult OnGet()
         {
-        ViewData["personID"] = new SelectList(_context.Persons, "personID", "personID");
+            if (!User.IsInRole("MIE\\PMS_HRCLERK"))
+            {
+                return RedirectToPage("/Shared/AccessDenied");
+            }
+            ViewData["personID"] = new SelectList(_context.Persons, "personID", "personID");
             return Page();
         }
 
@@ -30,6 +34,10 @@ namespace PIS2.Pages.BankInfo
         // For more information, see https://aka.ms/RazorPagesCRUD.
         public async Task<IActionResult> OnPostAsync()
         {
+            if (!User.IsInRole("MIE\\PMS_HRCLERK"))
+            {
+                return RedirectToPage("/Shared/AccessDenied");
+            }
             if (!ModelState.IsValid)
             {
                 return Page();

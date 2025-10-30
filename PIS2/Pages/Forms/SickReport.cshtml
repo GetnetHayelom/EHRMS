@@ -1,0 +1,138 @@
+﻿@page
+@model PIS2.Pages.Forms.SickReportModel
+@{
+    ViewData["Title"] = "Sick Report Form";
+}
+@{
+    string formNo = "WF/HRM/13";
+}
+<partial name="headerSimple" model="formNo" />
+
+<div class="container mt-4">
+    <div class="card p-4">
+        
+        <h3 class="card-subtitle text-center mb-3 fw-bold">Sick Report Form </h3>
+
+        <form method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="d-flex d-print-flex gap-2">
+                <div class="col-md-2 d-print-flex d-flex">
+                    <label for="EmployeeID" class="form-label">ID:</label>
+                    <div class="input-group">
+                        <input type="text" class="form-control" id="EmployeeID" required placeholder="Enter ID" />
+                        <button class="btn btn-outline-secondary d-print-none" type="button" id="lookupButton"
+                                onclick="fetchEmployeeData($('#EmployeeID').val(), '#EmployeeName', '#Department', '#JobTitle')">
+                            <i class="bi bi-search"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="col-md-6 d-flex ">
+                    <label asp-for="EmployeeName" class="form-label">Name:</label>
+                    <input asp-for="EmployeeName" class="form-control form-control-sm" id="EmployeeName">
+                    
+                </div>
+
+                <div class="col-md-2 d-flex">
+                    <label asp-for="Sex" class="form-label">Sex:</label>
+                    <select asp-for="Sex" class="form-control form-control-sm">
+                        <option value="">Select...</option>
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                    </select>
+                </div>
+
+                <div class="col-md-2 d-flex">
+                    <label asp-for="Age" class="form-label">Age:</label>
+                    <input asp-for="Age" type="number" class="form-control form-control-sm">
+                </div>
+            </div>
+
+            <div class="row mb-4">
+                <div class="col-12">
+                    <label asp-for="Address" class="form-label">Address:</label>
+                    <input asp-for="Address" class="form-control form-control-sm">
+                </div>
+            </div>
+
+
+            <div class="row mb-4 d-print-flex">
+
+                <div class="col-md-4">
+                    <label asp-for="Department" class="form-label">Department:</label>
+                    <input asp-for="Department" class="form-control form-control-sm" id="Department">
+                </div>
+
+                <div class="col-md-4">
+                    <label asp-for="JobTitle" class="form-label">Job Title:</label>
+                    <input asp-for="JobTitle" class="form-control form-control-sm" id="JobTitle">
+                </div>
+
+                <div class="col-md-4">
+                    <label asp-for="TimeSendToClinic" class="form-label">Time send to clinic:</label>
+                    <input asp-for="TimeSendToClinic" type="time" class="form-control form-control-sm">
+                </div>
+            </div>
+
+            <hr />
+
+            <h5 class="">Division In Charge Report:</h5>
+            <div class="row border p-3 bg-light d-print-flex">
+
+                <div class="col-md-8">
+                    <label asp-for="InChargeDivisionName" class="form-label">Name & sig. In charge of Division:</label>
+                    <input asp-for="InChargeDivisionName" class="form-control">
+                </div>
+
+                <div class="col-md-4">
+                    <label asp-for="ReportDate" class="form-label">Date:</label>
+                    <input class="form-control">
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-center gap-3">
+                @* Use your existing print partial and ensure it includes the d-print-none class *@
+                @await Html.PartialAsync("print")
+                @await Html.PartialAsync("back")
+                <div><button type="reset" class="btn btn-outline-secondary px-4 m-2 d-print-none">Reset</button></div>
+            </div>
+
+            <hr />
+
+            <h4 class="mb-3 text-secondary">@Model.ClinicFeedBackTitle</h4>
+            <div class="border p-3 bg-white">
+
+                <div class="col-12">
+                    <label asp-for="Diagnosis" class="form-label">Diagnosis:</label>
+                    <textarea asp-for="Diagnosis" class="form-control" rows="2"></textarea>
+                </div>
+                <div class="d-flex d-print-flex gap-2">
+                    <div class="col-md-3">
+                        <label asp-for="ReturnedTimeFromClinic" class="form-label">Returned Time From Clinic:</label>
+                        <input asp-for="ReturnedTimeFromClinic" type="time" class="form-control">
+                    </div>
+
+                    <div class="col-md-5">
+                        <label asp-for="NameInChargeOfClinic" class="form-label">Name of In charge of Clinic:</label>
+                        <input asp-for="NameInChargeOfClinic" class="form-control">
+                    </div>
+
+                    <div class="col-md-4">
+                        <label asp-for="ClinicDate" class="form-label">Date:</label>
+                        <input asp-for="ClinicDate" type="" class="form-control">
+                    </div>
+                </div>
+               
+            </div>
+
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/js/employeeLookup.js"></script>

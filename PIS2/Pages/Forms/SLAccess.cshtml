@@ -1,0 +1,370 @@
+﻿@page
+@model PIS2.Pages.Forms.SLAccessModel
+
+@{
+    ViewData["Title"] = "User Access Privilege Request";
+}
+@{
+    string formNo = "WF/ICT/02";
+}
+<partial name="headerSimple" model="formNo" />
+<style>
+/* ---------- Base print setup ---------- */
+@@page {
+    size: A4 portrait;
+    margin: 1.5cm;
+}
+
+@@media print {
+    body {
+        font-family: "Segoe UI", Arial, sans-serif;
+        font-size: 11pt;
+        color: #000;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+        background: #fff;
+    }
+
+    h2, h3, h4 {
+        page-break-after: avoid;
+        color: #000;
+    }
+
+    form {
+        width: 100%;
+        max-width: 100%;
+    }
+
+    /* Remove button elements and other non-print items */
+    .d-print-none, button, .btn {
+        display: none !important;
+    }
+
+    /* Allow wrapped layout for sections */
+    .d-print-flex {
+        display: flex !important;
+        flex-wrap: wrap !important;
+    }
+
+    /* Adjust columns for print to use percentage widths */
+    .col-md-3 { flex: 0 0 25% !important; max-width: 25% !important; }
+    .col-md-4 { flex: 0 0 33.33% !important; max-width: 33.33% !important; }
+    .col-md-5 { flex: 0 0 41.66% !important; max-width: 41.66% !important; }
+    .col-md-6 { flex: 0 0 50% !important; max-width: 50% !important; }
+    .col-md-8 { flex: 0 0 66.66% !important; max-width: 66.66% !important; }
+    .col-md-9 { flex: 0 0 75% !important; max-width: 75% !important; }
+    .col-md-12, .w-100 { flex: 0 0 100% !important; max-width: 100% !important; }
+
+    /* Ensure cards and sections stay together */
+    section, .card {
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
+    }
+
+    /* Card styling optimized for printing */
+    .card {
+        border: 1px solid #999;
+        border-radius: 8px;
+        background: #f9f9f9 !important;
+        padding: 0.75rem !important;
+        margin-bottom: 0.75rem !important;
+        box-shadow: none !important;
+    }
+
+    /* Compact spacing for print */
+    .form-label, label {
+        font-weight: 600;
+        margin-bottom: 0.25rem !important;
+    }
+
+    input.form-control, textarea.form-control {
+        border: 1px solid #aaa !important;
+        border-radius: 4px !important;
+        font-size: 10.5pt;
+        padding: 4px 6px;
+        height: auto !important;
+        background-color: #fff !important;
+        width: 100%;
+    }
+
+    .form-check-label {
+        font-size: 10pt;
+    }
+
+    .form-check {
+        margin-bottom: 0.25rem;
+    }
+
+    hr {
+        border-top: 1px solid #aaa;
+        margin: 0.75rem 0;
+    }
+
+    /* Avoid breaking important sections */
+    .section, h3, h4 {
+        page-break-after: avoid !important;
+    }
+
+    /* Header area fit */
+    h2.text-center {
+        font-size: 16pt;
+        margin-bottom: 0.25rem;
+    }
+
+    .fw-bold {
+        font-weight: 700 !important;
+    }
+
+    /* Adjust gap utilities for print */
+    .gap-3 {
+        gap: 0.5rem !important;
+    }
+
+    /* Better printing for checkboxes */
+    input[type="checkbox"] {
+        transform: scale(0.9);
+        margin-right: 0.3rem;
+    }
+
+    /* Fit all sections comfortably in A4 */
+    body {
+        overflow: visible;
+    }
+}
+</style>
+
+<h2 class="text-center fw-bold mb-1">SL Privilege Request Form</h2>
+<hr />
+
+<form method="post">
+    <section class="mb-1">
+        <h3 class="fw-bold">1. User Information</h3>
+        <div class="d-flex d-print-flex flex-wrap gap-3">
+            <div class="col-md-3 d-print-flex">
+                <label for="EmployeeID" class="form-label">Employee ID:</label>
+                <div class="input-group">
+                    <input type="text" class="form-control" id="EmployeeID" asp-for="EmployeeID" required placeholder="Enter ID" />
+                    <button class="btn btn-outline-secondary d-print-none" type="button" id="lookupButton"
+                            onclick="fetchEmployeeData($('#EmployeeID').val(), '#EmployeeName', '#JobTitle', '#Department', '#Company')">
+                        <i class="bi bi-search"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="col-md-6 d-print-flex">
+                <label for="EmployeeName" class="form-label">Employee Name:</label>
+                <input type="text" class="form-control" id="EmployeeName" asp-for="EmployeeName" required readonly/>
+            </div>
+            <div class="col-md-5 d-print-flex">
+                <label for="JobTitle" class="form-label">Job Title:</label>
+                <input type="text" class="form-control" id="JobTitle" asp-for="JobTitle" required readonly />
+            </div>
+            <div class="col-md-3 d-print-flex">
+                <label for="Department" class="form-label">Department:</label>
+                <input type="text" class="form-control" id="Department" asp-for="Department" required readonly />
+            </div>
+            <div class="col-md-3 d-print-flex">
+                <label for="Company" class="form-label">Company:</label>
+                <input type="text" class="form-control" id="Company" asp-for="Company" required readonly />
+            </div>
+
+        </div>
+    </section>
+
+    <hr />
+
+    <section class="mb-1">
+        <h3 class="fw-bold">2. SL Access Privileges</h3>
+       
+        <p class="text-muted mb-1">Select all applicable **Group ID / Access Type** and **Customization Groups** based on the Business Unit:</p>
+       
+        <div class="">
+            <h4>Group ID / Access Type</h4>
+            <div class="card p-3">
+                <div class="d-flex d-print-flex flex-wrap gap-3">
+                    <div class="mb-1">
+                        <strong>General/All</strong><br />
+                        <div class="form-check"><input class="form-check-input" type="checkbox" name="SLGroup" value="RQALL" /><label class="form-check-label">RQALL - Item Request for all</label></div>
+                        <div class="form-check"><input class="form-check-input" type="checkbox" name="SLGroup" value="RQALL" /><label class="form-check-label">MGMT – Top Management</label></div>
+                    </div>
+                    <div class="mb-1">
+                    <strong>DTC & Production</strong><br />
+                        <div class="d-flex d-flex-print flex-wrap mb-1">
+                        <div class="form-check me-3"><input class="form-check-input" type="checkbox" name="SLGroup" value="AMDTC" /><label class="form-check-label">AMDTC - Jams for DTC</label></div>
+                            <div class="form-check me-3"><input class="form-check-input" type="checkbox" name="SLGroup" value="AMMAN" /><label class="form-check-label">AMMAN - Jams for Manufacturing</label></div>
+                            <div class="form-check me-3"><input class="form-check-input" type="checkbox" name="SLGroup" value="AMVIEW" /><label class="form-check-label">AMVIEW - Jams for Manufacturing View</label></div>
+                    </div>
+                      
+                </div>
+                    <div class="mb-1">
+                <strong>HR</strong><br />
+                        <div class="d-flex d-flex-print flex-wrap mb-1">
+                            <div class="form-check me-3"><input class="form-check-input" type="checkbox" name="SLGroup" value="AP" /><label class="form-check-label">XH – Human Resource</label></div>
+                            <div class="form-check me-3"><input class="form-check-input" type="checkbox" name="SLGroup" value="AR" /><label class="form-check-label">FAHR – Fixed Asset for HR</label></div>
+                            <div class="form-check me-3"><input class="form-check-input" type="checkbox" name="SLGroup" value="AP" /><label class="form-check-label">FAVIEW - Fixed Asset view</label></div>
+                    </div>
+                    
+                </div>
+                    <div class="mb-1">
+                    <strong>Marketing and Auditor</strong><br />
+                        <div class="d-flex d-flex-print flex-wrap mb-1">
+                            <div class="form-check me-3"><input class="form-check-input" type="checkbox" name="SLGroup" value="AP" /><label class="form-check-label">OM- Order Management</label></div>
+                            <div class="form-check me-3"><input class="form-check-input" type="checkbox" name="SLGroup" value="AR" /><label class="form-check-label">AMVIEW – Jams for Manufacturing View</label></div>
+                    </div>
+                    
+                </div>
+                    <div class="mb-1">
+                    <strong>Planning</strong><br />
+                        <div class="d-flex d-flex-print flex-wrap mb-1">
+                            <div class="form-check me-3"><input class="form-check-input" type="checkbox" name="SLGroup" value="AP" /><label class="form-check-label">INIPC- Inventory for IPC</label></div>
+                            <div class="form-check me-3"><input class="form-check-input" type="checkbox" name="SLGroup" value="AR" /><label class="form-check-label">RQIPC– Requisition for IPC</label></div>
+                            <div class="form-check me-3"><input class="form-check-input" type="checkbox" name="SLGroup" value="AP" /><label class="form-check-label">AMPLN – Jams for Planning</label></div>
+                            <div class="form-check me-3"><input class="form-check-input" type="checkbox" name="SLGroup" value="AR" /><label class="form-check-label">INPLN – Inventory for Planning</label></div>
+                            <div class="form-check me-3"><input class="form-check-input" type="checkbox" name="SLGroup" value="AR" /><label class="form-check-label">MRP – Material Requirement Planning</label></div>
+                    </div>
+                    
+                </div>
+                    <div class="mb-1">
+                    <strong>Supply</strong><br />
+                        <div class="d-flex d-flex-print flex-wrap mb-1">
+                            <div class="form-check me-3"><input class="form-check-input" type="checkbox" name="SLGroup" value="AP" /><label class="form-check-label">INSUP - Inventory for Supply</label></div>
+                            <div class="form-check me-3"><input class="form-check-input" type="checkbox" name="SLGroup" value="AR" /><label class="form-check-label">POSUP – Purchase Order for Supply</label></div>
+                            <div class="form-check me-3"><input class="form-check-input" type="checkbox" name="SLGroup" value="AP" /><label class="form-check-label">MASUP – Maintenance for supply </label></div>
+                    </div>
+                </div>
+                    <div class="mb-1">
+                        <strong>Finance</strong><br />
+                        <div class="d-flex d-flex-print flex-wrap">
+                            <div class="form-check me-3"><input class="form-check-input" type="checkbox" name="SLGroup" value="AP" /><label class="form-check-label">AP - Acct. Payable</label></div>
+                            <div class="form-check me-3"><input class="form-check-input" type="checkbox" name="SLGroup" value="AR" /><label class="form-check-label">AR - Acct. Receivable</label></div>
+                            <div class="form-check me-3"><input class="form-check-input" type="checkbox" name="SLGroup" value="GL" /><label class="form-check-label">GL - General Ledger</label></div>
+                            <div class="form-check me-3"><input class="form-check-input" type="checkbox" name="SLGroup" value="BR" /><label class="form-check-label">BR - Bank Recon.</label></div>
+                            <div class="form-check me-3"><input class="form-check-input" type="checkbox" name="SLGroup" value="CM" /><label class="form-check-label">CM - Cash Mgr.</label></div>
+                            <div class="form-check me-3"><input class="form-check-input" type="checkbox" name="SLGroup" value="FAFIN" /><label class="form-check-label">FAFIN - Fixed Asset</label></div>
+                            <div class="form-check me-3"><input class="form-check-input " type="checkbox" name="SLGroup" value="INFIN" /><label class="form-check-label">INFIN - Inventory for Fin.</label></div>
+                            <div class="form-check me-3"><input class="form-check-input" type="checkbox" name="SLGroup" value="POFIN" /><label class="form-check-label">POFIN - PO for Finance</label></div>
+                            <div class="form-check me-3"><input class="form-check-input" type="checkbox" name="SLGroup" value="SD" /><label class="form-check-label">SD - Service Dispatch</label></div>
+                            <div class="form-check me-3"><input class="form-check-input" type="checkbox" name="SLGroup" value="PR" /><label class="form-check-label">PR - Payroll</label></div>
+                            <div class="form-check me-3"><input class="form-check-input" type="checkbox" name="SLGroup" value="PRVIEW" /><label class="form-check-label">PRVIEW - Payroll View</label></div>
+                            <div class="form-check me-3"><input class="form-check-input " type="checkbox" name="SLGroup" value="MAFIN" /><label class="form-check-label">MAFIN - Mtn for Fin</label></div>
+                            <div class="form-check me-3"><input class="form-check-input" type="checkbox" name="SLGroup" value="OM" /><label class="form-check-label">OM - Order Management</label></div>
+                            <div class="form-check me-3"><input class="form-check-input" type="checkbox" name="SLGroup" value="INVIEW" /><label class="form-check-label">INVIEW - Inventory View</label></div>
+                            
+                        </div>
+                            
+                    </div>
+                        
+                </div>
+            </div>
+        </div>
+
+        <div class="">
+            <h4>Customization Group</h4>
+            <div class="card px-2">
+                <div class="d-flex d-print-flex">
+                    <div class="form-check me-3"><input class="form-check-input" type="checkbox" name="SLCustomization" value="DENTRY" /><label class="form-check-label">DENTRY (Finance, Planning)</label></div>
+                    <div class="form-check me-3"><input class="form-check-input" type="checkbox" name="SLCustomization" value="FINENTRY" /><label class="form-check-label">FINENTRY (Finance)</label></div>
+                    <div class="form-check me-3"><input class="form-check-input" type="checkbox" name="SLCustomization" value="AMDTC" /><label class="form-check-label">AMDTC (DTC & Production, Marketing & Auditor)</label></div>
+                    <div class="form-check me-3"><input class="form-check-input" type="checkbox" name="SLCustomization" value="HRFA" /><label class="form-check-label">HRFA (HR)</label></div>
+                    <div class="form-check me-3"><input class="form-check-input" type="checkbox" name="SLCustomization" value="Store" /><label class="form-check-label">Store (Supply)</label></div>
+                </div>
+                
+
+            </div>
+        </div>
+       
+    </section>
+
+    <hr />
+
+    <section class="">
+        <h3 class="fw-bold">4. User and Manager Declarations</h3>
+
+        <div class="card px-2">
+            <p class="font-italic">
+                **Department Manager Declaration:** "I hereby would like to inform the above user has taken all the necessary trainings and important informations to enable him\her work on his own, so we request all the above access rights be given to the user."
+            </p>
+            <div class=" d-flex d-print-flex gap-3">
+                <div class="col-md-6 d-flex d-print-flex">
+                    <label class="form-label">Name:</label>
+                    <input type="text" class="form-control" asp-for="ManagerName" required />
+                </div>
+                <div class="col-md-6 d-flex d-print-flex">
+                    <label class="form-label">Signature:</label>
+                    <input type="text" class="form-control" asp-for="ManagerSign" placeholder="Signature" required />
+                </div>
+            </div>
+        </div>
+
+        <div class="card px-2">
+            <p class="font-italic">
+                **Requesting User Declaration:** "I have taken all the necessary trainings that enables me to work on my own, I request the above approved access rights."
+            </p>
+            <div class="d-flex d-print-flex gap-3">
+                <div class="col-md-6 d-flex d-print-flex">
+                    <label class="form-label">Name(User):</label>
+                    <input type="text" class="form-control" asp-for="UserName" required />
+                </div>
+                <div class="col-md-6 d-flex d-print-flex">
+                    <label class="form-label">Signature:</label>
+                    <input type="text" class="form-control" asp-for="UserSign" placeholder="Signature" required />
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <hr />
+
+    <section class="">
+        <h3 class="fw-bold">5. ICT Approvals</h3>
+        <div class="d-flex d-print-flex gap-3">
+            <div class="col-md-4">
+                <div class="card bg-light">
+                    <p class="mb-1"><strong>Prepared by (Database Administrator)</strong></p>
+                    <input type="text" class="form-control mb-1" placeholder="Name" asp-for="DBAPreparedBy" />
+                    <input type="text" class="form-control" placeholder="Sign" asp-for="DBASign" />
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card bg-light">
+                    <p class="mb-1"><strong>Checked by (ICT/Division Manager)</strong></p>
+                    <input type="text" class="form-control mb-1" placeholder="Name" asp-for="DivisionManagerCheckedBy" />
+                    <input type="text" class="form-control" placeholder="Sign" asp-for="DivisionManagerSign" />
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card bg-light">
+                    <p class="mb-1"><strong>Approved by (ICT Dept Manager)</strong></p>
+                    <input type="text" class="form-control mb-1" placeholder="Name" asp-for="ICTDeptManagerApprovedBy" />
+                    <input type="text" class="form-control" placeholder="Sign" asp-for="ICTDeptManagerSign" />
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <hr />
+
+    <section class="">
+        <h3 class="fw-bold">6. Termination Section (To be completed upon access termination)</h3>
+        <div class="d-flex d-print-flex gap-3">
+            <div class="col-md-4">
+                <label for="TerminationDate" class="">Termination Date:</label>
+                <input type="text" class="form-control" id="TerminationDate" asp-for="TerminationDate" />
+            </div>
+            <div class="col-md-8">
+                <label for="ReasonForTermination" class="">Reason for Termination:</label>
+                <textarea class="form-control" id="ReasonForTermination" asp-for="TerminationReason"></textarea>
+            </div>
+        </div>
+    </section>
+
+    <div class="d-flex justify-content-center">
+        @await Html.PartialAsync("print")
+        @await Html.PartialAsync("back")
+    </div>
+</form>
+
+@section Scripts {
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/js/employeeLookup.js"></script>
+}
+

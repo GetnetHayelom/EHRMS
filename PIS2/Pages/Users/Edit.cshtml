@@ -1,75 +1,217 @@
 ﻿@page
 @model PIS2.Pages.Users.EditModel
+@using PIS2.Models
+@using Microsoft.AspNetCore.Mvc.Rendering
 
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = "Edit User";
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
+<form id="tokenForm">
+    @Html.AntiForgeryToken()
+</form>
+<h1 class="fw-bold mb-4">Edit User</h1>
 
-<h1 class="fw-bold">Users</h1>
-
-<h4 class="fw-bold">Update User</h4>
-<hr />
 <div class="row">
-    <div class="col-md-4">
-        <form method="post">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="userModel.userID" />
-            <div class="form-group">
-                <label asp-for="userModel.personModel.personFullName" class="control-label">Full Name</label>
-                <input asp-for="userModel.personModel.personFullName" class="form-control" readonly></input>
-                <span asp-validation-for="userModel.personModel.personFullName" class="text-danger"></span>
-            </div>
+    <!-- Left Column: User Details -->
+    <div class="col-md-5">
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-primary text-white fw-bold">User Information</div>
+            <div class="card-body" id="UserFormContainer">
+                <form method="post" id="userForm">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" asp-for="userModel.userID" />
 
-            <div class="form-group">
-                <span class="text-danger">*</span>
-                <label asp-for="userModel.userName" class="control-label">User Name</label>
-                <input asp-for="userModel.userName" class="form-control" />
-                <span asp-validation-for="userModel.userName" class="text-danger"></span>
-            </div>           
-            <div class="form-group">
-                <label asp-for="userModel.userStatus" class="control-label">Status</label>
-                <select asp-for="userModel.userStatus" class="form-control" asp-items="Html.GetEnumSelectList<Models.mainStatus>()"></select>
-                <span asp-validation-for="userModel.userStatus" class="text-danger"></span>
+                    <div class="mb-3">
+                        <label class="form-label">Full Name</label>
+                        <input  class="form-control" value="@Model.userModel?.personModel?.personFullName" readonly />
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="userModel.userName" class="form-label">User Name <span class="text-danger">*</span></label>
+                        <input asp-for="userModel.userName" class="form-control" id="userName"/>
+                        <span asp-validation-for="userModel.userName" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="userModel.userStatus" class="form-label">Status</label>
+                        <select asp-for="userModel.userStatus" class="form-select" asp-items="Html.GetEnumSelectList<mainStatus>()" id="userStatus"></select>
+                        <span asp-validation-for="userModel.userStatus" class="text-danger"></span>
+                    </div>
+
+                    <div class="d-flex justify-content-end mt-4">
+                        <a asp-page="Delete" asp-route-id="@Model.userModel?.userID" class="btn btn-danger me-2">Delete</a>
+                        <button type="button" class="btn btn-success" onclick="UpdateUser()">Save</button>
+                    </div>
+                </form>
             </div>
-            
-            
-            <div class="form-group d-flex justify-content-end">
-                <a asp-page="Delete" asp-route-id="@Model.userModel.userID" class="btn btn-danger m-2" >Delete</a>
-                <input type="submit" value="Save" class="btn btn-success m-2" />
+        </div>
+
+        <!-- User Record History -->
+        <div class="card shadow-sm">
+            <div class="card-header bg-info text-white fw-bold">User Record History</div>
+            <div class="card-body p-0">
+                <table class="table table-striped table-hover mb-0">
+                    <thead class="bg-secondary text-white">
+                        <tr>
+                            <th>User Name</th>
+                            <th>Status</th>
+                            <th>Modified By</th>
+                            <th>Modified Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.userHistory ?? new List<userHistoryModel>())
+                        {
+                            <tr>
+                                <td>@item.userName</td>
+                                <td>@item.userStatus</td>
+                                <td>@item.modifiedBy</td>
+                                <td>@item.modifiedDate.ToString("g")</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
             </div>
-        </form>
+        </div>
     </div>
-    <div class="col-md-6">
-        <h4 class="fw-bold">User Record History</h4>
-        <table class="table table-striped table-hover">
-            <thead class="bg-info text-white">
-                <tr>
-                    <th>User Name</th>
-                    <th>Status</th>
-                    <th>Modified By</th>
-                    <th>Modified Date</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach(var item in Model.userHistory)
-                {
-                    <tr>
-                        <td>@item.userName</td>
-                        <td>@item.userStatus</td>
-                        <td>@item.modifiedBy</td>
-                        <td>@item.modifiedDate</td>
-                    </tr>
+
+    <!-- Right Column: Access Management -->
+    <div class="col-md-7">
+        <!-- Access Management -->
+        <div class="card shadow-sm">
+            <div class="card-header bg-success text-white fw-bold d-flex justify-content-between align-items-center">
+                User Accesses
+                <button class="btn btn-light btn-sm" type="button" data-bs-toggle="collapse" data-bs-target="#accessFormContainer" aria-expanded="false">
+                    + Add Access
+                </button>
+            </div>
+            <div class="card-body">
+                <div id="accessSection">
+                    @await Html.PartialAsync("_AccessTable", Model.UserAccesses ?? new List<accessModel>())
+                </div>
+
+                <!-- Add/Edit Access Form -->
+                <div class="collapse mt-3" id="accessFormContainer">
+                    <div class="card card-body bg-light">
+                        <form id="accessForm" method="POST">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" id="accessID" name="AccessInput.accessID" value="0" />
+                            
+
+                            <div class="mb-3">
+                                <label class="form-label">User Group</label>
+                                <select asp-for="AccessInput.userGroups" id="userGroups" class="form-select" asp-items="@Html.GetEnumSelectList<Models.UserGroups>()">
+                                                                    
+                                </select>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Company</label>
+                                <select id="companyID" asp-for="AccessInput.companyID" class="form-select">
+                                    <option value="0">All Companies</option>
+                                    @foreach (var c in Model.CompanySelectList ?? new List<companyModel>())
+                                    {
+                                        <option value="@c.companyID">@c.companyName</option>
+                                    }
+                                </select>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Status</label>
+                                <select id="accessStatus" asp-for="AccessInput.accessStatus" class="form-select" asp-items="@Html.GetEnumSelectList<Models.mainStatus>()">
+                                    
+                                </select>
+                            </div>
+
+                            <div class="d-flex justify-content-end">
+                                <button type="button" class="btn btn-success" id="btnSaveAccess" onclick="SaveAccess()">Save Access</button>
+                                <button type="button" class="btn btn-secondary ms-2" id="btnCancelAccess">Cancel</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script>
+        function SaveAccess(){
+
+        var accessData =  $('#accessForm').serialize();
+
+            $.ajax({
+                url: '@Url.Page("Edit", "SaveAccess")', // Razor Page handler
+                type: 'POST',
+                data: accessData,
+                success: function (response) {
+                    if (response.success) {
+                        alert(response.message); // show success message
+
+                        // Redirect after success
+                        if (response.redirectUrl) {
+                            window.location.href = response.redirectUrl;
+                        }
+                    } else {
+                        alert(response.message); // show error
+                    }
+                },
+                error: function (xhr) {
+                    alert("Error: " + xhr.responseText);
                 }
-            </tbody>
-        </table>
-    </div>
-</div>
+            });        
+        }
+        
+        function UpdateUser(){
+   
+            // Gather form data (including the hidden userID)
+            var formData = $('#userForm').serialize();
+ 
+            $.ajax({
+                url: '@Url.Page("Edit")', // same page
+                type: 'POST',
+                data: formData,
+                success: function (response) {
+                    if (response.success) {
+                        alert(response.message); // show success message
 
-<div>
-    <a asp-page="./Index">View All Users</a>
-</div>
+                        // Redirect after success
+                        if (response.redirectUrl) {
+                            window.location.href = response.redirectUrl;
+                        }
+                    } else {
+                        alert(response.message); // show error
+                    }
+                },
+                error: function (xhr) {
+                    alert("Error: " + xhr.responseText);
+                }
+        
+            });
 
-@section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-}
+        }
+        // Cancel button
+        $('#btnCancelAccess').click(function () {
+            resetAccessForm();
+            $('#accessFormContainer').collapse('hide');
+        });
+
+        // Reset form
+        function resetAccessForm() {
+            $('#accessForm')[0].reset();
+            $('#accessID').val(0);
+        }
+
+        // Reload Access Table
+        function reloadAccessTable() {
+            const userID = @Model.userModel.userID;
+            $.get('@Url.Page("", "AccessTablePartial")', { userID: userID }, function (data) {
+                $('#accessSection').html(data);
+            });
+        }
+
+    </script>
+

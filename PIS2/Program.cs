@@ -5,43 +5,73 @@ using PIS2.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+// -------------------------------
+// Add services to the container
+// -------------------------------
 
-//builder.Services.AddAuthentication(NegotiateDefaults.AuthenticationScheme)
-//   .AddNegotiate();
+// Enable Windows Authentication (Negotiate)
+builder.Services.AddAuthentication(NegotiateDefaults.AuthenticationScheme)
+    .AddNegotiate();
 
+// Global authorization policy — all requests require authorization by default
 builder.Services.AddAuthorization(options =>
 {
-    // By default, all incoming requests will be authorized according to the default policy.
     options.FallbackPolicy = options.DefaultPolicy;
 });
+
+// Add Razor Pages and Controllers
 builder.Services.AddRazorPages();
+builder.Services.AddControllers();
+
+// Register your application services
 builder.Services.AddScoped<Core>();
-builder.Services.AddDbContext<PISContext> (options => 
-options.UseSqlServer(builder.Configuration.GetConnectionString("Default")));
 
-builder.Services.AddControllers();  // <--- needed for API controllers
+// Configure your database context
+builder.Services.AddDbContext<PISContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("Default")));
 
+
+// -------------------------------
+// Build the application
+// -------------------------------
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+
+// -------------------------------
+// Configure the HTTP request pipeline
+// -------------------------------
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+    app.UseStatusCodePagesWithReExecute("/Error/403");
+
     app.UseHsts();
 }
-//app.UseMiddleware<DbHealthCheckMiddleware>();
+
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
 
-
+// Add authentication & authorization
 app.UseAuthentication();
 app.UseAuthorization();
 
+// ---------------------------------------------
+// Custom middleware to handle 403 (Access Denied)
+// ---------------------------------------------
+app.Use(async (context, next) =>
+{
+    await next();
+
+    if (context.Response.StatusCode == 403 && !context.Response.HasStarted)
+    {
+        context.Response.Redirect("/Shared/AccessDenied");
+    }
+});
+
+// Map Razor Pages and API Controllers
 app.MapRazorPages();
-app.MapControllers();   // <--- maps API controllers
+app.MapControllers();
 
 app.Run();

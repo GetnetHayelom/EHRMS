@@ -1,4 +1,4 @@
-html {
+﻿html {
   font-size: 14px;
 }
 
@@ -17,8 +17,81 @@ body {
   margin-bottom: 60px;
 }
 @media print{
+    /* 🧩 Force consistent layout regardless of orientation */
+    @page {
+        size: auto; /* Let browser choose, but keep proportions */
+        margin: 10mm;
+    }
+
+    body {
+        transform: scale(1);
+        transform-origin: top left;
+        width: 100%;
+        overflow: visible !important;
+    }
+    /* 🧍 Prevent flex rows from breaking in portrait */
+    .row {
+        display: flex !important;
+        flex-wrap: nowrap !important; /* Prevent collapsing into multiple lines */
+        align-items: flex-start;
+    }
+    /* All col, col-sm, col-md, col-lg variations */
+    .col, .col-sm, .col-md, .col-lg, .col-xl {
+        width: 100% !important;
+    }
+
+    /* Grid system in percent (12 columns) */
+    .col-1, .col-sm-1, .col-md-1, .col-lg-1, .col-xl-1 {
+        width: 8.333333% !important;
+    }
+
+    .col-2, .col-sm-2, .col-md-2, .col-lg-2, .col-xl-2 {
+        width: 16.666667% !important;
+    }
+
+    .col-3, .col-sm-3, .col-md-3, .col-lg-3, .col-xl-3 {
+        width: 25% !important;
+    }
+
+    .col-4, .col-sm-4, .col-md-4, .col-lg-4, .col-xl-4 {
+        width: 33.333333% !important;
+    }
+
+    .col-5, .col-sm-5, .col-md-5, .col-lg-5, .col-xl-5 {
+        width: 41.666667% !important;
+    }
+
+    .col-6, .col-sm-6, .col-md-6, .col-lg-6, .col-xl-6 {
+        width: 50% !important;
+    }
+
+    .col-7, .col-sm-7, .col-md-7, .col-lg-7, .col-xl-7 {
+        width: 58.333333% !important;
+    }
+
+    .col-8, .col-sm-8, .col-md-8, .col-lg-8, .col-xl-8 {
+        width: 66.666667% !important;
+    }
+
+    .col-9, .col-sm-9, .col-md-9, .col-lg-9, .col-xl-9 {
+        width: 75% !important;
+    }
+
+    .col-10, .col-sm-10, .col-md-10, .col-lg-10, .col-xl-10 {
+        width: 83.333333% !important;
+    }
+
+    .col-11, .col-sm-11, .col-md-11, .col-lg-11, .col-xl-11 {
+        width: 91.666667% !important;
+    }
+
+    .col-12, .col-sm-12, .col-md-12, .col-lg-12, .col-xl-12 {
+        width: 100% !important;
+    }
+
+    
     .print-wrap{
-        flex-wrap:wrap;
+        /*flex-wrap:wrap;*/
     }
     .print-dark{
         background-color: black;
@@ -70,7 +143,90 @@ body {
         text-decoration: underline;
         font-weight: bold;
     }
+    /* Optional: remove Bootstrap container width limit */
+    .container, .card, .p-4 {
+        max-width: 100% !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        box-shadow: none;
+        border: none;
+    }
+    /* Make inputs look like blank lines for a traditional form aesthetic */
+    .form-control {
+        border: none !important;
+        border-bottom: 1px solid #000 !important; /* Simulate a printed line */
+        padding: 0 0 2px 0 !important;
+        background-color: transparent !important;
+        box-shadow: none !important;
+        display: inline-block; /* Helps keep it compact */
+        height: auto !important; /* Ensure minimal height */
+        
+    }
+    /* Reduce spacing */
+    .mb-3, .mb-4, .mb-5 {
+        margin-bottom: 0.2rem !important;
+    }
 
+    .form-label {
+        font-size: 0.8rem;
+        font-weight: bold;
+        display: inline-block;
+        margin-bottom: 0;
+    }
+
+    .row {
+        margin-left: -5px !important;
+        margin-right: -5px !important;
+        display:flex;
+    }
+
+    .col-md-4, .col-md-8, .col-12 {
+        padding-left: 5px !important;
+        padding-right: 5px !important;
+    }
+    /* Adjust textarea for printing */
+    textarea.form-control {
+        height: 35px !important; /* Set a fixed, small height for print */
+        resize: none !important;
+        overflow: hidden !important;
+    }
+
+    /* Adjust select dropdowns for printing */
+    select.form-control {
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        padding-right: 15px; /* Space for the line */
+    }
+    button{
+        display:none;
+    }
+
+
+    /* Target common browsers for placeholder styles */
+    ::placeholder {
+        color: transparent !important; /* Make text transparent */
+        /* Or, for some older browsers, you might need to try: */
+        /* opacity: 0 !important; */
+    }
+
+    /* Webkit browsers (Chrome, Safari) */
+    input::-webkit-input-placeholder,
+    textarea::-webkit-input-placeholder {
+        color: transparent !important;
+    }
+
+    /* Mozilla Firefox */
+    input:-moz-placeholder,
+    textarea:-moz-placeholder {
+        color: transparent !important;
+    }
+
+    /* Internet Explorer 10-11 */
+    input:-ms-input-placeholder,
+    textarea:-ms-input-placeholder {
+        color: transparent !important;
+    }
 }
 table select{
     max-width:100px;
@@ -108,5 +264,9 @@ table select{
     background-color: #f0f0f0; /* a soft gray */
     /* color: #333; softer text for contrast */
 }
-
+.notice-card:hover {
+    transform: translateY(-3px);
+    transition: 0.2s ease-in-out;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+}
 

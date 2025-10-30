@@ -43,6 +43,11 @@ namespace PIS2.Pages.Account
 
         public async Task<IActionResult> OnPostAsync(int? id)
         {
+            if (!User.IsInRole("MIE\\PMS_HRMANAGER"))
+            {
+                return RedirectToPage("/Shared/AccessDenied");
+            }
+
             if (id == null)
             {
                 return NotFound();

@@ -1,0 +1,203 @@
+﻿@page
+@model PIS2.Pages.Forms.GeneralUserAccessModel
+
+@{
+    ViewData["Title"] = "User Access Privilege Request";
+}
+@{
+    string formNo = "WF/SP/13";
+}
+<partial name="headerSimple" model="formNo" />
+<h2 class="text-center fw-bold">User Access Privilege Request Form</h2>
+<hr />
+
+<form method="post">
+    <section class="mb-1">
+        <h3 class="mb-3 fw-bold">1. User Information</h3>
+        <div class="d-flex d-print-flex flex-wrap gap-3">
+            <div class="col-md-3 ">
+                <label for="EmployeeID" class="form-label">Employee ID:</label>
+                <div class="input-group">
+                    <input type="text" class="form-control" id="EmployeeID" required placeholder="Enter ID" />
+                    <button class="btn btn-outline-secondary d-print-none" type="button" id="lookupButton"
+                            onclick="fetchEmployeeData($('#EmployeeID').val(), '#EmployeeName','#JobTitle', '#Department', '#Company')">
+                        <i class="bi bi-search"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <label for="EmployeeName" class="form-label">Employee Name:</label>
+                <input type="text" class="form-control" id="EmployeeName" asp-for="EmployeeName" required />
+            </div>
+            <div class="col-md-5">
+                <label for="JobTitle" class="form-label">Job Title:</label>
+                <input type="text" class="form-control" id="JobTitle" asp-for="JobTitle" required />
+            </div>
+            <div class="col-md-3">
+                <label for="Department" class="form-label">Department:</label>
+                <input type="text" class="form-control" id="Department" asp-for="Department" required />
+            </div>
+            <div class="col-md-3">
+                <label for="Company" class="form-label">Company:</label>
+                <input type="text" class="form-control" id="Company" asp-for="Company" required />
+            </div>
+
+        </div>
+    </section>
+
+    <hr />
+
+    <section class="">
+        <h3 class="mb-3 fw-bold">2. General Access Requirements</h3>
+
+        <div class="mb-3 justify-content-between">
+            <div class="d-flex justify-content-left align-content-center">
+                <div>
+                    <label class="form-label">Windows Access Required:</label>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="WindowsRequired" id="WindowsYes" value="Yes" />
+                        <label class="form-check-label" for="WindowsYes">Yes</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="WindowsRequired" id="WindowsNo" value="No" />
+                        <label class="form-check-label" for="WindowsNo">No</label>
+                    </div>
+                </div>
+                <div><input type="text" class="form-control form-control-sm mt-2" placeholder="Login Name" asp-for="WindowsLoginName" /></div>
+                
+            </div>
+
+            <div class="d-flex justify-content-left align-content-center">
+                <div>
+                    <label class="form-label">Email Account Required:</label>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="EmailRequired" id="EmailYes" value="Yes" />
+                        <label class="form-check-label" for="EmailYes">Yes</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="EmailRequired" id="EmailNo" value="No" />
+                        <label class="form-check-label" for="EmailNo">No</label>
+                    </div>
+                </div>
+               
+                <div class="row g-2 mt-2">
+                    <div class="col-md-6">
+                        <input type="email" class="form-control" placeholder="Email Account" asp-for="EmailAccount" />
+                    </div>
+                    <div class="col-md-6">
+                        <input type="text" class="form-control" placeholder="Group" asp-for="EmailGroup" />
+                    </div>
+                </div>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Internet Access Time:</label>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="InternetTime" id="InternetFull" value="Full Time" required />
+                    <label class="form-check-label" for="InternetFull">Full Time</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="InternetTime" id="InternetHalf" value="Half Day" />
+                    <label class="form-check-label" for="InternetHalf">Half Day</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="InternetTime" id="Internet2Hrs" value="2 Hours" />
+                    <label class="form-check-label" for="Internet2Hrs">2 Hours</label>
+                </div>
+            </div>
+        </div>
+
+        
+    </section>
+
+    <hr />
+
+
+    <section class="mb-1">
+        <h3 class="mb-3 fw-bold">3. User and Manager Declarations</h3>
+
+        <div class="card p-3 mb-4">
+            <p class="font-italic">
+                **Department Manager Declaration:** "I hereby would like to inform the above user has taken all the necessary trainings and important informations to enable him\her work on his own, so we request all the above access rights be given to the user."
+            </p>
+            <div class="row g-3">
+                <div class="d-print-flex col-md-8">
+                    <label class="form-label">Name:</label>
+                    <input type="text" class="form-control" asp-for="ManagerName" required />
+                </div>
+                <div class="d-print-flex col-md-4">
+                    <label class="form-label">Signature:</label>
+                    <input type="text" class="form-control" asp-for="ManagerSign" placeholder="Signature" required />
+                </div>
+            </div>
+        </div>
+
+        <div class="card p-3">
+            <p class="font-italic">
+                **Requesting User Declaration:** "I have taken all the necessary trainings that enables me to work on my own, I request the above approved access rights."
+            </p>
+            <div class="row g-3">
+                <div class="d-print-flex col-md-6">
+                    <label class="form-label">Name (User):</label>
+                    <input type="text" class="form-control" asp-for="UserName" required />
+                </div>
+                <div class="d-print-flex col-md-6">
+                    <label class="form-label">Signature:</label>
+                    <input type="text" class="form-control" asp-for="UserSign" placeholder="Signature" required />
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <hr />
+
+    <section class="mb-1">
+        <h3 class="mb-1 fw-bold">4. ICT Approvals</h3>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="card p-3 bg-light">
+                    <p class="mb-1"><strong>Prepared by (Database Administrator)</strong></p>
+                    <input type="text" class="form-control mb-1" placeholder="Name" asp-for="DBAPreparedBy" />
+                    <input type="text" class="form-control" placeholder="Sign" asp-for="DBASign" />
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card p-3 bg-light">
+                    <p class="mb-1"><strong>Checked by (ICT/Division Manager)</strong></p>
+                    <input type="text" class="form-control mb-1" placeholder="Name" asp-for="DivisionManagerCheckedBy" />
+                    <input type="text" class="form-control" placeholder="Sign" asp-for="DivisionManagerSign" />
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card p-3 bg-light">
+                    <p class="mb-1"><strong>Approved by (ICT Dept Manager)</strong></p>
+                    <input type="text" class="form-control mb-1" placeholder="Name" asp-for="ICTDeptManagerApprovedBy" />
+                    <input type="text" class="form-control" placeholder="Sign" asp-for="ICTDeptManagerSign" />
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <hr />
+
+    <section class="mb-2">
+        <h3 class="mb-3 fw-bold">5. Termination Section (To be completed upon access termination)</h3>
+        <div class="row g-3">
+            <div class="d-print-flex col-md-4">
+                <label for="TerminationDate" class="form-label">Termination Date:</label>
+                <input class="form-control" id="TerminationDate" asp-for="TerminationDate" />
+            </div>
+            <div class="d-print-flex col-md-8">
+                <label for="ReasonForTermination" class="form-label">Reason for Termination:</label>
+                <textarea class="form-control" id="ReasonForTermination" asp-for="TerminationReason"></textarea>
+            </div>
+        </div>
+    </section>
+
+    <div class="d-flex justify-content-center">
+        @await Html.PartialAsync("print")
+        @await Html.PartialAsync("back")
+    </div>
+</form>
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="~/js/employeeLookup.js"></script>

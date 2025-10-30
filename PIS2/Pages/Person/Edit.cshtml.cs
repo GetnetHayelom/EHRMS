@@ -1,17 +1,19 @@
-﻿using System;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using PIS2.Models;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Hosting;
+using System;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace PIS2.Pages.Person
 {
+    [Authorize(Roles = "MIE\\PMS_HRCLERK")]
     public class EditModel : PageModel
     {
         private readonly PISContext _context;
@@ -46,6 +48,8 @@ namespace PIS2.Pages.Person
             PhotoExists = System.IO.File.Exists(photoPath);
 
             ViewData["addressID"] = new SelectList(_context.Addresses, "addressID", "addressFormatted");
+
+
             return Page();
         }
 
@@ -73,23 +77,43 @@ namespace PIS2.Pages.Person
                 throw;
             }
 
+            // ✅ Handle photo upload
             if (Photo != null && Photo.Length > 0)
             {
                 var fileExt = Path.GetExtension(Photo.FileName);
-                var fileName = $"{personModel.personID}{fileExt}";
+                var baseFileName = $"{personModel.personID}";
                 var imagesFolder = Path.Combine(_environment.WebRootPath, "images");
 
                 if (!Directory.Exists(imagesFolder))
                     Directory.CreateDirectory(imagesFolder);
 
-                var filePath = Path.Combine(imagesFolder, fileName);
+                var newFilePath = Path.Combine(imagesFolder, baseFileName + fileExt);
 
-                using var stream = new FileStream(filePath, FileMode.Create);
-                await Photo.CopyToAsync(stream);
+                // ✅ If a main image already exists, rename it with incremental suffix (_0, _1, etc.)
+                if (System.IO.File.Exists(newFilePath))
+                {
+                    int suffix = 0;
+                    string oldFilePath;
+                    do
+                    {
+                        oldFilePath = Path.Combine(imagesFolder, $"{baseFileName}_{suffix}{fileExt}");
+                        suffix++;
+                    } while (System.IO.File.Exists(oldFilePath));
+
+                    // Rename existing original file
+                    System.IO.File.Move(newFilePath, oldFilePath);
+                }
+
+                // ✅ Save new uploaded photo as personID.ext
+                using (var stream = new FileStream(newFilePath, FileMode.Create))
+                {
+                    await Photo.CopyToAsync(stream);
+                }
             }
 
             return RedirectToPage("./Details", new { id = personModel.personID });
         }
+
 
         private bool personModelExists(int id)
         {

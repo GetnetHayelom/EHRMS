@@ -5,7 +5,7 @@
     ViewData["Title"] = "Details";
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
-
+@await Html.PartialAsync("headerSimple", "")
 <h1 class="fw-bold">Absentism</h1>
 
 <div>
@@ -130,14 +130,19 @@
 </div>
 <div class="d-print-none d-flex justify-content-end">
     
-    @if (User.IsInRole("MIE\\PMS_HRCLERK") && (Model.leaveModel.leaveStatus == Models.leaveStatus.Hold || Model.leaveModel.leaveStatus == Models.leaveStatus.Approved))
+    @if (User.IsInRole("MIE\\PMS_HRCLERK") && (Model.leaveModel.leaveStatus == Models.leaveStatus.Hold))
     {
-        <a asp-page="./Edit" asp-route-id="@Model.leaveModel.leaveID" role="button" class="btn btn-primary text-decoration-none me-3">Edit</a>
-        <a asp-page="./Delete" asp-route-id="@Model.leaveModel.leaveID" role="button" class="btn btn-danger text-decoration-none me-3">Delete</a>
-        <form method="post">
-            <input asp-for="leaveModel.leaveID" name="leaveId" type="hidden"></input>
-            <button type="submit" class="btn btn-success post-button me-3 d-print-none" data-id="Model.leaveID">Post</button>
-        </form>
+        <div class="d-flex justify-content-between">
+
+            <a asp-page="./Create" asp-route-id="@Model.leaveModel.leaveID" role="button" class="btn btn-secondary m-2"><i class="bi bi-x-circle-fill"></i>Back</a>
+            <a asp-page="./Edit" asp-route-id="@Model.leaveModel.leaveID" role="button" class="btn btn-primary m-2">Edit</a>
+            <a asp-page="./Delete" asp-route-id="@Model.leaveModel.leaveID" role="button" class="btn btn-danger m-2">Delete</a>
+            <form method="post">
+                <input asp-for="leaveModel.leaveID" name="leaveId" type="hidden" />
+                <button type="submit" class="btn btn-success post-button d-print-none m-2" data-id="Model.leaveID">Post</button>
+            </form>
+        </div>
+        
     }
     @await Html.PartialAsync("print")
 </div>

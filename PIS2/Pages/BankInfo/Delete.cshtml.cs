@@ -23,6 +23,11 @@ namespace PIS2.Pages.BankInfo
 
         public async Task<IActionResult> OnGetAsync(int? id)
         {
+            if (!User.IsInRole("MIE\\PMS_HRCLERK"))
+            {
+                return RedirectToPage("/Shared/AccessDenied");
+            }
+
             if (id == null)
             {
                 return NotFound();
@@ -43,6 +48,11 @@ namespace PIS2.Pages.BankInfo
 
         public async Task<IActionResult> OnPostAsync(int? id)
         {
+            if (!User.IsInRole("MIE\\PMS_HRCLERK"))
+            {
+                return RedirectToPage("/Shared/AccessDenied");
+            }
+
             if (id == null)
             {
                 return NotFound();

@@ -1,12 +1,15 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using OfficeOpenXml;
 using System.Data;
 using System.Data.SqlClient;
-using OfficeOpenXml;
 using System.IO;
 
+[Authorize(Roles = "MIE\\PMS_SYSADMIN")]
 public class BackupDatabaseModel : PageModel
 {
+    
     private readonly IConfiguration _config;
 
     public BackupDatabaseModel(IConfiguration config)

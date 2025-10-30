@@ -1,15 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using PIS2.Models;
 using PIS2.Views;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace PIS2.Pages.Department
 {
+    [Authorize(Roles = "MIE\\PMS_HRMANAGER,MIE\\PMS_HRCLERK,MIE\\PMS_MANAGEMENT")]
     public class DetailsModel : PageModel
     {
         private readonly PIS2.Models.PISContext _context;
@@ -50,7 +52,8 @@ namespace PIS2.Pages.Department
         public async Task<IActionResult> OnGetAsync(int? id)
 
         {
-            Shifts=await _context.Shifts.Where(s => s.shiftStatus == mainStatus.Active).ToListAsync();
+          
+            Shifts =await _context.Shifts.Where(s => s.shiftStatus == mainStatus.Active).ToListAsync();
             WorkSites = await _context.WorkSites.Where(s => s.workSiteStatus == mainStatus.Active).ToListAsync();
 
             int personID = _context.Users.FirstOrDefault(u => u.userName == User.Identity.Name).personID;
@@ -166,6 +169,8 @@ namespace PIS2.Pages.Department
         [ValidateAntiForgeryToken]
         public async Task<JsonResult> OnPostApprove(LeaveDecision decision)
         {
+
+            
             // Check if the decisions list is null or empty
             if (decision == null )
             {

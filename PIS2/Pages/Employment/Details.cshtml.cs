@@ -30,7 +30,11 @@ namespace PIS2.Pages.Employment
         public async Task<IActionResult> OnGetAsync(int? id)
         {
 
-            
+            if (!User.IsInRole("MIE\\PMS_HRCLERK") || !User.IsInRole("MIE\\PMS_HRMANAGER") || !User.IsInRole("MIE\\PMS_MANAGEMENT") || _core.IsSelf(User.Identity.Name, id))
+            {
+                return RedirectToPage("/Shared/AccessDenied");
+            }
+
             if (!string.IsNullOrEmpty(givenID))
             {
                 var emp = await _context.Employments

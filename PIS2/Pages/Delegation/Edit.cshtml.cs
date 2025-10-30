@@ -24,6 +24,11 @@ namespace PIS2.Pages.delegation
 
         public async Task<IActionResult> OnGetAsync(int? id)
         {
+            if (!User.IsInRole("MIE\\PMS_HRMANAGER"))
+            {
+                return RedirectToPage("/Shared/AccessDenied");
+            }
+
             if (id == null)
             {
                 return NotFound();
@@ -44,6 +49,11 @@ namespace PIS2.Pages.delegation
         // For more information, see https://aka.ms/RazorPagesCRUD.
         public async Task<IActionResult> OnPostAsync()
         {
+            if (!User.IsInRole("MIE\\PMS_HRMANAGER"))
+            {
+                return RedirectToPage("/Shared/AccessDenied");
+            }
+
             ModelState.Remove("delegationModel.modifiedBy");
             delegationModel.modifiedBy = User.Identity.Name;
 

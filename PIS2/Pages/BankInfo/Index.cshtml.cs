@@ -27,6 +27,11 @@ namespace PIS2.Pages.BankInfo
 
         public async Task OnGetAsync()
         {
+            if (!User.IsInRole("MIE\\PMS_HRCLERK"))
+            {
+                RedirectToPage("/Shared/AccessDenied");
+            }
+
             var bankInfos = _context.BankInfos
                 .Include(b => b.personModel).ThenInclude(p => p.Employments).AsQueryable();
 

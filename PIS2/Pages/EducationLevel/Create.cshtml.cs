@@ -20,6 +20,10 @@ namespace PIS2.Pages.EducationLevel
 
         public IActionResult OnGet()
         {
+            if (!User.IsInRole("MIE\\PMS_HRMANAGER"))
+            {
+                return RedirectToPage("/Shared/AccessDenied");
+            }
             return Page();
         }
 
@@ -29,6 +33,10 @@ namespace PIS2.Pages.EducationLevel
         // For more information, see https://aka.ms/RazorPagesCRUD.
         public async Task<IActionResult> OnPostAsync()
         {
+            if (!User.IsInRole("MIE\\PMS_HRMANAGER"))
+            {
+                return RedirectToPage("/Shared/AccessDenied");
+            }
             if (!ModelState.IsValid)
             {
                 return Page();

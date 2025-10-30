@@ -187,138 +187,133 @@
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 }
 <script>
-    function removeMaxForLateComing() {
-         const leaveType = document.getElementById("leaveTypeSelect");
-        if (leaveType.value == 58) {                
-                leaveType.removeAttribute("max");
-                console.log("exit 58");
-                return;
-            }
-    }
-    document.addEventListener("DOMContentLoaded", function () {
-        const startDate = document.getElementById("startDate");
-        const endDate = document.getElementById("endDate");
-        const display = document.getElementById("maxLeaveDisplay");
-        const leaveType = document.getElementById("leaveType");
-        //calculateWorkingDays();
-        startDate.addEventListener("change", function () {
-            // Set the min attribute of endDate to match selected startDate
-            endDate.min = startDate.value;
+document.addEventListener("DOMContentLoaded", () => {
+    const startDate = document.getElementById("startDate");
+    const endDate = document.getElementById("endDate");
+    const leaveType = document.getElementById("leaveTypeSelect");
+    const display = document.getElementById("maxLeaveDisplay");
+    const leaveDaysInput = document.getElementById("leaveDays");
 
-            // Optional: auto-correct end date if it’s before the new start date
-            if (endDate.value < startDate.value) {
-                endDate.value = startDate.value;
-            }
-            //calculateWorkingDays();
-        });
-        endDate.addEventListener("change", function () {
-            // Set the min attribute of endDate to match selected startDate
-            startDate.max = endDate.value;
-
-            // Optional: auto-correct end date if it’s before the new start date
-            if (endDate.value < startDate.value) {
-                startDate.value = endDate.value;
-            }
-            //calculateWorkingDays();
-        });
-        
-
-    });
-    function calculateWorkingDays() {
-        
-        const startDate = document.getElementById("startDate");
-        const endDate = document.getElementById("endDate");
-        const display = document.getElementById("maxLeaveDisplay");
-        const leaveType = document.getElementById("leaveTypeSelect");
-
-            console.log(leaveType.Value);
-            const start = startDate.value;
-            const end = endDate.value;
-            console.log("###############By leave type is-->" + leaveType.value);
-            if (!start || !end || end < start || leaveType.value == 58) {
-                display.textContent = "";
-                leaveType.removeAttribute("max");
-                return;
-            }
-
-            const formData = new URLSearchParams();
-            formData.append("startDate", start);
-            formData.append("endDate", end);
-
-            fetch("/Leave/Create?handler=CalculateWorkingDays", {
-                method: "POST",
-                headers: {
-                    "RequestVerificationToken": document.querySelector('input[name="__RequestVerificationToken"]').value
-                },
-                body: formData
-            })
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error("Server error");
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    
-                    display.textContent = `Maximum working days: ${data} ${leaveType.value}`;
-                    // Set max attribute on leaveDays input
-                    const leaveDaysInput = document.getElementById("leaveDays");
-                    leaveDaysInput.max = data;
-                    
-                    
-                })
-                .catch(error => {
-                    console.error("Error calculating leave days:", error);
-                    display.textContent = "Error calculating available days";
-                });
+    // --- Date field synchronization ---
+    startDate?.addEventListener("change", () => {
+        endDate.min = startDate.value;
+        if (endDate.value < startDate.value) {
+            endDate.value = startDate.value;
         }
-    function summary() {
-        const startDate = document.getElementById("startDate1").value;
-        const endDate = document.getElementById("endDate1").value;
-        const absentType = document.getElementById("leaveType").value;
-        const empId = document.getElementById("givenID").value;
+        calculateWorkingDays();
+    });
 
-        const display = document.getElementById("summary");
+    endDate?.addEventListener("change", () => {
+        startDate.max = endDate.value;
+        if (endDate.value < startDate.value) {
+            startDate.value = endDate.value;
+        }
+        calculateWorkingDays();
+    });
 
-
-        if (!startDate || !endDate) {
-            display.textContent = "Please fill all fields.";
+    leaveType?.addEventListener("change", () => {
+        // Special case: Late coming (leave type 58)
+        if (leaveType.value === "58") {
+            leaveDaysInput.removeAttribute("max");
+            display.textContent = "";
+            console.log("Leave type 58 selected — max removed");
             return;
         }
-        if (!absentType){
-            absentType = 0;
+        calculateWorkingDays();
+    });
+
+    // --- Calculate working days from server ---
+    async function calculateWorkingDays() {
+        const start = startDate.value;
+        const end = endDate.value;
+
+        if (!start || !end || end < start) {
+            display.textContent = "";
+            return;
         }
-        const formData = new URLSearchParams();
-        formData.append("start", startDate);
-        formData.append("end", endDate);
-        formData.append("type", absentType);
-        formData.append("empId", empId);
 
+        if (leaveType.value === "58") {
+            display.textContent = "";
+            leaveDaysInput.removeAttribute("max");
+            return;
+        }
 
-        fetch("/Absentism/Create?handler=Summary", {
+        try {
+            const token = document.querySelector('input[name="__RequestVerificationToken"]')?.value;
+            if (!token) throw new Error("Missing CSRF token");
+
+            const formData = new URLSearchParams({
+                startDate: start,
+                endDate: end
+            });
+
+            const response = await fetch("/Leave/Create?handler=CalculateWorkingDays", {
+                method: "POST",
+                headers: {
+                    "RequestVerificationToken": token
+                },
+                body: formData
+            });
+
+            if (!response.ok) throw new Error("Server error");
+            const data = await response.json();
+
+            display.textContent = `Maximum working days: ${data}`;
+            leaveDaysInput.max = data;
+
+            console.log(`Calculated working days: ${data}`);
+        } catch (error) {
+            console.error("Error calculating leave days:", error);
+            display.textContent = "Error calculating available days.";
+        }
+    }
+});
+
+// --- Summary calculation for Absentism ---
+async function summary() {
+    const startDate = document.getElementById("startDate1")?.value;
+    const endDate = document.getElementById("endDate1")?.value;
+    const leaveType = document.getElementById("leaveType")?.value || 0;
+    const empId = document.getElementById("givenID")?.value;
+    const display = document.getElementById("summary");
+
+    if (!startDate || !endDate || !empId) {
+        display.textContent = "Please fill all fields.";
+        return;
+    }
+
+    try {
+        const token = document.querySelector('input[name="__RequestVerificationToken"]')?.value;
+        if (!token) throw new Error("Missing CSRF token");
+
+        const formData = new URLSearchParams({
+            start: startDate,
+            end: endDate,
+            type: leaveType,
+            empId: empId
+        });
+
+        const response = await fetch("/Absentism/Create?handler=Summary", {
             method: "POST",
             headers: {
                 "Content-Type": "application/x-www-form-urlencoded",
-                "RequestVerificationToken": document.querySelector('input[name="__RequestVerificationToken"]').value
+                "RequestVerificationToken": token
             },
             body: formData
-        })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error("Server error");
-            }
-            return response.json();
-        })
-        .then(data => {
-            console.log("Summary response:", data);
-            //display.textContent = `Total number of absentism records: ${data.countIs}, Total days: ${data.sumIs}`;
-            document.getElementById('table-body').innerHTML = data.tableHtml;
-            document.getElementById('count').textContent = data.countIs;
-            document.getElementById('sum').textContent = data.sumIs;
-        })
-        .catch(error => {
-            console.error("Error calculating leave days:", error);
-            display.textContent = "Error calculating available days";
         });
+
+        if (!response.ok) throw new Error("Server error");
+        const data = await response.json();
+
+        console.log("Summary response:", data);
+
+        document.getElementById("table-body").innerHTML = data.tableHtml;
+        document.getElementById("count").textContent = data.countIs;
+        document.getElementById("sum").textContent = data.sumIs;
+    } catch (error) {
+        console.error("Error fetching summary:", error);
+        display.textContent = "Error retrieving summary data.";
     }
+}
 </script>
+

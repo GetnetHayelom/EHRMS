@@ -20,6 +20,10 @@ namespace PIS2.Pages.Allowance
 
         public IActionResult OnGet()
         {
+            if (!User.IsInRole("MIE\\PMS_HRMANAGER"))
+            {
+                return RedirectToPage("/Shared/AccessDenied");
+            }
             return Page();
         }
 
@@ -31,7 +35,7 @@ namespace PIS2.Pages.Allowance
         {
             if (!User.IsInRole("MIE\\PMS_HRMANAGER"))
             {
-                return NotFound();
+                return RedirectToPage("/Shared/AccessDenied");
             }
             ModelState.Remove("allowanceModel.modifiedBy");
             allowanceModel.modifiedBy = User.Identity.Name;

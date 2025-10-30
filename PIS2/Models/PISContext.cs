@@ -17,6 +17,30 @@ namespace PIS2.Models
             base.OnModelCreating(modelBuilder);
             //Automatically register all entity types in the Assembly
             //modelBuilder.ApplyConfigurationsFromAssembly(typeof(PISContext).Assembly);
+            modelBuilder.Entity<accessModel>(entity =>
+            {
+                entity.HasKey(a => a.accessID);
+
+                entity.HasOne(a => a.userModel).WithMany(u => u.Accesses).HasForeignKey(a => a.userID).OnDelete(DeleteBehavior.Cascade);
+                entity.HasOne(a => a.CompanyModel).WithMany(c => c.Accesses).HasForeignKey(a => a.companyID).OnDelete(DeleteBehavior.SetNull);
+                entity.Property(a => a.modifiedBy).IsRequired().HasMaxLength(100);
+
+                entity.ToTable(t => t.UseSqlOutputClause(false));
+            });
+
+            // ------------------------------
+            // accessHistoryModel configuration
+            // ------------------------------
+            modelBuilder.Entity<accessHistoryModel>(entity =>
+            {
+                entity.HasKey(h => h.accessHistoryID);
+
+                entity.HasOne(h => h.accessModel).WithMany(a => a.AccessHistories).HasForeignKey(h => h.accessID).OnDelete(DeleteBehavior.Cascade);             
+                entity.Property(h => h.modifiedBy).IsRequired().HasMaxLength(100);
+;
+            });
+
+
             modelBuilder.Entity<accountModel>(entity =>
             {
                 entity.Property(e => e.accountID).HasColumnName("accountID");
@@ -297,7 +321,16 @@ namespace PIS2.Models
                 
             });
 
-          
+            modelBuilder.Entity<disciplineModel>(entity =>
+            {
+                entity.ToTable("Disciplines");
+                entity.Property(e => e.disciplineName)
+                      .IsRequired()
+                      .HasMaxLength(100);
+            });
+
+
+
             modelBuilder.Entity<educationLevelModel>(entity =>
             {
                 entity.HasIndex(e => e.educationLevelName, "IX_EducationLevels_personModelpersonID").IsUnique();
@@ -543,6 +576,8 @@ namespace PIS2.Models
                 entity.Property(e => e.jobStatus).HasColumnName("jobStatus");
                 entity.Property(e => e.jobTitle).HasColumnName("jobTitle");
                 entity.Property(e => e.jobCode).HasColumnName("jobCode");
+                entity.Property(e => e.jobQualifications).HasColumnName("jobQualifications");
+                entity.Property(e => e.jobExperience).HasColumnName("jobExperience");
                 entity.Property(e => e.modifiedBy).HasColumnName("modifiedBy");
 
                 entity.HasOne(d => d.jobCategoryModel).WithMany(p => p.Jobs).HasForeignKey(p => p.jobCategoryID);
@@ -740,8 +775,8 @@ namespace PIS2.Models
                 entity.HasMany(d => d.LeaveHistories).WithOne(p => p.leaveModel).HasForeignKey(d => d.leaveID).OnDelete(DeleteBehavior.Cascade);
                 
 
-                entity.HasCheckConstraint("CK_Leave_leaveEndDate",
-                    "[leaveEndDate]>=[leaveStartDate]");
+                //entity.HasCheckConstraint("CK_Leave_leaveEndDate",
+                //    "[leaveEndDate]>=[leaveStartDate]");
 
                 //entity.HasCheckConstraint("CK_Leave_NumberOfDays",
                 //    "leaveDays>0 AND leaveDays <= DATEDIFF(DAY, leaveStartDate, leaveEndDate)+1");
@@ -805,6 +840,51 @@ namespace PIS2.Models
                 entity.HasOne(e => e.loyaltyModel).WithMany(p => p.LoyaltyHistories).HasForeignKey(e => e.loyaltyID).OnDelete(DeleteBehavior.Cascade);
 
                 entity.HasIndex(d => new {d.loyaltyID, d.employmentID}).IsUnique();
+            });
+
+            modelBuilder.Entity<NoticeModel>(entity =>
+            {
+                entity.ToTable("Notices");
+
+                entity.HasKey(e => e.noticeID);
+
+                entity.Property(e => e.noticeID)
+                    .HasColumnName("noticeID");
+
+                entity.Property(e => e.noticeTitle)
+                    .IsRequired()
+                    .HasMaxLength(200)
+                    .HasColumnName("noticeTitle");
+
+                entity.Property(e => e.noticeContent)
+                    .IsRequired()
+                    .HasColumnName("noticeContent");
+
+                entity.Property(e => e.noticePostedBy)
+                    .HasMaxLength(100)
+                    .HasColumnName("noticePostedBy");
+
+                entity.Property(e => e.noticeApprovedBy)
+                    .HasMaxLength(100)
+                    .HasColumnName("noticeApprovedBy");
+
+                entity.Property(e => e.DatePosted)
+                    .HasColumnType("datetime")
+                    .HasColumnName("DatePosted")
+                    .HasDefaultValueSql("GETDATE()"); // DB default
+
+                entity.Property(e => e.ExpiryDate)
+                    .HasColumnType("datetime")
+                    .HasColumnName("ExpiryDate");
+
+                entity.Property(e => e.IsActive)
+                    .HasColumnName("IsActive")
+                    .HasDefaultValue(true);
+
+                entity.Property(e => e.AttachmentPath)
+                    .HasMaxLength(255)
+                    .HasColumnName("AttachmentPath");
+
             });
 
             modelBuilder.Entity<overtimeModel>(entity =>
@@ -1373,7 +1453,7 @@ namespace PIS2.Models
             // Certification View
             modelBuilder.Entity<CertificationSummaryView>()
             .HasNoKey()
-            .ToView("vw_certification_active");
+            .ToView("vw_CertificationSummary_Active");
 
             // Company Summary View
             modelBuilder.Entity<CompanySummary>()
@@ -1414,8 +1494,21 @@ namespace PIS2.Models
             modelBuilder.Entity<AllowanceDetailView>()
             .HasNoKey()
             .ToView("vw_AllowanceDetailView");
+
+            //Talent Experience View
+            modelBuilder.Entity<TalentExperienceView>()
+            .HasNoKey()
+            .ToView("vw_TalentPoolExperience");
+
+            //Certification Detail View
+            modelBuilder.Entity<CertificationDetailsView>()
+            .HasNoKey()
+            .ToView("vw_CertificationDetails");
+
         }
-       
+
+        public DbSet<accessModel> Accesses { get; set; }
+        public DbSet<accessHistoryModel> AccessHistories { get; set; }
         public DbSet<accountModel> Accounts { get; set; }
         public DbSet<addressModel> Addresses { get; set; }
         public DbSet<allowanceAssignmentModel> AllowanceAssignments { get; set; }
@@ -1431,6 +1524,7 @@ namespace PIS2.Models
         public DbSet<delegationHistoryModel> DelegationHistories {  get; set; }
         public DbSet<departmentModel> Departments { get; set; }
         public DbSet<departmentHistoryModel> DepartmentHistories { get; set; }
+        public DbSet<disciplineModel> Desciplines { get; set; }
         public DbSet<educationLevelModel> EducationLevels { get; set; }
         public DbSet<employmentModel> Employments { get; set; }
         public DbSet<employmentHistoryModel> EmploymentHistories { get; set; }
@@ -1459,6 +1553,7 @@ namespace PIS2.Models
         public DbSet<leaveModel> Leaves { get; set; }
         public DbSet<leaveHistoryModel> LeaveHistories { get; set; }
         public DbSet<leaveTypeModel> LeaveTypes { get; set; }
+        public DbSet<NoticeModel> Notices { get; set; }
         public DbSet<overtimeModel> Overtimes { get; set; }
         public DbSet<overtimeRecordModel> OvertimeRecords { get; set; }
         public DbSet<overtimeHistoryModel> OvertimeHistories { get; set; }
@@ -1486,6 +1581,7 @@ namespace PIS2.Models
         public DbSet<workSiteHistoryModel> WorkSitesHistories { get; set; }
         public DbSet<PIS2.Models.loyaltyModel> Loyalties { get; set; } = default!;
         public DbSet<PIS2.Models.loyaltyHistoryModel> LoyaltyHistories { get; set; } = default!;
+
         ///<summary>
         /// Payroll related
         ///</summary>
@@ -1505,7 +1601,7 @@ namespace PIS2.Models
         /// </summary>
 
         public DbSet<LeaveReportView> LeaveReportView { get; set; } = default!;
-        public DbSet<CertificationSummaryView> CertificationReportView { get; set; } = default!;
+        public DbSet<CertificationSummaryView> CertificationSummaryView { get; set; } = default!;
         public DbSet<CompanySummary> CompanySummaryView { get; set; } = default!;
         public DbSet<AnnualLeaveSummary> AnnualLeaveSummary { get; set; } = default!;
         public DbSet<EmploymentYearlyStat> EmploymentYearlyStats { get; set; } = default!;
@@ -1514,6 +1610,8 @@ namespace PIS2.Models
         public DbSet<OvertimeDetailView> OvertimeDetailView { get; set; } = default!;
         public DbSet<OvertimeSummaryView> OvertimeSummaryView { get; set; } = default!;
         public DbSet<AllowanceDetailView> AllowanceDetailView { get; set; } = default!;
-
+        public DbSet<TalentExperienceView> TalentExperienceView { get; set; } = default!;
+        public DbSet<CertificationDetailsView> CertificationDetailsView { get; set; } = default!;
     }
+    
 }

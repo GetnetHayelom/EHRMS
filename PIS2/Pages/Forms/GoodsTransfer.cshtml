@@ -1,0 +1,248 @@
+﻿@page
+@model PIS2.Pages.Forms.GoodsTransferModel
+@{
+
+    ViewData["Title"] = "Fixed Asset Transfer Slip";
+}
+
+@{
+    string formNo = "WF/HRM/076";
+}
+<partial name="headerSimple" model="formNo" />
+
+<div class="container">
+    <div class="card p-2">
+        @* Title from the document *@
+        <h3 class="fw-bold text-center text-dark mb-3">Fixed Asset and Property Ownership Transfer Slip</h3>
+        
+        <form id="assetTransferForm">
+            
+            <hr />
+
+            @* ------------------- From (Transferor) ------------------- *@
+            <div class="d-flex">
+                <h5 class="fw-bold text-dark me-2">From:</h5>
+                <div class="row mb-1 d-print-flex">
+                    <div class="col-md-3 ">
+                        <label for="EmployeeID" class="form-label">Employee ID:</label>
+                        <div class="input-group">
+                            <input type="text" class="form-control" id="EmployeeID" required placeholder="Enter ID" />
+                            <button class="btn btn-outline-secondary d-print-none" type="button" id="lookupButton"
+                                    onclick="fetchEmployeeData($('#EmployeeID').val(), '#EmployeeName','', '#Department')">
+                                <i class="bi bi-search"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label fw-bold">Name:</label>
+                        <input asp-for="TransferSlip.FromName" class="form-control" id="EmployeeName"/>
+                    </div>
+                   
+                    <div class="col-md-3">
+                        <label class="form-label fw-bold">Dept:</label>
+                        <input asp-for="TransferSlip.FromDept" class="form-control" id="Department"/>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label fw-bold">Sign:</label>
+                        <input asp-for="TransferSlip.FromSign" class="form-control" />
+                    </div>
+                </div>
+            </div>
+            
+            
+            <hr />
+
+            @* ------------------- To (Receiver) ------------------- *@
+            <div class="d-flex">
+                <h5 class="fw-bold text-dark me-2">To:</h5>
+                <div class="row mb-1">
+                    <div class="col-md-3 ">
+                        <label for="EmployeeID" class="form-label">Employee ID:</label>
+                        <div class="input-group">
+                            <input type="text" class="form-control" id="EmployeeID1" required placeholder="Enter ID" />
+                            <button class="btn btn-outline-secondary d-print-none" type="button" id="lookupButton"
+                                    onclick="fetchEmployeeData($('#EmployeeID1').val(), '#EmployeeName1','', '#Department1')">
+                                <i class="bi bi-search"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label fw-bold">Name:</label>
+                        <input asp-for="TransferSlip.ToName" class="form-control" id="EmployeeName1"/>
+                    </div>
+   
+                    <div class="col-md-3">
+                        <label class="form-label fw-bold">Dept:</label>
+                        <input asp-for="TransferSlip.ToDept" class="form-control" id="Department1" />
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label fw-bold">Sign:</label>
+                        <input asp-for="TransferSlip.ToSign" class="form-control" />
+                    </div>
+                </div>
+            </div>
+            
+            
+            <hr />
+
+            @* ------------------- Authorized By ------------------- *@
+            <div class="d-flex">
+                <h5 class="fw-bold text-dark me-2">Authorization:</h5>
+                <div class="row mb-1">
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold">Authorized By:</label>
+                        <input asp-for="TransferSlip.AuthorizedBy" class="form-control" />
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold">Job Title:</label>
+                        <input asp-for="TransferSlip.AuthJobTitle" class="form-control" />
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold">Sign:</label>
+                        <input asp-for="TransferSlip.AuthSign" class="form-control" />
+                    </div>
+                </div>
+            </div>
+            
+
+            @* ------------------- Posted By ------------------- *@
+            <div class="d-flex">
+                <h5 class="fw-bold text-dark me-2">Posting Details:</h5>
+                <div class="row mb-1">
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold">Posted By:</label>
+                        <input asp-for="TransferSlip.PostedBy" class="form-control" />
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold">Job Title:</label>
+                        <input asp-for="TransferSlip.PostJobTitle" class="form-control" />
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold">Sign:</label>
+                        <input asp-for="TransferSlip.PostSign" class="form-control" />
+                    </div>
+                </div>
+            </div>
+            
+            
+            <hr />
+
+            @* ------------------- Item Transfer Sheet (Table Format) ------------------- *@
+            <h5 class="fw-bold text-dark mb-3">Item Transfer Sheet:</h5>
+            <div class="row me-2">
+                <div class="col-12 table-responsive">
+                    <table class="table table-bordered" id="itemTable">
+                        <thead>
+                            <tr>
+                                <th style="width: 15%;">Asset Code </th>
+                                <th style="width: 30%;">Description </th>
+                                <th style="width: 15%;">Condition of the Asset </th>
+                                <th style="width: 20%;">Inspector Name & Sign. </th>
+                                <th style="width: 20%;">Remark </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @* Initial Row (Template) - Use a counter for correct indexing *@
+                            @{
+                                var i = 0;
+                            }
+                            <tr id="templateRow">
+                                <td><input asp-for="TransferSlip.Items[i].AssetCode" class="form-control" /></td>
+                                <td><input asp-for="TransferSlip.Items[i].Description" class="form-control" /></td>
+                                <td><input asp-for="TransferSlip.Items[i].Condition" class="form-control" /></td>
+                                <td><input asp-for="TransferSlip.Items[i].InspectorSign" class="form-control" /></td>
+                                <td><input asp-for="TransferSlip.Items[i].Remark" class="form-control" /></td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <div class="d-flex justify-content-end">
+                        <button type="button" class="btn btn-outline-primary btn-sm d-print-none" id="addRowBtn">
+                            <i class="bi bi-plus-circle"></i> Add Row
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            @* ------------------- Notes and Distribution ------------------- *@
+            <h5 class="fw-bold text-dark mt-4">N.B:</h5>
+            <p class="small">The person who authorize this transfer should be a member of the management, this transfer should processed at least with the involvement of the property receiver.</p>
+            <h5 class="fw-bold text-dark mt-4">Distribution of copies:</h5>
+            <p class="small">Original white: Property Master, 1st copy Pink: Management Account Div, 2nd copy Blue: Property Transferor, 3rd copy Green: Property Receiver, 4th copy Yellow: Pad.</p>
+            
+            @* ------------------- Footer Info ------------------- *@
+            <div class="row small text-end mt-5">
+                <div class="col-12">
+                    <p class="mb-0">REVISION-05/ ISSUE-01 </p>
+                </div>
+            </div>
+
+
+            @* ------------------- Buttons ------------------- *@
+            <div class="d-flex justify-content-center gap-3">
+                @* Use your existing print partial and ensure it includes the d-print-none class *@
+                @await Html.PartialAsync("print")
+                @await Html.PartialAsync("back")
+                <div><button type="reset" class="btn btn-outline-secondary px-4 m-2 d-print-none">Reset</button></div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const itemTableBody = document.querySelector('#itemTable tbody');
+        const addRowBtn = document.getElementById('addRowBtn');
+        const templateRow = document.getElementById('templateRow');
+
+        // Initial setup for the template row to hide it after cloning
+        templateRow.dataset.index = 0;
+
+        // Remove the template ID so it only gets used once and doesn't conflict
+        templateRow.removeAttribute('id');
+
+        let rowIndex = 1; // Start index for new rows
+
+        addRowBtn.addEventListener('click', function () {
+            // 1. Clone the row
+            const newRow = templateRow.cloneNode(true);
+
+            // 2. Update input names and IDs for model binding
+            // The regex replaces the old index (e.g., [0]) with the new one (e.g., [1])
+            const indexRegex = new RegExp('\\[0\\]', 'g');
+            newRow.innerHTML = newRow.innerHTML.replace(indexRegex, '[' + rowIndex + ']');
+
+            // 3. Update the data-index for the new row
+            newRow.dataset.index = rowIndex;
+
+            // 4. Add a "Remove" button (optional, but good practice)
+            const removeCell = document.createElement('td');
+            const removeBtn = document.createElement('button');
+            removeBtn.type = 'button';
+            removeBtn.className = 'btn btn-outline-danger btn-sm d-print-none';
+            removeBtn.innerHTML = 'Remove';
+            removeBtn.onclick = function() { newRow.remove(); };
+
+            // To keep the table structure simple and match the initial template,
+            // you might prefer to just add a remove button to the last column (Remark)
+            // or put it next to the Add button, but for simplicity, we'll omit the remove button
+            // in the table row itself for now, focusing only on adding rows.
+
+            // 5. Append the new row to the table
+            itemTableBody.appendChild(newRow);
+
+            // 6. Increment the index for the next row
+            rowIndex++;
+
+            // 7. Clear the cloned values (since the template row was populated by the model)
+            newRow.querySelectorAll('input').forEach(input => input.value = '');
+        });
+
+        // HINT for Print functionality:
+        // To print an empty format, your existing print CSS must target these table inputs as well.
+        // E.g., #itemTable input { border-bottom: 1px solid black !important; border: none; background: transparent; }
+    });
+</script>
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="~/js/employeeLookup.js"></script>

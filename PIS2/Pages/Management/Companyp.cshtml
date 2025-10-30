@@ -4,6 +4,7 @@
     ViewData["Title"] = "Welcome";
     var successMessage = TempData["SuccessMessage"] as string;
 }
+@await Html.PartialAsync("headerSimple", "")
 <div id="companyName">
     <h2 class="fw-bold text-center mb-4">
         <b>@Model.CompanySummary.CompanyName</b>

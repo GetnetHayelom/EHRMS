@@ -20,7 +20,12 @@ namespace PIS2.Pages.Employment
         public personModel Person { get; set; }
         public IActionResult OnGet(int? id)
         {
-            if(id >0)
+            if (!User.IsInRole("MIE\\PMS_HRCLERK"))
+            {
+                return RedirectToPage("/Shared/AccessDenied");
+            }
+
+            if (id >0)
             {
                 Person = _context.Persons.FirstOrDefault(p => p.personID == id);
                 ViewData["personID"] = new SelectList(_context.Persons
@@ -48,6 +53,10 @@ namespace PIS2.Pages.Employment
         // For more information, see https://aka.ms/RazorPagesCRUD.
         public async Task<IActionResult> OnPostAsync()
         {
+            if (!User.IsInRole("MIE\\PMS_HRCLERK"))
+            {
+                return RedirectToPage("/Shared/AccessDenied");
+            } 
             ViewData["personID"] = new SelectList(_context.Persons, "personID", "personFullName");
             ViewData["employmentTypeID"] = new SelectList(_context.EmploymentTypes, "employmentTypeID", "employmentTypeName");
             ModelState.Remove("employmentModel.modifiedBy");

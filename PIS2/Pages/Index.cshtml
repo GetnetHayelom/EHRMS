@@ -23,157 +23,135 @@
 }
 
 <div class="row mt-1 d-flex justify-content-center">
-    <!--Person Section-->
+    <!--PERSON DETAILS SECTION-->
     <div class="col-md-3 d-print-none">
-        <h4 class="fw-bold">Look Up</h4>
-        <hr />
-
-        <!--row for Search control-->
-        <div class="row mt-2">
-            <!--form for searching using ID --> 
-            <label for="employeeID">Look up by Empolyee ID:</label>
-            <form method="post" asp-page-handler="SearchID" class="d-flex">
-                <input id="givenID" name="searchID" type="text" class="form-control mb-1 me-2" asp-for="@Model.Employment.givenID" list="givenIDList">
-                <datalist id="givenIDList">
-                    @foreach (var item in Model.Employments)
-                    {
-                        <option value="@item.givenID"></option>
-                    }
-                </datalist>
-                <button type="submit" class="btn btn-primary mb-1">View</button>
-                
-            </form>
-            <!--form for searching using name-->
-            <label for="employeeName">Look up by Name:</label>
-            <form method="post" asp-page-handler="SearchName" class="d-flex">
-                <input id="employeeName" name="searchName" type="text" class="form-control mb-1 me-2" asp-for="@Model.Person.personFullName" list="namesList">
-                <datalist id="namesList">
-                    @foreach (var item in Model.People)
-                    {
-                        <option value="@item.personFullName">@item.personFullName</option>
-                    }
-                </datalist>
-                <button type="submit" class="btn btn-primary mb-1">View</button>
-               
-            </form>
-        </div>
-        <!--row for person details -->
-        @if (Model.Person != null)
-        {
-            <!--row for person remaining Details -->
-            <div class="d-flex flex-column mt-2 border-primary border rounded mb-1 p-2">
-                <div class="d-flex flex-column justify-content-center">
-
-                    <div class="d-flex justify-content-center">
-                        @{
-                            var imagePath = $"~/images/{Model.Person.personID}.jpg";
-                            if (!Model.PhotoExists)
-                            {
-                                imagePath = Model.Person.personGender == Models.Gender.Female? "~/images/female-default.png" : "~/images/male-default.png";
-                            }
-
-                        }
-                        <img src="@Url.Content(imagePath)" class="rounded-circle" style="width: 100px; height: 100px; object-fit: cover;" />
-                    </div>
-                    
-                </div>
-                <dl class="row">
-                    <div class="row">
-                        <dt class="me-2">
-                            Full Name: 
-                        </dt>
-                        @if (Model.Employment != null)
-                        {
-                            @if(User.IsInRole("MIE\\PMS_HRCLERK")){
-                                <dd class="" onclick="location.href='@Url.Page("/Employment/Edit", new { id = Model.Employment.employmentID })'" style="cursor:pointer;">
-                                    <u>@Html.DisplayFor(model => model.Person.personFullName)</u>
-                                </dd>
-                            }
-                            else
-                            {
-                                <dd class="" onclick="location.href='@Url.Page("/Employment/Details", new { id = Model.Employment.employmentID })'" style="cursor:pointer;">
-                                    <u>@Html.DisplayFor(model => model.Person.personFullName)</u>
-                                </dd>
-                            }
-                            
-                        }
-                        else
-                        {
-                            <dd class="" onclick="location.href='@Url.Page("/Person/Details", new { id = Model.Person.personID })'" style="cursor:pointer;">
-                                <u>@Html.DisplayFor(model => model.Person.personFullName)</u>
-                            </dd>
-                        }
-                    </div>
-                    <div class="d-flex">
-                        <dt class="me-2">
-                            Gender:
-                        </dt>
-                        <dd class="">
-                            <u>@Html.DisplayFor(model => model.Person.personGender)</u>
-                        </dd>
-                    </div>
-                    <div class="d-flex">
-                        <dt class="me-2">
-                            Phone:
-                        </dt>
-                    
-                        <dd class="">
-                            <u>@Html.DisplayFor(model => model.Person.personPhoneNumber)</u>
-                        </dd>
-                    </div>
-                    <div class="row">
-                        <dt class="me-2">
-                            Address:
-                        </dt>
-                        <dd class="">
-                            <u>@Html.DisplayFor(model => model.Person.addressModel.addressFormatted)</u>
-                        </dd>
-                    </div>
-                    <div class="row">
-                        <dt class="me-2">
-                            Email:
-                        </dt>
-                        <dd class="">
-                            <u>@Html.DisplayFor(model => model.Person.personEmailAddress)</u>
-                        </dd>
-                    </div>
-                    @if(Model.PersonEmployments != null)
-                    {
-                        <div class="row">
-                            <dt class="me-2">
-                                Job Title:
-                            </dt>
-                            <dd class="">
-                                <u>@Html.DisplayFor(model => model.JobPlacement.jobModel.jobTitle)</u>
-                            </dd>
-                        </div>
-                        <div class="row">
-                            <dt class="me-2">
-                                Department:
-                            </dt>
-                            <dd class="">
-                                <u>@Html.DisplayFor(model => model.JobPlacement.departmentModel.departmentName)</u>
-                            </dd>
-                        </div>
-                    }
-                </dl>
-                <a class="" onclick="location.href='@Url.Page("/Person/Details", new { id = Model.Person.personID })'" style="cursor:pointer;">
-                    <u>View Person Details</u>
-                </a>
-                <hr/>
-               
+        <div class="card shadow-sm border-0 mb-3">
+            <div class="card-header bg-primary text-white text-center py-2">
+                <h5 class="fw-bold mb-0">Employee Lookup</h5>
             </div>
-        }
-        else
-        {
-            <p>No Person Selected</p>            
-        }
+            <div class="card-body">
+                <!-- Search Controls -->
+                <h6 class="fw-semibold mb-2 text-secondary">Find Employee</h6>
+                <hr class="mt-0" />
+
+                <!-- Search by Employee ID -->
+                <form method="post" asp-page-handler="SearchID" class="input-group mb-3">
+                    <input id="givenID" name="searchID" type="text" class="form-control" placeholder="Search by Employee ID"
+                           asp-for="@Model.Employment.givenID" list="givenIDList">
+                    <datalist id="givenIDList">
+                        @foreach (var item in Model.Employments)
+                        {
+                            <option value="@item.givenID"></option>
+                        }
+                    </datalist>
+                    <button type="submit" class="btn btn-primary">View</button>
+                </form>
+
+                <!-- Search by Name -->
+                <form method="post" asp-page-handler="SearchName" class="input-group mb-3">
+                    <input id="employeeName" name="searchName" type="text" class="form-control" placeholder="Search by Name"
+                           asp-for="@Model.Person.personFullName" list="namesList">
+                    <datalist id="namesList">
+                        @foreach (var item in Model.People)
+                        {
+                            <option value="@item.personFullName">@item.personFullName</option>
+                        }
+                    </datalist>
+                    <button type="submit" class="btn btn-primary">View</button>
+                </form>
+
+                <!-- Person Details -->
+                @if (Model.Person != null && Model.Person?.personID != 0)
+                {
+                    <div class="card mt-3 border-0 shadow-sm">
+                        <div class="card-body text-center p-3">
+                            @{
+                                var imagePath = $"~/images/{Model.Person.personID}.jpg";
+                                if (!Model.PhotoExists)
+                                {
+                                    imagePath = Model.Person.personGender == Models.Gender.Female
+                                    ? "~/images/female-default.png"
+                                    : "~/images/male-default.png";
+                                }
+                            }
+                            <img src="@Url.Content(imagePath)" class="rounded-circle mb-2 border"
+                                 style="width: 100px; height: 100px; object-fit: cover;" alt="Employee Photo" />
+
+                            <h6 class="fw-bold mb-1 text-primary">
+                                @if (Model.Employment != null)
+                                {
+                                    if (User.IsInRole("MIE\\PMS_HRCLERK"))
+                                    {
+                                        <span onclick="location.href='@Url.Page("/Employment/Edit", new { id = Model.Employment.employmentID })'"
+                                              style="cursor:pointer; text-decoration:underline;">
+                                            @Html.DisplayFor(model => model.Person.personFullName)
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span onclick="location.href='@Url.Page("/Employment/Details", new { id = Model.Employment.employmentID })'"
+                                              style="cursor:pointer; text-decoration:underline;">
+                                            @Html.DisplayFor(model => model.Person.personFullName)
+                                        </span>
+                                    }
+                                }
+                                else
+                                {
+                                    <span onclick="location.href='@Url.Page("/Person/Details", new { id = Model.Person.personID })'"
+                                          style="cursor:pointer; text-decoration:underline;">
+                                        @Html.DisplayFor(model => model.Person.personFullName)
+                                    </span>
+                                }
+                            </h6>
+
+                            <p class="mb-1 small text-muted">
+                                <strong>Gender:</strong> @Html.DisplayFor(m => m.Person.personGender)
+                            </p>
+                            <p class="mb-1 small text-muted">
+                                <strong>Phone:</strong> @Html.DisplayFor(m => m.Person.personPhoneNumber)
+                            </p>
+                            <p class="mb-1 small text-muted">
+                                <strong>Address:</strong> @Html.DisplayFor(m => m.Person.addressModel.addressFormatted)
+                            </p>
+                            <p class="mb-2 small text-muted">
+                                <strong>Email:</strong> @Html.DisplayFor(m => m.Person.personEmailAddress)
+                            </p>
+
+                            @if (Model.PersonEmployments != null)
+                            {
+                                <hr class="my-2" />
+                                <p class="mb-1 small text-muted">
+                                    <strong>Job Title:</strong> @Html.DisplayFor(m => m.JobPlacement.jobModel.jobTitle)
+                                </p>
+                                <p class="mb-1 small text-muted">
+                                    <strong>Department:</strong> @Html.DisplayFor(m => m.JobPlacement.departmentModel.departmentName)
+                                </p>
+                            }
+
+                            <a class="d-block mt-2 small fw-semibold text-decoration-underline text-primary"
+                               onclick="location.href='@Url.Page("/Person/Details", new { id = Model.Person.personID })'"
+                               style="cursor:pointer;">
+                                View Full Details
+                            </a>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <div class="alert alert-light border mt-3 text-center py-3">
+                        <p class="mb-0 text-muted">No employee selected.</p>
+                    </div>
+                }
+            </div>
+        </div>
     </div>
+
 <!-- right side column -->
-    @if(Model.Person !=null && Model.PersonEmployments != null && Model.Employment != null)
-    {
-        <div class="col-md-9 d-print-flex print-full-width">
-            <!--top buttons -->
+    
+    <div class="col-md-9 d-print-flex print-full-width">
+        @if (Model.Person != null && Model.PersonEmployments != null && Model.Employment != null)
+        {
+            <!--TOP BUTTONS -->
             <div class="mt-1 d-flex justify-content-lg-between bg-primary text-white d-print-none">
                 @if(Model.Employment.employmentStatus == Models.mainStatus.Active)
                 {
@@ -201,9 +179,9 @@
                 }
                 
             </div>
-            <!--row for views-->
+            <!--ROW FOR VIEWS-->
             <div class="row mt-1 d-flex justify-content-center">
-                <!--leave Aggrigate-->
+                <!--LEAVE SUMMARY-->
                 <div class="row collapse border-primary rounded" id="leaveAggrigate">
                 @if (1 == 1)
                 {
@@ -238,8 +216,9 @@
                                 <h2 class="text-success fw-bold">@Model.LeaveDetail.leaveCost.ToString("N2")<span class="fs-6">Br</span></h2>
                             </div>
                         </div>
-                        
+                    <!--LEAVE SUMMARY TABLE-->    
                     <table class="table table-striped table-hover">
+                        
                         <thead>
                             <tr class="bg-dark text-white">
                                 <th>Year</th>
@@ -253,7 +232,7 @@
                             </tr>
 
                         </thead>
-                        <tbody>
+                        <tbody id="tbody">
                             @foreach(var item in Model.LeaveDetail.AnnualLeaveHistory)
                             {
                                 <tr>
@@ -273,9 +252,8 @@
                 }else{
                     <div class="alert"><p>No leave record found.</p></div>
                     }
-                </div>
-      
-                <!--Overtime History-->
+                </div>     
+                <!--OVERTIME HISTORY-->
                 <div class="col-md-12 collapse border-primary rounded @(TempData["KeepOvetimeHistory"] != null ? "show" : "")" id="overtimeHistoryView">
 
                     @if (Model.Employment == null)
@@ -363,7 +341,7 @@
                     }
 
                 </div>
-                <!--Leave History-->
+                <!--LEAVE HISTORY-->
                 <div class="col-md-12 collapse border-primary rounded @(TempData["KeepLeaveHistory"] != null ? "show" : "")" id="leaveHistoryView">
 
                     @if (Model.Employment == null)
@@ -375,8 +353,18 @@
                             <h3 class="fw-bold">Attendance and Leave History</h3>
                         </div>
                         <div class="modal-body">
-                            <h6 class="fw-bold" onclick="location.href='@Url.Page("/Employment/Details", new { id = Model.Employment.employmentID })'" style="cursor:pointer;">Employee Name: <u class="fw-normal">@Model.Person.personFullName</u> </h6>
-                            <h6 class="fw-bold">Employee ID: <u class="fw-normal"> @Model.Employment.givenID</u> </h6>
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <h6 class="fw-bold" onclick="location.href='@Url.Page("/Employment/Details", new { id = Model.Employment.employmentID })'" style="cursor:pointer;">Employee Name: <u class="fw-normal">@Model.Person.personFullName</u> </h6>
+                                    <h6 class="fw-bold">Employee ID: <u class="fw-normal"> @Model.Employment.givenID</u> </h6>
+                                </div>
+                                <div class="d-flex justify-content-end"> 
+                                    
+                                    @await Html.PartialAsync("print")
+                                </div>
+                            </div>
+                           
+                           
                             @if (Model.Leaves == null)
                             {
                                 <p>No leave history for the selected employment. @Model.Employment.givenID</p>
@@ -454,14 +442,13 @@
                     }
                         
                 </div>
-                <!--Employment History -->
+                <!--EMPLOYMENT HISTORY -->
                 <div class="col-md-12 collapse border-primary rounded @(TempData["KeepCollapseOpen"] != null ? "show" : "")" id="employmentHistoryView">
                     
                     <div class="modal-header d-flex justify-content-around">
                         <h3 class="fw-bold">Employment History</h3>
                         @if (Model.isSelf && Model.PersonEmployments.FirstOrDefault(pe => pe.employmentStatus == Models.mainStatus.Active) != null)
                         {
-                            
                             <button class="form-control btn btn-primary m-2 d-print-none" id="btnExprience" asp-page-handler="HandleRequest">Request Official Exprience</button>
 
                             <input type="hidden" id="antiForgeryToken" value="@tokens.RequestToken" />
@@ -518,11 +505,12 @@
                                             <td>
                                                 @Html.DisplayFor(modelItem => item.employmentReference)
                                             </td>
-                                        
+
                                         </tr>
+                                        <h4 class="fw-bold">Job Placements</h4>
 
                                         <table class="table table-striped table-hover">
-                                            <h4 class="fw-bold">Job Placements</h4>
+                                            
                                             <thead>
                                                 <tr class="bg-dark text-white">                                                    
                                                     <th>
@@ -593,15 +581,124 @@
 
                     </div>
                     <div class="modal-footer">
-                            @await Html.PartialAsync("print")
+                        @await Html.PartialAsync("print")
                     </div>
                         
                 </div>
+                
+            </div>
+        }
+        <!--COMPANY HUB-->
+        <div class="col g-3">
+            <!--NOTICE BOARD-->
+            <div class="">
+                <h2 class="fw-bold text-warnning">
+                    <i class="bi bi-megaphone-fill me-2"></i> <span class="text-dark"> Notice Board</span>
+                </h2>
+                <partial name="_NoticeCarousel" model="Model.ActiveNoticesForCarousel" />
+            </div>
+                
+            <!--FORMS-->
+            <style>
+                /* CSS for the professional hover effect */
+                .card-hover {
+                    transition: transform 0.2s, box-shadow 0.2s;
+                }
 
-               
+                    .card-hover:hover {
+                        transform: translateY(-5px); /* Lift card slightly */
+                        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important; /* Enhanced shadow on hover */
+                    }
+            </style>
+
+            <div class="col-md-12 p-4 border rounded shadow-sm bg-white d-print-none">
+            <h2 class="fw-bold mb-3 text-center text-dark">Company Forms & Requests</h2>
+            <p class="text-center text-muted mb-5">Select a form below to initiate a request and fill forms.</p>
+
+            <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
+
+                <div class="col">
+                    <div class="card text-center border-0 shadow-sm h-100 card-hover">
+                        <div class="card-body p-4">
+                            <p class="text-secondary small mb-2">Request authorization to move goods from a site.</p>
+                            <h5 class="fw-bold text-primary mb-0">
+                                <a href="@Url.Page("/Forms/GoodsGatePass")" class="text-primary text-decoration-underline">Goods Gate Pass</a>
+                            </h5>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col">
+                    <div class="card text-center border-0 shadow-sm h-100 card-hover">
+                        <div class="card-body p-4">
+                            <p class="text-secondary small mb-2">Form for transferring fixed assets between locations.</p>
+                            <h5 class="fw-bold text-success mb-0">
+                                <a href="@Url.Page("/Forms/GoodsTransfer")" class="text-success text-decoration-underline">Goods Transfer</a>
+                            </h5>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col">
+                    <div class="card text-center border-0 shadow-sm h-100 card-hover">
+                        <div class="card-body p-4">
+                            <p class="text-secondary small mb-2">Request Windows, Internet, or Company Email access.</p>
+                            <h5 class="fw-bold text-danger mb-0">
+                                <a href="@Url.Page("/Forms/GeneralUserAccess")" class="text-danger text-decoration-underline">General User Access</a>
+                            </h5>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col">
+                    <div class="card text-center border-0 shadow-sm h-100 card-hover">
+                        <div class="card-body p-4">
+                            <p class="text-secondary small mb-2">Request login credentials for the PIS system.</p>
+                            <h5 class="fw-bold text-primary mb-0">
+                                <a href="@Url.Page("/Forms/PISAccess")" class="text-primary text-decoration-underline">PIS Access</a>
+                            </h5>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col">
+                    <div class="card text-center border-0 shadow-sm h-100 card-hover">
+                        <div class="card-body p-4">
+                            <p class="text-secondary small mb-2">Specific access request form for the SL system.</p>
+                            <h5 class="fw-bold text-success mb-0">
+                                <a href="@Url.Page("/Forms/SLAccess")" class="text-success text-decoration-underline">SL Access</a>
+                            </h5>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col">
+                    <div class="card text-center border-0 shadow-sm h-100 card-hover">
+                        <div class="card-body p-4">
+                            <p class="text-secondary small mb-2">Template and format for official interoffice correspondence.</p>
+                            <h5 class="fw-bold text-danger mb-0">
+                                <a href="@Url.Page("/Forms/InterOffice")" class="text-danger text-decoration-underline">Interoffice Memo</a>
+                            </h5>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col">
+                    <div class="card text-center border-0 shadow-sm h-100 card-hover">
+                        <div class="card-body p-4">
+                            <p class="text-secondary small mb-2">Submit a formal report for sick leave or absence.</p>
+                            <h5 class="fw-bold text-info mb-0">
+                                <a href="@Url.Page("/Forms/SickReport")" class="text-info text-decoration-underline">Sick Report</a>
+                            </h5>
+                        </div>
+                    </div>
+                </div>
+
             </div>
         </div>
-    }
+        </div>
+    </div>
+    
     
 </div>
 
@@ -635,7 +732,7 @@
         const requestType = "Experience"; // or any dynamic value
 
         try {
-            const response = await fetch(/Index?handler=HandleRequest", {
+            const response = await fetch("/Index?handler=HandleRequest", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"

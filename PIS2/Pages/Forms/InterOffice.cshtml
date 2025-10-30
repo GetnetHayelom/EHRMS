@@ -1,0 +1,97 @@
+﻿@page
+@model PIS2.Pages.Forms.InterOfficeModel
+@{
+    ViewData["Title"] = "Inter Office Memo";
+}
+<script src="~/lib/tinymce/tinymce.min.js"></script>
+<script src="~/js/tinymce-initializer.js"></script>
+
+@{
+    string formNo = "WF/HRM/23";
+}
+<partial name="headerSimple" model="formNo" />
+
+<div class="container my-4">
+    <div class="card p-4">
+
+        <div class="row align-items-end mb-1">
+            <div class="col-8">
+                @* Use the company name found in your uploaded document *@
+                <h3 class="fw-bold text-dark mb-1">Inter Office Memo</h3>
+                
+            </div>
+            <div class="col-4 text-end">
+                <p class="mb-0 small">REVISION-03/ ISSUE-01</p>
+            </div>
+        </div>
+
+        <hr class="border-dark border-4 mt-0" />
+
+        <form id="memoForm">
+
+            @* --- TO, FROM, DATE --- *@
+            <div class="row mb-3 align-items-center">
+                <div class="col-md-6">
+                    <label class="form-label fw-bold">TO:</label>
+                    <input asp-for="Memo.ToDepartment" class="form-control" placeholder="Recipient Department/Individual" />
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label fw-bold">FROM:</label>
+                    <input asp-for="Memo.FromDepartment" class="form-control" placeholder="Sender Department/Individual" />
+                </div>
+           
+            </div>
+
+            @* --- SUBJECT --- *@
+            <div class="row mb-4">
+                <div class="col-12">
+                    <label class="form-label fw-bold">SUBJECT:</label>
+                    <input asp-for="Memo.Subject" class="form-control fw-bold" placeholder="Enter the memo subject line" />
+                </div>
+            </div>
+
+            @* --- BODY CONTENT --- *@
+            <div class="row mb-5">
+                <div class="col-12">
+                    <label class="form-label fw-bold d-print-none">Memo Body:</label>
+                    <textarea asp-for="Memo.MemoBody" class="form-control border-dark" rows="15" placeholder="Write the detailed memo content here..." id="textArea"></textarea>
+                </div>
+            </div>
+
+            @* --- SIGNATURES --- *@
+            <div class="row mt-5 pt-3">
+                <div class="col-md-6">
+                    <label class="form-label fw-bold">Prepared By:</label>
+                    <input asp-for="Memo.PreparedBy" class="form-control mb-1" placeholder="Name" />
+                    <input asp-for="Memo.PreparedBySign" class="form-control" placeholder="Signature" />
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label fw-bold">Approved By (Manager/Head):</label>
+                    <input asp-for="Memo.ApprovedBy" class="form-control mb-1" placeholder="Name" />
+                    <input asp-for="Memo.ApprovedBySign" class="form-control" placeholder="Signature" />
+                </div>
+            </div>
+
+            @* --- Footer Vision Statement (from your document) --- *@
+            <div class="row mt-5 text-center">
+                <div class="col-12">
+                    <p class="small text-muted fst-italic mb-0">
+                        
+                    </p>
+                </div>
+            </div>
+
+            @* --- ACTION BUTTONS (Hidden when printing) --- *@
+            <div class="d-flex justify-content-center gap-3 mt-4 d-print-none">
+                @* Use your existing print partial *@
+                @await Html.PartialAsync("print")
+                @await Html.PartialAsync("back")
+                <div><button type="reset" class="btn btn-outline-secondary px-4 m-2">Reset</button></div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>   
+    initializeTinyMCE('#textArea', 400);
+</script>

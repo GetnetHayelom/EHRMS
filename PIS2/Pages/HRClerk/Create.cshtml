@@ -6,13 +6,13 @@
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
 
-<h1>Create</h1>
+<h1 class="fw-bold">Personnel Center</h1>
 
-<h4>personModel</h4>
+
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <h2 class="fw-bold">Pending Leaves</h2>
+        <h2 class="fw-bold">Pending Attendance </h2>
     </div>
     <div class="col-md-4">
         <h2 class="fw-bold">Employee Services</h2>
@@ -53,10 +53,6 @@
     <a href="/Person/Create" class="bg-primary bi bi-plus p-4 m-2 text-decoration-none fw-bold text-white">New Person</a>
     <a href="/Employment/Create" class="bg-primary bi bi-plus p-4 m-2 text-decoration-none fw-bold text-white">New Employment</a>
     <a href="/JobPlacement/Create" class="bg-primary bi bi-plus p-4 m-2 text-decoration-none fw-bold text-white">New Job Assignment</a>
-</div>
-
-<div>
-    <a asp-page="Index">Back to List</a>
 </div>
 
 @section Scripts {

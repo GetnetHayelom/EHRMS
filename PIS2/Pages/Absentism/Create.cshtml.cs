@@ -48,10 +48,10 @@ namespace PIS2.Pages.Absentism
         public IActionResult OnGet()
         {
 
-            //Console.WriteLine($"Search ID on Get: {searchID}");
-            if (!User.IsInRole("MIE\\PMS_HRMANAGER"))
+            
+            if (!User.IsInRole("MIE\\PMS_HRCLERK"))
             {
-                return NotFound();
+                return RedirectToPage("/Shared/AccessDenied");
             }
 
             if (!string.IsNullOrEmpty(searchID))
@@ -117,6 +117,11 @@ namespace PIS2.Pages.Absentism
         // For more information, see https://aka.ms/RazorPagesCRUD.
         public async Task<IActionResult> OnPostCreateAsync()
         {
+
+            if (!User.IsInRole("MIE\\PMS_HRCLERK"))
+            {
+                return RedirectToPage("/Shared/AccessDenied");
+            }
             //ModelState.Clear();
             leaveModel.leaveStatus = leaveStatus.Hold;
             leaveModel.ratePerHour = _context.JobPlacements.FirstOrDefault(jp => jp.jobPlacementStatus == mainStatus.Active && jp.employmentID == leaveModel.employmentID)?.getJobRate() ?? 0;
@@ -125,6 +130,8 @@ namespace PIS2.Pages.Absentism
             ModelState.Remove("Department");
             ModelState.Remove("employmentPosition");
             ModelState.Remove("modifiedBy");
+
+            leaveModel.leaveRequestDate = DateTime.Now;
             if (!ModelState.IsValid)
             {
               

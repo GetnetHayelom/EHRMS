@@ -1,9 +1,11 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using PIS2.Views;
 
 namespace PIS2.Pages.Management
 {
+    [Authorize(Roles = "MIE\\PMS_HRMANAGER,MIE\\PMS_MANAGEMENT")]
     public class AnnualLeaveDepartmentSummaryModel : PageModel
     {
         private readonly PIS2.Models.PISContext _context;

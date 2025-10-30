@@ -510,7 +510,60 @@ namespace PIS2.Models
             return workingDays;
         }
 
+        public bool IsSelf(string UserName, int? empID)
+        {
+            if(empID == null)
+            {
+                return false;
+            }
+
+            string useN = _context.Employments
+                .Where(e => e.employmentID == empID)
+                .Select(e => e.personModel != null && e.personModel.userModel != null
+                    ? e.personModel.userModel.userName
+                    : null)
+                .FirstOrDefault();
+
+            
+            if (UserName == useN)
+            {
+                return true;
+            }
+            return false;
+        }
+        /// <summary>
+        /// Retrieves a user's access entries (roles and companies) by username.
+        /// </summary>
+        /// <param name="username">Windows username (e.g., DOMAIN\user)</param>
+        /// <returns>
+        /// List of tuples: (UserGroup role, CompanyID company)
+        /// </returns>
+        public async Task<List<(UserGroups Role, int? CompanyID)>> GetUserAccessAsync(string username)
+        {
+            if (string.IsNullOrEmpty(username))
+                return new List<(UserGroups, int?)>();
+
+            
+            var user = await _context.Users
+                .AsNoTracking()
+                .FirstOrDefaultAsync(u => u.userName == username);
+
+            if (user == null)
+                return new List<(UserGroups, int?)>();
+
+            var accessList = await _context.Accesses
+                .AsNoTracking()
+                .Where(a => a.userID == user.userID && a.accessStatus == mainStatus.Active)
+                .Select(a => new { a.userGroups, a.companyID })
+                .ToListAsync();
+
+            return accessList
+                .Select(a => (a.userGroups, a.companyID))
+                .ToList();
+        }
         public Core() { }
 
     }
+    // Helper class for the data returned by the AJAX handler
+   
 }

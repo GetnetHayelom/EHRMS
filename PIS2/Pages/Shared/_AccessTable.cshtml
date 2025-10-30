@@ -1,0 +1,39 @@
+﻿@model List<PIS2.Models.accessModel>
+
+<table class="table table-bordered table-striped">
+    <thead class="bg-secondary text-white">
+        <tr>
+            <th>User Group</th>
+            <th>Company</th>
+            <th>Status</th>
+            <th class="text-center">Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model != null && Model.Any())
+        {
+            foreach (var access in Model)
+            {
+                <tr>
+                    <td>@(access.userGroups.ToString() ?? "N/A")</td>
+                    <td>@(access.CompanyModel?.companyName ?? "All Companies")</td>
+                    <td>@(access.accessStatus.ToString() ?? "Active")</td>
+                    <td class="text-center">
+                        <button type="button" class="btn btn-sm btn-primary me-1" onclick="editAccess(@access.accessID)">
+                            Edit
+                        </button>
+                        <button type="button" class="btn btn-sm btn-danger" onclick="deleteAccess(@access.accessID)">
+                            Delete
+                        </button>
+                    </td>
+                </tr>
+            }
+        }
+        else
+        {
+            <tr>
+                <td colspan="4" class="text-center text-muted">No access entries found.</td>
+            </tr>
+        }
+    </tbody>
+</table>
