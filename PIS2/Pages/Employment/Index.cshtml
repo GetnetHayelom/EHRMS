@@ -13,8 +13,18 @@
 
     <div>
         <div class="d-flex justify-content-between align-content-end">
-            <h6 class="">Male:<u>@Model.maleCount (@Math.Round((decimal)Model.maleCount * 100 / Model.totalCount, 2)%)</u></h6>
-            <h6 class="">Female:<u>@Model.femaleCount (@Math.Round((decimal)Model.femaleCount * 100 / Model.totalCount, 2)%)</u></h6>
+            <h6 class="">
+                Male:<u>
+                    @Model.maleCount
+                    (@(Model.totalCount == 0 ? 0 : Math.Round((decimal)Model.maleCount * 100 / Model.totalCount, 2))%)
+                </u>
+            </h6>
+            <h6 class="">
+                Female:<u>
+                    @Model.femaleCount
+                    (@(Model.totalCount == 0 ? 0 : Math.Round((decimal)Model.femaleCount * 100 / Model.totalCount, 2))%)
+                </u>
+            </h6>
             <h4 class="fw-bold">Total:<u>@Model.employmentModel.Count()</u></h4>
         </div>
         <p class="d-flex justify-content-between">

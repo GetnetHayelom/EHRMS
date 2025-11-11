@@ -15,11 +15,23 @@ namespace PIS2.Pages.Structure
         public IndexModel(PISContext context) {_context = context;} 
 
         public IList<structureModel> Structures { get; set; } = new List<structureModel>();
-
-        public async Task OnGetAsync()
+        [BindProperty]
+        public int? CompanyID { get; set; }
+        public List<companyModel> Companies { get; set; }
+        public async Task OnGetAsync(int? id)
         {
-            Structures = await _context.Structures.Include(s => s.departmentModel)?.ThenInclude(d => d.companyModel)
-                .Include(s => s.jobModel).ToListAsync();
+            Companies = _context.Companies.ToList();
+            if(id != null)
+            {
+                Structures = await _context.Structures.Include(s => s.departmentModel)?.ThenInclude(d => d.companyModel)
+                    .Include(s => s.jobModel).Where(s => s.departmentModel.companyID ==id).ToListAsync();
+            }
+            else
+            {
+                Structures = await _context.Structures.Include(s => s.departmentModel)?.ThenInclude(d => d.companyModel)
+                    .Include(s => s.jobModel).ToListAsync();
+            }
+                
         }
     }
 }

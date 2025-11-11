@@ -10,15 +10,20 @@
 
 <h4 class="fw-bold">Update Penalty</h4>
 <hr />
-<div class="row">
-    <div class="col-md-4">
+<div class="d-flex gap-3">
+    <div class="col-md-4 card shadow-sm m-2 p-2">
         <form method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="penaltyModel.penaltyID" />
             <div class="form-group">
-                <label asp-for="penaltyModel.employmentID" class="control-label">Employee ID</label>
-                <input asp-for="penaltyModel.employmentID" class="form-control" readonly />
+                <label  class="control-label">Employee ID</label>
+                <input class="form-control" value="@Model.penaltyModel.employmentModel?.givenID" readonly />
                 <span asp-validation-for="penaltyModel.employmentID" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label  class="control-label">Name</label>
+                <input class="form-control" type="text" value="@Model.penaltyModel.employmentModel?.personModel?.personFullName" readonly/>
+                
             </div>
             <div class="form-group">
                 <label asp-for="penaltyModel.penaltyIssueDate" class="control-label">Issue Date</label>
@@ -58,6 +63,46 @@
                 <input type="submit" value="Save" class="btn btn-success m-2" />
             </div>
         </form>
+    </div>
+    <div class="col-md-8 card shadow-sm m-2 p-2">
+        <h4 class="fw-bold">Penalty History</h4>
+        <table class="table table-hover table-striped">
+            <thead class="bg-dark text-white">
+                <tr>
+                    <th>Date</th>
+                    <th>Modified By</th>
+                    <th>Status</th>
+                    
+                </tr>
+            </thead>
+            <tbody>
+                @foreach(var item in Model.penaltyHistory)
+                {
+                    <tr>
+                        <td>@item.modifiedDate</td>
+                        <td>@item.modifiedBy</td>
+                        <td>
+                            @if (item.penaltyStatus == Models.penaltyStatus.Post)
+                            {
+                                <span class="badge bg-success">@item.penaltyStatus</span>
+                            }
+                            else if (item.penaltyStatus == Models.penaltyStatus.Complete)
+                            {
+                                <span class="badge bg-secondary">@item.penaltyStatus</span>
+                            }
+                            else if (item.penaltyStatus == Models.penaltyStatus.Void)
+                            {
+                                <span class="badge bg-danger">@item.penaltyStatus</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-warning text-dark">@item.penaltyStatus</span>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
     </div>
 </div>
 

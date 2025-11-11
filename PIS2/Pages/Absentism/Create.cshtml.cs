@@ -213,7 +213,7 @@ namespace PIS2.Pages.Absentism
 
         public JsonResult OnPostCalculateWorkingDays(DateTime startDate, DateTime endDate)
         {
-            return new JsonResult(_core.WorkingDays(startDate, endDate));
+            return new JsonResult(_core.GetWorkingDays(startDate, endDate));
         }
         public JsonResult OnPostSummary()
         {

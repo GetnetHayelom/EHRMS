@@ -24,8 +24,9 @@ namespace PIS2.Pages.Employment
         public bool IsUserSelf { get; set; }
         public bool isSelf =false;
         public employmentModel employmentModel { get; set; } = default!;
-        public String Age { get; set; }
-        public String Exprience { get; set; }
+        public string Age { get; set; }
+        public string Exprience { get; set; }
+        public decimal Severance { get; set; }
 
         public async Task<IActionResult> OnGetAsync(int? id)
         {
@@ -44,6 +45,7 @@ namespace PIS2.Pages.Employment
                 {
                     //id = emp.employmentID;
                     // Redirect to the Details page with employmentID
+                    Severance = _core.GetSeverance(emp.employmentID);
                     return RedirectToPage("Details", new { id = emp.employmentID });
                 }
 
@@ -70,6 +72,7 @@ namespace PIS2.Pages.Employment
             else
             {
                 employmentModel = employmentmodel;
+                Severance = _core.GetSeverance(id ?? 0);
             }
             var currentUser = _context.Users.FirstOrDefault(u => u.userName == User.Identity.Name);
 

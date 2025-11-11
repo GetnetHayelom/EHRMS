@@ -52,6 +52,7 @@ namespace PIS2.Pages.Management
         public List<AnnuallLeaveSummaryCompanyView> AnnualLeaveSummaries { get; set; }
         public List<EmploymentYearlyStat> EmploymentYearlyStats { get; set; }
         public List<DepartmentEmploymentStats> DepartmentEmploymentStats { get; set; }
+        public decimal SeverancePay { get; set; }
         public async Task OnGetAsync()
         {
             //check if user is employee
@@ -230,7 +231,7 @@ namespace PIS2.Pages.Management
                 c.payableLeaves = annualLeaveSummary.Where(als => als.companyID == c.CompanyID).Sum(als => als.adjustedLeaveBalanceCost);
                 //c.payableLeaves = new leaveDetail();
             }
-
+            
 
         }
 

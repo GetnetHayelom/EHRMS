@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PIS2.Models;
 
@@ -11,9 +12,11 @@ using PIS2.Models;
 namespace PIS2.Migrations
 {
     [DbContext(typeof(PISContext))]
-    partial class PISContextModelSnapshot : ModelSnapshot
+    [Migration("20251031105334_migration83")]
+    partial class migration83
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -3317,9 +3320,6 @@ namespace PIS2.Migrations
                         .HasColumnType("nvarchar(max)")
                         .HasColumnName("modifiedBy");
 
-                    b.Property<DateTime>("prohibitionDate")
-                        .HasColumnType("datetime2");
-
                     b.Property<DateTime>("prohibitionEnd")
                         .HasColumnType("datetime2")
                         .HasColumnName("prohibitionEnd");
@@ -3922,38 +3922,6 @@ namespace PIS2.Migrations
                     b.HasAnnotation("SqlServer:UseSqlOutputClause", false);
                 });
 
-            modelBuilder.Entity("PIS2.Pages.Report.LeaveReportCompany", b =>
-                {
-                    b.Property<int>("CompanyID")
-                        .HasColumnType("int");
-
-                    b.Property<string>("CompanyName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<decimal?>("CompanySum")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<int>("CompanyTotal")
-                        .HasColumnType("int");
-
-                    b.Property<int>("EmployeeTotal")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("EndDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("StartDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<decimal>("WorkingDays")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.ToTable((string)null);
-
-                    b.ToView("vw_LeaveCompanyReport", (string)null);
-                });
-
             modelBuilder.Entity("PIS2.Views.AllowanceDetailView", b =>
                 {
                     b.Property<decimal>("AllowanceAmount")
@@ -4170,12 +4138,6 @@ namespace PIS2.Migrations
                     b.Property<decimal>("Salary")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<decimal>("SeverancePaid")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<decimal>("SeverancePayable")
-                        .HasColumnType("decimal(18,2)");
-
                     b.Property<decimal>("payableLeaves")
                         .HasColumnType("decimal(18,2)");
 
@@ -4331,17 +4293,8 @@ namespace PIS2.Migrations
                     b.Property<DateTime>("LeaveEnd")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("LeaveGroup")
-                        .HasColumnType("int");
-
                     b.Property<int>("LeaveId")
                         .HasColumnType("int");
-
-                    b.Property<bool>("LeaveJob")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("LeaveLegality")
-                        .HasColumnType("bit");
 
                     b.Property<DateTime>("LeaveRequestDate")
                         .HasColumnType("datetime2");
@@ -4357,9 +4310,6 @@ namespace PIS2.Migrations
 
                     b.Property<int?>("LeaveTypeID")
                         .HasColumnType("int");
-
-                    b.Property<decimal>("LeaveValue")
-                        .HasColumnType("decimal(18,2)");
 
                     b.ToTable((string)null);
 

@@ -2,80 +2,105 @@
 @model PIS2.Pages.Users.DetailsModel
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "User Details";
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
 
-<h1 class="fw-bold">Users</h1>
-<h4 class ="fw-bold">User Details</h4>
-<hr />
-<div class="d-flex">
-   
-    <dl class="row col-md-4">
-        <dt class="col-sm-2">
-            User Name:
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.userModel.userName)
-        </dd>
-        <dt class="col-sm-2">
-            Full Name:
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.userModel.personModel.personFullName)
-        </dd>
-        <dt class="col-sm-2">
-            Status:
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.userModel.userStatus)
-        </dd>
-        <dt class="col-sm-2">
-            Modified By:
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.userModel.modifiedBy)
-        </dd>
-        <dt class="col-sm-2">
-            Modified Date:
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.userModel.modifiedDate)
-        </dd>
-    </dl>
+<div class="container mt-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="fw-bold mb-0 text-dark">User Details</h1>
+            <p class="text-muted">Detailed information about the selected user</p>
+        </div>
+        <div>
+            <a asp-page="./Edit" asp-route-id="@Model.userModel.userID" class="btn btn-outline-primary me-2">
+                <i class="bi bi-pencil-square"></i> Edit
+            </a>
+            <a asp-page="./Index" class="btn btn-outline-secondary">
+                <i class="bi bi-people"></i> View All Users
+            </a>
+        </div>
+    </div>
+
+    <div class="card shadow-sm border-0 rounded-4 mb-4">
+        <div class="card-header bg-primary text-white fw-semibold rounded-top-4">
+            Basic Information
+        </div>
+        <div class="card-body">
+            <dl class="row mb-0">
+                <dt class="col-sm-3 text-muted">User Name:</dt>
+                <dd class="col-sm-9 fw-semibold">@Html.DisplayFor(m => m.userModel.userName)</dd>
+
+                <dt class="col-sm-3 text-muted">Full Name:</dt>
+                <dd class="col-sm-9 fw-semibold">@Html.DisplayFor(m => m.userModel.personModel.personFullName)</dd>
+
+                <dt class="col-sm-3 text-muted">Status:</dt>
+                <dd class="col-sm-9 fw-semibold">
+                    @if (Model.userModel.userStatus == Models.mainStatus.Active)
+                    {
+                        <span class="badge bg-success">Active</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-danger">Inactive</span>
+                    }
+                </dd>
+
+                <dt class="col-sm-3 text-muted">Modified By:</dt>
+                <dd class="col-sm-9 fw-semibold">@Html.DisplayFor(m => m.userModel.modifiedBy)</dd>
+
+                <dt class="col-sm-3 text-muted">Modified Date:</dt>
+                <dd class="col-sm-9 fw-semibold">@Html.DisplayFor(m => m.userModel.modifiedDate)</dd>
+            </dl>
+        </div>
+    </div>
 
     @if (Model.userHistory != null && Model.userHistory.Any())
     {
-        <div class="col-md-6">
-            <h4 class="fw-bold">User Record History</h4>
-            <table class="table table-striped table-hover">
-                <thead class="bg-info text-white">
-                    <tr>
-                        <th>User Name</th>
-                        <th>Status</th>
-                        <th>Modified By</th>
-                        <th>Modified Date</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var item in Model.userHistory)
-                    {
-                        <tr>
-                            <td>@item.userName</td>
-                            <td>@item.userStatus</td>
-                            <td>@item.modifiedBy</td>
-                            <td>@item.modifiedDate</td>
+        <div class="card shadow-sm border-0 rounded-4">
+            <div class="card-header bg-info text-white fw-semibold rounded-top-4">
+                User Record History
+            </div>
+            <div class="card-body p-0">
+                <table class="table table-hover table-striped mb-0 align-middle">
+                    <thead class="table-light">
+                        <tr class="text-secondary">
+                            <th>User Name</th>
+                            <th>Status</th>
+                            <th>Modified By</th>
+                            <th>Modified Date</th>
                         </tr>
-                    }
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.userHistory)
+                        {
+                            <tr>
+                                <td>@item.userName</td>
+                                <td>
+                                    @if (item.userStatus == Models.mainStatus.Active)
+                                    {
+                                        <span class="badge bg-success">Active</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-danger">Inactive</span>
+                                    }
+                                </td>
+                                <td>@item.modifiedBy</td>
+                                <td>@item.modifiedDate.ToString("yyyy-MM-dd HH:mm")</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-light border mt-3 text-center">
+            <i class="bi bi-clock-history text-secondary"></i> No record history available for this user.
         </div>
     }
 
 </div>
-
-<div class="d-flex justify-content-end">
-    <a asp-page="./Edit" asp-route-id="@Model.userModel.userID" class="btn btn-success m-2">Edit</a>
-    
-</div>
-<a asp-page="./Index">View All Users</a>

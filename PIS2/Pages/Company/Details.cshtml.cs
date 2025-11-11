@@ -40,7 +40,7 @@ namespace PIS2.Pages.Company
             else
             {
                 companyModel = companymodel;
-                Departments = companyModel.Departments?.ToList() ?? new List<departmentModel>();
+                Departments = companyModel.Departments?.OrderBy(d =>d.departmentName).ToList() ?? new List<departmentModel>();
             }
             return Page();
         }

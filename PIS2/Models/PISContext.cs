@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using PIS2.Models;
+using PIS2.Pages.Report;
 using PIS2.Views;
 
 namespace PIS2.Models
@@ -630,9 +631,7 @@ namespace PIS2.Models
                 entity.Property(e => e.jobID).HasColumnName("jobID");
                 entity.Property(e => e.jobPlacementDate).HasColumnName("jobPlacementDate");
                 entity.Property(e => e.jobPlacementReference).HasColumnName("jobPlacementReference");
-                entity.Property(e => e.jobPlacementSalary)
-                    .HasColumnType("decimal(18, 2)")
-                    .HasColumnName("jobPlacementSalary");
+                entity.Property(e => e.jobPlacementSalary).HasColumnType("decimal(18, 2)").HasColumnName("jobPlacementSalary");
                 entity.Property(e => e.jobPlacementStatus).HasColumnName("jobPlacementStatus");
                 entity.Property(e => e.jobPlacementReason).HasColumnName("jobPlacementReason");
                 entity.Property(e => e.jobStepID).HasColumnName("jobStepID");
@@ -641,8 +640,7 @@ namespace PIS2.Models
                 entity.HasOne(d => d.departmentModel).WithMany(p => p.JobPlacements)
                     .HasForeignKey(d => d.departmentID);
 
-                entity.HasOne(d => d.employmentModel).WithMany(p => p.JobPlacements)
-                    .HasForeignKey(d => d.employmentID).OnDelete(DeleteBehavior.NoAction);
+                entity.HasOne(d => d.employmentModel).WithMany(p => p.JobPlacements).HasForeignKey(d => d.employmentID).OnDelete(DeleteBehavior.Cascade);
                     
 
                 entity.HasOne(d => d.jobModel).WithMany(p => p.JobPlacements).HasForeignKey(d => d.jobID);
@@ -1333,7 +1331,7 @@ namespace PIS2.Models
                 entity.Property(e => e.payrollHistoryID).HasColumnName("payrollHistoryID");
                 entity.Property(e => e.payrollID).HasColumnName("payrollID");
                 entity.Property(e => e.payrollStatus).HasColumnName("payrollStatus");
-                entity.Property(e => e.modfiedDate).HasColumnName("modfiedDate");
+                entity.Property(e => e.modifiedDate).HasColumnName("modfiedDate");
                 entity.Property(e => e.modifiedBy).HasColumnName("modifiedBy");
 
                 entity.HasOne(e => e.payrollModel)
@@ -1367,17 +1365,17 @@ namespace PIS2.Models
             modelBuilder.Entity<earningModel>(entity =>
             {
                 entity.Property(e => e.earningID).HasColumnName("earningID");
-                entity.Property(e => e.EarningTypeId).HasColumnName("EarningTypeId");
+                entity.Property(e => e.earningTypeId).HasColumnName("EarningTypeId");
                 entity.Property(e => e.earningReference).HasColumnName("earningReference");
                 entity.Property(e => e.employmentID).HasColumnName("employmentID");
                 entity.Property(e => e.earningAmount).HasColumnName("earningAmount");
-                entity.Property(e => e.payrollID).HasColumnName("payrollID");
+                
                 entity.Property(e => e.earningStatus).HasColumnName("earningStatus");
                 entity.Property(e => e.modifiedBy).HasColumnName("modifiedBy");
 
-                entity.HasOne(e => e.EarningType)
+                entity.HasOne(e => e.earningType)
                       .WithMany(p => p.Earnings)
-                      .HasForeignKey(e => e.EarningTypeId)
+                      .HasForeignKey(e => e.earningTypeId)
                       .OnDelete(DeleteBehavior.Cascade);
 
                 entity.HasOne(e => e.EmploymentModel)
@@ -1385,10 +1383,7 @@ namespace PIS2.Models
                       .HasForeignKey(e => e.employmentID)
                       .OnDelete(DeleteBehavior.Cascade);
 
-                entity.HasOne(e => e.PayrollModel)
-                      .WithMany()
-                      .HasForeignKey(e => e.payrollID)
-                      .OnDelete(DeleteBehavior.SetNull); // since payrollID is nullable
+                
             });
 
             // earningType
@@ -1411,7 +1406,7 @@ namespace PIS2.Models
                 entity.Property(e => e.deductionReference).HasColumnName("deductionReference");
                 entity.Property(e => e.employmentID).HasColumnName("employmentID");
                 entity.Property(e => e.deductionAmount).HasColumnName("deductionAmount");
-                entity.Property(e => e.payrollID).HasColumnName("payrollID");
+                
                 entity.Property(e => e.deductionStatus).HasColumnName("deductionStatus");
                 entity.Property(e => e.modifiedBy).HasColumnName("modifiedBy");
 
@@ -1425,10 +1420,7 @@ namespace PIS2.Models
                       .HasForeignKey(e => e.employmentID)
                       .OnDelete(DeleteBehavior.Cascade);
 
-                entity.HasOne(e => e.payrollModel)
-                      .WithMany()
-                      .HasForeignKey(e => e.payrollID)
-                      .OnDelete(DeleteBehavior.Cascade);
+                
             });
 
             // deductionType
@@ -1440,6 +1432,12 @@ namespace PIS2.Models
                 entity.Property(e => e.Status).HasColumnName("Status");
             });
 
+            //tax rates
+            modelBuilder.Entity<taxRateModel>(entity =>
+            {
+                entity.ToTable("TaxRates");
+                
+            });
 
 
             /// <summary>
@@ -1449,6 +1447,15 @@ namespace PIS2.Models
             modelBuilder.Entity<LeaveReportView>()
             .HasNoKey()
             .ToView("vw_LeaveReport");
+
+
+            ///<summary>
+            ///ABSENTISM PER COMPANY
+            /// </summary>
+            /// 
+            modelBuilder.Entity<LeaveReportCompany>()
+                .HasNoKey()
+                .ToView("vw_LeaveCompanyReport");
 
             // Certification View
             modelBuilder.Entity<CertificationSummaryView>()
@@ -1592,6 +1599,7 @@ namespace PIS2.Models
         public DbSet<earningType> EarningTypes { get; set; }
         public DbSet<deductionModel> Deductions { get; set; }
         public DbSet<deductionType> DeductionTypes { get; set; }
+        public DbSet<taxRateModel> TaxRates { get; set; }
 
 
 
@@ -1612,6 +1620,7 @@ namespace PIS2.Models
         public DbSet<AllowanceDetailView> AllowanceDetailView { get; set; } = default!;
         public DbSet<TalentExperienceView> TalentExperienceView { get; set; } = default!;
         public DbSet<CertificationDetailsView> CertificationDetailsView { get; set; } = default!;
+        public DbSet<LeaveReportCompany> LeaveReportCompany { get; set; } = default!;
     }
     
 }

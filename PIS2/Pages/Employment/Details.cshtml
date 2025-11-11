@@ -98,7 +98,7 @@
             {
                 <div class="flex-grow-1 print-full-width">
                     <h5 class="fw-bold">Education Background and Certification</h5>
-                    <table class="table table-striped table-hover flex-grow-1">
+                    <table class="table table-striped table-hover flex-grow-1 print-full-width">
                         <thead class="bg-dark text-white">
                             <tr>
                                 <th>Name</th>
@@ -208,6 +208,14 @@
                     <u>@Model.Age</u>
                 </dd>
             </div>
+            <div class="d-flex me-3">
+                <dt class="me-1">
+                    Severance:
+                </dt>
+                <dd>
+                    <u>@(Math.Round(Model.Severance, 2).ToString("N2")) Br</u>
+                </dd>
+            </div>
 
             @if (Model.employmentModel.employmentStatus == Models.mainStatus.Inactive)
             {
@@ -242,7 +250,7 @@
     <div class="w-100">
     <hr />
         <h4 class="fw-bold">Employment History</h4>
-        <table class="table table-striped table-hover">
+        <table class="table table-striped table-hover print-full-width">
             <thead>
                 <tr class="bg-dark text-white">
                     <th>Date</th>
@@ -273,7 +281,7 @@
         @if (Model.employmentModel.JobPlacements != null && Model.employmentModel.JobPlacements.Any())
         {
             <h4 class="fw-bold">Job Placements History</h4>
-            <table class="table table-stripped table-hover">
+            <table class="table table-stripped table-hover print-full-width">
                 <thead>
                     <tr class="bg-info text-white">
                         <th>Date</th>

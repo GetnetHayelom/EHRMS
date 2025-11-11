@@ -417,7 +417,11 @@ namespace PIS2.Models
 
             return Tuple.Create(years, months);
         }
-        public decimal WorkingDays(DateTime startDate, DateTime endDate)
+        /// <summary>
+        /// Calculate the number of working days (excluding Sundays & active holidays)
+        /// multiplied by the number of active employees in the company.
+        /// </summary>
+        public decimal GetWorkingDays(DateTime startDate, DateTime endDate)
         {
 
             // Example: List of holidays – ideally from a database or config
@@ -439,7 +443,7 @@ namespace PIS2.Models
                 else
                     workingDays += 1;
             }
-
+            workingDays = workingDays == 0 ? 1 : workingDays;
             return workingDays;
         }
         public bool IsHoliday(DateTime date)
@@ -459,7 +463,6 @@ namespace PIS2.Models
             }
             return model;
         }
-
 
 
         /// <summary>
@@ -482,34 +485,13 @@ namespace PIS2.Models
                             d.jobPlacementStatus == mainStatus.Active)
                 .Count();
         }
+        
         /// <summary>
-        /// Calculate the number of working days (excluding Sundays & active holidays)
-        /// multiplied by the number of active employees in the company.
+        /// CHECK IF LOGGED IN USER MATCHES SELECTED EMPLOYEE
         /// </summary>
-        public decimal GetWorkingDays(DateTime StartDate, DateTime EndDate)
-        {
-            var holidays = _context.Holidays
-                .Where(h => h.holidayStatus == mainStatus.Active &&
-                            h.holidayStart <= EndDate &&
-                            h.holidayEnd >= StartDate) // overlaps
-                .ToList();
-
-            int workingDays = 0;
-
-            for (var day = StartDate; day <= EndDate; day = day.AddDays(1))
-            {
-                bool isSunday = day.DayOfWeek == DayOfWeek.Sunday;
-                bool isHoliday = holidays.Any(h => day >= h.holidayStart && day <= h.holidayEnd);
-
-                if (!isSunday && !isHoliday)
-                {
-                    workingDays++;
-                }
-            }
-
-            return workingDays;
-        }
-
+        /// <param name="UserName"></param>
+        /// <param name="empID"></param>
+        /// <returns>bool</returns>
         public bool IsSelf(string UserName, int? empID)
         {
             if(empID == null)
@@ -561,6 +543,67 @@ namespace PIS2.Models
                 .Select(a => (a.userGroups, a.companyID))
                 .ToList();
         }
+
+
+        /// <summary>
+        /// GET SEVERANCE PAY
+        /// </summary>
+        /// <param name="empID"></param>
+        /// <returns>decimal</returns>
+   
+        public decimal GetSeverance(int empID)
+        {
+            var employment = _context.Employments.FirstOrDefault(e => e.employmentID == empID);
+            if (employment == null) return 0;
+
+            var termination = _context.Terminations.FirstOrDefault(e => e.employmentID == empID);
+            var jobPlacement = _context.JobPlacements
+                .Where(j => j.employmentID == empID)
+                .OrderByDescending(j => j.jobPlacementDate)
+                .FirstOrDefault();
+
+            if (jobPlacement == null || jobPlacement.jobPlacementSalary <= 0)
+                return 0;
+
+            DateTime startDate = employment.employmentDate;
+            DateTime endDate = termination?.terminationDate ?? DateTime.Now;
+            if (startDate >= endDate) return 0;
+
+            decimal salary = jobPlacement.jobPlacementSalary;
+            double totalDays = (endDate - startDate).TotalDays;
+            double yearsOfService = totalDays / 365.25;
+            decimal dailySalary = salary / 26;
+
+            // Calculate severance days
+            decimal severanceDays;
+            if (yearsOfService >= 1)
+            {
+                severanceDays = 30 + (decimal)((yearsOfService - 1) * 10);
+            }
+            else
+            {
+                severanceDays = (decimal)(yearsOfService * 30);
+            }
+
+            // Cap to 12 months (360 days)
+            if (severanceDays > 312)
+                severanceDays = 312;
+
+            return dailySalary * severanceDays;
+        }
+
+        /// <summary>
+        /// CHECK PROHIBITIONS
+        /// </summary>
+        /// 
+        public bool CheckProhibition(int empID, ProhibitionType type)
+        {
+            return _context.Prohibitions.Any(p =>
+                p.employmentID == empID &&
+                p.prohibitionType == type &&
+                p.prohibitionStatus == mainStatus.Active);
+        }
+
         public Core() { }
 
     }

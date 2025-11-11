@@ -260,15 +260,15 @@ namespace PIS2.Pages.HRClerck
                 case "Prohibition":
                     var prohibitionList = _context.Prohibitions
                         .Include(j => j.employmentModel).ThenInclude(e => e.personModel)
-                        .Where(e => e.prohibitionStatus == mainStatus.Active).ToList();
+                        .Where(e => e.prohibitionStatus == mainStatus.Active || e.prohibitionStatus == mainStatus.Suspended).ToList();
 
 
-                    tableTitle = "Active Prohibitions";
+                    tableTitle = "Prohibitions Requests";
                     tableHeader = "<td>Employee ID</td><td>Full Name</td><td>From</td><td>To</td><td>Type</td><td>Reason</td><td>Modified By</td>";
 
                     tableBody = string.Join("", prohibitionList.Select(p =>
                     {
-                        var url = Url.Page("/Prohibition/Details", new { id = p.prohibitionID });
+                        var url = Url.Page("/Prohibition/Edit", new { id = p.prohibitionID });
                         
 
                         return $"<tr onclick=\"location.href='{url}'\" style='cursor:pointer'><td>{p.employmentModel.givenID}</td>" +

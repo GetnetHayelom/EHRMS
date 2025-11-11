@@ -21,6 +21,7 @@ namespace PIS2.Pages.Prohibition
 
         [BindProperty]
         public prohibitionModel prohibitionModel { get; set; } = default!;
+        public List<prohibitionHistoryModel>? prohibitionHistory { get; set; }
 
         public async Task<IActionResult> OnGetAsync(int? id)
         {
@@ -29,11 +30,13 @@ namespace PIS2.Pages.Prohibition
                 return NotFound();
             }
 
-            var prohibitionmodel =  await _context.Prohibitions.FirstOrDefaultAsync(m => m.prohibitionID == id);
+            var prohibitionmodel =  await _context.Prohibitions
+                .Include(p => p.employmentModel).FirstOrDefaultAsync(m => m.prohibitionID == id);
             if (prohibitionmodel == null)
             {
                 return NotFound();
             }
+            prohibitionHistory = _context.prohibitionHistories.Where(p => p.prohibitionID == prohibitionmodel.prohibitionID).OrderBy(p => p.modifiedDate).ToList();
             prohibitionModel = prohibitionmodel;
            ViewData["employmentID"] = new SelectList(_context.Employments, "employmentID", "givenID");
             return Page();
@@ -43,14 +46,20 @@ namespace PIS2.Pages.Prohibition
         // For more information, see https://aka.ms/RazorPagesCRUD.
         public async Task<IActionResult> OnPostAsync()
         {
-            ModelState.Remove("prohibitionModel.modifiedBy");
-            prohibitionModel.modifiedBy = User.Identity.Name;
-            if (!ModelState.IsValid)
-            {
-                return Page();
-            }
+            if (!User.IsInRole("MIE\\PMS_HRMANAGER")) return RedirectToPage("/Shared/AccessDenied");
+            var prob = await _context.Prohibitions.FindAsync(prohibitionModel.prohibitionID);
+            if (prob == null)
+                return NotFound();
 
-            _context.Attach(prohibitionModel).State = EntityState.Modified;
+            prob.prohibitionStart = prohibitionModel.prohibitionStart;
+            prob.prohibitionEnd = prohibitionModel.prohibitionEnd;
+            prob.prohibitionStatus = prohibitionModel.prohibitionStatus;
+            prob.prohibitionReason = prohibitionModel.prohibitionReason;
+            prob.prohibitionType = prohibitionModel.prohibitionType;
+            prob.prohibitionRemark = prohibitionModel.prohibitionRemark;
+            prob.modifiedBy = User.Identity.Name;
+
+            
 
             try
             {

@@ -37,8 +37,8 @@ namespace PIS2.Pages.AllowanceAssignment
             var empID = _core.getUserEmp(User.Identity.Name);
 
             var company = _context.JobPlacements.Include(j => j.departmentModel)
-                .FirstOrDefault(j => j.jobPlacementStatus == mainStatus.Active && j.employmentID == empID)?.departmentModel?.companyID;
-            Company = _context.Companies.FirstOrDefault(c => c.companyID == company).companyName;
+                .FirstOrDefault(j => j.jobPlacementStatus == mainStatus.Active && j.employmentID == empID)?.departmentModel?.companyID ?? 0;
+            Company = _context.Companies.FirstOrDefault(c => c.companyID == company)?.companyName ?? "";
 
             allowanceAssignmentModel = await _context.AllowanceAssignments
                 .Include(a => a.allowanceModel)
@@ -47,7 +47,7 @@ namespace PIS2.Pages.AllowanceAssignment
                 .Where(a => a.allowanceStatus == mainStatus.Active
                 && a.employmentModel.JobPlacements.FirstOrDefault(js=> js.jobPlacementStatus == mainStatus.Active).departmentModel.companyID == company)
                 .OrderBy(a => a.employmentModel.givenID)
-                .ToListAsync();
+                .ToListAsync() ?? new List<allowanceAssignmentModel>();
 
             GroupedAllowance = allowanceAssignmentModel.GroupBy(l => l.employmentModel.JobPlacements
                 .FirstOrDefault(j => j.jobPlacementStatus == mainStatus.Active)?.departmentModel)

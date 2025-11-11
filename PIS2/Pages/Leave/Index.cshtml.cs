@@ -27,6 +27,7 @@ namespace PIS2.Pages.Leave
 
         public class LeaveGroup
         {
+            public string? CompanyName { get; set; }
             public string DepartmentName { get; set; } = string.Empty;
             public int Count { get; set; }
             public decimal SumDays { get; set; }
@@ -44,28 +45,46 @@ namespace PIS2.Pages.Leave
 
         public async Task OnGetAsync()
         {
+            var userID = _context.Users.FirstOrDefault(u => u.userName == User.Identity.Name)?.userID ?? 0;
+
+
             var empID = _core.getUserEmp(User.Identity.Name);
            
             var company = _context.JobPlacements.Include(j => j.departmentModel)
                 .FirstOrDefault(j => j.jobPlacementStatus == mainStatus.Active && j.employmentID == empID)?.departmentModel?.companyID;
 
+            var accessibleCompanies = _context.Accesses
+                .Where(a => a.userID == userID && a.accessStatus == mainStatus.Active) // 1 = active access
+                .Select(a => a.companyID)
+                .ToList();
+
+            var allowedCompanies = accessibleCompanies
+                .Append(company)
+                .Where(c => c != null)
+                .Distinct()
+                .ToList();
+
 
             leaveModel = _context.Leaves
-                .Include(l => l.employmentModel)?.ThenInclude(e => e.JobPlacements)?.ThenInclude(j => j.departmentModel)
+                .Include(l => l.employmentModel)?.ThenInclude(e => e.JobPlacements)?.ThenInclude(j => j.departmentModel).ThenInclude(d => d.companyModel)
                 .Include(l => l.employmentModel).ThenInclude(e => e.personModel)
                 .Include(l => l.leaveTypeModel)
-                .Where(l => l.employmentModel.JobPlacements.FirstOrDefault(j => j.jobPlacementStatus == mainStatus.Active).departmentModel.companyID == company
-                && l.leaveStatus == leaveStatus.Hold || l.leaveStatus == leaveStatus.Approved)
+                .Where(l => 
+                    l.employmentModel.JobPlacements
+                        .Any(j => j.jobPlacementStatus == mainStatus.Active && allowedCompanies.Contains(j.departmentModel.companyID))
+                    && l.leaveStatus == leaveStatus.Hold || l.leaveStatus == leaveStatus.Approved)
                 .OrderBy(l => l.leaveRequestDate)
                 .ToList() ?? new List<leaveModel>();
 
-            GroupedDepLeaves =leaveModel.GroupBy(l => l.employmentModel.JobPlacements
+            GroupedDepLeaves =leaveModel
+                .GroupBy(l => l.employmentModel.JobPlacements
                 .FirstOrDefault(j => j.jobPlacementStatus == mainStatus.Active)?.departmentModel)
                 .Select(g => new LeaveGroup
                 {
+                    CompanyName= g.Key?.companyModel?.companyName ?? "Unknown",
                     DepartmentName = g.Key?.departmentName ?? "Unknown",
                     Count = g.Count(),
-                    SumDays =(decimal)g.Sum(l => l.leaveDays),
+                    SumDays = g.Sum(l => (decimal?)l.leaveDays) ?? 0,
                     Records = g.ToList()
                 }).ToList();
 

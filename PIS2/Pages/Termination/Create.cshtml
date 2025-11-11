@@ -63,6 +63,17 @@
             }
 
         </div>
+        <div class="col-md-4 d-flex flex-wrap gap-3">
+            <div class="card shadow-sm p-4 text-center">
+                <p class="small mb-1 text-muted"> Severance Pay</p>
+                <h4 class="card-body fw-bold">@(Math.Round(Model.SeverancePay, 2))</h4>
+            </div>
+
+            <div class="card shadow-sm p-4 text-center">
+                <p class="small mb-1 text-muted">Leave Payable</p>
+                <h4 class="card-body fw-bold">@(Math.Round(Model.SeverancePay, 2))</h4>
+            </div>
+        </div>
     </div>
 }
 else

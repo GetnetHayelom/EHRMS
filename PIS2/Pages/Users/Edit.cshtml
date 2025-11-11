@@ -40,7 +40,7 @@
                     </div>
 
                     <div class="d-flex justify-content-end mt-4">
-                        <a asp-page="Delete" asp-route-id="@Model.userModel?.userID" class="btn btn-danger me-2">Delete</a>
+                        <a asp-page="Index" class="btn btn-secondary me-2">Cancel</a>
                         <button type="button" class="btn btn-success" onclick="UpdateUser()">Save</button>
                     </div>
                 </form>
@@ -209,3 +209,31 @@
 
     </script>
 
+ <script>
+     function updateAccess(accessID){
+        const token = $('input[name="__RequestVerificationToken"]').val();
+        $.ajax({
+             url:"@Url.Page("Edit", "UpdateAccess")",
+             type:"POST",
+             data:{
+                 accessID : accessID,
+                __RequestVerificationToken: token
+             },
+             success: function (response) {
+                 if (response.success) {
+                     alert(response.message);
+                     // Redirect after success
+                    if (response.redirectUrl) {
+                        window.location.href = response.redirectUrl;
+                    }
+                } else {
+                    alert(response.message); // show error
+                }
+            },
+            error: function (xhr) {
+                alert("Error: " + xhr.responseText);
+            }
+
+        });
+     }
+ </script>

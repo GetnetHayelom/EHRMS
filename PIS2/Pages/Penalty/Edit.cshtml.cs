@@ -23,6 +23,7 @@ namespace PIS2.Pages.Penalty
 
         [BindProperty]
         public penaltyModel penaltyModel { get; set; } = default!;
+        public List<penaltyHistoryModel>? penaltyHistory { get; set; }
 
         public async Task<IActionResult> OnGetAsync(int? id)
         {
@@ -31,11 +32,15 @@ namespace PIS2.Pages.Penalty
                 return NotFound();
             }
 
-            var penaltymodel =  await _context.Penalties.FirstOrDefaultAsync(m => m.penaltyID == id);
+            var penaltymodel =  await _context.Penalties
+                .Include(p => p.employmentModel).ThenInclude(e => e.personModel)
+                .FirstOrDefaultAsync(m => m.penaltyID == id);
+
             if (penaltymodel == null)
             {
                 return NotFound();
             }
+            penaltyHistory = _context.PenaltyHistories.Where(p => p.penaltyID == penaltymodel.penaltyID).OrderBy(p => p.modifiedDate).ToList();
             penaltyModel = penaltymodel;
            ViewData["employmentID"] = new SelectList(_context.Employments, "employmentID", "givenID");
            ViewData["penaltyTypeID"] = new SelectList(_context.PenaltyTypes, "penaltyTypeID", "penaltyTypeID");
@@ -46,12 +51,17 @@ namespace PIS2.Pages.Penalty
         // For more information, see https://aka.ms/RazorPagesCRUD.
         public async Task<IActionResult> OnPostAsync()
         {
-            if (!ModelState.IsValid)
-            {
-                return Page();
-            }
+            if (!User.IsInRole("MIE\\PMS_HRMANAGER")) return RedirectToPage("/Shared/AccessDenied");
 
-            _context.Attach(penaltyModel).State = EntityState.Modified;
+            var penal = _context.Penalties.FirstOrDefault(p => p.penaltyID == penaltyModel.penaltyID) ?? new penaltyModel();
+
+            penal.penaltyReason = penaltyModel.penaltyReason;
+            penal.penaltyReference = penaltyModel.penaltyReference;
+            penal.penaltyStartDate = penaltyModel.penaltyStartDate;
+            penal.penaltyEndDate = penaltyModel.penaltyEndDate;
+            penal.penaltyStatus = penaltyModel.penaltyStatus;
+            penal.modifiedBy = User.Identity.Name;
+
 
             try
             {

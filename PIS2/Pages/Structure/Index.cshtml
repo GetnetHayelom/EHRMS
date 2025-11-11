@@ -4,8 +4,35 @@
 <h2 class="fw-bold">Structures</h2>
 <p>
 <a asp-page="Create" class="btn btn-primary">Create New Structure</a></p>
-@await Html.PartialAsync("filter")
-<table class="table table-bordered table-striped table-hover" id="tableBody">
+<div class="d-flex gap-3">
+    <div class="col-md-6">
+        @await Html.PartialAsync("filter")
+    </div>
+    <form typeof="GET" class="col-md-6 d-flex gap-3">
+        <div class="m-2 d-print-flex flex-grow">
+            <label for="filter-company">Company:</label>
+            <select class="form-select" aria-label="Default select example" id="filter-company" name="CompanyID">
+                <option value="">All</option>
+                @foreach (var company in Model.Companies)
+                {
+                    <option value="@company.companyID">@company.companyName</option>
+                }
+            </select>
+        </div>
+        <div class="m-2 d-print-flex flex-grow">
+            <label for="filter-department">Department:</label>
+            <select class="form-select" aria-label="Default select example" id="filter-department">
+                <option value="">All</option>                
+            </select>
+        </div>
+        <div class="d-flex align-items-end">
+            <button type="submit" class="btn btn-primary d-print-none m-2">Load</button>
+        </div>
+    </form>
+ 
+</div>
+
+<table class="table table-bordered table-striped table-hover" id="dataTable">
     <thead class="bg-dark text-white">
         <tr>
             
@@ -69,3 +96,6 @@
     @await Html.PartialAsync("back")
     @await Html.PartialAsync("print")
 </div>
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="~/js/filter-department.js"></script>

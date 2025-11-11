@@ -37,8 +37,10 @@ namespace PIS2.Views
         public int xEmployees { get; set; }
         public decimal Salary { get; set; }
         public decimal Allowance { get; set; } = 0;
-        public decimal Overtime { get; set; }           
-        
+        public decimal Overtime { get; set; }
+        public decimal SeverancePayable { get; set; }
+        public decimal SeverancePaid { get; set; }
+
         public decimal getTotalExpence()
         {
             return Salary + Allowance + Overtime;
@@ -59,6 +61,7 @@ namespace PIS2.Views
         public leaveDetail Leaves { get; set; }
         public decimal Overtime { get; set; }
         public decimal Allowance { get; set; }
+        public decimal Severance { get; set; } = 0;
         public decimal Total { get; set; }
     }
     public class EmployeeView
@@ -197,7 +200,9 @@ namespace PIS2.Views
     }
 
 
-    ///<summary>Allowance View</summary>
+    ///<summary>
+    ///Allowance View
+    ///</summary>
     ///
 
     public class AllowanceDetailView

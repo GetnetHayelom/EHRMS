@@ -151,18 +151,17 @@
                         <h5 class="fw-bold text-dark">$@Math.Round((decimal)(Model.CompanySummaries.Sum(c => c.Overtime)), 2).ToString("N0")</h5>
                     </div>
                 </div>
-
                 <div class="col-md-2">
-                    <div class="card text-center shadow-sm p-3 clickable" onclick="location.href='@Url.Page("/Report/PayableLeaveReport")'">
-                        <p class="small mb-1 text-muted">Payable Leave</p>
-                        <h5 class="fw-bold text-dark">$@Math.Round((decimal)(Model.CompanySummaries.Sum(c => c.payableLeaves)), 2).ToString("N0")</h5>
+                    <div class="card text-center shadow-sm p-3 clickable" onclick="location.href='@Url.Page("/Report/OvertimeRecordReport")'">
+                        <p class="small mb-1 text-muted">Severance Pay</p>
+                        <h5 class="fw-bold text-dark">$@Math.Round((decimal)(Model.CompanySummaries.Sum(c => c.SeverancePayable)), 2).ToString("N0")</h5>
                     </div>
                 </div>
 
                 <div class="col-md-3">
                     <div class="card text-center shadow-sm bg-success text-white p-3">
                         <p class="small mb-1">Total</p>
-                        <h4 class="fw-bold">$@Math.Round((decimal)(Model.CompanySummaries.Sum(c => c.Salary + c.Allowance + c.Overtime)), 2).ToString("N0")</h4>
+                        <h4 class="fw-bold">$@Math.Round((decimal)(Model.CompanySummaries.Sum(c => c.Salary + c.Allowance + c.Overtime + c.SeverancePayable)), 2).ToString("N0")</h4>
                     </div>
                 </div>
             </div>

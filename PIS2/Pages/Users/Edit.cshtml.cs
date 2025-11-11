@@ -150,6 +150,34 @@ namespace PIS2.Pages.Users
             }
         }
 
+        public IActionResult OnPostUpdateAccess(int accessID)
+        {
+            var access = _context.Accesses.FirstOrDefault(a => a.accessID == accessID);
+            if(access != null)access.accessStatus = access.accessStatus == mainStatus.Active? access.accessStatus = mainStatus.Inactive: access.accessStatus = mainStatus.Active;
+
+            try
+            {
+                _context.SaveChanges();
+
+                return new JsonResult(new
+                {
+                    success=true,
+                    message ="Access Updated!",
+                    redirectUrl ="Edit?id=" + access?.userID
+                });
+
+            }
+            catch (Exception ex)
+            {
+
+                return new JsonResult(new
+                {
+                    success = false,
+                    message = "Access Update Failed!"
+                });
+            }
+            
+        }
         public IActionResult OnGetAccessTablePartial(int userID)
         {
             // Fetch access data for the given user

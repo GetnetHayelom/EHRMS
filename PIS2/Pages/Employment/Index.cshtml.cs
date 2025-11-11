@@ -40,14 +40,16 @@ namespace PIS2.Pages.Employment
         public int totalCount { get; set; }
         public int maleCount { get; set; }
         public int femaleCount { get; set; }
-public string Company { get; set; }
+        public string Company { get; set; }
         public async Task OnGetAsync()
         {
             var empID = _core.getUserEmp(User.Identity.Name);
             Console.WriteLine("*Your empID iS____________" + empID);
+
             var company = _context.JobPlacements.Include(j => j.departmentModel)
-                .FirstOrDefault(j => j.jobPlacementStatus == mainStatus.Active && j.employmentID == empID)?.departmentModel?.companyID;
-            Company = _context.Companies.FirstOrDefault(c => c.companyID == company).companyName;
+                .FirstOrDefault(j => j.jobPlacementStatus == mainStatus.Active && j.employmentID == empID)?.departmentModel?.companyID ?? 0;
+
+            Company = _context.Companies.FirstOrDefault(c => c.companyID == company)?.companyName ?? "";
             //Console.WriteLine("*Your Comapny iS____________" + _context.Companies.FirstOrDefault(c => c.companyID == company).companyName);
             employmentModel = await _context.Employments
                 .Include(e => e.personModel)
@@ -55,14 +57,15 @@ public string Company { get; set; }
                 .Include(e => e.JobPlacements).ThenInclude(jp => jp.departmentModel)
                 .Include(e => e.JobPlacements).ThenInclude(jp => jp.jobModel)
                 .Where(e => e.employmentStatus == mainStatus.Active
-                && e.JobPlacements.First(j => j.jobPlacementStatus == mainStatus.Active || j.jobPlacementStatus == mainStatus.Suspended).departmentModel.companyID == company)
+                && e.JobPlacements.FirstOrDefault(j => j.jobPlacementStatus == mainStatus.Active || j.jobPlacementStatus == mainStatus.Suspended).departmentModel.companyID == company)
                 .OrderBy(e => e.givenID)
-                .ToListAsync();
-            totalCount = employmentModel.Count();
-            maleCount = employmentModel.Count(e => e.personModel?.personGender == Gender.Male);
-            femaleCount = employmentModel.Count(e => e.personModel?.personGender == Gender.Female);
+                .ToListAsync() ?? new List<employmentModel>();
 
-            GroupedEmployments = employmentModel.GroupBy(e => e.JobPlacements.First(j => j.jobPlacementStatus == mainStatus.Active).departmentModel)
+            totalCount = employmentModel?.Count() ?? 0;
+            maleCount = employmentModel?.Count(e => e.personModel?.personGender == Gender.Male) ?? 0;
+            femaleCount = employmentModel?.Count(e => e.personModel?.personGender == Gender.Female) ?? 0;
+
+            GroupedEmployments = employmentModel?.GroupBy(e => e.JobPlacements?.FirstOrDefault(j => j.jobPlacementStatus == mainStatus.Active).departmentModel)?
               .Select(g => new GroupDepEmployment
               {
                   DepartmentName = g.Key?.departmentName ?? "Unknown",

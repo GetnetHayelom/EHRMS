@@ -22,60 +22,42 @@ namespace PIS2.Pages.Penalty
         {
             _context = context;
         }
-        [BindProperty]
-        [ValidateNever]
-        public List<employmentModel>? Employments { get; set; } = default!;
+        
         [ValidateNever]
         public employmentModel Employment { get; set; }
         public int EmployeeID;
-        [ValidateNever]
-        public personModel Person { get; set; } = new personModel();
         [BindProperty(SupportsGet = true)]
-        public string givenID { get; set; }
+        public string searchID { get; set; }
         public string message { get; set; }
+        public List<penaltyModel>? Penalties { get; set; }
         public IActionResult OnGet(int? id)
         {
-            Employments = _context.Employments.ToList();
+            
             Employment = new employmentModel();
-            if (!string.IsNullOrEmpty(givenID))
+            if (!string.IsNullOrEmpty(searchID))
             {
-                
 
-                Person = _context.Persons.Where(p => p.Employments.Any(e => e.givenID == givenID))
-                    .FirstOrDefault();
+                Employment = _context.Employments?
+                    .Include(e => e.personModel)?.FirstOrDefault(e => e.givenID == searchID) ?? new employmentModel();
 
-                if (Person == null)
+                Penalties = _context.Penalties
+                    .Include(p => p.penaltyTypeModel).Where(p => p.employmentID == Employment.employmentID).ToList();
+
+                if (Employment == null)
                 {
-                    TempData["SuccessMessage"] = $"No employment found with employment ID {givenID}";
+                    TempData["SuccessMessage"] = $"No employment found with employment ID {searchID}";
                     return Page();
                 }
-                else
-                {
-                    TempData["PersonID"] = Person.personID;
-                    Employment = _context.Employments
-                        .Include(e => e.Leaves).ThenInclude(l => l.leaveTypeModel)?
-                        .Include(e => e.JobPlacements).ThenInclude(j => j.jobModel)?
-                        .Include(e => e.JobPlacements).ThenInclude(j => j.departmentModel)?
-                        .FirstOrDefault(e => e.personID == Person.personID);
-
-                    if (Employment == null)
-                    {
-                        TempData["SuccessMessage"] = $"No employment found with employment ID {givenID}";
-                        return Page();
-
-                    }
-                    
-
-                }
+                
+                
 
             }
             else
             {
                 
-                Employments = _context.Employments.ToList();
-                Person = new personModel();
+                
                 Employment = new employmentModel();
-                ViewData["employmentID"] = new SelectList(_context.Employments, "employmentID", "givenID");
+                
                 var leaveTypes = _context.LeaveTypes.Where(lt => lt.leaveGroup == leaveGroup.Absentism && lt.leaveTypeStatus == mainStatus.Active).ToList();
     
             }
@@ -91,10 +73,11 @@ namespace PIS2.Pages.Penalty
         // For more information, see https://aka.ms/RazorPagesCRUD.
         public async Task<IActionResult> OnPostAsync()
         {
+
             ModelState.Remove("penaltyModel.modifiedBy");
             ModelState.Remove("modifiedBy");
             penaltyModel.modifiedBy = User.Identity.Name;
-            //penaltyModel = new penaltyModel();
+            penaltyModel.penaltyStatus = penaltyStatus.Hold;
 
             if (!ModelState.IsValid)
             {

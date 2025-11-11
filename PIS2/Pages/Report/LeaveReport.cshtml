@@ -11,11 +11,12 @@
     <h2 class="fw-bold">Attendance and Leave Report</h2>
     <div class="d-flex d-print-none">
         <ul class="nav nav-tabs">
+           
             <li class="nav-item">
-                <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#absentismView">Absentism</button>
+                <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#annualLeaveView">Annual Leave Summary</button>
             </li>
             <li class="nav-item">
-                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#annualLeaveView">Annual Leave Summary</button>
+                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#absentismView">Absentism</button>
             </li>
             <li class="nav-item">
                 <button class="nav-link" data-bs-toggle="tab" data-bs-target="#detailLeaveView">Custom Attendance Report</button>
@@ -27,135 +28,8 @@
 </div>
 <hr />
 <div class="tab-content mt-3">
-    <div class="tab-pane fade show active" id="absentismView">
-        <h4 class="fw-bold">Absentism Summary</h4>
-
-        <!--SUMMARY POINTS-->
-        <div class="d-flex justify-content-between">
-            <div class="card m-2 p-2 shadow flex-grow-1">
-                <p>Employees</p>
-                <h6 class="fw-bold"><u>@Model.Leaves.Sum(l => l.EmployeeTotal)</u> </h6>
-            </div>
-            
-            <div class="card m-2 p-2 shadow flex-grow-1">
-                <p>Total Absence (Days) </p>
-                <h6 class="fw-bold">
-                    <u>@Math.Round((decimal)Model.Leaves.Sum(l => l.CompanySum), 2).ToString("N2")</u>
-                </h6>
-            </div>
-            <div class="card m-2 p-2 shadow flex-grow-1">
-                <p> Avg (Per Employee)</p>
-                <h6 class="fw-bold">
-                    <u>@Math.Round((decimal)Model.Leaves.Sum(l => l.CompanySum) / Model.Leaves.Sum(l => l.EmployeeTotal), 2) Days</u>
-                </h6>
-            </div>
-            
-            <div class="card m-2 p-2 shadow flex-grow-1">
-                <p>Total Absence Records (Count) </p>
-                <h6 class="fw-bold"><u>@Model.Leaves.Sum(l => l.CompanyTotal).ToString("N2")</u> </h6>
-             </div>
-            <div class="card m-2 p-2 shadow flex-grow-1">
-                <p> Absentism Rate</p>
-                <h6 class="fw-bold">
-                    <u>
-                        @(Model.Leaves.Any()?
-                        Math.Round((decimal)(Model.Leaves.Sum(l => l.CompanySum) / (Model.Leaves.Sum(l => l.EmployeeTotal) * Model.Leaves.First().WorkingDays)) * 100, 2): 0)
-                        %
-                    </u>
-                </h6>
-            </div>
-            
-            
-        </div>
-        <hr />
-        <!--ABSENTISM FILTER CONTROLS-->
-        <form method="get" onsubmit="showLoader()" class="d-flex justify-content-between m-2 d-print-none align-items-end">
-            <div class="col-3">
-                <label for="CompanyID">Company:</label>
-                <select class="form-select" aria-label="Default select company" name="CompanyID" asp-for="CompanyID">
-                    <option value="0">All</option>
-                    @foreach (var company in Model.Companies)
-                    {
-                        <option value="@company.companyID">@company.companyName</option>
-                    }
-                </select>
-            </div>
-            
-            <div class="col-3">
-                <label for="dateStart">Date of Start From:</label>
-                <input class="form-control" type="date" id="dateStart" asp-for="StartDate" name="StartDate" value="@Model.Leaves.Max(l => l.StartDate).ToString("yyyy-MM-dd")" />
-            </div>
-            <div class="col-3 d-print-none">
-                <label for="dateEnd">Date of End Upto:</label>
-                <input class="form-control" type="date" id="dateEnd" name="EndDate" asp-for="EndDate" value="@Model.Leaves.Max(l => l.EndDate).ToString("yyyy-MM-dd")" />
-            </div>
-            <div class="d-flex align-items-end">
-                <button type="submit" value="Filter" class="btn btn-primary m-2">Load</button>
-            </div>
-            
-        </form>
-        <div class="d-none d-print-flex justify-content-between">
-            <h6 class="fw-bold m-2">Company: <u>@Model.companyName</u></h6>
-            <div class="d-flex">
-                <h6 class="fw-bold m-2">From: <u>@Model.SDate?.ToString("MM/dd/yyyy")</u></h6>
-                <h6 class="fw-bold m-2">To: <u>@Model.EDate?.ToString("MM/dd/yyyy")</u></h6>
-            </div>
-            
-        </div>
-        <!--End type of filtering section-->
-
-        <!--Leave Absence Rate Table-->
-        <table class="table table-bordered table-striped table-hover">
-            <thead class="bg-dark text-white">
-                <tr>
-                    <th colspan="3">Company</th>
-                    <th>Total Employees</th>
-                    <th>Total Absence Days</th>
-                    <th>Absence Rate</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var company in Model.Leaves)
-                {
-                    <tr class="table-primary" id="@company.CompanyID">
-                        <td colspan="3"><h5 class="fw-bold">@company.CompanyName</h5></td>
-                        <td><h5 class="fw-bold">@company.EmployeeTotal</h5></td>
-                        <td><h5 class="fw-bold">@Math.Round((decimal)company.CompanySum, 2).ToString("N2")</h5></td>
-                        <td><h5 class="fw-bold">@Math.Round((decimal)(company.CompanySum/(company.EmployeeTotal* company.WorkingDays))*100, 2) %</h5></td>
-                    </tr>
-                    <tr><td></td><td colspan="3" class="text-secondary fw-bold">Top 3 Absentism Reasons By Department</td>   </tr>
-                    @foreach (var dept in company.Departments)
-                    {
-                        <tr class="table-secondary">
-                            <td></td>
-                   
-                            <td class="fw-bold" colspan="2">@dept.DepartmentName</td>
-                            <td class="fw-bold">@dept.EmployeeTotal</td>
-                            <td class="fw-bold">@Math.Round((decimal)dept.DepartmentSum, 2)</td>
-                            <td class="fw-bold">@Math.Round((decimal)(dept.DepartmentSum / (@dept.EmployeeTotal*company.WorkingDays)) * 100, 2) %</td>
-                        </tr>
-                
-                        @foreach (var type in dept.LeaveTypes)
-                        {
-                    
-                            <tr>
-                                <td colspan="2"></td>
-
-                                <td colspan="2">@type.LeaveType</td>
-                                <td>@Math.Round((decimal)@type.LeaveTypeSum, 2)<u>(@Math.Round((decimal)(type.LeaveTypeSum / dept.DepartmentSum) * 100, 2) %)</u></td>
-                                <td></td>
-                            </tr>
-                        }
-        
-                    }
-    
-                }
-            </tbody>
-        </table>
-    </div>
-
-    <!--Payable Leave By Company Table-->
-    <div class="tab-pane fade" id="annualLeaveView">
+    <!--LEAVE BALANCE REPORT-->
+    <div class="tab-pane fade show active" id="annualLeaveView">
         <h4 class="fw-bold">Annual Leave Summary</h4>
         <table class="table table-bordered table-striped table-hover print-full-width">
             <thead class="bg-dark text-white">
@@ -171,7 +45,7 @@
                 @{
                     int index = 1;
                 }
-                @if (Model.AnnualLeaveSummaries?.Any()!= null)
+                @if (Model.AnnualLeaveSummaries?.Any() != null)
                 {
                     @foreach (var item in Model.AnnualLeaveSummaries)
                     {
@@ -200,8 +74,6 @@
                                 <tr class="accordion-collapse collapse show" id="@collapseId" style="cursor:pointer;"
                                     onclick=" location.href='@Url.Page("/Management/AnnualLeaveDepartmentSummary", new { id = item2.DepartmentID })' ">
                                     <td>@index.@index2</td>
-
-
                                     <td colspan="2">@item2.Department</td>
                                     <td>@item2.LeaveBalance.ToString("N2")</td>
                                     <td>@item2.AllowedLeave.ToString("N2")</td>
@@ -225,7 +97,123 @@
         </table>
     </div>
 
-    <!--ALL LEAVES TABLE FOR CUSTOM REPORTS-->
+    <!--ABSENTISM REPORT-->
+    <div class="tab-pane fade" id="absentismView">
+        <h4 class="fw-bold">Absentism Summary</h4>
+
+        <!--SUMMARY POINTS-->
+        <div class="d-flex justify-content-between">
+            <div class="card m-2 p-2 shadow flex-grow-1">
+                <p>Employees</p>
+                <h6 class="fw-bold"><u id="employees"></u> </h6>
+            </div>
+            
+            <div class="card m-2 p-2 shadow flex-grow-1">
+                <p>Total Absence (Days) </p>
+                <h6 class="fw-bold">
+                    <u id="totalDays"></u>
+                </h6>
+            </div>
+            <div class="card m-2 p-2 shadow flex-grow-1">
+                <p> Avg (Per Employee)</p>
+                <h6 class="fw-bold">
+                    <u id="perEmployee"></u>
+                </h6>
+            </div>
+            
+            <div class="card m-2 p-2 shadow flex-grow-1">
+                <p>Total Absence Records (Count) </p>
+                <h6 class="fw-bold"><u id="countAbsentism"></u> </h6>
+             </div>
+            <div class="card m-2 p-2 shadow flex-grow-1">
+                <p> Absentism Rate</p>
+                <h6 class="fw-bold">
+                    <u id="absentismRate">
+                        
+                    </u>
+                </h6>
+            </div>
+            
+            
+        </div>
+        <hr />
+        <!--ABSENTISM FILTER CONTROLS-->
+        <form id="absentismForm" class="d-flex flex-wrap m-2 d-print-none gap-3">
+            <div class="col-3">
+                <label for="CompanyID">Company:</label>
+                <select class="form-select" aria-label="Default select company" name="CompanyID" asp-for="CompanyID">
+                    <option value="0">All</option>
+                    @foreach (var company in Model.Companies)
+                    {
+                        <option value="@company.companyID">@company.companyName</option>
+                    }
+                </select>
+            </div>
+            <div class="col-3">
+                <label for="LeaveTypeID">Type/Reason:</label>
+                <select class="form-select" aria-label="Default select leave type" name="LeaveTypeID" asp-for="LeaveTypeID">
+                    <option value="0">All</option>
+                    @foreach (var leave in Model.LeaveTypes)
+                    {
+                        <option value="@leave.leaveTypeID">@leave.leaveTypeName</option>
+                    }
+                </select>
+            </div>
+            <div class="col-3">
+                <label for="LeaveGroup">Group:</label>
+                <select class="form-select" aria-label="Default select leave group" name="LeaveGroup" asp-for="LeaveGroup" asp-items="@Html.GetEnumSelectList<Models.leaveGroup>()">
+                    <option value="0">All</option>
+                </select>
+            </div>
+            <div class="col-3">
+                <label for="Legality">Legality:</label>
+                <select class="form-select" aria-label="Default select leave legality" name="Legality" asp-for="Legality">
+                    <option value="">All</option>
+                    <option value="true">Legal</option>
+                    <option value="false">Illegal</option>
+                </select>
+            </div>
+            <div class="col-3">
+                <label for="dateStart">Date of Start From:</label>
+                <input class="form-control" type="date" id="dateStart" asp-for="StartDate" name="StartDate" value="@Model.SDate?.ToString("yyyy-MM-dd")" />
+            </div>
+            <div class="col-3 d-print-none">
+                <label for="dateEnd">Date of End Upto:</label>
+                <input class="form-control" type="date" id="dateEnd" name="EndDate" asp-for="EndDate" value="@Model.EDate?.ToString("yyyy-MM-dd")" />
+            </div>
+            <div class="d-flex align-items-end">
+                <button type="submit" value="Filter" class="btn btn-primary m-2">Load</button>
+            </div>
+            
+        </form>
+        <div class="d-none d-print-flex justify-content-between">
+            <h6 class="fw-bold m-2">Company: <u>@Model.companyName</u></h6>
+            <div class="d-flex">
+                <h6 class="fw-bold m-2">From: <u>@Model.SDate?.ToString("MM/dd/yyyy")</u></h6>
+                <h6 class="fw-bold m-2">To: <u>@Model.EDate?.ToString("MM/dd/yyyy")</u></h6>
+            </div>
+            
+        </div>
+        <!--End type of filtering section-->
+
+        <!--Leave Absence Rate Table-->
+        <table class="table table-bordered table-striped table-hover">
+            <thead class="bg-dark text-white">
+                <tr>
+                    <th colspan="3">Company</th>
+                    <th>Total Employees</th>
+                    <th>Total Absence Days</th>
+                    <th>Absence Rate</th>
+                </tr>
+            </thead>
+            <tbody id="leaveTableBody">
+               
+            </tbody>
+        </table>
+    </div>
+
+    
+    <!--CUSTOM LEAVE REPORTS-->
     <div class="tab-pane fade" id="detailLeaveView">
         <div class="d-flex justify-content-between">
             <h4 class="fw-bold">Custom Report</h4>
@@ -335,7 +323,9 @@
                     <th>
                         Status
                     </th>
-
+                    <th>
+                        Value/Cost
+                    </th>
                 </tr>
             </thead>
             <tbody id="table-body">
@@ -384,7 +374,7 @@
             $("#table-body").html(data.tableHtml);
             $("#totalRecords").text(data.totalCount);
             $("#totalDays").text(data.totalDays);
-            $("#totalUnposted").text(data.CountUnposted);
+            $("#totalUnposted").text(data.countUnposted);
             $("#recordsPerEmployee").text(data.recordsPerEmployee);
             $("#daysPerEmployee").text(parseFloat(data.daysPerEmployee).toFixed(2));
 
@@ -397,3 +387,41 @@
     // Optional: call filterLeaves on page load
     // $(document).ready(filterLeaves);
 </script>
+<script>
+    $(document).ready(function () {
+        $("#absentismForm").on("submit", function (e) {
+            e.preventDefault(); // prevent normal form submission
+            showLoader();
+
+            $.ajax({
+                url: "@Url.Page(null, null, new { handler = "Absentism" })", // maps to OnGetAbsentism
+                type: "GET",
+                data: $(this).serialize(),
+                success: function (response) {
+                    hideLoader();
+                    if (response) {
+                        $("#leaveTableBody").html(response.tableHtml);
+                        $("#employees").text(response.employees);
+                        $("#totalDays").text(response.totalDays);
+                        $("#perEmployee").text(response.perEmployee);
+                        $("#countAbsentism").text(response.countAbsentism);
+                        $("#absentismRate").text(response.apnentismRate);
+                    }
+                },
+                error: function (xhr) {
+                    hideLoader();
+                    alert("Error loading absenteeism data: " + xhr.responseText);
+                }
+            });
+        });
+    });
+
+    function showLoader() {
+        $("#absentismResult").html('<div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div>');
+    }
+
+    function hideLoader() {
+        // optional cleanup if you use a loader overlay
+    }
+</script>
+

@@ -11,13 +11,19 @@
 <h4 class="fw-bold">Update Prohibition</h4>
 <hr />
 <div class="row">
-    <div class="col-md-4">
+    <div class="col-md-4 card shadow-sm p-2">
         <form method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="prohibitionModel.prohibitionID" />
+            
             <div class="form-group">
-                <label asp-for="prohibitionModel.employmentID" class="control-label">Employee ID</label>
-                <input asp-for="prohibitionModel.employmentID" class="form-control"></input>
+                <label asp-for="prohibitionModel.employmentModel.givenID" class="control-label">Employee ID</label>
+                <input class="form-control" value="@Model.prohibitionModel.employmentModel?.givenID" readonly />
+                <span asp-validation-for="prohibitionModel.employmentID" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="prohibitionModel.employmentModel.personModel.personFullName" class="control-label">Employee ID</label>
+                <input class="form-control" value="@Model.prohibitionModel.employmentModel?.personModel?.personFullName" readonly />
                 <span asp-validation-for="prohibitionModel.employmentID" class="text-danger"></span>
             </div>
             <div class="form-group">
@@ -52,13 +58,52 @@
             </div>
             
             <div class="form-group d-flex justify-content-end">
-                <input type="submit" value="Save" class="btn btn-success" />
+                @await Html.PartialAsync("back")
+                <input type="submit" value="Save" class="btn btn-success m-2" />
             </div>
         </form>
     </div>
+    <div class="col-md-8 m-2">
+        <div class="card shadow-sm p-2">
+            <h4 class="fw-bold">Prohibition History</h4>
+            <table class="table table-hover table-striped">
+                <thead class="bg-dark text-white">
+                    <tr>
+                        <th>Date</th>
+                        <th>Modified By</th>
+                        <th>Status</th>
+                        <th>Start Date</th>
+                        <th>End Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.prohibitionHistory)
+                    {
+                        <tr>
+                            <td>@item.modifiedDate</td>
+                            <td>@item.modifiedBy</td>
+                            <td>
+                                @if (item.prohibitionStatus == Models.mainStatus.Active)
+                                {
+                                    <span class="badge bg-success">@item.prohibitionStatus</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-warning text-dark">@item.prohibitionStatus</span>
+                                }
+                            </td>
+                            <td>@item.prohibitionStart</td>
+                            <td>@item.prohibitionEnd</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
 </div>
 
-<div>
+<div class="m-2">
     <a asp-page="./Index">View All Prohibirion</a>
 </div>
 

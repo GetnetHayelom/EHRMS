@@ -11,8 +11,8 @@
 
 <h4 class="fw-bold">Add Absentism</h4>
 <hr />
-<div class="d-flex justify-content-between">
-    <div class="col-md-4 d-print-none">
+<div class="d-flex justify-content-between gap-3">
+    <div class="col-md-4 card shadow-sm p-2 d-print-none">
         <div class="row">
             <!--row for Search control-->
             <div class="row mt-2">
@@ -107,10 +107,10 @@
         </div>
     </div>
     
-    <div class="col-md-7 print-full-width">
-        @if(Model.Absentism != null && Model.Absentism.Any())
-        {
-
+    
+    @if(Model.Absentism != null && Model.Absentism.Any())
+    {
+        <div class="col-md-8 card shadow-sm p-2 print-full-width">
             <h4 class="fw-bold">Absentism History</h4>
             <div class="d-flex justify-content-around w-100 mb-2 d-none d-print-block">
                 <div class="d-flex">
@@ -179,8 +179,9 @@
                 <div class="d-flex align-content-end">
                     @await Html.PartialAsync("print")
                 </div>
-        }
-    </div>
+        </div>
+    }
+    
     
 </div>
 @section Scripts {

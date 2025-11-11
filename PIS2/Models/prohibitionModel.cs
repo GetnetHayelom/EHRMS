@@ -8,6 +8,7 @@ namespace PIS2.Models
         public int prohibitionID { get; set; }
         public int employmentID { get; set; }
         public virtual employmentModel? employmentModel { get; set; }
+        public DateTime prohibitionDate { get; set; } = DateTime.Now;
         public DateTime prohibitionStart { get; set; } =DateTime.Now;
         public DateTime prohibitionEnd { get; set; } = DateTime.MaxValue;
         public mainStatus prohibitionStatus { get; set; }

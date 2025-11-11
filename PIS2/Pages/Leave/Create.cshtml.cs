@@ -30,6 +30,7 @@ namespace PIS2.Pages.Leave
         public personModel Person { get; set; } = new personModel();
         public leaveDetail LeaveDetail { get; set; } =new leaveDetail();
         public List<leaveModel> Leaves { get; set; }
+        public bool CheckProhibition { get; set; } = false;
         
         public IActionResult OnGet(int id)
         {
@@ -64,6 +65,7 @@ namespace PIS2.Pages.Leave
                     
                     id = Employment.employmentID;
                     EmployeeID = id;
+                    CheckProhibition = _core.CheckProhibition(EmployeeID, ProhibitionType.Leave);
                     Console.WriteLine("ID is set from givenID" + id);
                     // Redirect to the Details page with employmentID
                     return RedirectToPage("Create", new { id = Employment.employmentID });
@@ -109,7 +111,7 @@ namespace PIS2.Pages.Leave
         {
            
             ModelState.Clear();
-            decimal maxWorkingDays = _core.WorkingDays(Leave.leaveStartDate, Leave.leaveEndDate);
+            decimal maxWorkingDays = _core.GetWorkingDays(Leave.leaveStartDate, Leave.leaveEndDate);
             if (maxWorkingDays < (Leave.leaveEndDate - Leave.leaveStartDate).Days) {
                 ModelState.AddModelError("leaveModel.leaveDays", "Requested date must be less than or equal to maximum working days. " + maxWorkingDays);
                 return Page();
@@ -119,6 +121,9 @@ namespace PIS2.Pages.Leave
             Leave.leaveStatus = leaveStatus.Hold;
             Leave.ratePerHour = _context.JobPlacements.FirstOrDefault(jp => jp.jobPlacementStatus == mainStatus.Active && jp.employmentID == Employment.employmentID)?.getJobRate() ?? 0;
             Employment = _context.Employments.FirstOrDefault(e => e.employmentID == Leave.employmentID)?? new employmentModel();
+
+            if(_core.CheckProhibition(Leave.employmentID, ProhibitionType.Leave)) return Page();
+          
             if (!ModelState.IsValid)
             {
                 return Page();
@@ -133,7 +138,7 @@ namespace PIS2.Pages.Leave
         
         public JsonResult OnPostCalculateWorkingDays(DateTime startDate, DateTime endDate)
         {
-            return new JsonResult(_core.WorkingDays(startDate, endDate));
+            return new JsonResult(_core.GetWorkingDays(startDate, endDate));
         }
 
     }

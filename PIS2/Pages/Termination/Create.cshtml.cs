@@ -15,10 +15,12 @@ namespace PIS2.Pages.Termination
     public class CreateModel : PageModel
     {
         private readonly PIS2.Models.PISContext _context;
+        private readonly PIS2.Models.Core _core;
 
-        public CreateModel(PIS2.Models.PISContext context)
+        public CreateModel(PIS2.Models.PISContext context, Core core)
         {
             _context = context;
+            _core = core;
         }
         [BindProperty(SupportsGet = true)]
         public string givenID { get; set; }
@@ -26,6 +28,7 @@ namespace PIS2.Pages.Termination
         [BindProperty]
         public employmentModel Employment { get; set; }
         int? EmpID { get; set; }
+        public decimal SeverancePay { get; set; }
         public IActionResult OnGet(int? id)
         {
             Employment = new employmentModel();
@@ -41,6 +44,7 @@ namespace PIS2.Pages.Termination
                     id = emp.employmentID;
                     Console.WriteLine("############## The ID is == " + id);
                     employmentModel = _context.Employments.Include(e => e.personModel).FirstOrDefault(e => e.employmentID == id);
+                    SeverancePay = _core.GetSeverance(employmentModel.employmentID);
                     return Page();
                     //return RedirectToPage("Create", new { id = emp.employmentID });
                 }
@@ -52,6 +56,7 @@ namespace PIS2.Pages.Termination
                 employmentModel = _context.Employments.Include(e => e.personModel)
                     .Where(e => e.employmentStatus == mainStatus.Active && e.TerminationModel == null)
                     .FirstOrDefault(e => e.employmentID == id);
+                SeverancePay = _core.GetSeverance(employmentModel.employmentID);
                 givenID = employmentModel.givenID;
             }
             

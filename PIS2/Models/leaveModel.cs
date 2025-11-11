@@ -54,7 +54,7 @@ namespace PIS2.Models
         Approved,
         Posted,
         Declined,
-        Comleted
+        Completed
 
     }
     public class leaveHistoryModel

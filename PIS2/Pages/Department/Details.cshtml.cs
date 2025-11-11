@@ -219,12 +219,12 @@ namespace PIS2.Pages.Department
             }
             return new JsonResult(new { success = false, message = "No Action" });
         }
-        // Inside your PageModel class
+
+        // SHIFT UPDATE
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> OnPostUpdateShiftAsync([FromBody] ShiftUpdateRequest request)
         {
-            
-  
+             
             var employmentId = request.EmploymentId;
             var shiftId = request.ShiftId;
             var target = request.Target;

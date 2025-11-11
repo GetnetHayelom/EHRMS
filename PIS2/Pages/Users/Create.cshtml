@@ -2,85 +2,119 @@
 @model PIS2.Pages.Users.CreateModel
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Create User";
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
 
-<h1 class="fw-bold">Users</h1>
+<div class="container mt-4">
 
-<h4 class="fw-bold">New User</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <!-- Search by Employee ID -->
-        <form method="post" id="SearchID" class="input-group mb-3">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="fw-bold mb-0 text-dark">Users</h1>
+            <p class="text-muted">Create a new user account</p>
+        </div>
+        <a asp-page="Index" class="btn btn-outline-secondary rounded-3">
+            <i class="bi bi-people"></i> View All Users
+        </a>
+    </div>
+
+    <!-- Search Section -->
+    <div class="card border-0 shadow-sm rounded-4 mb-4 col-md-4">
+        <div class="card-header bg-light fw-semibold rounded-top-4">
+            <i class="bi bi-search"></i> Search by Employee ID
+        </div>
+        <div class="card-body">
             <div class="input-group">
-                <input type="text" class="form-control" id="EmployeeID" required placeholder="Enter ID" name="givenID" />
-                <button class="btn btn-outline-secondary d-print-none" type="button" id="lookupButton"
+                <input type="text" class="form-control" id="EmployeeID" name="givenID"
+                       required placeholder="Enter Employee ID..." />
+                <button class="btn btn-outline-primary" type="button" id="lookupButton"
                         onclick="fetchEmployeeData($('#EmployeeID').val())">
-                    <i class="bi bi-search"></i>
+                    <i class="bi bi-search"></i> Lookup
                 </button>
             </div>
-
-        </form>
-        <form method="post">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             
-            <div class="form-group">
-                <label asp-for="userModel.personID" class="control-label">Full Name</label>
-                <select asp-for="userModel.personID" class="form-control select2" asp-items="ViewBag.personID" id="personID">
-                    <option value="">-- Select a Person --</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <span class="text-danger">*</span>
-                <label asp-for="userModel.userName" class="control-label">User Name</label>
-                <input asp-for="userModel.userName" class="form-control" />
-                <span asp-validation-for="userModel.userName" class="text-danger"></span>
-            </div>
-            
-            <div class="form-group">
-                <label asp-for="userModel.userStatus" class="control-label">Status</label>
-                <select asp-for="userModel.userStatus" class="form-control" asp-items="Html.GetEnumSelectList<Models.mainStatus>()"></select>
-                <span asp-validation-for="userModel.userStatus" class="text-danger"></span>
-            </div>
-            
-            <div class="form-group d-flex justify-content-end">
-                <input type="submit" value="Save" class="btn btn-success m-2" />
-            </div>
-        </form>
+            <form method="post" id="SearchID" class="input-group">
+                
+            </form>
+        </div>
     </div>
+
+    <!-- Create Form -->
+    <div class="card border-0 shadow-sm rounded-4 col-md-6">
+        <div class="card-header bg-primary text-white fw-semibold rounded-top-4">
+            <i class="bi bi-person-plus-fill"></i> New User Information
+        </div>
+        <div class="card-body">
+            <form method="post">
+                <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                <div class="mb-3">
+                    <label asp-for="userModel.personID" class="form-label fw-semibold">Full Name</label>
+                    <select asp-for="userModel.personID" class="form-select select2" asp-items="ViewBag.personID" id="personID">
+                        <option value="">-- Select a Person --</option>
+                    </select>
+                    <span asp-validation-for="userModel.personID" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="userModel.userName" class="form-label fw-semibold">User Name <span class="text-danger">*</span></label>
+                    <input asp-for="userModel.userName" class="form-control" placeholder="Enter username..." />
+                    <span asp-validation-for="userModel.userName" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="userModel.userStatus" class="form-label fw-semibold">Status</label>
+                    <select asp-for="userModel.userStatus" class="form-select" asp-items="Html.GetEnumSelectList<Models.mainStatus>()"></select>
+                    <span asp-validation-for="userModel.userStatus" class="text-danger"></span>
+                </div>
+
+                <div class="d-flex justify-content-end">
+                    <button type="submit" class="btn btn-success shadow-sm px-4">
+                        <i class="bi bi-save"></i> Save
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
 </div>
 
-<div>
-    <a asp-page="Index">View All Users</a>
-</div>
-
+<!-- Scripts -->
 <script src="~/lib/jquery/dist/jquery.min.js"></script>
 <script>
-    function fetchEmployeeData(empID){
+    function fetchEmployeeData(empID) {
+        if (!empID) {
+            alert("Please enter an Employee ID.");
+            return;
+        }
 
         $.ajax({
-            url:'@Url.Page("Create", "FetchEmp")',
-            type:'Get',
-            data:{
-                givenID: empID
-            },
-            success:function(response){
-                if(response.success){
-                    $('#personID').val(response.message);
-                }else{
+            url: '@Url.Page("Create", "FetchEmp")',
+            type: 'GET',
+            data: { givenID: empID },
+            success: function (response) {
+                if (response.success) {
+                    $('#personID').val(response.message).trigger('change');
+                } else {
                     alert(response.message);
                 }
-               
             },
             error: function (xhr) {
                 alert("Error: " + xhr.responseText);
             }
-        })
+        });
     }
 </script>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }
+
+<style>
+    .card-header i {
+        margin-right: 6px;
+    }
+</style>
