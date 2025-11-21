@@ -41,12 +41,7 @@ namespace PIS2.Pages.Department
             departmentModel = departmentmodel;
             DepartmentHistories = _context.DepartmentHistories.Include(d => d.employmentModel).ThenInclude(e => e.personModel).Where(m => m.departmentID == departmentmodel.departmentID).ToList();
 
-            ViewData["employmentID"] = new SelectList(
-                _context.Employments.OrderBy(e => e.personModel.personFirstName).ThenBy(e=>e.personModel.personFatherName).ThenBy(e=>e.personModel.personLastName)
-                .Select(e => new { e.employmentID, FullName = e.personModel.personFullName }),
-                "employmentID",
-                "FullName"
-            );
+          
             ViewData["companyID"] = new SelectList(_context.Companies, "companyID", "companyName");
            ViewData["subAccountID"] = new SelectList(_context.SubAccounts, "subAccountID", "subAccountDescription");
             return Page();

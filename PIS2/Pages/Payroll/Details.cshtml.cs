@@ -2,6 +2,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using PIS2.Models;
+using Microsoft.AspNetCore.Authorization;
+
 
 namespace PIS2.Pages.Payroll
 {
@@ -19,6 +21,7 @@ namespace PIS2.Pages.Payroll
         public payrollModel Payroll { get; set; } = new payrollModel();
         public IList<payrollPay> PayrollPays { get; set; } = new List<payrollPay>();
 
+        [Authorize(Roles = @"MIE\PMS_HRCLERK,MIE\PMS_HRMANAGER,MIE\PMS_PAYROLL")]
         public async Task<IActionResult> OnGetAsync(int id)
         {
             Payroll = await _db.Payrolls
@@ -43,6 +46,7 @@ namespace PIS2.Pages.Payroll
 
         public async Task<IActionResult> OnPostApproveAsync(int id)
         {
+            if (!User.IsInRole("MIE\\PMS_PAYROLL") || !User.IsInRole("MIE\\PMS_PAYROLL")) return RedirectToPage("/Shared/AccessDenied");
             var payroll = await _db.Payrolls.FirstOrDefaultAsync(p => p.payrollID == id);
             if (payroll == null) return NotFound();
 

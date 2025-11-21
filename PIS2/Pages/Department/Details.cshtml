@@ -89,7 +89,7 @@
                     Manager:
                 </dt>
                 <dd class="">
-                    @Html.DisplayFor(model => model.departmentModel.employmentModel.givenID)
+                    @Model.departmentModel.employmentModel?.personModel?.personFullName
                 </dd>
             </div>
         </dl>
@@ -199,7 +199,7 @@
                         </td>
                         <td>
                             <div class="shift-wrapper position-relative d-inline-block">
-                                <select class="form-select shift-selector" data-focus="1" data-employment="@item.Employment.employmentID">
+                                <select class="form-select shift-selector" data-focus="1" data-employment="@item.Employment.employmentID" @(Model.isManager || Model.isDelegatee ? "disabled" : "")>
                                     <option value="">-- Select Shift --</option>
                                     @foreach (var shift in Model.Shifts)
                                     {
@@ -214,7 +214,7 @@
                         </td>
                         <td>
                             <div class="shift-wrapper position-relative d-inline-block">
-                                <select class="form-select shift-selector" data-focus="2" data-employment="@item.Employment.employmentID">
+                                <select class="form-select shift-selector" data-focus="2" data-employment="@item.Employment.employmentID" @(Model.isManager || Model.isDelegatee ? "disabled" : "")>
                                     <option value="">-- Select Site --</option>
                                     @foreach (var site in Model.WorkSites)
                                     {

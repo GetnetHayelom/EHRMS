@@ -4,7 +4,7 @@
  * The data is retrieved from the Razor Page handler OnGetEmployeeLookup.
  * @param {string} employeeId - The ID of the employee to look up.
  */
-function fetchEmployeeData(employeeId, EmployeeName, JobTitle, Department, Company, WorkLocation) {
+function fetchEmployeeData(employeeId) {
     const $status = $('#statusMessage');
     $status.addClass('d-none').removeClass('alert-success alert-danger');
 
@@ -12,17 +12,18 @@ function fetchEmployeeData(employeeId, EmployeeName, JobTitle, Department, Compa
 
     $.getJSON(`/api/core/EmployeeLookup/${employeeId}`, function (data) {
         function setIfExists(id, value) {
-            const $el = $(id);
+            const $el = $("#"+id);
             if ($el.length) $el.val(value || '');
         }
-
+        
         if (data.isFound) {
-            setIfExists(EmployeeName, data.employeeName);
-            setIfExists(JobTitle, data.jobTitle);
-            setIfExists(Department, data.department);
-            setIfExists(Company, data.company);
-            setIfExists(WorkLocation, data.workLocation);
-
+            setIfExists("EmploymentID", data.employmentID);
+            setIfExists("EmployeeName", data.employeeName);
+            setIfExists("JobTitle", data.jobTitle);
+            setIfExists("Department", data.department);
+            setIfExists("Company", data.company);
+            setIfExists("WorkLocation", data.workLocation);
+            console.log("################");
             $status.text('Employee data loaded successfully.')
                 .removeClass('d-none alert-danger')
                 .addClass('alert-success');

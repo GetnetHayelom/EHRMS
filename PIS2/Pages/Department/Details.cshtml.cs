@@ -78,12 +78,17 @@ namespace PIS2.Pages.Department
                 .OrderBy(d => d.departmentName).FirstOrDefaultAsync(m => m.departmentID == id);
             
             departmentModel = departmentmodel;
-                isMember = depID== id? true: false;
+                isMember = User.IsInRole("PMS_MANAGEMENT") ? true: false;
                 isManager= empID == departmentModel?.employmentID? true: false;
-                isDelegatee = _context.Delegations
-                .Where(d => d.delegationFrom == departmentModel.employmentID && d.delegationStatus == mainStatus.Active)?
-                .FirstOrDefault()?.delegationTo ==empID ? true: false;
-                
+
+            var delegation = _context.Delegations
+                .FirstOrDefault(d =>
+                    d.delegationFrom == departmentModel.employmentID &&
+                    d.delegationStatus == mainStatus.Active);
+
+            bool isDelegatee = delegation != null && delegation.delegationTo == empID;
+
+            if (!(isManager || isMember || isDelegatee)) return RedirectToPage("/Shared/AccessDenied");
             Jobs = _context.JobPlacements.Where(j => j.departmentID ==departmentModel.departmentID && j.jobPlacementStatus == mainStatus.Active)
                 .Include(j => j.employmentModel)?.ThenInclude(e => e.personModel)
                 .Include(j => j.employmentModel)?.ThenInclude(e => e.employmentTypeModel)

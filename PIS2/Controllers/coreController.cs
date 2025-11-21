@@ -67,6 +67,7 @@ namespace PIS2.Controllers
 
             var result = new EmployeeData
             {
+                EmploymentID =person.employmentID,
                 EmployeeName = person.personModel?.personFullName ?? "",
                 JobTitle = activeJobPlacement?.jobModel?.jobTitle ?? "",
                 Department = department?.departmentName ?? "",
@@ -81,6 +82,7 @@ namespace PIS2.Controllers
         public class EmployeeData
         {
             public bool IsFound { get; set; }
+            public int? EmploymentID { get; set; }
             public string EmployeeName { get; set; }
             public string JobTitle { get; set; }
             public string Department { get; set; }

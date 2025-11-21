@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using PIS2.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
 
 namespace PIS2.Pages.Payroll
 {
@@ -19,6 +20,7 @@ namespace PIS2.Pages.Payroll
 
         public IList<companyModel> Companies { get; set; } = new List<companyModel>();
 
+        [Authorize(Roles = @"MIE\PMS_HRCLERK,MIE\PMS_HRMANAGER,MIE\PMS_PAYROLL")]
         public async Task OnGetAsync()
         {
             Companies = await _db.Companies.Where(c => c.companyStatus == mainStatus.Active).ToListAsync();
@@ -27,6 +29,7 @@ namespace PIS2.Pages.Payroll
 
         public async Task<IActionResult> OnPostAsync()
         {
+            if (!User.IsInRole("MIE\\PMS_PAYROLL")) return RedirectToPage("/Shared/AccessDenied");
             ModelState.Remove("Payroll.modifiedBy");
             Payroll.modifiedBy = User.Identity.Name ?? "system";
             Payroll.payrollMonth = Payroll.StartDate.Month.ToString();

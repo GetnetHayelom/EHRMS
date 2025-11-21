@@ -42,16 +42,21 @@
                 <span asp-validation-for="departmentModel.companyID" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="departmentModel.employmentID" class="control-label">Manager</label>
-                <select asp-for="departmentModel.employmentID" asp-items="@(ViewData["employmentID"] as SelectList)" class="form-control">
-                    <option value="">-- Select Manager --</option>
-                </select>
-                <span asp-validation-for="departmentModel.employmentID" class="text-danger"></span>
+                <label for="" class="form-label">Manager:</label>
+                <div class="input-group">
+                    <input type="text" class="form-control" id="EmployeeID" required placeholder="Enter ID" />
+                    <input type="hidden" class="form-control" id="EmploymentID" />
+                    <button class="btn btn-outline-secondary d-print-none" type="button" id="lookupButton"
+                            onclick="fetchEmployeeData($('#EmployeeID').val())">
+                        <i class="bi bi-search"></i>
+                    </button>
+                </div>
             </div>
             <div class="form-group d-flex justify-content-end">
                 <input type="submit" value="Save" class="btn btn-success m-2" />
             </div>
         </form>
+
     </div>
     @if (Model.DepartmentHistories?.Any() == true)
     {
@@ -89,6 +94,8 @@
     <a asp-page="./Index">View All Departments</a>
 </div>
 
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="~/js/employeeLookup.js"></script>
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 }
