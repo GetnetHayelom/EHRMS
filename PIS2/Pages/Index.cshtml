@@ -294,6 +294,9 @@
                                                 Overtime Type
                                             </th>
                                             <th>
+                                                Overtime Cost
+                                            </th>
+                                            <th>
                                                 Overtime Status
                                             </th>
 
@@ -301,7 +304,7 @@
                                     </thead>
                                     <tbody>
 
-                                        @foreach (var item in Model.Overtimes)
+                                        @foreach (var item in Model.Overtimes.OrderByDescending(or => or.overtimeRecordDate))
                                         {
                                             <tr onclick="location.href='@Url.Page("/OvertimeRecord/Details", new { id = item.overtimeRecordID })'" style="cursor:pointer;">
 
@@ -315,11 +318,12 @@
                                                     @item.overtimeRecordEndTime
                                                 </td>
                                                 <td>
-                                                   @item.TimeElapsed 
+                                                   @item.TimeElapsed
                                                 </td>
                                                 <td>
                                                     @Html.DisplayFor(modelItem => item.overtimeModel.overtimeName)
                                                 </td>
+                                                <td>@Math.Round((item.overtimeRate * item.overtimeRecordEmploymentRate * (decimal) item.TimeElapsed.TotalMinutes/60),2).ToString("N2")</td>
                                                 <td>
                                                     @Html.DisplayFor(modelItem => item.overtimeRecordStatus)
                                                 </td>
@@ -327,13 +331,9 @@
                                             </tr>
                                         }
 
-
                                     </tbody>
                                 </table>
                             }
-
-
-
                         </div>
                         <div class="modal-footer">
                             @await Html.PartialAsync("print")
@@ -694,6 +694,16 @@
                     </div>
                 </div>
 
+                    <div class="col">
+                        <div class="card text-center border-0 shadow-sm h-100 card-hover">
+                            <div class="card-body p-4">
+                                <p class="text-secondary small mb-2">Transport request form</p>
+                                <h5 class="fw-bold text-info mb-0">
+                                    <a href="@Url.Page("/Forms/Transport")" class="text-info text-decoration-underline">Transport Request</a>
+                                </h5>
+                            </div>
+                        </div>
+                    </div>
             </div>
         </div>
         </div>

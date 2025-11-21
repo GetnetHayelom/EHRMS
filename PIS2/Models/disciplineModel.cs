@@ -2,6 +2,9 @@
 
 namespace PIS2.Models
 {
+    /// <summary>
+    /// Discipline of education fields(Engineering, Health, Law, Accounting,Computer Science etc)
+    /// </summary>
     public class disciplineModel
     {
         [Key]

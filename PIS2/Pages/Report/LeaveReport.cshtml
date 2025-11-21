@@ -162,7 +162,7 @@
             <div class="col-3">
                 <label for="LeaveGroup">Group:</label>
                 <select class="form-select" aria-label="Default select leave group" name="LeaveGroup" asp-for="LeaveGroup" asp-items="@Html.GetEnumSelectList<Models.leaveGroup>()">
-                    <option value="0">All</option>
+                    <option value="0" selected>All</option>
                 </select>
             </div>
             <div class="col-3">
@@ -175,11 +175,11 @@
             </div>
             <div class="col-3">
                 <label for="dateStart">Date of Start From:</label>
-                <input class="form-control" type="date" id="dateStart" asp-for="StartDate" name="StartDate" value="@Model.SDate?.ToString("yyyy-MM-dd")" />
+                <input class="form-control" type="date" id="dateStart-absentism" asp-for="StartDate" name="StartDate" value="@Model.SDate?.ToString("yyyy-MM-dd")" />
             </div>
             <div class="col-3 d-print-none">
                 <label for="dateEnd">Date of End Upto:</label>
-                <input class="form-control" type="date" id="dateEnd" name="EndDate" asp-for="EndDate" value="@Model.EDate?.ToString("yyyy-MM-dd")" />
+                <input class="form-control" type="date" id="dateEnd-absentism" name="EndDate" asp-for="EndDate" value="@Model.EDate?.ToString("yyyy-MM-dd")" />
             </div>
             <div class="d-flex align-items-end">
                 <button type="submit" value="Filter" class="btn btn-primary m-2">Load</button>
@@ -229,7 +229,7 @@
             </div>
             <div class="card m-2 p-2 shadow flex-grow-1">
                 <p>Total Records In Days</p>
-                <h6 class="fw-bold"><u id="totalDays">@Model.totalDays.ToString("N2")</u> </h6>
+                <h6 class="fw-bold"><u id="totalDays1">@Model.totalDays.ToString("N2")</u> </h6>
             </div>
             <div class="card m-2 p-2 shadow flex-grow-1">
                 <p>Total Records unposted</p>
@@ -268,10 +268,10 @@
                     }
                 </select>
             </div>
-            <div class="col-3 m-2 d-print-flex">
-                <label for="filter-status">Status:</label>
-                <select class="form-select" aria-label="Default select example" id="filter-status" asp-items="Html.GetEnumSelectList<Models.leaveStatus>()">
-                    <option value="">All</option>
+            <div class="col-3">
+                <label for="LeaveGroup">Group:</label>
+                <select class="form-select" aria-label="Default select leave group" id="filter-group" asp-for="LeaveGroup" asp-items="@Html.GetEnumSelectList<Models.leaveGroup>()">
+                    <option value="0">All</option>
                 </select>
             </div>
             <div class="col-3 m-2 d-print-flex">
@@ -285,12 +285,23 @@
                 </select>
             </div>
             <div class="col-3 m-2 d-print-flex">
+                <label for="filter-status">Status:</label>
+                <select class="form-select" aria-label="Default select example" id="filter-status" asp-items="Html.GetEnumSelectList<Models.leaveStatus>()">
+                    <option value="">All</option>
+                </select>
+            </div>
+            
+            <div class="col-3 m-2 d-print-flex">
                 <label for="dateStart">Date of Start From:</label>
-                <input class="form-control" type="date" id="dateStart" asp-for="SDate" />
+                <input class="form-control" type="date" id="dateStart" />
             </div>
             <div class="col-3 m-2 d-print-flex">
                 <label for="dateEnd">Date of End Upto:</label>
-                <input class="form-control" type="date" id="dateEnd" asp-for="EDate"/>
+                <input class="form-control" type="date" id="dateEnd" />
+            </div>
+            <div class="col-3 m-2 d-print-flex">
+                <label>EmpID:</label>
+                <input class="form-control" type="text" id="empID" placeholder="Enter employee id for single employer."/>
             </div>
             <div class="d-flex align-items-end">
                 <button onclick="filterLeaves()" class="btn btn-primary d-print-none">Load</button>
@@ -346,26 +357,32 @@
         var department = $("#filter-department").val();
         var leaveStatus = $("#filter-status").val();
         var leaveType = $("#filter-type").val();
+        var leaveGroup = $("#filter-group").val();
         var company = $("#filter-company").val();
         var dateStart = $("#dateStart").val();
         var dateEnd = $("#dateEnd").val();
+        var empID = $("#empID").val();
 
         // Normalize empty values to null
         department = (!department || department === "") ? null : department;
         leaveStatus = (!leaveStatus || leaveStatus === "") ? null : leaveStatus;
+        leaveGroup = (!leaveGroup || leaveGroup === "") ? null : leaveGroup;
         leaveType = (!leaveType || leaveType === "") ? null : leaveType;
         company = (!company || company === "") ? null : company;
         dateStart = (!dateStart || dateStart === "") ? null : new Date(dateStart).toISOString();
         dateEnd = (!dateEnd || dateEnd === "") ? null : dateEnd;
+        empID = (!empID || empID === "") ? null : empID;
 
         // Build the URL with filters
         var url = `/Report/LeaveReport?handler=Filter` +
             `&department=${encodeURIComponent(department)}` +
             `&leaveStatus=${encodeURIComponent(leaveStatus)}` +
+            `&leaveGroup=${encodeURIComponent(leaveGroup)}` +
             `&leaveType=${encodeURIComponent(leaveType)}` +
             `&company=${encodeURIComponent(company)}` +
             `&dateStart=${encodeURIComponent(dateStart)}` +
-            `&dateEnd=${encodeURIComponent(dateEnd)}`;
+            `&dateEnd=${encodeURIComponent(dateEnd)}` +
+            `&empID=${encodeURIComponent(empID)}`;
 
         // jQuery AJAX
         $.getJSON(url, function (data) {
@@ -373,7 +390,7 @@
 
             $("#table-body").html(data.tableHtml);
             $("#totalRecords").text(data.totalCount);
-            $("#totalDays").text(data.totalDays);
+            $("#totalDays1").text(data.totalDays);
             $("#totalUnposted").text(data.countUnposted);
             $("#recordsPerEmployee").text(data.recordsPerEmployee);
             $("#daysPerEmployee").text(parseFloat(data.daysPerEmployee).toFixed(2));

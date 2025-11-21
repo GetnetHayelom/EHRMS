@@ -71,8 +71,8 @@
         </div>
 
         <!--FILTER CONTROLS-->
-        <div class="d-flex m-2 justify-content-between flex-wrap">
-            <div class="col-3 m-2 d-print-flex">
+        <div class="d-flex m-2 flex-wrap">
+            <div class="col-3 d-print-flex p-3">
                 <label for="filter-company">Company:</label>
                 <select class="form-select" aria-label="Default select example" id="filter-company">
                     <option value="">All</option>
@@ -82,7 +82,7 @@
                     }
                 </select>
             </div>
-            <div class="col-3 m-2 d-print-flex">
+            <div class="col-3 d-print-flex p-3">
                 <label for="filter-department">Department:</label>
                 <select class="form-select" aria-label="Default select example" id="filter-department">
                     <option value="">All</option>
@@ -92,7 +92,7 @@
                     }
                 </select>
             </div>
-            <div class="col-3 m-2 d-print-flex">
+            <div class="col-3 d-print-flex p-3">
                 <label for="filter-department">Overtime Type:</label>
                 <select class="form-select" aria-label="Default select example" id="filter-type">
                     <option value="">All</option>
@@ -102,21 +102,25 @@
                     }
                 </select>
             </div>
-            <div class="col-3 m-2 d-print-flex">
+            <div class="col-3 d-print-flex p-3">
                 <label for="filter-status">Status:</label>
                 <select class="form-select" aria-label="Default select example" id="filter-status" asp-items="Html.GetEnumSelectList<Models.overtimeStatus>()">
                     <option value="">All</option>
                 </select>
             </div>
-            <div class="col-3 m-2 d-print-flex">
+            <div class="col-3 d-print-flex p-3">
                 <label for="dateStart">Date From:</label>
                 <input class="form-control" type="date" id="dateStart" id="dateEnd" asp-for="SDate" />
             </div>
-            <div class="col-3 m-2 d-print-flex">
+            <div class="col-3 d-print-flex p-3">
                 <label for="dateEnd">Date Upto:</label>
                 <input class="form-control" type="date" id="dateEnd" asp-for="EDate" />
             </div>
-            <div class="d-flex align-items-end">
+            <div class="col-3 d-print-flex p-3">
+                <label >Employee ID:</label>
+                <input class="form-control" type="text" id="empID" />
+            </div>
+            <div class="col-3 d-flex align-items-end justify-content-end">
                 <button onclick="filterOvertime()" class="btn btn-primary d-print-none">Load</button>
             </div>
         </div>
@@ -305,6 +309,7 @@
         var company = $("#filter-company").val();
         var dateStart = $("#dateStart").val();
         var dateEnd = $("#dateEnd").val();
+        var empID = $("#empID").val();
 
         // Normalize empty values to null
         department = (!department || department === "") ? null : department;
@@ -313,6 +318,7 @@
         company = (!company || company === "") ? null : company;
         dateStart = (!dateStart || dateStart === "") ? null : new Date(dateStart).toISOString();
         dateEnd = (!dateEnd || dateEnd === "") ? null : dateEnd;
+        empID = (!empID || empID === "") ? null : empID;
 
         // Build the URL with filters
         var url = `/Report/OvertimeRecordReport?handler=Filter` +
@@ -321,7 +327,8 @@
             `&overtimeType=${encodeURIComponent(overtimeType)}` +
             `&company=${encodeURIComponent(company)}` +
             `&dateStart=${encodeURIComponent(dateStart)}` +
-            `&dateEnd=${encodeURIComponent(dateEnd)}`;
+            `&dateEnd=${encodeURIComponent(dateEnd)}` +
+            `&empID=${encodeURIComponent(empID)}`;
 
         // jQuery AJAX
         $.getJSON(url, function (data) {
@@ -353,6 +360,7 @@
         var overtimeType = $("#filter-type").val();
         var dateStart = $("#dateStart").val();
         var dateEnd = $("#dateEnd").val();
+        var empID = $("#empID").val();
 
         var $row = $(this);
 
@@ -360,7 +368,7 @@
         if ($row.hasClass("loaded")) return;
         $row.addClass("loaded");
 
-        $.get(`/Report/OvertimeRecordReport?handler=DepartmentDetails&deptId=${deptId}&overtimeStatus=${overtimeStatus}&overtimeType=${overtimeType}&dateStart=${dateStart}&dateEnd=${dateEnd}`, function (data) {
+        $.get(`/Report/OvertimeRecordReport?handler=DepartmentDetails&deptId=${deptId}&overtimeStatus=${overtimeStatus}&overtimeType=${overtimeType}&dateStart=${dateStart}&dateEnd=${dateEnd}&empID=${empID}`, function (data) {
             // Insert after the department row
             $row.after(data.tableHtml);
         });

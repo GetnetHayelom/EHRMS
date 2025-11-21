@@ -144,7 +144,7 @@ namespace PIS2.Pages.Report
         }
 
         // Post handler
-        public IActionResult OnGetFilter(int? department, int? leaveStatus, int? leaveType, int? company, DateTime? dateStart, DateTime? dateEnd)
+        public IActionResult OnGetFilter(int? department,int? leaveGroup, int? leaveStatus, int? leaveType, int? company, DateTime? dateStart, DateTime? dateEnd, string? empID)
         {
             Console.WriteLine("the Date is " + dateStart);
             // Start with the full list of employees
@@ -174,8 +174,14 @@ namespace PIS2.Pages.Report
 
             }
 
+            // Filter by group (if provided)
+            if (leaveGroup.HasValue)
+            {
+                leaveModel = leaveModel.Where(e => e.LeaveGroup == (leaveGroup)leaveGroup);
 
-           
+            }
+
+
             // Filter by type (if provided)
             if (leaveType.HasValue && leaveType != null)
             {
@@ -196,7 +202,12 @@ namespace PIS2.Pages.Report
                 leaveModel = leaveModel
                     .Where(e => e.LeaveEnd <= dateEnd);
             }
-
+            // Filter by empID (if provided)
+            if (!string.IsNullOrEmpty(empID))
+            {
+                leaveModel = leaveModel
+                    .Where(e => e.GivenID == empID);
+            }
             // Execute the query and get the filtered results
             var filteredLeaves= leaveModel.OrderBy(e => e.LeaveRequestDate).ToList();
             filteredCount = filteredLeaves.Count;

@@ -7,7 +7,34 @@
     <h1 class="fw-bold">Department Annual Leave Report</h1>
     <h4 class="fw-bold">@Model.DepartmentName, @Model.CompanyName</h4>
     <hr />
-    <table class="table table-bordered table-striped table-hover print-full-width">
+    
+</div><!--SUMMARY-->
+@if (Model.annualLeaveSummaries != null)
+{
+    <!--SUMMARY POINTS-->
+    <div class="d-flex justify-content-between">
+
+
+        <div class="card m-2 p-2 shadow flex-grow-1">
+            <p>Total Employees (Records) </p>
+            <h6 class="fw-bold">
+                <u id="TotalRecords"></u>@Model.annualLeaveSummaries.Count().ToString("N2")
+            </h6>
+        </div>
+        <div class="card m-2 p-2 shadow flex-grow-1">
+            <p>Total Sum </p>
+            <h6 class="fw-bold">
+                <u id="TotalSum"></u>@Math.Round(Model.annualLeaveSummaries.Sum(l => l.adjustedLeaveBalanceCost)).ToString("N2")/ Birr
+            </h6>
+
+        </div>
+
+
+    </div>
+
+}
+    @await Html.PartialAsync("filter")
+    <table class="table table-bordered table-striped table-hover print-full-width" id="dataTable">
         <thead class="bg-black text-white">
             <tr>
                 <th>S/No</th>
@@ -21,7 +48,7 @@
             @{
                 int index = 1;
             }
-            @foreach (var item in Model.annualLeaveSummaries)
+            @foreach (var item in Model.annualLeaveSummaries.OrderBy(l => l.givenID))
             {
                 <tr>
                     <td >@index</td>

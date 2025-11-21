@@ -1,0 +1,62 @@
+﻿@page
+@model PIS2.Pages.Deduction.CreateModel
+@{
+    ViewData["Title"] = "Create Deduction Type";
+}
+
+<div class="container mt-5">
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">Create Deduction Type</h4>
+        </div>
+
+        <div class="card-body">
+            <form method="post">
+                <div class="mb-3">
+                    <label asp-for="DeductionType.deductionName" class="form-label fw-semibold">Deduction Name</label>
+                    <input asp-for="DeductionType.deductionName" class="form-control" placeholder="Enter deduction name" />
+                    <span asp-validation-for="DeductionType.deductionName" class="text-danger"></span>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="DeductionType.deductBase" class="form-label fw-semibold">Deduct From</label>
+                        <select asp-for="DeductionType.deductBase" class="form-select" asp-items="Html.GetEnumSelectList<Models.deductionBase>()"></select>
+                        <span asp-validation-for="DeductionType.deductBase" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="DeductionType.dedcutionPriority" class="form-label fw-semibold">Deduction Priority</label>
+                        <input asp-for="DeductionType.dedcutionPriority" type="number" min="1" class="form-control" placeholder="e.g. 1 for highest priority" />
+                        <span asp-validation-for="DeductionType.dedcutionPriority" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="DeductionType.deductionStatus" class="form-label fw-semibold">Status</label>
+                        <select asp-for="DeductionType.deductionStatus" class="form-select" asp-items="Html.GetEnumSelectList<Models.mainStatus>()"></select>
+                        <span asp-validation-for="DeductionType.deductionStatus" class="text-danger"></span>
+                    </div>
+
+                    
+                </div>
+
+                <div class="form-check mb-3">
+                    <input asp-for="DeductionType.isRecurring" class="form-check-input" />
+                    <label asp-for="DeductionType.isRecurring" class="form-check-label">Recurring Deduction</label>
+                </div>
+
+                <div class="form-check mb-4">
+                    <input asp-for="DeductionType.isMandatory" class="form-check-input" />
+                    <label asp-for="DeductionType.isMandatory" class="form-check-label">Mandatory Deduction</label>
+                </div>
+
+                <div class="d-flex justify-content-end">
+                    <a asp-page="./Index" class="btn btn-outline-secondary me-2">Cancel</a>
+                    <button type="submit" class="btn btn-success">Save Deduction</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

@@ -31,7 +31,7 @@ namespace PIS2.Pages.PersonEducationLevel
         public List<departmentModel> Departments { get; set; }
         public List<jobClassModel> JobClasses { get; set; }
         public List<jobModel> Jobs { get; set; }
-        public List<educationLevelModel> EducationLevels { get; set; }
+        public List<string> EducationFields { get; set; }
         public DateTime SDate { get; set; }
         public DateTime EDate { get; set; }
 
@@ -45,9 +45,9 @@ namespace PIS2.Pages.PersonEducationLevel
             Companies = _context.Companies.OrderBy(c => c.companyName).ToList();
             Departments = _context.Departments.ToList();
             JobClasses = _context.JobClasses.ToList();
-            Jobs = _context.Jobs.ToList();
-            EducationLevels = _context.EducationLevels.ToList();
-            EducationDescipline = _context.PersonEducationLevels.Distinct().Select(e => e.educationDiscipline.ToString()).ToList();
+            Jobs = _context.Jobs.OrderBy(j => j.jobTitle).ToList();
+            EducationFields = _context.PersonEducationLevels.Select(e => e.educationField).Distinct().ToList();
+            EducationDescipline = _context.PersonEducationLevels.Select(e => e.educationDiscipline.ToString()).Distinct().ToList();
 
             personEducationLevelModel =new List<CertificationDetailsView>();
             personEducationLevelModel = await _context.CertificationDetailsView.ToListAsync();
@@ -57,97 +57,112 @@ namespace PIS2.Pages.PersonEducationLevel
 
             CertificationSummary = _context.CertificationSummaryView.OrderByDescending(c => c.Total).ToList();
       
-
         }
         public IActionResult OnGetTalentExperienceFilter(int? jobClassID, string? jobTitle, int? empStatus, int? duration, int? gender)
         {
-            var talentpool = _context.TalentExperienceView.AsQueryable();
+            var tableHtml = new List<object>
+                {
+                    new { FullName = "<tr class='table-danger text-center fw-bold'>" +
+                                        "<td colspan='10'>No records found</td>" +
+                                    "</tr>"
+                    }
+                };
 
+            if (_context?.TalentExperienceView == null)
+            {
+                Male = 0;
+                Female = 0;
+                ActiveEmp = 0;
+                TotalRecords = 0;
+                return new JsonResult(new { tableHtml, Male, Female, ActiveEmp, TotalRecords });
+            }
+
+            var query = _context?.TalentExperienceView.AsQueryable();
+
+
+            // Apply filters safely
             if (jobClassID.HasValue)
-            {
-                talentpool = talentpool.Where(e => e.jobClassID == jobClassID);
+                query = query.Where(e => e.jobClassID == jobClassID);
 
-            }
             if (!string.IsNullOrEmpty(jobTitle))
-            {
-                talentpool = talentpool.Where(e => EF.Functions.Like(e.jobTitle, $"%{jobTitle}%"));
-            }
+                query = query.Where(e => EF.Functions.Like(e.jobTitle, $"%{jobTitle}%"));
+
             if (empStatus.HasValue && Enum.IsDefined(typeof(mainStatus), empStatus.Value))
-            {
-                talentpool = talentpool.Where(e => e.EmploymentStatus == (mainStatus) empStatus);
+                query = query.Where(e => e.EmploymentStatus == (mainStatus)empStatus);
 
-            }
             if (duration.HasValue)
-            {
-                talentpool = talentpool.Where(e => e.Duration >= duration);
+                query = query.Where(e => e.Duration >= duration);
 
-            }
             if (gender.HasValue && Enum.IsDefined(typeof(Gender), gender.Value))
-            {
-                talentpool = talentpool.Where(e => e.PersonGender ==(Gender) gender);
+                query = query.Where(e => e.PersonGender == (Gender)gender);
 
-            }
+            // Execute query safely
+            var filteredTalent = query.ToList() ?? new List<TalentExperienceView>();
 
-            var filteredTalent = talentpool.ToList();
+
             Male = filteredTalent.Count(t => t.PersonGender == Gender.Male);
             Female = filteredTalent.Count(t => t.PersonGender == Gender.Female);
             ActiveEmp = filteredTalent.Count(t => t.EmploymentStatus == mainStatus.Active);
             TotalRecords = filteredTalent.Count();
-
-            var tableHtml = filteredTalent.OrderByDescending(e => e.Duration)
+            
+            if (filteredTalent.Count() > 0)
+            {
+                tableHtml = filteredTalent.OrderByDescending(e => e.Duration)
                 .Select(e => new
                 {
                     FullName = e.FullName,
                     JobTitle = e.jobTitle,
-                    EmploymentStatus = e.EmploymentStatus,
-                    Gender = e.PersonGender,
+                    EmploymentStatus = e.EmploymentStatus.ToString(),
+                    Gender = e.PersonGender.ToString(),
                     Duration = e.Duration,
                     DurationText = $"{e.Duration} Mos ({e.Duration / 12}.{e.Duration % 12} Yrs)",
                     DetailsUrl = Url.Page("/Person/Details", new { id = e.personID })
-                }).ToList();
-
+                }).ToList<object>();
+            }
             
 
-            return new JsonResult(new { tableHtml, Male, Female,ActiveEmp, TotalRecords });
+                return new JsonResult(new { tableHtml, Male, Female, ActiveEmp, TotalRecords });
         }
-
-        public JsonResult OnGetEducationReport(int? companyID, int? departmentID, int? educationLevelID, string? educationCategory, int? gender, string? educationField, int? empStatus, DateTime? startDate, DateTime? endDate)
+ 
+        public JsonResult OnGetEducationReport(int? CompanyID, int? DepartmentID, int? Category, string? Discipline, string? Field, int? EmploymentStatus, DateTime? Start, DateTime? End)
         {
             var talentpool = _context.CertificationDetailsView.AsQueryable();
 
-            if (companyID.HasValue)
+            if (CompanyID.HasValue)
             {
-                talentpool = talentpool.Where(e => e.CompanyID == companyID);
+                talentpool = talentpool.Where(e => e.CompanyID == CompanyID);
             }
-            if (!string.IsNullOrEmpty(educationCategory))
+            //
+            if (Category.HasValue)
             {
-                talentpool = talentpool.Where(e => EF.Functions.Like(e.EducationLevelCategory, $"%{educationCategory}%"));
+                talentpool = talentpool.Where(e => e.EducationLevelCategory == (educationCategory)Category);
             }
-            if (!string.IsNullOrEmpty(educationField))
+            //
+            if (!string.IsNullOrEmpty(Discipline))
             {
-                talentpool = talentpool.Where(e => EF.Functions.Like(e.EducationField, $"%{educationField}%"));
+                talentpool = talentpool.Where(e => EF.Functions.Like(e.EducationDiscipline, $"%{Discipline}%"));
             }
-            if (gender.HasValue && Enum.IsDefined(typeof(Gender), gender.Value))
+            //
+            if (!string.IsNullOrEmpty(Field))
             {
-                talentpool = talentpool.Where(e => e.PersonGender == (Gender)gender);
+                talentpool = talentpool.Where(e => EF.Functions.Like(e.EducationField, $"%{Field}%"));
+            }
+            //
+            if (EmploymentStatus.HasValue && Enum.IsDefined(typeof(mainStatus), EmploymentStatus.Value))
+            {
+                talentpool = talentpool.Where(e => e.EmploymentStatus == (mainStatus)EmploymentStatus);
 
             }
-           
-            if (empStatus.HasValue && Enum.IsDefined(typeof(mainStatus), empStatus.Value))
+            if (Start.HasValue)
             {
-                talentpool = talentpool.Where(e => e.EmploymentStatus == (mainStatus)empStatus);
-
+                talentpool = talentpool.Where(e => e.EducationLevelDate >= Start);
             }
-            if (startDate.HasValue)
+            if (End.HasValue)
             {
-                talentpool = talentpool.Where(e => e.EducationLevelDate >= startDate);
-            }
-            if (endDate.HasValue)
-            {
-                talentpool = talentpool.Where(e => e.EducationLevelDate <= endDate);
+                talentpool = talentpool.Where(e => e.EducationLevelDate <= End);
             }
 
-            var filteredTalent = talentpool.ToList();
+            var filteredTalent = talentpool.Count() > 0? talentpool.ToList() : new List<CertificationDetailsView>();
             Male = filteredTalent.Count(t => t.PersonGender == Gender.Male);
             Female = filteredTalent.Count(t => t.PersonGender == Gender.Female);
             ActiveEmp = filteredTalent.Count(t => t.EmploymentStatus == mainStatus.Active);
@@ -175,7 +190,7 @@ namespace PIS2.Pages.PersonEducationLevel
                                 .GroupBy(c => c.EducationLevelCategory)
                                 .Select(level => new
                                 {
-                                    LevelCategory = level.FirstOrDefault().EducationLevelCategory,
+                                    LevelCategory = level.FirstOrDefault().EducationLevelCategory.ToString(),
                                     DistinctPersons = level.Select(c => c.PersonID).Distinct().Count(),
                                     TotalRecords = level.Count(),
 
@@ -183,7 +198,7 @@ namespace PIS2.Pages.PersonEducationLevel
                                         .GroupBy(c => c.PersonGender)
                                         .Select(gender => new
                                         {
-                                            Gender = gender.Key,
+                                            Gender = gender.Key.ToString(),
                                             DistinctPersons = gender.Select(c => c.PersonID).Distinct().Count(),
                                             TotalRecords = gender.Count(),
                                             Individuals = gender
@@ -202,7 +217,7 @@ namespace PIS2.Pages.PersonEducationLevel
                 })
                 .ToList();
 
-            return new JsonResult(data);
+            return new JsonResult(new { data, Male, Female, ActiveEmp, TotalRecords });
         }
 
 

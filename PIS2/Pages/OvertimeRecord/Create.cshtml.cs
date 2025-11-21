@@ -1,12 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
 using PIS2.Models;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace PIS2.Pages.OvertimeRecord
 {
@@ -116,7 +117,105 @@ namespace PIS2.Pages.OvertimeRecord
                 shiftEnd = new TimeSpan(12, 0, 0);
             }
 
+            
+            var otEndTemp = otEnd;
             TrimOvertime(ref otStart, ref otEnd, shiftStart, shiftEnd);
+
+            var savedIds = new List<int>();
+            savedIds.AddRange(await AddOtRecords(overtimeRecordModel.overtimeRecordDate, otStart, otEnd, empID));
+            if (otStart < shiftStart && otEndTemp > shiftEnd)
+            {
+                var otStartTemp = otEnd;
+                savedIds.AddRange(await AddOtRecords(overtimeRecordModel.overtimeRecordDate, shiftEnd, otEndTemp, empID));
+            }
+
+            if (savedIds.Count > 0)
+            {
+                return RedirectToPage("./PersonOTR", new { otrID = savedIds, empID = 0 });
+            }
+            else
+            {
+
+                return Page();
+            }
+        }
+
+        public void TrimOvertime(ref TimeSpan otStart, ref TimeSpan otEnd, TimeSpan shiftStart, TimeSpan shiftEnd)
+        {
+            // Fully within shift — discard overtime
+            if (otStart >= shiftStart && otEnd <= shiftEnd)
+            {
+                otStart = otEnd = TimeSpan.Zero;
+                message = "Overtime can not be with in shift period.";
+            }
+            // Fully before shift — no change
+            else if (otEnd <= shiftStart)
+            {
+                // keep as is
+            }
+            // Fully after shift — no change
+            else if (otStart >= shiftEnd)
+            {
+                // keep as is
+            }
+            // Starts before shift, ends during shift — trim end
+            else if (otStart < shiftStart && otEnd > shiftStart && otEnd <= shiftEnd)
+            {
+                otEnd = shiftStart;
+                message = "Overtime ends with in shift period, and is adjusted to the start of shift.";
+            }
+            // Starts during shift, ends after shift — trim start
+            else if (otStart >= shiftStart && otStart < shiftEnd && otEnd > shiftEnd)
+            {
+                otStart = shiftEnd;
+                message = "Overtime starts with in shift period, and is set to the end of shift";
+            }
+            // Overlaps both sides — keep only part after shift (optionally split)
+            else if (otStart < shiftStart && otEnd > shiftEnd)
+            {
+                otEnd = shiftStart;
+                message = "Overtime overlaps shift period and is trimmed to the start of shift.";
+                
+            }
+        }
+        public bool IsHoliday(DateTime date)
+        {
+            List<holidayModel> holidays = _context.Holidays.Where(h => h.holidayStatus == mainStatus.Active).ToList();
+            return holidays.Any(h =>
+                date.Date >= h.holidayStart.Date &&
+                date.Date <= (h.holidayEnd == default ? h.holidayStart.Date : h.holidayEnd.Date)
+            );
+        }
+
+        private void LoadPageData(int employmentId)
+        {
+            ViewData["employmentID"] = new SelectList(_context.Employments, "employmentID", "givenID");
+            ViewData["overtimeID"] = new SelectList(_context.Overtimes, "overtimeID", "overtimeName");
+
+            EmployeeID = employmentId;
+            TempData["MyNumber"] = EmployeeID;
+
+            Employment = _context.Employments.FirstOrDefault(e => e.employmentID == employmentId) ?? new employmentModel();
+            Person = _context.Persons.FirstOrDefault(e => e.personID == Employment.personID) ?? new personModel();
+
+            OtRecords = _context.OvertimeRecords
+                .Where(e => e.overtimeRecordStatus == overtimeStatus.Hold && e.employmentID == EmployeeID)
+                .Include(otr => otr.overtimeModel)
+                .ToList();
+        }
+
+
+        public async Task<List<int>> AddOtRecords(DateTime date, TimeSpan otStart, TimeSpan otEnd, int empID)
+        {
+            var nightOt =await _context.Overtimes.FirstOrDefaultAsync(o => o.overtimeName.ToLower() == "night" && o.overtimeStatus == mainStatus.Active);
+            var normalOt = await _context.Overtimes.FirstOrDefaultAsync(o => o.overtimeName.ToLower() == "normal" && o.overtimeStatus == mainStatus.Active);
+            var sundayOt = await _context.Overtimes.FirstOrDefaultAsync(o => o.overtimeName.ToLower() == "sunday" && o.overtimeStatus == mainStatus.Active);
+            var holidayOt = await _context.Overtimes.FirstOrDefaultAsync(o => o.overtimeName.ToLower() == "holiday" && o.overtimeStatus == mainStatus.Active);
+
+            var job =await _context.JobPlacements
+                .FirstOrDefaultAsync(j => j.employmentID == empID && j.jobPlacementStatus == mainStatus.Active) ?? new jobPlacementModel();
+            
+            var depID = job.departmentID;
 
             var records = new List<overtimeRecordModel>();
             //Sunday OT
@@ -127,7 +226,7 @@ namespace PIS2.Pages.OvertimeRecord
                     employmentID = empID,
                     modifiedBy = User.Identity?.Name!,
                     overtimeRecordStatus = overtimeStatus.Hold,
-                    overtimeRecordEmploymentRate = job.getJobRate(),
+                    overtimeRecordEmploymentRate = job?.getJobRate() ?? 0,
                     overtimeRecordDate = overtimeRecordModel.overtimeRecordDate,
                     overtimeRecordStartTime = otStart,
                     overtimeRecordEndTime = otEnd,
@@ -145,7 +244,7 @@ namespace PIS2.Pages.OvertimeRecord
                     employmentID = empID,
                     modifiedBy = User.Identity?.Name!,
                     overtimeRecordStatus = overtimeStatus.Hold,
-                    overtimeRecordEmploymentRate = job.getJobRate(),
+                    overtimeRecordEmploymentRate = job?.getJobRate() ?? 0,
                     overtimeRecordDate = overtimeRecordModel.overtimeRecordDate,
                     overtimeRecordStartTime = otStart,
                     overtimeRecordEndTime = otEnd,
@@ -262,98 +361,26 @@ namespace PIS2.Pages.OvertimeRecord
                     });
                 }
             }
+
             var savedIds = new List<int>();
             if (records.Count > 0)
             {
-                
+
                 _context.OvertimeRecords.AddRange(records);
                 try
                 {
                     await _context.SaveChangesAsync();
                     savedIds.AddRange(records.Select(r => r.overtimeRecordID));
-                    return RedirectToPage("./PersonOTR", new { otrID = savedIds, empID = 0 });
 
                 }
                 catch (Exception ex)
-                {  
+                {
                     ModelState.AddModelError("", "An unexpected error occurred while saving.");
-                    return Page();
+                    
                 }
             }
-            else
-            {
-                
-                return Page();
-            }
-
-            
+            return savedIds;
         }
-
-        public void TrimOvertime(ref TimeSpan otStart, ref TimeSpan otEnd, TimeSpan shiftStart, TimeSpan shiftEnd)
-        {
-            // Fully within shift — discard overtime
-            if (otStart >= shiftStart && otEnd <= shiftEnd)
-            {
-                otStart = otEnd = TimeSpan.Zero;
-                message = "Overtime can not be with in shift period.";
-            }
-            // Fully before shift — no change
-            else if (otEnd <= shiftStart)
-            {
-                // keep as is
-            }
-            // Fully after shift — no change
-            else if (otStart >= shiftEnd)
-            {
-                // keep as is
-            }
-            // Starts before shift, ends during shift — trim end
-            else if (otStart < shiftStart && otEnd > shiftStart && otEnd <= shiftEnd)
-            {
-                otEnd = shiftStart;
-                message = "Overtime ends with in shift period, and is adjusted to the start of shift.";
-            }
-            // Starts during shift, ends after shift — trim start
-            else if (otStart >= shiftStart && otStart < shiftEnd && otEnd > shiftEnd)
-            {
-                otStart = shiftEnd;
-                message = "Overtime starts with in shift period, and is set to the end of shift";
-            }
-            // Overlaps both sides — keep only part after shift (optionally split)
-            else if (otStart < shiftStart && otEnd > shiftEnd)
-            {
-                otEnd = shiftStart;
-                message = "Overtime overlaps shift period and is trimmed to the start of shift.";
-                
-            }
-        }
-        public bool IsHoliday(DateTime date)
-        {
-            List<holidayModel> holidays = _context.Holidays.Where(h => h.holidayStatus == mainStatus.Active).ToList();
-            return holidays.Any(h =>
-                date.Date >= h.holidayStart.Date &&
-                date.Date <= (h.holidayEnd == default ? h.holidayStart.Date : h.holidayEnd.Date)
-            );
-        }
-
-
-        private void LoadPageData(int employmentId)
-        {
-            ViewData["employmentID"] = new SelectList(_context.Employments, "employmentID", "givenID");
-            ViewData["overtimeID"] = new SelectList(_context.Overtimes, "overtimeID", "overtimeName");
-
-            EmployeeID = employmentId;
-            TempData["MyNumber"] = EmployeeID;
-
-            Employment = _context.Employments.FirstOrDefault(e => e.employmentID == employmentId) ?? new employmentModel();
-            Person = _context.Persons.FirstOrDefault(e => e.personID == Employment.personID) ?? new personModel();
-
-            OtRecords = _context.OvertimeRecords
-                .Where(e => e.overtimeRecordStatus == overtimeStatus.Hold && e.employmentID == EmployeeID)
-                .Include(otr => otr.overtimeModel)
-                .ToList();
-        }
-
 
     }
 }

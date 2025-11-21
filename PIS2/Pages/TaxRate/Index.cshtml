@@ -1,0 +1,72 @@
+﻿@page
+@model PIS2.Pages.TaxRate.IndexModel
+@{
+    ViewData["Title"] = "Tax Rates";
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold text-primary">Tax Rate List</h2>
+        <a asp-page="Create" class="btn btn-primary shadow-sm">
+            <i class="bi bi-plus-lg"></i> Add New Tax Rate
+        </a>
+    </div>
+
+    @if (Model.TaxRates != null && Model.TaxRates.Any())
+    {
+        <div class="card shadow-sm border-0 rounded-3">
+            <div class="card-body p-0">
+                <table class="table table-striped mb-0 align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>From</th>
+                            <th>Ceiling</th>
+                            <th>Rate (%)</th>
+                            <th>Deduction</th>
+                            <th>Reference</th>
+                            <th>Status</th>
+                            <th>Last Modified</th>
+                            <th class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var rate in Model.TaxRates)
+                        {
+                            <tr>
+                                <td>@rate.from.ToString("N2")</td>
+                                <td>@rate.ceiling.ToString("N2")</td>
+                                <td>@rate.taxRate.ToString("N2")</td>
+                                <td>@rate.deduction.ToString("N2")</td>
+                                <td>@rate.reference</td>
+                                <td>
+                                    <span class="badge @(rate.taxStatus == Models.mainStatus.Active ? "bg-success" : "bg-secondary")">
+                                        @rate.taxStatus
+                                    </span>
+                                </td>
+                                <td>@rate.modifiedDate.ToShortDateString()</td>
+                                <td class="text-end">
+                                    <a asp-page="Edit" asp-route-id="@rate.taxRateID" class="btn btn-sm btn-outline-primary me-2">
+                                        <i class="bi bi-pencil-square"></i> Edit
+                                    </a>
+                                    <a asp-page="Details" asp-route-id="@rate.taxRateID" class="btn btn-sm btn-outline-info me-2">
+                                        <i class="bi bi-eye"></i> View
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-info shadow-sm mt-4">
+            <i class="bi bi-info-circle"></i> No tax rates found. Click "Add New Tax Rate" to get started.
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+}

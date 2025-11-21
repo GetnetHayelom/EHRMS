@@ -9,7 +9,7 @@ namespace PIS2.Models
         [Required]
         public string educationLevelName { get; set; }
         public string educationLevelGrade { get; set; }
-        public string educationLevelCategory { get; set; }
+        public educationCategory educationLevelCategory { get; set; }
         public string? educationLevelDescription { get; set; }
         public mainStatus educationLevelStatus { get; set; }
        
@@ -42,5 +42,14 @@ namespace PIS2.Models
         [Display(Name = "Services")]
         Services
 
+    }
+    public enum educationCategory
+    {
+        Certificate,
+        Diploma,
+        Degree,
+        Masters,
+        PHD,
+        Other
     }
 }

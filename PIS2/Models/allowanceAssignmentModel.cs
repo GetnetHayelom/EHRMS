@@ -25,7 +25,7 @@ namespace PIS2.Models
     public class allowanceAssignmentHistoryModel
     {
         [Key]
-        public int allowanceAssignmentHistoryID { get;}
+        public int allowanceAssignmentHistoryID { get; set; }
         public int allowanceAssignmentID { get;}
         public virtual allowanceAssignmentModel? allowanceAssignmentModel { get; }
         public DateTime modifiedDate { get;} 

@@ -1,0 +1,71 @@
+﻿@page
+@model PIS2.Pages.TaxRate.CreateModel
+@{
+    ViewData["Title"] = "Add New Tax Rate";
+}
+
+<div class="container mt-4">
+    <div class="card shadow-sm border-0 rounded-3">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+            <h4 class="mb-0">Add New Tax Rate</h4>
+            <a asp-page="Index" class="btn btn-light btn-sm">
+                <i class="bi bi-arrow-left"></i> Back to List
+            </a>
+        </div>
+
+        <div class="card-body">
+            <form method="post" class="needs-validation" novalidate>
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label asp-for="TaxRate.from" class="form-label fw-semibold">From Amount</label>
+                        <input asp-for="TaxRate.from" class="form-control" placeholder="Enter minimum range" />
+                        <span asp-validation-for="TaxRate.from" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="TaxRate.ceiling" class="form-label fw-semibold">Ceiling</label>
+                        <input asp-for="TaxRate.ceiling" class="form-control" placeholder="Enter maximum range" />
+                        <span asp-validation-for="TaxRate.ceiling" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label asp-for="TaxRate.taxRate" class="form-label fw-semibold">Tax Rate (%)</label>
+                        <input asp-for="TaxRate.taxRate" class="form-control" placeholder="Enter rate" />
+                        <span asp-validation-for="TaxRate.taxRate" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="TaxRate.deduction" class="form-label fw-semibold">Deduction</label>
+                        <input asp-for="TaxRate.deduction" class="form-control" placeholder="Enter deduction amount" />
+                        <span asp-validation-for="TaxRate.deduction" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="TaxRate.reference" class="form-label fw-semibold">Reference / Proclamation</label>
+                    <input asp-for="TaxRate.reference" class="form-control" placeholder="Enter reference or note" />
+                    <span asp-validation-for="TaxRate.reference" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="TaxRate.taxStatus" class="form-label fw-semibold">Status</label>
+                    <select asp-for="TaxRate.taxStatus" class="form-select">
+                        <option value="0">Inactive</option>
+                        <option value="1" selected>Active</option>
+                    </select>
+                </div>
+
+                <div class="text-end">
+                    <button type="submit" class="btn btn-success px-4 shadow-sm">
+                        <i class="bi bi-save"></i> Save Tax Rate
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+}

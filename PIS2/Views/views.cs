@@ -12,7 +12,7 @@ namespace PIS2.Views
     {}
     public class EducationLevelData
     {
-        public string EducationLevelCategory { get; set; }
+        public educationCategory EducationLevelCategory { get; set; }
         public string EducationLevelName { get; set; }
         public int EducationLevelCount { get; set; }
     }
@@ -253,7 +253,7 @@ namespace PIS2.Views
         public int? DepartmentID { get; set; }
         public string? DepartmentName { get; set; }
         public int? EducationLevelID { get; set; }
-        public string? EducationLevelCategory { get; set; }
+        public educationCategory? EducationLevelCategory { get; set; }
         public string? EducationField { get; set; }
         public string? EducationDiscipline { get; set; }
         public string? EducationDomain { get; set; }

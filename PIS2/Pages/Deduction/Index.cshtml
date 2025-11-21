@@ -1,0 +1,119 @@
+﻿@page
+@model PIS2.Pages.Deductions.IndexModel
+@{
+    ViewData["Title"] = "Deduction Types";
+}
+
+<div class="container mt-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3 class="fw-bold text-primary">Deduction Types</h3>
+        <a asp-page="./Create" class="btn btn-success">
+            <i class="bi bi-plus-circle me-1"></i> Add New Deduction
+        </a>
+    </div>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <div class="card shadow-sm border-0">
+        <div class="card-body p-0">
+            @if (Model.DeductionTypes != null && Model.DeductionTypes.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover table-striped mb-0 align-middle">
+                        <thead class="table-primary">
+                            <tr>
+                                <th>#</th>
+                                <th>Deduction Name</th>
+                                <th>Deduct From</th>
+                                <th>Priority</th>
+                                <th>Recurring</th>
+                                <th>Mandatory</th>
+                                <th>Status</th>
+                                <th>Modified By</th>
+                                <th class="text-end">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.DeductionTypes)
+                            {
+                                <tr>
+                                    <td>@item.deductionTypeID</td>
+                                    <td>@item.deductionName</td>
+                                    <td>@item.deductBase</td>
+                                    <td>@item.dedcutionPriority</td>
+                                    <td>
+                                        @if (item.isRecurring)
+                                        {
+                                            <span class="badge bg-info text-dark">Yes</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-secondary">No</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        @if (item.isMandatory)
+                                        {
+                                            <span class="badge bg-success">Yes</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-light text-muted">No</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        @switch (item.deductionStatus)
+                                        {
+                                            case Models.mainStatus.Active:
+                                                <span class="badge bg-success">Active</span>
+                                                ;
+                                                break;
+                                            case Models.mainStatus.Suspended:
+                                                <span class="badge bg-warning text-dark">Suspended</span>
+                                                ;
+                                                break;
+                                            case Models.mainStatus.Inactive:
+                                                <span class="badge bg-danger">Inactive</span>
+                                                ;
+                                                break;
+                                            default:
+                                                <span class="badge bg-secondary">Unknown</span>
+                                                ;
+                                                break;
+                                        }
+                                    </td>
+                                    <td>@item.modifiedBy</td>
+                                    <td class="text-end">
+                                        <a asp-page="./Edit" asp-route-id="@item.deductionTypeID" class="btn btn-sm btn-outline-primary me-1">
+                                            <i class="bi bi-pencil-square"></i>
+                                        </a>
+                                        <a asp-page="./Details" asp-route-id="@item.deductionTypeID" class="btn btn-sm btn-outline-info me-1">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                        <form method="post" asp-page-handler="Delete" asp-route-id="@item.deductionTypeID" class="d-inline">
+                                            <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Are you sure you want to delete this deduction type?')">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="p-4 text-center text-muted">
+                    <i class="bi bi-info-circle me-2"></i> No deduction types found.
+                </div>
+            }
+        </div>
+    </div>
+</div>

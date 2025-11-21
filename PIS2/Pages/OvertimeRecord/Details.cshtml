@@ -150,10 +150,12 @@
         </form>
         
     }
-    @if(Model.overtimeRecordModel.overtimeRecordStatus == Models.overtimeStatus.Hold && User.IsInRole("MIE\\PMS_HRCLERK"))
+    @if (Model.overtimeRecordModel.overtimeRecordStatus == Models.overtimeStatus.Hold && (User.IsInRole("MIE\\PMS_HRCLERK") || Model.overtimeRecordModel.overtimeRecordStatus == Models.overtimeStatus.Hold && Model.isSelf))
     {
-        <a class="btn btn-primary m-2 d-print-none" asp-page="./Edit" asp-route-id="@Model.overtimeRecordModel.overtimeRecordID">Edit</a>
+        <a class="btn btn-primary m-2 d-print-none" asp-page="./Edit" asp-route-id="@Model.overtimeRecordModel.overtimeRecordID">Edit</a>   
+        <a asp-page="./Delete" asp-route-id="@Model.overtimeRecordModel.overtimeRecordID" role="button" class="btn btn-danger text-decoration-none m-2">Delete</a>
     } 
+
     @await Html.PartialAsync("back")
     @await Html.PartialAsync("print")
 </div>

@@ -35,14 +35,15 @@
                     <input asp-for="overtimeRecordModel.overtimeRecordDate" class="form-control" type="date" value="@DateTime.Today.ToString("yyyy-MM-dd")" />
                     <span asp-validation-for="overtimeRecordModel.overtimeRecordDate" class="text-danger"></span>
                 </div>
+                <p>Note: A day starts at 12:00 AM(00:00) after midnight and ends at 11:59 PM(23:59) before midnight.</p>
                 <div class="form-group mb-2">
                     <label asp-for="overtimeRecordModel.overtimeRecordStartTime" class="control-label">Start Time</label>
-                    <input asp-for="overtimeRecordModel.overtimeRecordStartTime" class="form-control" type="time"/>
+                    <input asp-for="overtimeRecordModel.overtimeRecordStartTime" class="form-control" type="time" step="60" asp-format="{0:hh\\:mm}" pattern="([01][0-9]|2[0-3]):[0-5][0-9]" />
                     <span asp-validation-for="overtimeRecordModel.overtimeRecordStartTime" class="text-danger"></span>
                 </div>
                 <div class="form-group mb-2">
                     <label asp-for="overtimeRecordModel.overtimeRecordEndTime" class="control-label">End Time</label>
-                    <input asp-for="overtimeRecordModel.overtimeRecordEndTime" class="form-control" type="time"/>
+                    <input asp-for="overtimeRecordModel.overtimeRecordEndTime" class="form-control" type="time" step="60" asp-format="{0:hh\\:mm}" pattern="([01][0-9]|2[0-3]):[0-5][0-9]" />
                     <span asp-validation-for="overtimeRecordModel.overtimeRecordEndTime" class="text-danger"></span>
                 </div>
                 <div class="form-group mb-2">
@@ -107,6 +108,103 @@
         }
     </div>
 </div>
+
+
+
+<div class="container my-4">
+    <h4 class="fw-bold mb-3">Ethiopian Time vs International Time</h4>
+
+    <div class="table-responsive">
+        <table class="table table-bordered text-center align-middle">
+            <thead class="table-dark">
+                <tr>
+                    <!-- Morning 6 hours -->
+                    <th colspan="6" class="bg-primary">Morning</th>
+
+                    <!-- Afternoon 6 hours -->
+                    <th colspan="6" class="bg-success">Afternoon</th>
+
+                    <!-- Evening 4 hours -->
+                    <th colspan="4" class="bg-warning">Evening</th>
+
+                    <!-- Night 8 hours -->
+                    <th colspan="8" class="bg-secondary">Night</th>
+                </tr>
+
+                
+            </thead>
+
+            <tbody>
+                <!-- Ethiopian Local Time Row -->
+                <tr class="table-primary">
+                    <!-- Fill Ethiopian times hour-by-hour -->
+                    <td>1 AM</td>
+                    <td>2 AM</td>
+                    <td>3 AM</td>
+                    <td>4 AM</td>
+                    <td>5 AM</td>
+                    <td>6 AM</td>
+
+                    <td>7 AM</td>
+                    <td>8 AM</td>
+                    <td>9 AM</td>
+                    <td>10 AM</td>
+                    <td>11 AM</td>
+                    <td>12 PM</td>
+
+                    <td>1 PM</td>
+                    <td>2 PM</td>
+                    <td>3 PM</td>
+                    <td>4 PM</td>
+                    <td>5 PM</td>
+                    <td>6 PM</td>
+
+                    <td>7 PM</td>
+                    <td>8 PM</td>
+                    <td>9 PM</td>
+                    <td>10 PM</td>
+                    <td>11 PM</td>
+                    <td>12 AM</td>
+                    
+                </tr>
+
+                <!-- International Time Row -->
+                <tr class="table-secondary">
+                    <!-- Example uses UTC time = Ethiopia - 3 -->
+                    <td>7 PM</td>
+                    <td>8 PM</td>
+                    <td>9 PM</td>
+                    <td>10 PM</td>
+                    <td>11 PM</td>
+                    <td>12 AM</td>
+
+                    <td>1 AM</td>
+                    <td>2 AM</td>
+                    <td>3 AM</td>
+                    <td>4 AM</td>
+                    <td>5 AM</td>
+                    <td>6 AM</td>
+
+                    <td>7 AM</td>
+                    <td>8 AM</td>
+                    <td>9 AM</td>
+                    <td>10 AM</td>
+                    <td>11 AM</td>
+                    <td>12 PM</td>
+
+                    <td>1 PM</td>
+                    <td>2 PM</td>
+                    <td>3 PM</td>
+                    <td>4 PM</td>
+                    <td>5 PM</td>
+                    <td>6 PM</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
 
 <div class="d-flex justify-content-end">
     <a asp-page="./PersonOTR" asp-route-otrID="null" asp-route-empID="@Model.EmployeeID" class="btn btn-secondary me-2 d-print-none">Preview</a>

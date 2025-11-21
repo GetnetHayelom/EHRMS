@@ -12,8 +12,7 @@
     <div class="flex-grow-1 print-full-width">
     <h3 class="fw-bold">Leave Detail</h3>
         <hr />
-        <dl class=""> 
-            <div class="d-flex justify-content-between  me-3">
+        <dl class="d-flex justify-content-between  me-3">            
                 <div class="flex-grow-1">
                     <div class="d-flex mb-2">
                         <dt class="me-2">
@@ -120,11 +119,7 @@
                             <u>@Html.DisplayFor(model => model.leaveModel.leaveStatus)</u>
                         </dd>
                     </div>
-                </div>
-                
-  
-                
-            </div>
+                </div>     
         </dl>
     </div>
     
@@ -221,12 +216,9 @@
         </tr>
     </tbody>
 </table>
+
 <div class="d-print-none d-flex justify-content-end">
-    @if(Model.leaveModel.leaveStatus == Models.leaveStatus.Hold && Model.isSelf)
-    {
-        <a asp-page="./Edit" asp-route-id="@Model.leaveModel.leaveID" role="button" class="btn btn-primary text-decoration-none m-2">Edit</a>
-        <a asp-page="./Delete" asp-route-id="@Model.leaveModel.leaveID" role="button" class="btn btn-danger text-decoration-none m-2">Delete</a>
-    }
+    
     @if (User.IsInRole("MIE\\PMS_HRCLERK") && (Model.leaveModel.leaveStatus == Models.leaveStatus.Hold || Model.leaveModel.leaveStatus == Models.leaveStatus.Approved))
     {
         <form method="post">

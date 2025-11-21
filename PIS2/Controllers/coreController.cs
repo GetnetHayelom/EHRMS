@@ -71,6 +71,7 @@ namespace PIS2.Controllers
                 JobTitle = activeJobPlacement?.jobModel?.jobTitle ?? "",
                 Department = department?.departmentName ?? "",
                 Company = company?.companyName ?? "",
+                EmploymentStatus = person.employmentStatus,
                 IsFound = true
             };
 
@@ -85,6 +86,19 @@ namespace PIS2.Controllers
             public string Department { get; set; }
             public string Company { get; set; }
             public string WorkLocation { get; set; }
+            public mainStatus? EmploymentStatus { get; set; }
+        }
+
+        [HttpGet("JobsByJobClass/{jobClassID}")]
+        public IActionResult GetJobsByJobClass(int jobClassID)
+        {
+            var jobs = _context.Jobs
+                .Where(d => d.jobClassID == jobClassID)
+                .OrderBy(d => d.jobTitle)
+                .Select(d => new { d.jobID, d.jobTitle })
+                .ToList();
+
+            return Ok(jobs);
         }
     }
 }

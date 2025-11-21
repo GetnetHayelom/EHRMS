@@ -943,46 +943,15 @@ namespace PIS2.Models
             });
 
             modelBuilder.Entity<penaltyModel>(entity => {
-                entity.Property(e => e.penaltyID).HasColumnName("penaltyID");
-                entity.Property(e => e.penaltyTypeID).HasColumnName("penaltyTypeID");
-                entity.Property(e => e.employmentID).HasColumnName("employmentID");
-                entity.Property(e => e.penaltyIssueDate).HasColumnName("penaltyIssueDate");
-                entity.Property(e => e.penaltyStartDate).HasColumnName("penaltyStartDate");
-                entity.Property(e => e.penaltyEndDate).HasColumnName("penaltyEndDate");
-                entity.Property(e => e.penaltyReference).HasColumnName("penaltyReference");
-                entity.Property(e => e.penaltyReason).HasColumnName("penaltyReason");
-                entity.Property(e => e.penaltyStatus).HasColumnName("penaltyStatus");
-                entity.Property(e => e.penaltyAmount).HasColumnName("penaltyAmount");
-                entity.Property(e => e.modifiedBy).HasColumnName("modifiedBy");
-
+               
                 entity.HasOne(e => e.employmentModel).WithMany(e => e.Penalties).HasForeignKey(e => e.employmentID);
                 entity.HasOne(e => e.penaltyTypeModel).WithMany(e => e.Penalties).HasForeignKey(e => e.penaltyTypeID);
                 entity.HasMany(e => e.PenaltyHistories).WithOne(e => e.penaltyModel).HasForeignKey(e => e.penaltyID);
 
                 entity.ToTable(t => t.UseSqlOutputClause(false));
             });
-            modelBuilder.Entity<penaltyHistoryModel>(entity => {
-                entity.Property(e => e.penaltyHistoryID).HasColumnName("penaltyHistoryID");
-                entity.Property(e => e.penaltyID).HasColumnName("penaltyID");
-                entity.Property(e => e.penaltyStatus).HasColumnName("penaltyStatus");
-                entity.Property(e => e.modifiedBy).HasColumnName("modifiedBy");
-                entity.Property(e => e.modifiedDate).HasColumnName("modifiedDate");
-
-                entity.HasOne(e => e.penaltyModel).WithMany(e => e.PenaltyHistories).HasForeignKey(e => e.penaltyID);
-                
-            });
-            modelBuilder.Entity<penaltyTypeModel>(entity => {
-                entity.Property(e => e.penaltyTypeID).HasColumnName("penaltyTypeID");
-                entity.Property(e => e.penaltyName).HasColumnName("penaltyName");
-                entity.Property(e => e.penaltyTypeStatus).HasColumnName("penaltyTypeStatus");
-                entity.Property(e => e.penaltyMethod).HasColumnName("penaltyMethod");
-                entity.Property(e => e.penaltyRate).HasColumnName("penaltyRate");
-                entity.Property(e => e.penaltyValidity).HasColumnName("penaltyValidity");
-                entity.Property(e => e.modifiedBy).HasColumnName("modifiedBy");
-                entity.Property(e => e.modifiedDate).HasColumnName("modifiedDate");
-
-                entity.HasMany(p => p.Penalties).WithOne(e => e.penaltyTypeModel).HasForeignKey(e => e.penaltyTypeID);
-            });
+            modelBuilder.Entity<penaltyHistoryModel>();
+            modelBuilder.Entity<penaltyTypeModel>();
 
             modelBuilder.Entity<personModel>(entity =>
             {
@@ -1312,17 +1281,7 @@ namespace PIS2.Models
             // payrollModel
             modelBuilder.Entity<payrollModel>(entity =>
             {
-                entity.Property(e => e.payrollID).HasColumnName("payrollID");
-                entity.Property(e => e.payrollName).HasColumnName("payrollName");
-                entity.Property(e => e.StartDate).HasColumnName("StartDate");
-                entity.Property(e => e.EndDate).HasColumnName("EndDate");
-                entity.Property(e => e.payrollStatus).HasColumnName("payrollStatus");
-                entity.Property(e => e.modifiedBy).HasColumnName("modifiedBy");
-
-                entity.HasMany(e => e.payrollHistories)
-                      .WithOne(p => p.payrollModel)
-                      .HasForeignKey(p => p.payrollID)
-                      .OnDelete(DeleteBehavior.Cascade);
+                entity.HasMany(e => e.payrollHistories).WithOne(p => p.payrollModel).HasForeignKey(p => p.payrollID).OnDelete(DeleteBehavior.Cascade);
             });
 
             // payrollHistory
@@ -1350,87 +1309,35 @@ namespace PIS2.Models
                 entity.Property(e => e.NetPay).HasColumnName("NetPay");
                 entity.Property(e => e.modifiedBy).HasColumnName("modifiedBy");
 
-                entity.HasOne(e => e.payrollModel)
-                      .WithMany()
-                      .HasForeignKey(e => e.payrollID)
-                      .OnDelete(DeleteBehavior.Cascade);
+                entity.HasOne(e => e.payrollModel).WithMany().HasForeignKey(e => e.payrollID).OnDelete(DeleteBehavior.Cascade);
 
-                entity.HasOne(e => e.EmploymentModel)
-                      .WithMany()
-                      .HasForeignKey(e => e.employmentID)
-                      .OnDelete(DeleteBehavior.Cascade);
+                entity.HasOne(e => e.EmploymentModel).WithMany().HasForeignKey(e => e.employmentID).OnDelete(DeleteBehavior.Cascade);
+                entity.HasMany(e => e.DeductionRecords).WithOne().HasForeignKey(e => e.payrollPayID).OnDelete(DeleteBehavior.Cascade);
+                entity.HasMany(e => e.EarningRecords).WithOne().HasForeignKey(e => e.payrollPayID).OnDelete(DeleteBehavior.Cascade);
+
             });
-
-            // earningModel
-            modelBuilder.Entity<earningModel>(entity =>
+            //earningModel
+            modelBuilder.Entity<earningModel>();
+            // earningRecordModel
+            modelBuilder.Entity<earningRecordModel>(entity =>
             {
-                entity.Property(e => e.earningID).HasColumnName("earningID");
-                entity.Property(e => e.earningTypeId).HasColumnName("EarningTypeId");
-                entity.Property(e => e.earningReference).HasColumnName("earningReference");
-                entity.Property(e => e.employmentID).HasColumnName("employmentID");
-                entity.Property(e => e.earningAmount).HasColumnName("earningAmount");
-                
-                entity.Property(e => e.earningStatus).HasColumnName("earningStatus");
-                entity.Property(e => e.modifiedBy).HasColumnName("modifiedBy");
-
-                entity.HasOne(e => e.earningType)
-                      .WithMany(p => p.Earnings)
-                      .HasForeignKey(e => e.earningTypeId)
-                      .OnDelete(DeleteBehavior.Cascade);
-
-                entity.HasOne(e => e.EmploymentModel)
-                      .WithMany()
-                      .HasForeignKey(e => e.employmentID)
-                      .OnDelete(DeleteBehavior.Cascade);
-
-                
+                entity.HasOne(e => e.earningType).WithMany(p => p.Earnings).HasForeignKey(e => e.earningTypeId).OnDelete(DeleteBehavior.Cascade);
+           
             });
 
             // earningType
-            modelBuilder.Entity<earningType>(entity =>
+            modelBuilder.Entity<earningType>();
+            //deductionModel
+            modelBuilder.Entity<deductionModel>();
+            // deductionRecordModel
+            modelBuilder.Entity<deductionRecordModel>(entity =>
             {
-                entity.Property(e => e.earningTypeID).HasColumnName("earningTypeID");
-                entity.Property(e => e.earningName).HasColumnName("earningName");
-                entity.Property(e => e.isRecurring).HasColumnName("isRecurring");
-                entity.Property(e => e.isTaxable).HasColumnName("isTaxable");
-                entity.Property(e => e.Status).HasColumnName("Status");
-            });
-
-            // deductionModel
-            modelBuilder.Entity<deductionModel>(entity =>
-            {
-                entity.HasKey(e => e.deductionID);
-
-                entity.Property(e => e.deductionID).HasColumnName("deductionID");
-                entity.Property(e => e.deductionTypeID).HasColumnName("deductionTypeID");
-                entity.Property(e => e.deductionReference).HasColumnName("deductionReference");
-                entity.Property(e => e.employmentID).HasColumnName("employmentID");
-                entity.Property(e => e.deductionAmount).HasColumnName("deductionAmount");
-                
-                entity.Property(e => e.deductionStatus).HasColumnName("deductionStatus");
-                entity.Property(e => e.modifiedBy).HasColumnName("modifiedBy");
-
-                entity.HasOne(e => e.DeductionType)
-                      .WithMany(p => p.Deductions)
-                      .HasForeignKey(e => e.deductionTypeID)
-                      .OnDelete(DeleteBehavior.Cascade);
-
-                entity.HasOne(e => e.EmploymentModel)
-                      .WithMany()
-                      .HasForeignKey(e => e.employmentID)
-                      .OnDelete(DeleteBehavior.Cascade);
-
+                entity.HasOne(e => e.DeductionType).WithMany(p => p.Deductions).HasForeignKey(e => e.deductionTypeID).OnDelete(DeleteBehavior.Cascade);
                 
             });
 
             // deductionType
-            modelBuilder.Entity<deductionType>(entity =>
-            {
-                entity.Property(e => e.deductionTypeID).HasColumnName("deductionTypeID");
-                entity.Property(e => e.deductionName).HasColumnName("deductionName");
-                entity.Property(e => e.isRecurring).HasColumnName("isRecurring");
-                entity.Property(e => e.Status).HasColumnName("Status");
-            });
+            modelBuilder.Entity<deductionType>();
 
             //tax rates
             modelBuilder.Entity<taxRateModel>(entity =>
@@ -1596,8 +1503,10 @@ namespace PIS2.Models
         public DbSet<payrollHistory> PayrollHistories { get; set; }
         public DbSet<payrollPay> PayrollPays { get; set; }
         public DbSet<earningModel> Earnings { get; set; }
+        public DbSet<earningRecordModel> EarningRecords { get; set; }
         public DbSet<earningType> EarningTypes { get; set; }
         public DbSet<deductionModel> Deductions { get; set; }
+        public DbSet<deductionRecordModel> DeductionRecords { get; set; }
         public DbSet<deductionType> DeductionTypes { get; set; }
         public DbSet<taxRateModel> TaxRates { get; set; }
 

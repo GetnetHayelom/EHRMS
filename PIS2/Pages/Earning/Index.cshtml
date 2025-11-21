@@ -1,0 +1,64 @@
+﻿@page
+@model PIS2.Pages.Earning.IndexModel
+@{
+    ViewData["Title"] = "Earning Types";
+}
+
+<div class="container mt-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3 class="fw-bold text-primary mb-0">
+            <i class="bi bi-cash-stack me-2"></i> Earning Types
+        </h3>
+        <a asp-page="Create" class="btn btn-primary">
+            <i class="bi bi-plus-lg me-1"></i> Add New Earning Type
+        </a>
+    </div>
+
+    @if (Model.EarningTypes.Any())
+    {
+        <div class="card shadow-sm border-0">
+            <div class="card-body p-0">
+                <table class="table table-hover mb-0 align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Name</th>
+                            <th>Recurring</th>
+                            <th>Taxable</th>
+                            <th>Status</th>
+                            <th class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var earning in Model.EarningTypes)
+                        {
+                            <tr>
+                                <td>@earning.earningTypeName</td>
+                                <td>@(earning.isRecurring ? "Yes" : "No")</td>
+                                <td>@(earning.isTaxable ? "Yes" : "No")</td>
+                                <td>
+                                    <span class="badge @(earning.earningTypeStatus == Models.mainStatus.Active ? "bg-success" : "bg-secondary")">
+                                        @earning.earningTypeStatus
+                                    </span>
+                                </td>
+                                <td class="text-end">
+                                    <a asp-page="Edit" asp-route-id="@earning.earningTypeID" class="btn btn-sm btn-outline-primary me-1">
+                                        <i class="bi bi-pencil-square"></i>
+                                    </a>
+                                    <a asp-page="Delete" asp-route-id="@earning.earningTypeID" class="btn btn-sm btn-outline-danger">
+                                        <i class="bi bi-trash"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-info mt-4">
+            <i class="bi bi-info-circle me-1"></i> No earning types found.
+        </div>
+    }
+</div>

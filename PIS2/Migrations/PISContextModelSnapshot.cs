@@ -729,77 +729,115 @@ namespace PIS2.Migrations
                 {
                     b.Property<int>("deductionID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasColumnName("deductionID");
+                        .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("deductionID"));
 
-                    b.Property<decimal>("deductionAmount")
-                        .HasColumnType("decimal(18,2)")
-                        .HasColumnName("deductionAmount");
+                    b.Property<int?>("EmploymentModelemploymentID")
+                        .HasColumnType("int");
 
-                    b.Property<int>("deductionReference")
-                        .HasColumnType("int")
-                        .HasColumnName("deductionReference");
+                    b.Property<bool>("IsPercentage")
+                        .HasColumnType("bit");
+
+                    b.Property<decimal>("deductionAmount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("deductionIteration")
+                        .HasColumnType("int");
+
+                    b.Property<string>("deductionReference")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("deductionStatus")
-                        .HasColumnType("int")
-                        .HasColumnName("deductionStatus");
+                        .HasColumnType("int");
 
                     b.Property<int>("deductionTypeID")
-                        .HasColumnType("int")
-                        .HasColumnName("deductionTypeID");
+                        .HasColumnType("int");
 
                     b.Property<int>("employmentID")
-                        .HasColumnType("int")
-                        .HasColumnName("employmentID");
+                        .HasColumnType("int");
 
                     b.Property<string>("modifiedBy")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("modifiedBy");
-
-                    b.Property<int>("payrollID")
-                        .HasColumnType("int")
-                        .HasColumnName("payrollID");
-
-                    b.Property<int?>("payrollPayID")
-                        .HasColumnType("int");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("deductionID");
 
+                    b.HasIndex("EmploymentModelemploymentID");
+
                     b.HasIndex("deductionTypeID");
 
-                    b.HasIndex("employmentID");
+                    b.ToTable("Deductions");
+                });
 
-                    b.HasIndex("payrollID");
+            modelBuilder.Entity("PIS2.Models.deductionRecordModel", b =>
+                {
+                    b.Property<int>("deductionRecordID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("deductionRecordID"));
+
+                    b.Property<decimal?>("deductionAmount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("deductionReference")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("deductionTypeID")
+                        .HasColumnType("int");
+
+                    b.Property<string>("modifiedBy")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("payrollPayID")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("payrollPayID1")
+                        .HasColumnType("int");
+
+                    b.HasKey("deductionRecordID");
+
+                    b.HasIndex("deductionTypeID");
 
                     b.HasIndex("payrollPayID");
 
-                    b.ToTable("Deductions");
+                    b.HasIndex("payrollPayID1");
+
+                    b.ToTable("DeductionRecords");
                 });
 
             modelBuilder.Entity("PIS2.Models.deductionType", b =>
                 {
                     b.Property<int>("deductionTypeID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasColumnName("deductionTypeID");
+                        .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("deductionTypeID"));
 
-                    b.Property<int>("Status")
-                        .HasColumnType("int")
-                        .HasColumnName("Status");
+                    b.Property<int>("dedcutionPriority")
+                        .HasColumnType("int");
+
+                    b.Property<int>("deductBase")
+                        .HasColumnType("int");
 
                     b.Property<string>("deductionName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("deductionName");
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("deductionStatus")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("isMandatory")
+                        .HasColumnType("bit");
 
                     b.Property<bool>("isRecurring")
-                        .HasColumnType("bit")
-                        .HasColumnName("isRecurring");
+                        .HasColumnType("bit");
+
+                    b.Property<string>("modifiedBy")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("deductionTypeID");
 
@@ -1051,81 +1089,112 @@ namespace PIS2.Migrations
                 {
                     b.Property<int>("earningID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasColumnName("earningID");
+                        .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("earningID"));
 
-                    b.Property<int>("EarningTypeId")
-                        .HasColumnType("int")
-                        .HasColumnName("EarningTypeId");
+                    b.Property<int?>("EmploymentModelemploymentID")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsPercentage")
+                        .HasColumnType("bit");
 
                     b.Property<decimal>("earningAmount")
-                        .HasColumnType("decimal(18,2)")
-                        .HasColumnName("earningAmount");
+                        .HasColumnType("decimal(18,2)");
 
-                    b.Property<int>("earningReference")
-                        .HasColumnType("int")
-                        .HasColumnName("earningReference");
+                    b.Property<int>("earningBase")
+                        .HasColumnType("int");
+
+                    b.Property<int>("earningIteration")
+                        .HasColumnType("int");
 
                     b.Property<int>("earningStatus")
-                        .HasColumnType("int")
-                        .HasColumnName("earningStatus");
+                        .HasColumnType("int");
+
+                    b.Property<int>("earningTypeId")
+                        .HasColumnType("int");
 
                     b.Property<int>("employmentID")
-                        .HasColumnType("int")
-                        .HasColumnName("employmentID");
+                        .HasColumnType("int");
 
                     b.Property<string>("modifiedBy")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("modifiedBy");
-
-                    b.Property<int?>("payrollID")
-                        .HasColumnType("int")
-                        .HasColumnName("payrollID");
-
-                    b.Property<int?>("payrollPayID")
-                        .HasColumnType("int");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("earningID");
 
-                    b.HasIndex("EarningTypeId");
+                    b.HasIndex("EmploymentModelemploymentID");
 
-                    b.HasIndex("employmentID");
+                    b.HasIndex("earningTypeId");
 
-                    b.HasIndex("payrollID");
+                    b.ToTable("Earnings");
+                });
+
+            modelBuilder.Entity("PIS2.Models.earningRecordModel", b =>
+                {
+                    b.Property<int>("earningRecordID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("earningRecordID"));
+
+                    b.Property<decimal>("earningAmount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("earningReference")
+                        .HasColumnType("int");
+
+                    b.Property<int>("earningTypeId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("modifiedBy")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("payrollPayID")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("payrollPayID1")
+                        .HasColumnType("int");
+
+                    b.HasKey("earningRecordID");
+
+                    b.HasIndex("earningTypeId");
 
                     b.HasIndex("payrollPayID");
 
-                    b.ToTable("Earnings");
+                    b.HasIndex("payrollPayID1");
+
+                    b.ToTable("EarningRecords");
                 });
 
             modelBuilder.Entity("PIS2.Models.earningType", b =>
                 {
                     b.Property<int>("earningTypeID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasColumnName("earningTypeID");
+                        .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("earningTypeID"));
 
-                    b.Property<int>("Status")
-                        .HasColumnType("int")
-                        .HasColumnName("Status");
+                    b.Property<string>("earningTypeDescription")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("earningName")
+                    b.Property<string>("earningTypeName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("earningName");
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("earningTypeStatus")
+                        .HasColumnType("int");
 
                     b.Property<bool>("isRecurring")
-                        .HasColumnType("bit")
-                        .HasColumnName("isRecurring");
+                        .HasColumnType("bit");
 
                     b.Property<bool>("isTaxable")
-                        .HasColumnType("bit")
-                        .HasColumnName("isTaxable");
+                        .HasColumnType("bit");
+
+                    b.Property<string>("modifiedBy")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("earningTypeID");
 
@@ -1141,9 +1210,8 @@ namespace PIS2.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("educationLevelID"));
 
-                    b.Property<string>("educationLevelCategory")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)")
+                    b.Property<int>("educationLevelCategory")
+                        .HasColumnType("int")
                         .HasColumnName("educationLevelCategory");
 
                     b.Property<string>("educationLevelDescription")
@@ -2764,14 +2832,14 @@ namespace PIS2.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("payrollHistoryID"));
 
-                    b.Property<DateTime>("modfiedDate")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("modfiedDate");
-
                     b.Property<string>("modifiedBy")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)")
                         .HasColumnName("modifiedBy");
+
+                    b.Property<DateTime>("modifiedDate")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("modfiedDate");
 
                     b.Property<int>("payrollID")
                         .HasColumnType("int")
@@ -2792,34 +2860,57 @@ namespace PIS2.Migrations
                 {
                     b.Property<int>("payrollID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasColumnName("payrollID");
+                        .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("payrollID"));
 
                     b.Property<DateTime>("EndDate")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("EndDate");
+                        .HasColumnType("datetime2");
 
                     b.Property<DateTime>("StartDate")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("StartDate");
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("companyID")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("companyModelcompanyID")
+                        .HasColumnType("int");
 
                     b.Property<string>("modifiedBy")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("modifiedBy");
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("payrollMonth")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("payrollName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("payrollName");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("payrollStatus")
-                        .HasColumnType("int")
-                        .HasColumnName("payrollStatus");
+                        .HasColumnType("int");
+
+                    b.Property<int?>("totalEmployees")
+                        .HasColumnType("int");
+
+                    b.Property<decimal?>("totalGross")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal?>("totalNet")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal?>("totalPensionEmployee")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal?>("totalPensionEmployer")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal?>("totalTax")
+                        .HasColumnType("decimal(18,2)");
 
                     b.HasKey("payrollID");
+
+                    b.HasIndex("companyModelcompanyID");
 
                     b.ToTable("Payrolls");
                 });
@@ -2854,11 +2945,16 @@ namespace PIS2.Migrations
                         .HasColumnType("int")
                         .HasColumnName("payrollID");
 
+                    b.Property<int?>("payrollModelpayrollID")
+                        .HasColumnType("int");
+
                     b.HasKey("payrollPayID");
 
                     b.HasIndex("employmentID");
 
                     b.HasIndex("payrollID");
+
+                    b.HasIndex("payrollModelpayrollID");
 
                     b.ToTable("PayrollPays");
                 });
@@ -2867,27 +2963,22 @@ namespace PIS2.Migrations
                 {
                     b.Property<int>("penaltyHistoryID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasColumnName("penaltyHistoryID");
+                        .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("penaltyHistoryID"));
 
                     b.Property<string>("modifiedBy")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("modifiedBy");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("modifiedDate")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("modifiedDate");
+                        .HasColumnType("datetime2");
 
                     b.Property<int>("penaltyID")
-                        .HasColumnType("int")
-                        .HasColumnName("penaltyID");
+                        .HasColumnType("int");
 
                     b.Property<int>("penaltyStatus")
-                        .HasColumnType("int")
-                        .HasColumnName("penaltyStatus");
+                        .HasColumnType("int");
 
                     b.HasKey("penaltyHistoryID");
 
@@ -2900,53 +2991,39 @@ namespace PIS2.Migrations
                 {
                     b.Property<int>("penaltyID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasColumnName("penaltyID");
+                        .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("penaltyID"));
 
                     b.Property<int>("employmentID")
-                        .HasColumnType("int")
-                        .HasColumnName("employmentID");
+                        .HasColumnType("int");
 
                     b.Property<string>("modifiedBy")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("modifiedBy");
-
-                    b.Property<decimal>("penaltyAmount")
-                        .HasColumnType("decimal(18,2)")
-                        .HasColumnName("penaltyAmount");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime?>("penaltyEndDate")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("penaltyEndDate");
+                        .HasColumnType("datetime2");
 
                     b.Property<DateTime>("penaltyIssueDate")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("penaltyIssueDate");
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("penaltyReason")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("penaltyReason");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("penaltyReference")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("penaltyReference");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime?>("penaltyStartDate")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("penaltyStartDate");
+                        .HasColumnType("datetime2");
 
                     b.Property<int>("penaltyStatus")
-                        .HasColumnType("int")
-                        .HasColumnName("penaltyStatus");
+                        .HasColumnType("int");
 
                     b.Property<int>("penaltyTypeID")
-                        .HasColumnType("int")
-                        .HasColumnName("penaltyTypeID");
+                        .HasColumnType("int");
 
                     b.HasKey("penaltyID");
 
@@ -2963,43 +3040,35 @@ namespace PIS2.Migrations
                 {
                     b.Property<int>("penaltyTypeID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasColumnName("penaltyTypeID");
+                        .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("penaltyTypeID"));
 
+                    b.Property<bool>("IsPercentage")
+                        .HasColumnType("bit");
+
                     b.Property<string>("modifiedBy")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("modifiedBy");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("modifiedDate")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("modifiedDate");
+                        .HasColumnType("datetime2");
+
+                    b.Property<decimal>("penaltyAmount")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<int>("penaltyCategory")
                         .HasColumnType("int");
 
-                    b.Property<int>("penaltyMethod")
-                        .HasColumnType("int")
-                        .HasColumnName("penaltyMethod");
-
                     b.Property<string>("penaltyName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("penaltyName");
-
-                    b.Property<decimal>("penaltyRate")
-                        .HasColumnType("decimal(18,2)")
-                        .HasColumnName("penaltyRate");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("penaltyTypeStatus")
-                        .HasColumnType("int")
-                        .HasColumnName("penaltyTypeStatus");
+                        .HasColumnType("int");
 
                     b.Property<decimal>("penaltyValidity")
-                        .HasColumnType("decimal(18,2)")
-                        .HasColumnName("penaltyValidity");
+                        .HasColumnType("decimal(18,2)");
 
                     b.HasKey("penaltyTypeID");
 
@@ -3673,6 +3742,45 @@ namespace PIS2.Migrations
                     b.ToTable("SubAccounts");
                 });
 
+            modelBuilder.Entity("PIS2.Models.taxRateModel", b =>
+                {
+                    b.Property<int>("taxRateID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("taxRateID"));
+
+                    b.Property<decimal>("ceiling")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("deduction")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("from")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("modifiedBy")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("modifiedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("reference")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("taxRate")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("taxStatus")
+                        .HasColumnType("int");
+
+                    b.HasKey("taxRateID");
+
+                    b.ToTable("TaxRates", (string)null);
+                });
+
             modelBuilder.Entity("PIS2.Models.terminationModel", b =>
                 {
                     b.Property<int>("terminationID")
@@ -4083,8 +4191,8 @@ namespace PIS2.Migrations
                     b.Property<string>("EducationField")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("EducationLevelCategory")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int?>("EducationLevelCategory")
+                        .HasColumnType("int");
 
                     b.Property<DateTime?>("EducationLevelDate")
                         .HasColumnType("datetime2");
@@ -4655,33 +4763,42 @@ namespace PIS2.Migrations
 
             modelBuilder.Entity("PIS2.Models.deductionModel", b =>
                 {
+                    b.HasOne("PIS2.Models.employmentModel", "EmploymentModel")
+                        .WithMany()
+                        .HasForeignKey("EmploymentModelemploymentID");
+
+                    b.HasOne("PIS2.Models.deductionType", "DeductionType")
+                        .WithMany()
+                        .HasForeignKey("deductionTypeID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("DeductionType");
+
+                    b.Navigation("EmploymentModel");
+                });
+
+            modelBuilder.Entity("PIS2.Models.deductionRecordModel", b =>
+                {
                     b.HasOne("PIS2.Models.deductionType", "DeductionType")
                         .WithMany("Deductions")
                         .HasForeignKey("deductionTypeID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("PIS2.Models.employmentModel", "EmploymentModel")
-                        .WithMany()
-                        .HasForeignKey("employmentID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("PIS2.Models.payrollModel", "payrollModel")
-                        .WithMany()
-                        .HasForeignKey("payrollID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("PIS2.Models.payrollPay", null)
-                        .WithMany("deductions")
-                        .HasForeignKey("payrollPayID");
+                        .WithMany("DeductionRecords")
+                        .HasForeignKey("payrollPayID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("PIS2.Models.payrollPay", "PayrollPay")
+                        .WithMany()
+                        .HasForeignKey("payrollPayID1");
 
                     b.Navigation("DeductionType");
 
-                    b.Navigation("EmploymentModel");
-
-                    b.Navigation("payrollModel");
+                    b.Navigation("PayrollPay");
                 });
 
             modelBuilder.Entity("PIS2.Models.delegationHistoryModel", b =>
@@ -4763,32 +4880,42 @@ namespace PIS2.Migrations
 
             modelBuilder.Entity("PIS2.Models.earningModel", b =>
                 {
-                    b.HasOne("PIS2.Models.earningType", "EarningType")
-                        .WithMany("Earnings")
-                        .HasForeignKey("EarningTypeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("PIS2.Models.employmentModel", "EmploymentModel")
                         .WithMany()
-                        .HasForeignKey("employmentID")
+                        .HasForeignKey("EmploymentModelemploymentID");
+
+                    b.HasOne("PIS2.Models.earningType", "earningType")
+                        .WithMany()
+                        .HasForeignKey("earningTypeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.HasOne("PIS2.Models.payrollModel", "PayrollModel")
-                        .WithMany()
-                        .HasForeignKey("payrollID")
-                        .OnDelete(DeleteBehavior.SetNull);
-
-                    b.HasOne("PIS2.Models.payrollPay", null)
-                        .WithMany("earnings")
-                        .HasForeignKey("payrollPayID");
-
-                    b.Navigation("EarningType");
 
                     b.Navigation("EmploymentModel");
 
-                    b.Navigation("PayrollModel");
+                    b.Navigation("earningType");
+                });
+
+            modelBuilder.Entity("PIS2.Models.earningRecordModel", b =>
+                {
+                    b.HasOne("PIS2.Models.earningType", "earningType")
+                        .WithMany("Earnings")
+                        .HasForeignKey("earningTypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("PIS2.Models.payrollPay", null)
+                        .WithMany("EarningRecords")
+                        .HasForeignKey("payrollPayID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("PIS2.Models.payrollPay", "PayrollPay")
+                        .WithMany()
+                        .HasForeignKey("payrollPayID1");
+
+                    b.Navigation("PayrollPay");
+
+                    b.Navigation("earningType");
                 });
 
             modelBuilder.Entity("PIS2.Models.employmentHistoryModel", b =>
@@ -5198,6 +5325,15 @@ namespace PIS2.Migrations
                     b.Navigation("payrollModel");
                 });
 
+            modelBuilder.Entity("PIS2.Models.payrollModel", b =>
+                {
+                    b.HasOne("PIS2.Models.companyModel", "companyModel")
+                        .WithMany()
+                        .HasForeignKey("companyModelcompanyID");
+
+                    b.Navigation("companyModel");
+                });
+
             modelBuilder.Entity("PIS2.Models.payrollPay", b =>
                 {
                     b.HasOne("PIS2.Models.employmentModel", "EmploymentModel")
@@ -5211,6 +5347,10 @@ namespace PIS2.Migrations
                         .HasForeignKey("payrollID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("PIS2.Models.payrollModel", null)
+                        .WithMany("PayrollPays")
+                        .HasForeignKey("payrollModelpayrollID");
 
                     b.Navigation("EmploymentModel");
 
@@ -5744,14 +5884,16 @@ namespace PIS2.Migrations
 
             modelBuilder.Entity("PIS2.Models.payrollModel", b =>
                 {
+                    b.Navigation("PayrollPays");
+
                     b.Navigation("payrollHistories");
                 });
 
             modelBuilder.Entity("PIS2.Models.payrollPay", b =>
                 {
-                    b.Navigation("deductions");
+                    b.Navigation("DeductionRecords");
 
-                    b.Navigation("earnings");
+                    b.Navigation("EarningRecords");
                 });
 
             modelBuilder.Entity("PIS2.Models.penaltyModel", b =>

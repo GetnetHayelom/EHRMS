@@ -6,7 +6,7 @@
     Layout = "~/Pages/Shared/_Layout.cshtml";
     int num = 0;
 }
-
+@await Html.PartialAsync("headerSimple", "")
 <h1 class="fw-bold">Overtime Request</h1>
 
 <p class="d-flex">
@@ -138,7 +138,7 @@
     </tbody>
 </table>
 <div class="d-flex justify-content-end">
-    <a class="btn btn-secondary m-2" asp-page="Create" asp-route-id="@Model.employmentModel.employmentID">Cancel</a>
+    @await Html.PartialAsync("back")
     @await Html.PartialAsync("print")
 </div>
 @await Html.PartialAsync("signature")

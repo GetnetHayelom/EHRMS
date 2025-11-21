@@ -26,7 +26,7 @@ namespace PIS2.Models
     public class prohibitionHistoryModel
     {
         [Key]
-        public int prohibitionHistoryID { get;}
+        public int prohibitionHistoryID { get; set; }
         public int prohibitionID { get;}
         public virtual prohibitionModel prohibitionModel { get; set; }
         public DateTime prohibitionStart { get; }

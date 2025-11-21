@@ -37,12 +37,15 @@ namespace PIS2.Pages.Leave
             else
             {
                 leaveModel = leavemodel;
+                
             }
             return Page();
         }
 
         public async Task<IActionResult> OnPostAsync(int? id)
         {
+            if (User.IsInRole("PMS_HRCLERCK")) return RedirectToPage("/Shared/AccessDenied");
+
             if (id == null)
             {
                 return NotFound();
@@ -52,7 +55,8 @@ namespace PIS2.Pages.Leave
             if (leavemodel != null)
             {
                 leaveModel = leavemodel;
-                _context.Leaves.Remove(leaveModel);
+                if (leaveModel.leaveStatus != leaveStatus.Hold) throw new ArgumentException("Only leave on hols status can be deleted!");
+                    _context.Leaves.Remove(leaveModel);
                 await _context.SaveChangesAsync();
             }
 

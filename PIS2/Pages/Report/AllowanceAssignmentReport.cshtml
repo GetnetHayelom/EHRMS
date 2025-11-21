@@ -120,6 +120,7 @@
             <input class="form-control" type="date" id="dateEnd"/>
         </div>
        <div class="d-flex justify-content-end d-print-none">
+            <excel-export table="dataTable" filename="Allowance_@(DateTime.Now).xlsx"></excel-export>
             <button id="toggle-allowances" class="btn btn-primary m-2">
                 Show/Hide Detail Rows
             </button>
@@ -179,7 +180,7 @@
                             @item3.AllowanceAmount
                         </td>
                         <td>
-                            @Html.DisplayFor(modelItem => item3.AllowanceStart)
+                            @item3.AllowanceStart.ToString("MM/dd/yyyy")
                         </td>@{
                             string bg_color;
                             if (item3.AllowanceStatus == Models.mainStatus.Suspended)
@@ -207,6 +208,7 @@
     </tbody>
 </table>
 <div class="d-flex justify-content-end">
+    <excel-export table="dataTable" filename="Allowance_@(DateTime.Now).xlsx"></excel-export>
     @await Html.PartialAsync("print")
 </div>
 

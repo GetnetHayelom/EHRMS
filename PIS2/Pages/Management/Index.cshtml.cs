@@ -199,7 +199,7 @@ namespace PIS2.Pages.Management
                 .GroupBy(cs => cs.educationLevelModel.educationLevelCategory)
                 .Select(g => new NameAndCount
                 {
-                    zName = g.Key,
+                    zName = g.Key.ToString(),
                     zCount = g.Count()
                 }).ToList();
 

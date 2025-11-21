@@ -18,7 +18,7 @@ namespace PIS2.Models
         public string educationLevelInstitutionName { get; set; }
         public string? educationLevelNumber { get; set; }//Certificate serial Number if any
         public string? educationField { get; set; }
-        public educationDomains? educationDomain { get; set; }
+        public educationDomains? educationDomain { get; set; }//Natural, Social
         public string? educationDiscipline { get; set; }
         public string modifiedBy { get; set; }
         public DateTime modifiedDate { get; set; } = DateTime.Now;

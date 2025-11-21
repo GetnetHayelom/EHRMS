@@ -1,63 +1,4 @@
-﻿//function printDiv(divId) {
-//    // Get the content of the div
-//    var content = document.getElementById(divId).innerHTML;
-//    // Get the current date
-//    var currentDate = new Date().toLocaleDateString('en-US', {
-//        year: 'numeric', month: 'long', day: 'numeric'
-//    });
-//    // Open a new window for printing
-//    var printWindow = window.open('', '', 'height=600,width=800');
-
-//    // Write the HTML structure to the print window
-//    printWindow.document.write('<html><head><title>PIS2</title>');
-
-//    // You can include your own styles or link to external stylesheets
-
-//    printWindow.document.write('<link rel="stylesheet" href="/lib/bootstrap/dist/css/bootstrap.min.css" />');
-//    printWindow.document.write('<link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />');
-//    printWindow.document.write('<link rel="stylesheet" href="~/PIS2.styles.css" asp-append-version="true" />');
-
-//    printWindow.document.write('</head><body>');
-//    printWindow.document.write(`
-//            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; width: 100%;">
-//                <!-- Left Logo -->
-//                <div style="width: 15%; text-align: left;">
-//                    <img src="/assets/mie_logo.png" alt="Logo" style="width: 100%; max-height: 80px;">
-//                        <p>Form No. WF/HRM/11</p>
-//                </div>
-
-//                <!-- Centered Company Info -->
-//                <div style="width: 70%; text-align: center;">
-//                    <h3 style="margin: 0;">መስፍን ኢንዳስትሪያል ኢንጂነሪንግ ሓ/የተ/የግ/ኩባንያ</h3>
-//                    <h2 style="margin: 0;">Mefin Industrial Engineering PLC</h2>
-//                    <p style="margin: 0;">Mekelle, Ethiopia</p>
-//                    <p style="margin: 0;">Phone: +123 456 789 | Email: contact@company.com</p>
-//                </div>
-
-//                <!-- Right Logo -->
-//                <div style="width: 15%; text-align: right;">
-//                    <img src="/assets/mie_logo.png" alt="Logo" style="width: 100%; max-height: 80px;">
-//                    <p style="margin: 10px 0; font-weight: bold;">Date: ${currentDate}</p>
-//                </div>
-//            </div>
-//            <hr>
-//                `);
-
-
-//    // Insert the content of the div into the print window
-//    printWindow.document.write(content);
-
-
-
-//    printWindow.document.close(); // Close the document for writing
-//    //printWindow.focus(); // Focus the new window
-//    //printWindow.print(); // Print the content
-//    // Wait for the stylesheets to load before printing
-//    printWindow.onload = function () {
-//        printWindow.focus();
-//        printWindow.print();
-//    };
-//}
+﻿
 function printDiv(divId) {
     var printWin = window.open(window.location.href, "_self");
     
@@ -88,6 +29,9 @@ function filterTable() {
         row.style.display = text.includes(input) ? "" : "none";
     });
 }
+
+
+
 
 function highlightDifferences() {
     const table = document.getElementById("historyTable");
@@ -239,6 +183,52 @@ function updateSortingIcons(table, columnIndex, direction) {
         }
         icon.innerText = index === columnIndex ? (direction === 1 ? " 🔼" : " 🔽") : "";
     });
+}
+//
+//
+//
+//
+//EXPORT TO EXCEL
+function exportTableToExcel(tableID, filename = 'export.xlsx') {
+    const table = document.getElementById(tableID);
+    if (!table) {
+        console.error("Table not found: " + tableID);
+        return;
+    }
+
+    // Convert table to workbook
+    const workbook = XLSX.utils.table_to_book(table, { sheet: "Sheet1" });
+    const worksheet = workbook.Sheets["Sheet1"];
+
+    // ----- AUTO COLUMN WIDTH -----
+    const sheetData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+    let colWidths = [];
+
+    sheetData.forEach(row => {
+        row.forEach((cell, colIndex) => {
+            const cellValue = cell ? cell.toString() : "";
+            const width = cellValue.length + 2; // +2 for padding
+            colWidths[colIndex] = Math.max(colWidths[colIndex] || 10, width);
+        });
+    });
+
+    worksheet['!cols'] = colWidths.map(w => ({ wch: w }));
+
+    // ----- HEADER FORMATTING -----
+    const range = XLSX.utils.decode_range(worksheet['!ref']); // get the worksheet range
+    for (let C = range.s.c; C <= range.e.c; ++C) {
+        const cellAddress = XLSX.utils.encode_cell({ r: 0, c: C }); // first row = header
+        if (!worksheet[cellAddress]) continue;
+
+        worksheet[cellAddress].s = {
+            font: { bold: true, color: { rgb: "FFFFFF" } },
+            fill: { fgColor: { rgb: "4F81BD" } }, // header background color
+            alignment: { horizontal: "center", vertical: "center" }
+        };
+    }
+
+    // Export Excel file
+    XLSX.writeFile(workbook, filename, { bookType: 'xlsx', cellStyles: true });
 }
 
 

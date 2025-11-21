@@ -1,0 +1,8 @@
+﻿@page
+@model (string TableId, string FileName)
+
+<button onclick="exportTableToExcel('@Model.TableId', '@Model.FileName')"
+        class="btn btn-outline-primary m-2">
+    Export to Excel
+</button>
+

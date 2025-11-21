@@ -21,7 +21,7 @@ namespace PIS2.Pages.OvertimeRecord
         public overtimeRecordModel overtimeRecordModel { get; set; } = default!;
         public List<overtimeHistoryModel> OvertimeHistories { get; set; } = default!;
         public double otCost = 0;
-
+        public bool isSelf { get; set; } = false;
         public async Task<IActionResult> OnGetAsync(int? id)
         {
             if (id == null)
@@ -42,6 +42,12 @@ namespace PIS2.Pages.OvertimeRecord
             else
             {
                 overtimeRecordModel = overtimerecordmodel;
+                var currentUser = _context.Users.FirstOrDefault(u => u.userName == User.Identity.Name);
+
+                if (currentUser != null && currentUser.personID == overtimeRecordModel.employmentModel?.personID)
+                {
+                    isSelf = true;
+                }
             }
             return Page();
         }

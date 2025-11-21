@@ -1,0 +1,49 @@
+﻿@page
+@model PIS2.Pages.Payroll.IndexModel
+@using PIS2.Models
+@inject PayrollService PayrollService
+
+<h1 class="fw-bold">Payrolls</h1>
+<a class="btn btn-primary" asp-page="Create">Prepare New Payroll</a>
+
+<table class="table table-bordered table-hover table-striped">
+    <thead class="bg-dark text-white">
+        <tr>
+            <th>Name</th>
+            <th>Company</th>
+            <th>Period</th>
+            <th>Status</th>
+            <th>Total Gross</th>
+            <th>Total Net</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var payroll in Model.Payrolls)
+        {
+            <tr onclick="location.href='@Url.Page("Details", new{id=payroll.payrollID})'" style="cursor:pointer;">
+                <td>@payroll.payrollName</td>
+                <td>@(payroll.companyModel?.companyName ?? "All")</td>
+                <td>@payroll.StartDate.ToShortDateString() - @payroll.EndDate.ToShortDateString()</td>
+                <td>@payroll.payrollStatus</td>
+                <td>@payroll.totalGross?.ToString("C")</td>
+                <td>@payroll.totalNet?.ToString("C")</td>
+                <td>
+                    <a asp-page="./Details" asp-route-id="@payroll.payrollID">Details</a> |
+                    @if (payroll.payrollStatus == payrollStatus.APPROVED)
+                    {
+                        <form method="post" asp-page-handler="Generate" asp-route-id="@payroll.payrollID" style="display:inline">
+                            <button class="btn btn-sm btn-primary">Generate</button>
+                        </form>
+                    }
+                    @if (payroll.payrollStatus == payrollStatus.POSTED)
+                    {
+                        <form method="post" asp-page-handler="Complete" asp-route-id="@payroll.payrollID" style="display:inline">
+                            <button class="btn btn-sm btn-success">Complete</button>
+                        </form>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

@@ -24,20 +24,25 @@
                 <select asp-for="penaltyTypeModel.penaltyTypeStatus" class="form-control" asp-items="@Html.GetEnumSelectList<Models.mainStatus>()"></select>
                 <span asp-validation-for="penaltyTypeModel.penaltyTypeStatus" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="penaltyTypeModel.penaltyMethod" class="control-label">Method</label>
-                <select asp-for="penaltyTypeModel.penaltyMethod" class="form-control" asp-items="@Html.GetEnumSelectList<Models.penaltyMethod>()"></select>
-                <span asp-validation-for="penaltyTypeModel.penaltyMethod" class="text-danger"></span>
-            </div>
+            
             <div class="form-group">
                 <label asp-for="penaltyTypeModel.penaltyValidity" class="control-label">Validity In Months</label>
                 <input asp-for="penaltyTypeModel.penaltyValidity" class="form-control" type="number"/>
                 <span asp-validation-for="penaltyTypeModel.penaltyValidity" class="text-danger"></span>
             </div>
+            <div class="mb-3 form-check form-switch">
+                <!-- IsPercentage toggle -->
+                <input asp-for="penaltyTypeModel.IsPercentage" class="form-check-input" type="checkbox" id="IsPercentageToggle" />
+                <label class="form-check-label" for="IsPercentageToggle">
+                    Use percentage
+                </label>
+                <span class="form-text">If checked the value will be treated as a percentage of the chosen base.</span>
+                <span asp-validation-for="penaltyTypeModel.IsPercentage" class="text-danger"></span>
+            </div>
             <div class="form-group">
-                <label asp-for="penaltyTypeModel.penaltyRate" class="control-label">Rate</label>
-                <input asp-for="penaltyTypeModel.penaltyRate" class="form-control" type="number"/>
-                <span asp-validation-for="penaltyTypeModel.penaltyRate" class="text-danger"></span>
+                <label asp-for="penaltyTypeModel.penaltyAmount" class="control-label">Rate</label>
+                <input asp-for="penaltyTypeModel.penaltyAmount" class="form-control" type="number"/>
+                <span asp-validation-for="penaltyTypeModel.penaltyAmount" class="text-danger"></span>
             </div>
            
             <div class="form-group d-flex justify-content-end">

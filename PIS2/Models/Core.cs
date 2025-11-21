@@ -396,7 +396,7 @@ namespace PIS2.Models
             return leaves;
         }
         private List<leaveModel> GetUsedLeaves(int empID) {
-            List<leaveModel> usedLeaves = GetLeaves(empID).Where(l => l.leaveTypeModel.leaveTypeImpact == leaveTypeImpact.Negative && (l.leaveStatus == leaveStatus.Posted || l.leaveStatus == leaveStatus.Comleted)).ToList();
+            List<leaveModel> usedLeaves = GetLeaves(empID).Where(l => l.leaveTypeModel.leaveTypeImpact == leaveTypeImpact.Negative && (l.leaveStatus == leaveStatus.Posted || l.leaveStatus == leaveStatus.Completed)).ToList();
             return usedLeaves;
         }
         private List<leaveModel> GetAccruedLeaves(int empID)

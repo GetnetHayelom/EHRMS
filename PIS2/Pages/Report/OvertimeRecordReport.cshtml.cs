@@ -123,9 +123,10 @@ namespace PIS2.Pages.Report
         }
 
                                    
-        public IActionResult OnGetFilter(int? department, int? overtimeStatus, int? overtimeType, int? company, DateTime? dateStart, DateTime? dateEnd)
+        public IActionResult OnGetFilter(int? department, int? overtimeStatus, int? overtimeType, int? company, DateTime? dateStart, DateTime? dateEnd, string? empID)
         {
             Console.WriteLine("the Date is " + dateStart);
+            
             // Start with the full list of employees
             var otDetails = _context.OvertimeDetailView.AsQueryable();
 
@@ -153,8 +154,6 @@ namespace PIS2.Pages.Report
 
             }
 
-
-
             // Filter by type (if provided)
             if (overtimeType.HasValue && overtimeType != null)
             {
@@ -175,7 +174,15 @@ namespace PIS2.Pages.Report
                 otDetails = otDetails
                     .Where(e => e.OvertimeDate <= dateEnd);
             }
-            
+             
+            // Filter by EmployeeID (if provided)
+            if (!string.IsNullOrEmpty(empID))
+            {
+                Console.WriteLine("##############" + empID);
+                otDetails = otDetails
+                    .Where(e => e.GivenID == empID);
+            }
+
             // Execute the query and get the filtered results
             var filteredOvertime = otDetails.ToList();
 
@@ -235,7 +242,7 @@ namespace PIS2.Pages.Report
             return new JsonResult(new { tableHtml = tableHtml.ToString(), TotalRecords, TotalHours, TotalDays, TotalCost, InvolvedEmployees, DaysPerEmployees, CostPerEmployees});
 
         }
-        public IActionResult OnGetDepartmentDetails(int deptId, int? overtimeStatus, int? overtimeType, DateTime? dateStart, DateTime? dateEnd)
+        public IActionResult OnGetDepartmentDetails(int deptId, int? overtimeStatus, int? overtimeType, DateTime? dateStart, DateTime? dateEnd, string? empID)
         {
             
             var otDetails = _context.OvertimeDetailView.AsQueryable();
@@ -246,8 +253,6 @@ namespace PIS2.Pages.Report
                 otDetails = otDetails.Where(e => e.OvertimeStatus == (Models.overtimeStatus)overtimeStatus);
 
             }
-
-
 
             // Filter by type (if provided)
             if (overtimeType.HasValue && overtimeType != null)
@@ -268,6 +273,14 @@ namespace PIS2.Pages.Report
                 otDetails = otDetails
                     .Where(e => e.OvertimeDate <= dateEnd);
             }
+            // Filter by EmployeeID (if provided)
+            if (!string.IsNullOrEmpty(empID))
+            {
+                Console.WriteLine("##############" + empID);
+                otDetails = otDetails
+                    .Where(e => e.GivenID == empID);
+            }
+
             var records = otDetails?
                 .Where(o => o.DepartmentID == deptId)
                 .Select(e => new

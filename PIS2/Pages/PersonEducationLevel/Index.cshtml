@@ -6,7 +6,7 @@
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
 
-@await Html.PartialAsync("headerSimple")
+@await Html.PartialAsync("headerSimple", "")
 <div class="d-flex justify-content-between">
     <h1 class="fw-bold">Education and Certification</h1>
     <div class="d-flex d-print-none">
@@ -20,7 +20,7 @@
                 <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#summaryView">Certification Summary</button>
             </li>
             <li class="nav-item">
-                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#companyView">Company Report</button>
+                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#companyView">Certification Lookup</button>
             </li>
             <li class="nav-item">
                 <button class="nav-link" data-bs-toggle="tab" data-bs-target="#talentPool">Talent Pool</button>
@@ -77,22 +77,29 @@
             <div class="card m-2 p-2 shadow flex-grow-1">
                 <p>Total</p>
                 <h6 class="fw-bold">
-                    <u id="TotalRecords">@Model.TotalRecords</u>
+                    <u id="TotalRecords1">@Model.TotalRecords</u>
                 </h6>
             </div>
 
             <div class="card m-2 p-2 shadow flex-grow-1">
                 <p>Male</p>
                 <h6 class="fw-bold">
-                    <u id="TotalRecords">@Model.Male</u>
+                    <u id="Male1">@Model.Male</u>
                 </h6>
             </div>
             <div class="card m-2 p-2 shadow flex-grow-1">
                 <p>Female </p>
                 <h6 class="fw-bold">
-                    <u id="TotalHours">@Model.Female</u>
+                    <u id="Female1">@Model.Female</u>
                 </h6>
                 
+            </div>
+            <div class="card m-2 p-2 shadow flex-grow-1">
+                <p>Active Employee </p>
+                <h6 class="fw-bold">
+                    <u id="Active1">@Model.ActiveEmp</u>
+                </h6>
+
             </div>
         </div>
 
@@ -100,7 +107,7 @@
         <div class="d-flex m-2 justify-content-between flex-wrap">
             <div class="col-3 m-2 d-print-flex">
                 <label for="filter-company">Company:</label>
-                <select class="form-select" aria-label="Default select example" id="filter-company1">
+                <select class="form-select" aria-label="Default select example" id="filter-company">
                     <option value="">All</option>
                     @foreach (var company in Model.Companies)
                     {
@@ -110,7 +117,7 @@
             </div>
             <div class="col-3 m-2 d-print-flex">
                 <label for="filter-department">Department:</label>
-                <select class="form-select" aria-label="Default select example" id="filter-department1">
+                <select class="form-select" aria-label="Default select example" id="filter-department">
                     <option value="">All</option>
                     @foreach (var department in Model.Departments)
                     {
@@ -120,17 +127,13 @@
             </div>
             <div class="col-3 m-2 d-print-flex">
                 <label for="filter-category">Category:</label>
-                <select class="form-select" aria-label="Default select example" id="filter-category1">
+                <select class="form-select" aria-label="Default select example" id="filter-category" asp-items="@Html.GetEnumSelectList<Models.educationCategory>()">
                     <option value="">All</option>
-                    @foreach (var cat in Model.EducationLevels)
-                    {
-                        <option value="@cat.educationLevelCategory">@cat.educationLevelCategory</option>
-                    }
                 </select>
             </div>
             <div class="col-3 m-2 d-print-flex">
                 <label for="filter-discipline">Discipline:</label>
-                <select class="form-select" aria-label="Default select example" id="filter-discipline1">
+                <select class="form-select" aria-label="Default select example" id="filter-discipline">
                     <option value="">All</option>
                     @foreach (var edu in Model.EducationDescipline)
                     {
@@ -138,33 +141,38 @@
                     }
                 </select>
             </div>
-            <div class="col-3 d-print-none">
+            <div class="col-3 d-print-flex">
                 <label for="filter-field">Field of Study:</label>
-                <input list="CertificationFieldOptions" class="form-control" id="filter-field1" placeholder="Type or select Field of Study" />
+                <input list="CertificationFieldOptions" class="form-control" id="filter-field" placeholder="Type or select Field of Study" />
                     <datalist id="CertificationFieldOptions">
                         <option value="">All</option>
-                        @foreach (var job in Model.Jobs)
+                        @foreach (var field in Model.EducationFields)
                         {
-                            <option value="@job.jobTitle">@job.jobTitle</option>
+                            <option value="@field">@field</option>
                         }
                     </datalist>
+                
+            </div>
+            <div class="col-3 m-2 d-print-flex">
+                <label for="filter-status">Employment Status:</label>
+                <select class="form-select" aria-label="Default select example" id="filter-status1" asp-items="Html.GetEnumSelectList<Models.mainStatus>()">
+                    <option value="">All</option>
+                </select>
             </div>
             <div class="col-3 m-2 d-print-flex">
                 <label for="dateStart">Date From:</label>
-                <input class="form-control" type="date" id="dateStart1" asp-for="SDate" />
+                <input class="form-control" type="date" id="dateStart" asp-for="SDate" />
             </div>
             <div class="col-3 m-2 d-print-flex">
                 <label for="dateEnd">Date of End Upto:</label>
-                <input class="form-control" type="date" asp-for="EDate" />
+                <input class="form-control" type="date" asp-for="EDate" id="dateEnd"/>
             </div>
-            <div class="d-flex align-items-end">
-                <button class="btn btn-primary d-print-none" onclick="filterCertification()">Load</button>
+            <div class="col-3 m-2 d-flex align-items-end d-print-none justify-content-end">
+                <button class="btn btn-primary d-print-none m-2" onclick="filterCertification()">Load</button>
+                @await Html.PartialAsync("print")
             </div>
         </div>
-        <div class="d-flex">
-            @await Html.PartialAsync("filter")
-            @await Html.PartialAsync("print")
-        </div>
+   
 
         <!--LIST TABLE-->
         <table class="table table-striped table-hover" id="dataTable1">
@@ -192,7 +200,7 @@
                     <th>Total</th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody id="table-body1">
                 @foreach (var comp in Model.personEducationLevelModel.OrderBy(c => c.CompanyName).GroupBy(c => c.CompanyID))
                 {
                     <tr class="table-primary fw-bold">
@@ -359,6 +367,7 @@
 
 <script src="~/lib/jquery/dist/jquery.min.js"></script>
 <script src="~/js/filter-department.js"></script>
+<script src="~/js/filter-jobs.js"></script>
 
 
 <script>
@@ -418,59 +427,131 @@
     }
 
     function filterCertification() {
-        var CompanyID = $("#filter-company1").val();
-        var DepartmentID = $("#filter-department1").val();
-        var DepartmentID = $("#filter-department1").val();
-        var EmploymentStatus = $("#filter-status").val();
-        var JobTitle = $("#filter-jobTitle").val();
-        var Gender = $("#filter-gender").val();
-        var Duration = $("#filter-duration").val();
 
+        var CompanyID = $("#filter-company").val();
+        var DepartmentID = $("#filter-department").val();
+        var Category = $("#filter-category").val();
+        var Discipline = $("#filter-discipline").val(); // FIXED
+        var Field = $("#filter-field").val();
+        var EmploymentStatus = $("#filter-status1").val();
+        var Start = $("#dateStart").val();
+        var End = $("#dateEnd").val();
 
         // Normalize empty values to null
-        jobClassID = (!jobClassID || jobClassID === "") ? null : jobClassID;
-        EmploymentStatus = (!EmploymentStatus || EmploymentStatus === "") ? null : EmploymentStatus;
-        JobTitle = (!JobTitle || JobTitle === "") ? null : JobTitle;
-        Gender = (!Gender || Gender === "") ? null : Gender;
-        Duration = (!Duration || Duration === "") ? null : Duration;
+        CompanyID = CompanyID || null;
+        DepartmentID = DepartmentID || null;
+        Category = Category || null;
+        Discipline = Discipline || null;
+        Field = Field || null;
+        EmploymentStatus = EmploymentStatus || null;
+        Start = Start || null;
+        End = End || null;
 
+        var filters = {
+            CompanyID: CompanyID,
+            DepartmentID: DepartmentID,
+            Category: Category,
+            Discipline: Discipline,
+            Field: Field,
+            EmploymentStatus: EmploymentStatus,
+            Start: Start,
+            End: End
+        };
 
-            var filters = {
-                jobClassID: jobClassID,
-                jobTitle: JobTitle,
-                empStatus: EmploymentStatus,
-                duration: Duration,
-                gender: Gender
-            };
+        var url = "?handler=EducationReport&" + $.param(filters);
 
-    var url = "?handler=TalentExperienceFilter&" + $.param(filters);
+            $.getJSON(url, function (data) {
 
-        // jQuery AJAX
-        $.getJSON(url, function (data) {
+        let html = "";
 
+        data.data.forEach(company => {
 
-                //$("#table-body").html(data.tableHtml);
-                $("#table-body").html(
-                    data.tableHtml.map(e => `
-                        <tr onclick="location.href='${e.detailsUrl}'" style="cursor:pointer;">
-                        <td>${e.fullName}</td>
-                        <td>${e.jobTitle}</td>
-                        <td>${e.employmentStatus}</td>
-                        <td>${e.gender}</td>
-                        <td>${e.durationText}</td>
+            // ---------------------- Company Row -----------------------
+            html += `
+                <tr class="table-primary fw-bold">
+                    <td colspan="8">${company.companyName}</td>
+                    <td>${company.distinctPersons}</td>
+                    <td>${company.totalRecords}</td>
+                </tr>
+            `;
+
+            // ---------------------- Department Rows -------------------
+            (company.departments || []).forEach(dept => {
+
+                html += `
+                    <tr class="table-secondary fw-bold">
+                        <td></td>
+                        <td colspan="7">${dept.departmentName}</td>
+                        <td>${dept.distinctPersons}</td>
+                        <td>${dept.totalRecords}</td>
                     </tr>
-                    `).join('')
-                );
+                `;
 
-                $("#totalRecords").text(data.totalRecords);
-                $("#maleCount").text(data.male);
-                $("#femaleCount").text(data.female);
-                $("#activeEmps").text(data.activeEmp);
+                // ---------------------- Education Level Rows ------------
+                (dept.educationLevels || []).forEach(level => {
 
+                    html += `
+                        <tr class="table-secondary fw-bold">
+                            <td colspan="2"></td>
+                            <td colspan="6">${level.levelCategory}</td>
+                            <td>${level.distinctPersons}</td>
+                            <td>${level.totalRecords}</td>
+                        </tr>
+                    `;
 
+                    // ---------------------- Gender Rows -------------------
+                    (level.genders || []).forEach(gender => {
 
-        }).fail(function (jqXHR, textStatus, errorThrown) {
-            console.error("Error:", textStatus, errorThrown);
+                        html += `
+                            <tr class="fw-bold">
+                                <td colspan="3"></td>
+                                <td colspan="5">${gender.gender}</td>
+                                <td>${gender.distinctPersons}</td>
+                                <td>${gender.totalRecords}</td>
+                            </tr>
+                        `;
+
+                        // ---------------------- Individual Rows -------------
+                        (gender.individuals || []).forEach(ind => {
+
+                            html += `
+                                <tr>
+                                    <td colspan="3"></td>
+                                    <td>${ind.givenID}</td>
+                                    <td>${ind.fullName}</td>
+                                    <td>${ind.educationField ?? ""}</td>
+                                    <td>${ind.date}</td>
+                                    <td>${ind.educationLevelMark ?? ""}</td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                            `;
+
+                        });
+
+                    });
+
+                });
+
+            });
+
         });
+
+        // Insert into table
+        $("#table-body1").html(html);
+
+        // ---------------------------------------
+        // Update Summary Counts (WORKS NOW)
+        // ---------------------------------------
+        $("#TotalRecords1").text(data.totalRecords);
+        $("#Male1").text(data.male);
+        $("#Female1").text(data.female);
+        $("#Active1").text(data.activeEmp);
+
+    })
+    .fail(function (jqXHR, textStatus, errorThrown) {
+        console.error("Error:", textStatus, errorThrown);
+    });
     }
+   
 </script>

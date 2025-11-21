@@ -19,6 +19,9 @@ builder.Services.AddAuthorization(options =>
     options.FallbackPolicy = options.DefaultPolicy;
 });
 
+//Add Payroll Service
+builder.Services.AddScoped<PayrollService>();
+
 // Add Razor Pages and Controllers
 builder.Services.AddRazorPages();
 builder.Services.AddControllers();

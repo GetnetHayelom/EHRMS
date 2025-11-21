@@ -15,7 +15,6 @@ namespace PIS2.Models
         public DateTime? penaltyEndDate { get; set; }
         public int penaltyTypeID { get; set; }
         public penaltyStatus penaltyStatus { get; set; }
-        public decimal penaltyAmount { get; set; }
         public virtual penaltyTypeModel? penaltyTypeModel { get; set; }
         public string modifiedBy { get; set; }
         public virtual ICollection<penaltyHistoryModel>? PenaltyHistories { get; set; } 
@@ -40,8 +39,9 @@ namespace PIS2.Models
         public string penaltyName { get; set; }
         public penaltyCategory penaltyCategory { get; set; }
         public mainStatus penaltyTypeStatus { get; set; }
-        public penaltyMethod penaltyMethod { get; set; }
-        public decimal penaltyRate { get; set; }
+        // Calculation method
+        public bool IsPercentage { get; set; } // true = % of base value, false = fixed
+        public decimal penaltyAmount { get; set; }// e.g. 7 for 7%, or 500 for fixed
         public decimal penaltyValidity { get; set; }
         public DateTime modifiedDate { get; set; }
         public string modifiedBy { get; set; }
@@ -56,13 +56,6 @@ namespace PIS2.Models
         Post,
         Complete,
         Void
-    }
-
-    public enum penaltyMethod
-    {
-        None,
-        Fixed,
-        Percent
     }
 
     public enum penaltyCategory

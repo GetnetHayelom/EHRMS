@@ -1,4 +1,6 @@
-﻿namespace PIS2.Views
+﻿using PIS2.Models;
+
+namespace PIS2.Views
 {
     public class CertificationView
     {
@@ -12,7 +14,7 @@
 
     public class CertificationSummaryView
     {
-        public string CertificationCategory { get; set; }
+        public educationCategory CertificationCategory { get; set; }
         public int Male { get; set; }
         public int Female { get; set; }
         public int Total { get; set; }
