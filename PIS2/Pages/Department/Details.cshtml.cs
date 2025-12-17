@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace PIS2.Pages.Department
 {
-    [Authorize(Roles = "MIE\\PMS_HRMANAGER,MIE\\PMS_HRCLERK,MIE\\PMS_MANAGEMENT")]
+    //[Authorize(Roles = "MIE\\PMS_HRMANAGER,MIE\\PMS_HRCLERK,MIE\\PMS_MANAGEMENT")]
     public class DetailsModel : PageModel
     {
         private readonly PIS2.Models.PISContext _context;
@@ -47,6 +47,7 @@ namespace PIS2.Pages.Department
         public bool isManager { get; set; }
         public bool isMember { get; set; }
         public bool isDelegatee { get; set; }
+        public int RequiredEmployee {get; set;} =0;
 
 
         public async Task<IActionResult> OnGetAsync(int? id)
@@ -94,11 +95,9 @@ namespace PIS2.Pages.Department
                 .Include(j => j.employmentModel)?.ThenInclude(e => e.employmentTypeModel)
                 .Include(j=> j.jobModel).ToList() ?? new List<jobPlacementModel>(); 
             Employments =Jobs.Select(j => j.employmentModel).Distinct().ToList();
-                //Jobs = _context.JobPlacements.Include(j => j.employmentModel).ThenInclude(e => e.personModel).Where(j => j.departmentID == id).ToList();
-                //Employments = _context.Employments.Include(e => e.employmentTypeModel).Distinct().Where(e => Jobs.Select(j => j.employmentID).Contains(e.employmentID)).ToList();
-                
 
-                
+            RequiredEmployee = _context.StructureView.Where(s => s.DepartmentID == departmentModel.departmentID && s.StructureStatus ==(int) mainStatus.Active).Sum(s => s.RequiredNumber ?? 0);
+
                 EmploymentView =Employments.Select(ev => new EmployeeView
                     {
                         Employment = ev,

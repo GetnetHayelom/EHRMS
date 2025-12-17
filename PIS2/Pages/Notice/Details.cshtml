@@ -75,9 +75,13 @@
             <div class="d-flex justify-content-end"> 
                 @await Html.PartialAsync("print")
                 <div>
-                    <a asp-page="/Notice/Edit" asp-route-id="@Model.Notice.noticeID" class="btn btn-primary d-print-none m-2">
-                        <i class="bi bi-pencil"></i> Edit Notice
-                    </a>
+                    @if (User.IsInRole("MIE\\PMS_HRCLERK"))
+                    {
+                        <a asp-page="/Notice/Edit" asp-route-id="@Model.Notice.noticeID" class="btn btn-primary d-print-none m-2">
+                            <i class="bi bi-pencil"></i> Edit Notice
+                        </a>
+                    }
+                    
                 </div>
                 
             </div>

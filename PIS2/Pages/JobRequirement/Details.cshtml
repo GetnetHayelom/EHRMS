@@ -2,125 +2,133 @@
 @model PIS2.Pages.JobRequirement.DetailsModel
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Job Placement Request Details";
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
 
-<h1 class="fw-bold">JobPlacement Request</h1>
+<!-- Page Header -->
+<div class="mb-4">
+    <h1 class="fw-bold text-dark">Job Placement Request</h1>
+    <p class="text-muted mb-0">View detailed information, history, and associated costs of this job request</p>
+</div>
 
-<div class="d-flex">
-    <h4 class="fw-bold">Job Placement Request Details</h4>
-    <hr />
-    <dl class="row col-md-4">
-        <dt class="col-sm-2">
-            Company:
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.jobRequirementModel.DepartmentModel.companyModel.companyName) ?? "";
-        </dd>
-        <dt class="col-sm-2">
-            Department:
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.jobRequirementModel.DepartmentModel.departmentName)
-        </dd>
-        <dt class="col-sm-2">
-            Job Title:
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.jobRequirementModel.JobModel.jobID)
-        </dd>
-        <dt class="col-sm-2">
-            Required Number:
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.jobRequirementModel.requiredNumber)
-        </dd>
-        <dt class="col-sm-2">
-           Status:
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.jobRequirementModel.jobRequirementStatus)
-        </dd>
-        <dt class="col-sm-2">
-            Modified By:
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.jobRequirementModel.modifiedBy)
-        </dd>
-        <dt class="col-sm-2">
-            Modified Date:
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.jobRequirementModel.modifiedDate)
-        </dd>
-    </dl>
+<div class="row g-4">
 
-    <div class="flex-grow">
-        <h4 class="fw-bold">Request History</h4>
-        <table class="table table-bordered table-striped table-hover">
-            <thead class="bg-info text-white">
-                <tr>
-                    <th>Date</th>
-                    <th>Modified By</th>
-                    <th>Requested Number</th>
-                    <th>Status</th>
-                   
-                </tr>
-            </thead>
-            <tbody>
-                @foreach(var item in Model.RequestHistory)
-                {
-                    <tr>
-                        <td>@item?.modifiedBy</td>
-                        <td>@item?.modifiedDate</td>
-                        <td>@item?.requiredNumber</td>
-                        <td>@item?.jobRequirementStatus</td>
-                       
-                    </tr>
-                }
-                
-            </tbody>
-        </table>
-        <h4 class="fw-bold">Job Request Costs</h4>
-        <table class="table table-bordered table-striped table-hover">
-            <thead class="bg-info text-white">
-                <tr>
-                    <th>Date</th>
-                    <th>Modified By</th>
-                    <th>Stage</th>
-                    <th>Reason</th>
-                    <th>Estimate</th>
-                    <th>Actual</th>
-                    <th>Reference</th>
-                   
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var item in Model.JobReqCosts)
-                {
-                    <tr>
-                        <td>@item?.jobReqCostReason</td>
-                        <td>@item?.modifiedBy</td>
-                        <td>@item?.modifiedDate</td>
-                        <td>@item?.jobReqStatus</td>
-                        <td>@item?.jobReqCostReason</td>
-                        <td>@item?.jobReqCostEstimate</td>
-                        <td>@item?.jobReqCostReference</td>
-                      
+    <!-- Request Details -->
+    <div class="col-lg-4">
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-dark text-white fw-bold">
+                Job Placement Request Details
+            </div>
+            <div class="card-body">
+                <dl class="row mb-0">
+                    <dt class="col-sm-5">Company:</dt>
+                    <dd class="col-sm-7">@Html.DisplayFor(m => m.jobRequirementModel.DepartmentModel.companyModel.companyName)</dd>
 
-                    </tr>
-                }
-                <tr>
-                    <th colspan="5">Total</th>
-                    <th >@Model.JobReqCosts?.Sum(jrc => jrc.jobReqCostEstimate) </th>
-                    <th>@Model.JobReqCosts?.Sum(jrc => jrc.jobReqCostActual) </th>
-                </tr>
-            </tbody>
-        </table>
+                    <dt class="col-sm-5">Department:</dt>
+                    <dd class="col-sm-7">@Html.DisplayFor(m => m.jobRequirementModel.DepartmentModel.departmentName)</dd>
+
+                    <dt class="col-sm-5">Job Title:</dt>
+                    <dd class="col-sm-7">@Html.DisplayFor(m => m.jobRequirementModel.JobModel.jobTitle)</dd>
+
+                    <dt class="col-sm-5">Required Number:</dt>
+                    <dd class="col-sm-7">@Html.DisplayFor(m => m.jobRequirementModel.requiredNumber)</dd>
+
+                    <dt class="col-sm-5">Status:</dt>
+                    <dd class="col-sm-7">@Html.DisplayFor(m => m.jobRequirementModel.jobRequirementStatus)</dd>
+
+                    <dt class="col-sm-5">Modified By:</dt>
+                    <dd class="col-sm-7">@Html.DisplayFor(m => m.jobRequirementModel.modifiedBy)</dd>
+
+                    <dt class="col-sm-5">Modified Date:</dt>
+                    <dd class="col-sm-7">@Html.DisplayFor(m => m.jobRequirementModel.modifiedDate)</dd>
+                </dl>
+            </div>
+        </div>
+    </div>
+
+    <!-- History & Costs -->
+    <div class="col-lg-8">
+        <!-- Request History -->
+        <div class="card shadow-sm border-0 mb-4">
+            <div class="card-header bg-info text-white fw-bold">
+                Request History
+            </div>
+            <div class="card-body p-0">
+                <table class="table table-striped table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Date</th>
+                            <th>Modified By</th>
+                            <th>Requested Number</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.RequestHistory)
+                        {
+                            <tr>
+                                <td>@item?.modifiedDate.ToString("yyyy-MM-dd")</td>
+                                <td>@item?.modifiedBy</td>
+                                <td>@item?.requiredNumber</td>
+                                <td>@item?.jobRequirementStatus</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Job Request Costs -->
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-info text-white fw-bold">
+                Job Request Costs
+            </div>
+            <div class="card-body p-0">
+                <table class="table table-striped table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Date</th>
+                            <th>Modified By</th>
+                            <th>Stage</th>
+                            <th>Reason</th>
+                            <th>Estimate</th>
+                            <th>Actual</th>
+                            <th>Reference</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.JobReqCosts)
+                        {
+                            <tr>
+                                <td>@item?.modifiedDate.ToString("yyyy-MM-dd")</td>
+                                <td>@item?.modifiedBy</td>
+                                <td>@item?.jobReqStatus</td>
+                                <td>@item?.jobReqCostReason</td>
+                                <td>@item?.jobReqCostEstimate.ToString("N2")</td>
+                                <td>@item?.jobReqCostActual.ToString("N2")</td>
+                                <td>@item?.jobReqCostReference</td>
+                            </tr>
+                        }
+                        <tr class="fw-bold">
+                            <td colspan="4" class="text-end">Total</td>
+                            <td>@Model.JobReqCosts?.Sum(j => j.jobReqCostEstimate).ToString("N2")</td>
+                            <td>@Model.JobReqCosts?.Sum(j => j.jobReqCostActual).ToString("N2")</td>
+                            <td></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
 </div>
-<div class="d-flex justify-content-end">
-    <a asp-page="./Edit" asp-route-id="@Model.jobRequirementModel.jobRequirementID" class="btn btn-primary">Edit</a> 
+
+<!-- Actions -->
+<div class="mt-4 d-flex justify-content-between">
+    <div>
+        <a asp-page="./Index" class="btn btn-outline-secondary">← View All Job Placement Requests</a>
+    </div>
+    <div>
+        <a asp-page="./Edit" asp-route-id="@Model.jobRequirementModel.jobRequirementID" class="btn btn-primary">Edit</a>
+    </div>
 </div>
-<a asp-page="./Index">View All Job Placement Requests</a>

@@ -21,8 +21,8 @@ namespace PIS2.Models
         public virtual ICollection<businessUnitModel>? BusinessUnits { get; set; } = null!;
         public virtual ICollection<accessModel>? Accesses { get; set; } = null!;
         public string modifiedBy { get; set; }
+        public DateTime modifiedDate { get; set; } = DateTime.Now;
 
-        
         public companyModel()
         {
 

@@ -1,11 +1,13 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using PIS2.Models;
+using PIS2.Pages.Management;
+using PIS2.Views;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace PIS2.Pages.Structure
 {
@@ -14,23 +16,44 @@ namespace PIS2.Pages.Structure
         private readonly PISContext _context;
         public IndexModel(PISContext context) {_context = context;} 
 
-        public IList<structureModel> Structures { get; set; } = new List<structureModel>();
+        public ICollection<StructureView> Structures { get; set; } = new List<StructureView>();
         [BindProperty]
-        public int? CompanyID { get; set; }
+        public int? CompanyID { get; set; } = 0;
+        public int? DepartmentID { get; set; } = 0;
         public List<companyModel> Companies { get; set; }
-        public async Task OnGetAsync(int? id)
+        
+        public mainStatus? Status { get; set; }
+        public async Task OnGetAsync(int? CompanyID, int? DepartmentID, mainStatus? Status)
         {
-            Companies = _context.Companies.ToList();
-            if(id != null)
+            Companies = _context.Companies.OrderBy(c => c.companyName).ToList();
+            var structure = _context.StructureView.AsQueryable();
+
+            this.CompanyID = CompanyID;
+            this.DepartmentID = DepartmentID;
+            this.Status = Status;
+
+            if (CompanyID != null)
             {
-                Structures = await _context.Structures.Include(s => s.departmentModel)?.ThenInclude(d => d.companyModel)
-                    .Include(s => s.jobModel).Where(s => s.departmentModel.companyID ==id).ToListAsync();
+                structure = structure
+                    .Where(s => s.CompanyID == CompanyID);
             }
-            else
+            if (DepartmentID != null)
             {
-                Structures = await _context.Structures.Include(s => s.departmentModel)?.ThenInclude(d => d.companyModel)
-                    .Include(s => s.jobModel).ToListAsync();
+                
+                structure =structure
+                    .Where(s => s.DepartmentID == DepartmentID);
             }
+            
+            
+             if (Status != null)
+            {
+                structure = structure
+                    .Where(s => s.StructureStatus == (int) Status);
+            }
+
+            var filteredStruct = structure.ToList();
+
+            Structures = filteredStruct;
                 
         }
     }

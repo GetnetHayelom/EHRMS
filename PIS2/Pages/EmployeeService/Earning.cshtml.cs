@@ -1,22 +1,26 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using PIS2.Models;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace PIS2.Pages.EmployeeService
 {
+    [Authorize(Roles = "MIE\\PMS_HRCLERK, MIE\\PMS_HRMANAGER")]
     public class EarningModel : PageModel
     {
         private readonly PIS2.Models.PISContext _context;
+        private readonly PayrollService _payrollService;
 
-        public EarningModel(PIS2.Models.PISContext context)
+        public EarningModel(PIS2.Models.PISContext context, PayrollService payrollService)
         {
             _context = context;
+            _payrollService = payrollService;
         }
 
         [BindProperty]
@@ -36,10 +40,15 @@ namespace PIS2.Pages.EmployeeService
         public bool EmpSelected { get; set; } = true;
 
         public List<overtimeRecordModel> OvertimeRecords { get; set; }
-
+        public payrollPay payrollPay { get; set; }
+        public List<earningType> EarningTypes { get; set; }
+        public List<deductionType> DeductionTypes { get; set; }
         public decimal Gross { get; set; }
         public async Task<IActionResult> OnGetAsync(int? id)
         {
+            if (!(User.IsInRole("MIE\\PMS_HRCLERCK") || User.IsInRole("MIE\\PMS_HRMANAGER"))) { return RedirectToPage("/Shared/AccessDenied"); }
+            EarningTypes = await _context.EarningTypes.ToListAsync();
+            DeductionTypes = await _context.DeductionTypes.ToListAsync();
 
             if (!string.IsNullOrEmpty(givenID) && id == null)
             {
@@ -50,7 +59,7 @@ namespace PIS2.Pages.EmployeeService
                 {
                     
                     // Redirect to the Details page with employmentID
-                    Console.WriteLine("############## The ID is == " + id);
+                    
                     return RedirectToPage("Earning", new { id = emp.employmentID });
                 }
 
@@ -70,6 +79,7 @@ namespace PIS2.Pages.EmployeeService
                 .FirstOrDefaultAsync(m => m.employmentID == id);
 
             
+
             AllowanceAssignments = new List<allowanceAssignmentModel>();
             OvertimeRecords = new List<overtimeRecordModel>();
             if (employmentmodel == null)
@@ -78,16 +88,35 @@ namespace PIS2.Pages.EmployeeService
                 return Page();
             }
             
+
             employmentModel = employmentmodel ?? new employmentModel();
             jobPlacementModel = employmentModel.JobPlacements?.FirstOrDefault(j => j.jobPlacementStatus == mainStatus.Active) ?? new jobPlacementModel();
-            personModel = _context.Persons.Include(p => p.addressModel).FirstOrDefault( p=> p.personID == employmentModel.personID) ?? new personModel();
-            AllowanceAssignments = _context.AllowanceAssignments
-                .Include(aa=> aa.allowanceModel).Where(aa=>aa.employmentID == employmentModel.employmentID && aa.allowanceStatus == mainStatus.Active).ToList();
-            OvertimeRecords = _context.OvertimeRecords
-                .Include(aa => aa.overtimeModel).Where(otr => otr.employmentID == employmentModel.employmentID && otr.overtimeRecordStatus == overtimeStatus.Posted).ToList();
+            personModel =await _context.Persons.Include(p => p.addressModel).FirstOrDefaultAsync( p=> p.personID == employmentModel.personID) ?? new personModel();
+
+            AllowanceAssignments =await _context.AllowanceAssignments
+                .Include(aa=> aa.allowanceModel).Where(aa=>aa.employmentID == employmentModel.employmentID && aa.allowanceStatus == mainStatus.Active).ToListAsync();
+
+            OvertimeRecords =await _context.OvertimeRecords
+                .Include(aa => aa.overtimeModel).Where(otr => otr.employmentID == employmentModel.employmentID && otr.overtimeRecordStatus == overtimeStatus.Posted).ToListAsync();
 
             Gross =(decimal) AllowanceAssignments.Sum(aa => aa.allowanceAssignmentAmount) + (decimal) OvertimeRecords.Sum(otr => otr.GetOtCost) + jobPlacementModel.jobPlacementSalary;
+//
+            //Payroll Pay
+            var today = DateTime.Today;
+            var start = new DateTime(today.Year, today.Month, 1);
+            var end = start.AddMonths(1).AddDays(-1);
 
+            var payroll = new payrollModel
+            {
+                StartDate = start,
+                EndDate = end,
+                payrollName = $"{today:MM}-{employmentmodel.givenID}",
+                payrollStatus = payrollStatus.PENDING,
+                modifiedBy = User.Identity.Name
+            }; 
+            payrollPay = await _payrollService.CalculateEmployeePayAsync(employmentmodel, payroll);
+            //
+            //
             return Page();
         }      
 

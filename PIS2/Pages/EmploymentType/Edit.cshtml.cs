@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace PIS2.Pages.EmploymentType
 {
-    [Authorize(Roles = "MIE\\PMS_HRMANAGER")]
+    
     public class EditModel : PageModel
     {
         private readonly PIS2.Models.PISContext _context;
@@ -26,6 +26,10 @@ namespace PIS2.Pages.EmploymentType
 
         public async Task<IActionResult> OnGetAsync(int? id)
         {
+            if (!User.IsInRole("MIE\\PMS_HRADMIN"))
+            {
+                return RedirectToPage("/Shared/AccessDenied");
+            }
             if (id == null)
             {
                 return NotFound();
@@ -44,6 +48,10 @@ namespace PIS2.Pages.EmploymentType
         // For more information, see https://aka.ms/RazorPagesCRUD.
         public async Task<IActionResult> OnPostAsync()
         {
+            if (!User.IsInRole("MIE\\PMS_HRADMIN"))
+            {
+                return RedirectToPage("/Shared/AccessDenied");
+            }
             ModelState.Clear();
             employmentTypeModel.modifiedBy = User.Identity.Name;
             if (!ModelState.IsValid)

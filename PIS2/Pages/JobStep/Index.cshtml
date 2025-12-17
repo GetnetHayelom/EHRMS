@@ -5,22 +5,145 @@
     ViewData["Title"] = "Index";
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
-
+@await Html.PartialAsync("headerSimple", "")
 <h1 class="fw-bold">Job Steps</h1>
 
 <p>
-    <a asp-page="Create" class="btn btn-primary">Add New Job Step</a>
+    <a asp-page="Create" class="btn btn-primary d-print-none">Add New Job Step</a>
 </p>
 <hr />
-<table class="table table-striped table-hover">
+<!-- SUMMARY CARDS -->
+<div class="row my-3">
+
+    <div class="col-md-3">
+        <div class="card shadow-sm border-start border-primary border-3">
+            <div class="card-body">
+                <small class="text-muted">Total Job Steps</small>
+                <h4 class="fw-bold">@Model.TotalSteps</h4>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card shadow-sm border-start border-success border-3">
+            <div class="card-body">
+                <small class="text-muted">Active Job Steps</small>
+                <h4 class="fw-bold">@Model.ActiveSteps</h4>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card shadow-sm border-start border-warning border-3">
+            <div class="card-body">
+                <small class="text-muted">Min Salary</small>
+                <h4 class="fw-bold">@Model.MinStepSalary.ToString("N2")</h4>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card shadow-sm border-start border-danger border-3">
+            <div class="card-body">
+                <small class="text-muted">Max Salary</small>
+                <h4 class="fw-bold">@Model.MaxStepSalary.ToString("N2")</h4>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-4">
+        <div class="card shadow-sm border-start border-info border-3">
+            <div class="card-body">
+                <small class="text-muted">Average Salary</small>
+                <h4 class="fw-bold">@Model.AvgStepSalary.ToString("N2")</h4>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card shadow-sm border-start border-secondary border-3">
+            <div class="card-body">
+                <small class="text-muted">Median Salary</small>
+                <h4 class="fw-bold">@Model.MedianStepSalary.ToString("N2")</h4>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card shadow-sm border-start border-dark border-3">
+            <div class="card-body">
+                <small class="text-muted">Total Grades</small>
+                <h4 class="fw-bold">@Model.TotalGrades</h4>
+            </div>
+        </div>
+    </div>
+</div>
+
+<form method="get" class="card shadow-sm p-3 mb-3">
+    <div class="row">
+
+        <div class="col-md-3">
+            <label>Status</label>
+            <select name="Status" class="form-select">
+                <option value="">All</option>
+                @foreach (var s in Enum.GetValues(typeof(Models.mainStatus)))
+                {
+                    <option value="@s" selected="@(Model.Status == (Models.mainStatus)s)">
+                        @s
+                    </option>
+                }
+            </select>
+        </div>
+
+        <div class="col-md-3">
+            <label>Job Grade</label>
+            <select name="GradeId" class="form-select">
+                <option value="">All</option>
+                @foreach (var g in Model.Grades)
+                {
+                    <option value="@g.jobGradeID" selected="@(Model.GradeId == g.jobGradeID)">
+                        @g.jobGradeName
+                    </option>
+                }
+            </select>
+        </div>
+
+        <div class="col-md-3">
+            <label>Min Salary</label>
+            <input type="number" step="0.01" name="MinSalary" value="@Model.MinSalary" class="form-control" />
+        </div>
+
+        <div class="col-md-3">
+            <label>Max Salary</label>
+            <input type="number" step="0.01" name="MaxSalary" value="@Model.MaxSalary" class="form-control" />
+        </div>
+
+    </div>
+
+    <div class="text-end mt-3 d-print-none">
+        <button class="btn btn-primary">Apply Filter</button>
+        <a href="/JobStep/Index" class="btn btn-secondary">Reset</a>
+    </div>
+</form>
+
+<div class="d-flex justify-content-end d-print-none">
+    <div class="me-2">@await Html.PartialAsync("filter")</div>
+    @await Html.PartialAsync("print")
+    <excel-export table="dataTable" filename="JobSteps_@(DateTime.UtcNow).xlsx"></excel-export>
+</div>
+<table class="table table-striped table-hover" id="dataTable">
     <thead class="bg-dark text-white">
         <tr>
             <th>
-                Job Step Name
-            </th>
-            <th>
                 Job Step Garde
             </th>
+            <th>
+                Job Step Name
+            </th>
+            
             <th>Job Step Number</th>
             <th>
                 Job Step Salary
@@ -31,32 +154,66 @@
             <th>
                 Modified By
             </th>
+            <th class="d-print-none">Action</th>
             
         </tr>
     </thead>
     <tbody>
-    @foreach (var item in Model.jobStepModel) {
-        <tr onclick="location.href='@Url.Page("Details", new {id = item.jobStepID})'" style="cursor:pointer">
-            <td>
-                @Html.DisplayFor(modelItem => item.jobStepName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.jobGradeModel.jobGradeID)
-            </td>
-             <td>
-                 @Html.DisplayFor(modelItem => item.jobStepNumber)
-            </td> 
-            <td>
-                @Html.DisplayFor(modelItem => item.jobStepSalary)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.jobStepStatus)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.modifiedBy)
-            </td>
-           
-        </tr>
-    }
-    </tbody>
+        @foreach(var steps in Model.jobStepModel.GroupBy(j => j.jobGradeID))
+        {
+            <tr class="table-primary">
+                <td class="fw-bold">Grade @steps.FirstOrDefault().jobGradeModel?.jobGradeName</td>
+                <td colspan="6">@steps.FirstOrDefault().jobGradeModel?.jobGradeDescription</td>
+            </tr>
+            @foreach (var item in steps)
+            {
+                <tr onclick="location.href='@Url.Page("Details", new {id = item.jobStepID})'" style="cursor:pointer">
+                    <td></td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.jobStepName)
+                    </td>
+                    
+                     <td>
+                         @Html.DisplayFor(modelItem => item.jobStepNumber)
+                    </td> 
+                    <td>
+                        @Html.DisplayFor(modelItem => item.jobStepSalary)
+                    </td>
+                    <td>
+                            @if (item.jobStepStatus == Models.mainStatus.Active)
+                            {
+                                <span class="badge bg-success">@Html.DisplayFor(modelItem => item.jobStepStatus)</span>
+
+                            }
+                            else if (item.jobStepStatus == Models.mainStatus.Suspended)
+                            {
+                                <span class="badge bg-warning">@Html.DisplayFor(modelItem => item.jobStepStatus)</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-secondary">@Html.DisplayFor(modelItem => item.jobStepStatus)</span>
+                            }
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.modifiedBy)
+                    </td>
+                    <td class="d-print-none">
+                        <div class="btn-group" role="group">
+                            <a asp-page="./Details" asp-route-id="@item.jobStepID" class="btn btn-sm btn-outline-primary" title="View Details">
+                                <i class="bi bi-eye"></i>
+                            </a>
+                            <a asp-page="./Edit" asp-route-id="@item.jobStepID" class="btn btn-sm btn-outline-success" title="Edit">
+                                <i class="bi bi-pencil-square"></i>
+                            </a>
+                        </div>
+                    </td>
+            </tr>
+            }
+
+        }
+            </tbody>
 </table>
+<div class="d-flex justify-content-end d-print-none">
+    @await Html.PartialAsync("print")
+    <excel-export table="dataTable" filename="Job_Steps_@(DateTime.UtcNow).xlsx"></excel-export>
+</div>

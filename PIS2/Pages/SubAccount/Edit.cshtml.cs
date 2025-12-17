@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace PIS2.Pages.SubAccount
 {
-    [Authorize(Roles = "MIE\\PMS_HRMANAGER")]
+    [Authorize(Roles = "MIE\\PMS_FINANCE")]
     public class EditModel : PageModel
     {
         private readonly PIS2.Models.PISContext _context;
@@ -26,6 +26,8 @@ namespace PIS2.Pages.SubAccount
 
         public async Task<IActionResult> OnGetAsync(int? id)
         {
+            
+
             if (id == null)
             {
                 return NotFound();
@@ -45,6 +47,8 @@ namespace PIS2.Pages.SubAccount
         // For more information, see https://aka.ms/RazorPagesCRUD.
         public async Task<IActionResult> OnPostAsync()
         {
+            ModelState.Clear();
+            subAccountModel.modifiedBy = User.Identity.Name;
             if (!ModelState.IsValid)
             {
                 return Page();

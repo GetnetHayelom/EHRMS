@@ -6,7 +6,7 @@ using PIS2.Models;
 
 namespace PIS2.Pages.Notice
 {
-    [Authorize(Roles = "MIE\\PMS_HRCLERK")]
+    [Authorize(Roles = "MIE\\PMS_HRCLERK,MIE\\PMS_HRCLERK")]
     public class EditModel : PageModel
     {
         private readonly PIS2.Models.PISContext _context;

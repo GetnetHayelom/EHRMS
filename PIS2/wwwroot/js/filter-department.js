@@ -7,7 +7,7 @@
 
         if (companyID) {
             $.getJSON('/api/core/DepartmentsByCompany/' + companyID, function (data) {
-                $dept.empty().append('<option value="">All</option>');
+                $dept.empty().append('<option value="" selected>All</option>');
 
                 $.each(data, function (i, dept) {
                     $dept.append($('<option>', {

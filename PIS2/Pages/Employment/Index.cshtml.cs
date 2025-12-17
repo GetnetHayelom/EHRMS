@@ -29,6 +29,7 @@ namespace PIS2.Pages.Employment
 
         public class GroupDepEmployment
         {
+            public string CompanyName { get; set; } = string.Empty;
             public string DepartmentName { get; set; } = string.Empty;
             public int Count { get; set; }
             public List<employmentModel> Records { get; set; } = new();
@@ -43,21 +44,35 @@ namespace PIS2.Pages.Employment
         public string Company { get; set; }
         public async Task OnGetAsync()
         {
+            var userID = _context.Users.FirstOrDefault(u => u.userName == User.Identity.Name)?.userID ?? 0;
             var empID = _core.getUserEmp(User.Identity.Name);
-            Console.WriteLine("*Your empID iS____________" + empID);
-
+ 
             var company = _context.JobPlacements.Include(j => j.departmentModel)
                 .FirstOrDefault(j => j.jobPlacementStatus == mainStatus.Active && j.employmentID == empID)?.departmentModel?.companyID ?? 0;
 
+            var accessibleCompanies = _context.Accesses
+                .Where(a => a.userID == userID && a.accessStatus == mainStatus.Active) // 1 = active access
+                .Select(a => a.companyID)
+                .ToList();
+
+            var allowedCompanies = accessibleCompanies
+                .Append(company)
+                .Where(c => c != null)
+                .Distinct()
+                .ToList();
+
             Company = _context.Companies.FirstOrDefault(c => c.companyID == company)?.companyName ?? "";
-            //Console.WriteLine("*Your Comapny iS____________" + _context.Companies.FirstOrDefault(c => c.companyID == company).companyName);
+
+            var employees = _context.JobPlacements.Where(j => j.jobPlacementStatus == mainStatus.Active && allowedCompanies.Contains(j.departmentModel.companyID)).Distinct().Select(e =>e.employmentID);
+
+            
             employmentModel = await _context.Employments
                 .Include(e => e.personModel)
                 .Include(e => e.employmentTypeModel)
-                .Include(e => e.JobPlacements).ThenInclude(jp => jp.departmentModel)
-                .Include(e => e.JobPlacements).ThenInclude(jp => jp.jobModel)
+                .Include(e => e.JobPlacements)?.ThenInclude(jp => jp.departmentModel)?.ThenInclude(d => d.companyModel)
+                .Include(e => e.JobPlacements)?.ThenInclude(jp => jp.jobModel)
                 .Where(e => e.employmentStatus == mainStatus.Active
-                && e.JobPlacements.FirstOrDefault(j => j.jobPlacementStatus == mainStatus.Active || j.jobPlacementStatus == mainStatus.Suspended).departmentModel.companyID == company)
+                && employees.Contains(e.employmentID))
                 .OrderBy(e => e.givenID)
                 .ToListAsync() ?? new List<employmentModel>();
 
@@ -68,6 +83,7 @@ namespace PIS2.Pages.Employment
             GroupedEmployments = employmentModel?.GroupBy(e => e.JobPlacements?.FirstOrDefault(j => j.jobPlacementStatus == mainStatus.Active).departmentModel)?
               .Select(g => new GroupDepEmployment
               {
+                  CompanyName =g.Key?.companyModel?.companyName ?? "",
                   DepartmentName = g.Key?.departmentName ?? "Unknown",
                   Count = g.Count(),
                   Male=g.Count(e => e.personModel?.personGender == Gender.Male),

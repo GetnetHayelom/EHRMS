@@ -12,6 +12,7 @@ namespace PIS2.Models
         public string? terminationRemark { get; set; }
         public terminationStatus terminationStatus { get; set; }
         public string modifiedBy { get; set; }
+        public DateTime modifiedDate { get; set; } = DateTime.Now;
         public terminationModel()
         {
 

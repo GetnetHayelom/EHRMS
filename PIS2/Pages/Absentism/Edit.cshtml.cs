@@ -24,6 +24,10 @@ namespace PIS2.Pages.Absentism
 
         public async Task<IActionResult> OnGetAsync(int? id)
         {
+            if (!(User.IsInRole("MIE\\PMS_HRMANAGER") || User.IsInRole("MIE\\PMS_HRCLERK")))
+            {
+                return RedirectToPage("/Shared/AccessDenied");
+            }
             if (id == null)
             {
                 return NotFound();
@@ -44,11 +48,11 @@ namespace PIS2.Pages.Absentism
         // For more information, see https://aka.ms/RazorPagesCRUD.
         public async Task<IActionResult> OnPostAsync()
         {
-            if (!User.IsInRole("MIE\\PMS_HRMANAGER"))
+            if (!(User.IsInRole("MIE\\PMS_HRMANAGER")|| User.IsInRole("MIE\\PMS_HRCLERK")))
             {
                 return RedirectToPage("/Shared/AccessDenied");
             }
-
+            if(leaveModel.leaveStatus == leaveStatus.Completed) { return Page(); }
             if (!ModelState.IsValid)
             {
                 foreach (var kv in ModelState)

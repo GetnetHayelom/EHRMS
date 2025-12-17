@@ -12,7 +12,7 @@ namespace PIS2.Models
         public virtual personModel? personModel2 { get; private set; }
         public familyRelation relation { get; set; }
         public string modifiedBy { get; set; }
-        public DateTime modifiedDate { get; set; }
+        public DateTime modifiedDate { get; set; } = DateTime.Now;
         public familyModel() { }
     }
 
@@ -30,6 +30,8 @@ namespace PIS2.Models
         Uncle,
         Aunty,
         GrandSon,
-        GrandDaughter
+        GrandDaughter,
+        EmergencyContact,
+        Other
     }
 }

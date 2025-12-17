@@ -5,22 +5,48 @@
     ViewData["Title"] = "Department";
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
-
+@await Html.PartialAsync("headerSimple", "")
 <h1 class="fw-bold">Departments</h1>
 
-<p>
+<p class="d-print-none">
     <a asp-page="Create" class="btn btn-primary">Add New Department</a>    
 </p>
-@await Html.PartialAsync("filter")
+<div class="d-flex d-print-flex gap-3 m-2">
+    <div class="col-md-4">
+        <label class="form-label fw-bold">Status</label>
+        <select id="statusFilter" class="form-select" asp-items="@Html.GetEnumSelectList<Models.mainStatus>()">
+            <option value="" selected>-- All Statuses --</option>
+        </select>
+    </div>
+    <div class="col-md-4">
+        <label class="form-label fw-bold">Company</label>
+        <select id="companyFilter" class="form-select">
+            <option value="">-- All Companies --</option>
+            @foreach (var company in Model.Companies)
+            {
+                <option value="@company.companyID">@company.companyName</option>
+            }
+        </select>
+    </div>
+       
+</div>
+<div class="d-flex justify-content-end d-print-none m-2">
+    <div class="me-2">@await Html.PartialAsync("filter")</div>
+    @await Html.PartialAsync("print")
+    <excel-export table="dataTable" filename="Department_@(DateTime.UtcNow).xlsx"></excel-export>
+</div>
+
+
 <table class="table table-striped table-hover" id="dataTable">
     <thead>
         <tr class="bg-dark text-white">
             <th>
-                Department Alias
-            </th>
-            <th>
                 Department Name
             </th>
+            <th>
+                Department Alias
+            </th>
+            
             <th>
                 Status
             </th>
@@ -33,49 +59,38 @@
             <th>
                 Manager
             </th>
-            <th>Action</th>
+            <th class="d-print-none">Action</th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model.departmentModel) {
-        <tr onclick="location.href='@Url.Page("Details", new{id = item.departmentID})'" style="cursor:pointer;">
-            <td>
-                @Html.DisplayFor(modelItem => item.departmentShort)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.departmentName)
-            </td>
-            <td>
-                    @if(item.departmentStatus == Models.mainStatus.Active)
-                    {
-                        <p class="fw-bold text-success">@Html.DisplayFor(modelItem => item.departmentStatus)</p>
-                    }
-                    else
-                    {
-                        <p class="fw-bold text-danger">@Html.DisplayFor(modelItem => item.departmentStatus)</p>
-                    }
-                    
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.subAccountModel.subAccountDescription)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.companyModel.companyName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.employmentModel.personModel.personFullName)
-            </td>
-            <td>
-                <a asp-page="./Edit" asp-route-id="@item.departmentID">Edit</a> |
-                <a asp-page="./Details" asp-route-id="@item.departmentID">Details</a>
-                
-            </td>
-        </tr>
-}
+        @await Html.PartialAsync("_DepartmentsPartial", Model.departmentModel)      
     </tbody>
 </table>
-<div class="d-flex justify-content-end">
+<div class="d-flex justify-content-end d-print-none">
+    
     @await Html.PartialAsync("print")
+    <excel-export table="dataTable" filename="Companies_@(DateTime.UtcNow).xlsx"></excel-export>
 </div>
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
 <script>
-   </script>
+    $(document).ready(function() {
+        $('#companyFilter, #statusFilter').on('change', function () {
+            var companyId = $('#companyFilter').val();
+            var status = $('#statusFilter').val();
+
+            $.ajax({
+                url: '@Url.Page("Index", "Filter")',
+                type: 'GET',
+                data: { companyId: companyId, status: status },
+                success: function (result) {
+                    $('#dataTable').find('tbody').html(result);
+                },
+                error: function () {
+                    alert('Failed to filter departments.');
+                }
+            });
+        });
+    });
+</script>
+
+  

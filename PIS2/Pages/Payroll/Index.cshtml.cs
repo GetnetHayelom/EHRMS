@@ -18,9 +18,12 @@ namespace PIS2.Pages.Payroll
         }
 
         public IList<payrollModel> Payrolls { get; set; } = new List<payrollModel>();
+        
+
         [Authorize(Roles = @"MIE\PMS_HRCLERK,MIE\PMS_HRMANAGER,MIE\PMS_PAYROLL")]
         public async Task OnGetAsync()
         {
+            
             Payrolls = await _db.Payrolls.Include(p => p.companyModel).ToListAsync();
         }
 

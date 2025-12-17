@@ -36,6 +36,7 @@ namespace PIS2.Models
         public virtual ICollection<personEducationLevelModel>? PersonEducationLevels { get; set; }
         public virtual ICollection<personHistoryModel>? PersonHistories { get; set; }
         public virtual ICollection<familyModel>? Families { get; set; }
+        public virtual ICollection<experienceModel>? Experiences { get; set; }
         public virtual userModel? userModel { get; set; }
         public string modifiedBy { get; set; }
         public personModel()

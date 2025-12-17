@@ -1,17 +1,106 @@
 ﻿@page
 @model PIS2.Pages.Structure.IndexModel
+@await Html.PartialAsync("headerSimple", "")
+<h2 class="fw-bold">Structure and Job Maping</h2>
 
-<h2 class="fw-bold">Structures</h2>
-<p>
-<a asp-page="Create" class="btn btn-primary">Create New Structure</a></p>
-<div class="d-flex gap-3">
-    <div class="col-md-6">
-        @await Html.PartialAsync("filter")
+    @if(User.IsInRole("MIE\\PMS_HRADMIN"))
+{
+    <p><a asp-page="Create" class="btn btn-primary d-print-none">Create New Structure</a></p>
+}
+
+<!-- =======================
+     SUMMARY CARDS
+     ======================= -->
+@{
+    var totalRequired = Model.Structures.Sum(s => s.RequiredNumber) ?? 0;
+    var totalActive = Model.Structures.Sum(s => s.ActivePlacements) ?? 0;
+    var totalGap = totalActive - totalRequired;
+    var percActive = (totalActive * 100) / totalRequired;
+    string gapColor = totalGap < 0 ? "danger" : totalGap > 0 ? "warning" : "success";
+}
+
+<div class="d-flex gap-3 mb-4 d-print-flex">
+
+    <div class="flex-fill">
+        <div class="card shadow-sm border-start border-info border-3">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <small class="text-muted">Companies</small>
+                        <h3 class="fw-bold mb-0">@Model.Structures.Select(s => s.CompanyID).Distinct().Count()</h3>
+                    </div>
+                    <div><i class="bi bi-building fs-2 text-info"></i></div>
+                </div>
+            </div>
+        </div>
     </div>
-    <form typeof="GET" class="col-md-6 d-flex gap-3">
-        <div class="m-2 d-print-flex flex-grow">
-            <label for="filter-company">Company:</label>
-            <select class="form-select" aria-label="Default select example" id="filter-company" name="CompanyID">
+
+    <div class="flex-fill">
+        <div class="card shadow-sm border-start border-primary border-3">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <small class="text-muted">Positions</small>
+                        <h3 class="fw-bold mb-0">@Model.Structures.Count()</h3>
+                    </div>
+                    <div><i class="bi bi-briefcase fs-2 text-primary"></i></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="flex-fill">
+        <div class="card shadow-sm border-start border-warning border-3">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <small class="text-muted">Required</small>
+                        <h3 class="fw-bold mb-0">@totalRequired</h3>
+                    </div>
+                    <div><i class="bi bi-list-check fs-2 text-warning"></i></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="flex-fill">
+        <div class="card shadow-sm border-start border-success border-3">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <small class="text-muted">Active</small>
+                        <h3 class="fw-bold mb-0">@totalActive<span class="fw-light small">(@percActive%)</span></h3>
+                    </div>
+                    <div><i class="bi bi-check-circle fs-2 text-success"></i></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="flex-fill">
+        <div class="card shadow-sm border-start border-@gapColor border-3">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <small class="text-muted">Overall Gap</small>
+                        <h3 class="fw-bold mb-0">@totalGap</h3>
+                    </div>
+                    <div><i class="bi bi-exclamation-triangle fs-2 text-@gapColor"></i></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<div class="d-flex gap-4 flex-wrap card p-2">
+
+    <form method="GET" class="d-flex gap-3 align-items-end flex-wrap ">
+
+        <!-- Company -->
+        <div class="d-flex flex-column">
+            <label for="filter-company" class="form-label fw-bold">Company:</label>
+            <select class="form-select mb-2" id="filter-company" name="CompanyID">
                 <option value="">All</option>
                 @foreach (var company in Model.Companies)
                 {
@@ -19,64 +108,131 @@
                 }
             </select>
         </div>
-        <div class="m-2 d-print-flex flex-grow">
-            <label for="filter-department">Department:</label>
-            <select class="form-select" aria-label="Default select example" id="filter-department">
-                <option value="">All</option>                
+
+        <!-- Department -->
+        <div class="d-flex flex-column">
+            <label for="filter-department" class="form-label fw-bold">Department:</label>
+            <select class="form-select mb-2" id="filter-department" name="DepartmentID">
+                <option value="">All</option>
             </select>
         </div>
-        <div class="d-flex align-items-end">
-            <button type="submit" class="btn btn-primary d-print-none m-2">Load</button>
+
+        <!-- Status -->
+        <div class="d-flex flex-column">
+            <label for="filter-status" class="form-label fw-bold">Status:</label>
+            <select class="form-select mb-2" id="filter-status" name="StatusID"
+                    asp-items="@Html.GetEnumSelectList<Models.mainStatus>()">
+                <option value="">All</option>
+            </select>
         </div>
+
+        <!-- Buttons -->
+        <div class="d-flex align-items-end gap-2">
+            <button type="submit" class="btn btn-primary d-print-none m-2">Load</button>
+            @await Html.PartialAsync("print")
+            <excel-export table="dataTable" filename="StructureReport_@(DateTime.Today).xlsx"></excel-export>
+        </div>
+
     </form>
- 
+
+    <!-- Partial filter box -->
+    <div class="">
+        @await Html.PartialAsync("filter")
+    </div>
+
 </div>
 
-<table class="table table-bordered table-striped table-hover" id="dataTable">
+
+<table class="table table-bordered table-striped table-hover print-full-width" id="dataTable">
     <thead class="bg-dark text-white">
         <tr>
-            
             <th>S/no</th>
             <th>Company</th>
             <th>Job Title\Position</th>
-            <th>Reports To</th>
             <th>Required</th>
-            <th>Status</th>
-            
+            <th>Active Placement</th>
+            <th>Gap</th>
+            <th>Status</th>   
         </tr>
     </thead>
     <tbody>
         @{
             int companyIndex = 1;
         }
-        @foreach (var companyGroup in Model.Structures.GroupBy(s => s.departmentModel.companyModel.companyName))
+        @foreach (var companyGroup in Model.Structures.GroupBy(s => s.CompanyName))
         {
             <tr class="table-primary">
                 <td class="fw-bold">@companyIndex</td>
-                <td colspan="3"><strong>@companyGroup.Key</strong></td>
-                <td><strong>@companyGroup.Sum(s => s.requiredNumber)</strong></td>
+                <td colspan="2"><strong>@companyGroup.Key</strong></td>
+                <td><strong>@companyGroup.Sum(s => s.RequiredNumber)</strong></td>
+                <td><strong>@companyGroup.Sum(s => s.ActivePlacements)</strong></td>
+                @{
+                    int gap = companyGroup.Sum(s => s.ActivePlacements) - companyGroup.Sum(s => s.RequiredNumber) ?? 0;
+                }
+                <td class="text-white @(gap < 0? "bg-danger" : @gap > 0? "bg-warning" : "bg-success")">
+                    <strong class="fw-bold">@gap</strong>
+                </td>
                 <td></td>
-                
             </tr>
             int departmentIndex = 1;
-            @foreach (var departmentGroup in companyGroup.GroupBy(s => s.departmentModel.departmentName))
+            @foreach (var departmentGroup in companyGroup.GroupBy(s => s.DepartmentName))
             {
                 <tr class="table-secondary">
                     <td>@companyIndex.@departmentIndex</td>
-                    <td colspan="3"><strong>@departmentGroup.Key</strong></td>
-                    <td><strong>@departmentGroup.Sum(s => s.requiredNumber)</strong></td>
+                    <td colspan="2"><strong>@departmentGroup.Key</strong>
+                        <a href="/Structure/Create?id=@departmentGroup.First().DepartmentID" class="d-print-none"><i class="bi bi-plus-circle"></i>Add Structure</a></td>
+                    
+                    <td><strong>@departmentGroup.Sum(s => s.RequiredNumber)</strong></td>
+                    <td><strong>@departmentGroup.Sum(s => s.ActivePlacements)</strong></td>
+                    <td>
+                        @if (departmentGroup.Sum(s => s.RequiredNumber) > departmentGroup.Sum(s => s.ActivePlacements))
+                        {
+                            <strong class="badge bg-danger">@(departmentGroup.Sum(s => s.ActivePlacements) - departmentGroup.Sum(s => s.RequiredNumber))</strong>
+                        }
+                        else if (departmentGroup.Sum(s => s.RequiredNumber) < departmentGroup.Sum(s => s.ActivePlacements))
+                        {
+                            <strong class="badge bg-warning">+@(departmentGroup.Sum(s => s.ActivePlacements) - departmentGroup.Sum(s => s.RequiredNumber))</strong>
+                        }
+                        else
+                        {
+                            <strong class="badge bg-success">0</strong>
+                        }
+                    </td>
                     <td></td>
                 </tr>
                 @foreach (var item in departmentGroup)
                 {
-                    <tr onclick="location.href='@Url.Page("Edit", new {id = item.structureID})'"  style="cursor:pointer;">
-                    
+                    <tr>
                         <td></td>
                         <td></td>
-                        <td>@item.jobModel?.jobTitle</td>
-                        <td>@item.ReportsTo?.departmentModel?.departmentName, @item.ReportsTo?.jobModel?.jobTitle</td>
-                        <td>@item.requiredNumber</td>
-                        <td>@item.structureStatus</td>
+                        <td onclick="location.href='@Url.Page("Edit", new { id = item.StructureID })'" style="cursor:pointer;">@item.JobTitle</td>
+
+                        <td>@item.RequiredNumber</td>
+                        <td>@item.ActivePlacements</td>
+                        <td>
+                            @if(item.RequiredNumber > item.ActivePlacements)
+                            {
+                                <strong class="badge bg-danger">@(item.ActivePlacements - item.RequiredNumber)</strong>
+                            }
+                            else if (item.RequiredNumber < item.ActivePlacements)
+                            {
+                                <strong class="badge bg-warning">+@(item.ActivePlacements - item.RequiredNumber)</strong>
+                            }
+                            else
+                            {
+                                <strong class="badge bg-success">0</strong>
+                            }
+                        </td>
+                         <td>
+                            @if ((Models.mainStatus)item.StructureStatus == Models.mainStatus.Active)
+                            {
+                                <strong class="badge bg-success">@((Models.mainStatus)item.StructureStatus)</strong>
+                            }
+                            else
+                            {
+                                <strong class="badge bg-secondary">@((Models.mainStatus)item.StructureStatus)</strong>
+                            }
+                        </td >
                         
                     </tr>
                 }
@@ -87,8 +243,11 @@
     </tbody>
     <tfoot class="bg-secondary fw-bold">
         <tr>
-            <td colspan="4">Total Required Man-power</td>
-            <td>@Model.Structures.Sum(s => s.requiredNumber)</td>
+            <td colspan="3">Total Required Man-power</td>
+            <td>@Model.Structures.Sum(s => s.RequiredNumber)</td>
+            <td>@Model.Structures.Sum(s => s.ActivePlacements)</td>
+            <td>@(Model.Structures.Sum(s => s.ActivePlacements) -Model.Structures.Sum(s => s.RequiredNumber))</td>
+            <td></td>
         </tr>
     </tfoot>
 </table>

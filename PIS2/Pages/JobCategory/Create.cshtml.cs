@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace PIS2.Pages.JobCategory
 {
-    [Authorize(Roles = "MIE\\PMS_HRMANAGER")]
+    [Authorize(Roles = "MIE\\PMS_HRADMIN")]
     public class CreateModel : PageModel
     {
         private readonly PIS2.Models.PISContext _context;
@@ -31,6 +31,9 @@ namespace PIS2.Pages.JobCategory
         // For more information, see https://aka.ms/RazorPagesCRUD.
         public async Task<IActionResult> OnPostAsync()
         {
+            ModelState.Clear();
+            jobCategoryModel.modifiedBy = User.Identity.Name;
+
             if (!ModelState.IsValid)
             {
                 return Page();

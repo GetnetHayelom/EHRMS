@@ -10,9 +10,8 @@ namespace PIS2.Models
         public int RecordID { get; set; }
         public string ColumnName { get; set; }
         public string OldValue { get; set; }
-        public string NewValue { get; set; }
         public string ModifiedBy { get; set; }
-        public string ModifiedDate { get; set; }
+        public DateTime ModifiedDate { get; set; } = DateTime.Now;
 
         public AuditLog() { }
     }

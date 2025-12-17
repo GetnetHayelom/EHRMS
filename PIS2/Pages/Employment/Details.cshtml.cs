@@ -27,7 +27,10 @@ namespace PIS2.Pages.Employment
         public string Age { get; set; }
         public string Exprience { get; set; }
         public decimal Severance { get; set; }
-
+        public leaveDetail? LeaveDetail { get; set; } = new leaveDetail();
+        public List<overtimeRecordModel>? Overtimes { get; set; } = default!;
+        public ICollection<leaveModel>? Leaves { get; set; } = new List<leaveModel>();
+        public personModel Person { get; set; }
         public async Task<IActionResult> OnGetAsync(int? id)
         {
 
@@ -36,21 +39,26 @@ namespace PIS2.Pages.Employment
                 return RedirectToPage("/Shared/AccessDenied");
             }
 
+           
+
             if (!string.IsNullOrEmpty(givenID))
             {
-                var emp = await _context.Employments
+               var emp = await _context.Employments
                     .FirstOrDefaultAsync(e => e.givenID == givenID);
 
                 if (emp != null)
                 {
-                    //id = emp.employmentID;
-                    // Redirect to the Details page with employmentID
+                    Leaves = _context.Leaves.Include(l => l.leaveTypeModel).OrderByDescending(l => l.leaveRequestDate).Where(l => l.employmentID == emp.employmentID).ToList();
+                    LeaveDetail = _core.GetLeaveSummary(emp.employmentID);
+                    Overtimes = _context.OvertimeRecords.Include(o => o.overtimeModel).OrderByDescending(l => l.overtimeRecordDate).Where(l => l.employmentID == emp.employmentID).ToList();
                     Severance = _core.GetSeverance(emp.employmentID);
+                    Person = _context.Persons.Include(p => p.Employments).FirstOrDefault(p => p.personID == emp.personID);
                     return RedirectToPage("Details", new { id = emp.employmentID });
                 }
 
                 ErrorMessage = "No employee found with that Given ID.";
             }
+
             if (id == null)
             {
                 return NotFound();
@@ -71,8 +79,14 @@ namespace PIS2.Pages.Employment
             }
             else
             {
+                Leaves = _context.Leaves.Include(l => l.leaveTypeModel).OrderByDescending(l => l.leaveRequestDate).Where(l => l.employmentID == employmentmodel.employmentID).ToList();
+                LeaveDetail = _core.GetLeaveSummary(employmentmodel.employmentID);
+                Overtimes = _context.OvertimeRecords.Include(o => o.overtimeModel).OrderByDescending(l => l.overtimeRecordDate).Where(l => l.employmentID == employmentmodel.employmentID).ToList();
                 employmentModel = employmentmodel;
                 Severance = _core.GetSeverance(id ?? 0);
+                Person = _context.Persons
+                    .Include(p => p.Employments)
+                    .Include(p => p.addressModel).FirstOrDefault(p => p.personID == employmentModel.personID);
             }
             var currentUser = _context.Users.FirstOrDefault(u => u.userName == User.Identity.Name);
 
@@ -81,9 +95,10 @@ namespace PIS2.Pages.Employment
                 isSelf = true;
             }
 
-            //isSelf = _context.Users.FirstOrDefault(u => u.userName.ToLower() == User.Identity.Name!.ToLower()).personID == employmentModel.personID ? true : false;
+            
             Age = _core.GetYearsAndMonths(employmentModel.personModel.personDoB, DateTime.Now).Item1 + " years " +
                 _core.GetYearsAndMonths(employmentModel.personModel.personDoB, DateTime.Now).Item2 + " months ";
+
             if (employmentmodel.employmentStatus == mainStatus.Active)
             {
                 Exprience = _core.GetYearsAndMonths(employmentModel.employmentDate, DateTime.Now).Item1 + " years " +

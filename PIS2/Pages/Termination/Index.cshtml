@@ -5,59 +5,246 @@
     ViewData["Title"] = "Index";
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
-
+@await Html.PartialAsync("headerSimple", "")
 <h1 class="fw-bold">Terminations</h1>
-<p>
+@if(User.IsInRole("MIE\\PMS_HRCLERK")){<p>
     <a asp-page="Create" class="btn btn-primary">Create New Termination</a>
-</p>
-@await Html.PartialAsync("filter")
-<table class="table table-striped table-hover" id="dataTable">
-    <thead class="bg-dark text-white">
-        <tr>
-            <th>
-                Employee ID
-            </th>
-            <th>
-                Termination Date
-            </th>
-            <th>
-                Termination Reason
-            </th>
-            <th>
-                Termination Remark
-            </th>
-            <th>
-                Termination Status
-            </th>
-            <th>
-                Modified By
-            </th>
+</p>}
+@{
+    int others = Model.total - Model.management - Model.professional;
+}
+<!-- Summary Cards -->
+<div class="d-flex gap-3 mb-4 d-print-flex" id="summaryRow">
+    <div class="flex-fill">
+        <div class="card shadow-sm border-start border-primary border-3">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <small class="text-muted">Total</small>
+                        <h3 class="mb-0">@Model.total</h3>
+                    </div>
+                    <div><i class="bi bi-people fs-2 text-primary"></i></div>
+                </div>
+            </div>
+        </div>
+    </div>
 
+    <div class="flex-fill">
+        <div class="card shadow-sm border-start border-success border-3">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <small class="text-muted">Male</small>
+                        <h3 class="mb-0">@Model.male</h3>
+                    </div>
+                    <div><i class="bi bi-gender-male fs-2 text-success"></i></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="flex-fill">
+        <div class="card shadow-sm border-start border-danger border-3">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <small class="text-muted">Female</small>
+                        <h3 class="mb-0">@Model.female</h3>
+                    </div>
+                    <div><i class="bi bi-gender-female fs-2 text-danger"></i></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="flex-fill">
+        <div class="card shadow-sm border-start border-warning border-3">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <small class="text-muted">Management</small>
+                        <h3 class="mb-0">@Model.management</h3>
+                    </div>
+                    <div><i class="bi bi-briefcase fs-2 text-warning"></i></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="flex-fill">
+        <div class="card shadow-sm border-start border-info border-3">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <small class="text-muted">Professional</small>
+                        <h3 class="mb-0">@Model.professional</h3>
+                    </div>
+                    <div><i class="bi bi-award fs-2 text-info"></i></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="flex-fill">
+        <div class="card shadow-sm border-start border-muted border-3">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <small class="text-muted">Others</small>
+                        <h3 class="mb-0"> @others</h3>
+                    </div>
+                    <div><i class="bi bi-gear fs-2 text-muted"></i></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+</div>
+
+<!-- Filter Form -->
+<div class="card p-3 mb-3">
+    <form method="get" id="filterForm" class="row g-3 align-items-end d-print-flex">
+        <div class="col-auto mb-2">
+            <label class="form-label fw-bold">Company</label>
+            <select asp-for="CompanyID" class="form-select" id="filter-company">
+                <option value="">All</option>
+                @foreach (var c in Model.Companies)
+                {
+                    <option value="@c.companyID">@c.companyName</option>
+                }
+            </select>
+        </div>
+
+        <div class="col-auto mb-2">
+            <label class="form-label fw-bold">Department</label>
+            <select asp-for="DepartmentID" class="form-select" id="filter-department">
+                <option value="">All</option>
+            </select>
+        </div>
+
+        <div class="col-auto mb-2">
+            <label class="form-label fw-bold">Status</label>
+            <select asp-for="Status" class="form-select">
+                <option value="">All</option>
+                @foreach (var s in Enum.GetValues(typeof(PIS2.Models.terminationStatus)).Cast<PIS2.Models.terminationStatus>())
+                {
+                    <option value="@( (int)s )">@s</option>
+                }
+            </select>
+        </div>
+
+        <div class="col-auto mb-2">
+            <label class="form-label fw-bold">Job Class</label>
+            <select asp-for="jClass" class="form-select">
+                <option value="">All</option>
+                @foreach (var jc in Model.JobClasses)
+                {
+                    <option value="@jc.JobClassId">@jc.JobClassName</option>
+                }
+            </select>
+        </div>
+
+        <div class="col-auto mb-2">
+            <label class="form-label fw-bold">Reason</label>
+            <select asp-for="Reason" class="form-select">
+                <option value="">All</option>
+                @foreach (var r in Model.Reasons)
+                {
+                    <option value="@r">@r</option>
+                }
+            </select>
+        </div>
+
+        <div class="col-auto mb-2">
+            <label class="form-label fw-bold">Category</label>
+            <select name="Category" class="form-select">
+                <option value="">All</option>
+                @foreach (var jc in Model.JobCategories)
+                {
+                    <option value="@jc.jobCategoryID">@jc.jobCategoryName</option>
+                }
+            </select>
+        </div>
+
+        <div class="col-auto mb-2">
+            <label class="form-label fw-bold">From</label>
+            <input asp-for="From" type="date" class="form-control" />
+        </div>
+
+        <div class="col-auto mb-2">
+            <label class="form-label fw-bold">To</label>
+            <input asp-for="To" type="date" class="form-control" />
+        </div>
+
+        <div class="col-auto mb-2 d-print-none">
+            <button type="submit" class="btn btn-primary">Load</button>
+        </div>
+        <div class="col-auto mb-2 d-prtin-none">
+            <button type="button" class="btn btn-outline-secondary" id="resetBtn">Reset</button>
+        </div>
+        <div class="col-auto d-print-none">
+            @await Html.PartialAsync("print")
+        </div>
+        <div class="col-auto d-print-none">
+            <excel-export table="dataTable" filename="Termination_Report_@(DateTime.Now).xlsx"></excel-export>
+        </div>
+        <div class="col-auto">@await Html.PartialAsync("filter")</div>
+    </form>
+</div>
+
+<table class="table table-hover table-striped print-full-width" id="dataTable">
+    <thead>
+        <tr class="bg-dark text-white">
+            <th>Employee</th>
+            <th>Gender</th>           
+            <th>Job Category</th>
+            <th>Job Class</th>
+            <th>Reason</th>
+            <th>Status</th>
+            <th>Date</th>
         </tr>
     </thead>
-    <tbody id="tbody">
-@foreach (var item in Model.terminationModel) {
-        <tr onclick="location.href='@Url.Page("Details", new {id = item.terminationID})'" style="cursor:pointer;">
-            <td>
-                @Html.DisplayFor(modelItem => item.EmploymentModel.givenID)
-            </td>
-            <td>
-                @item.terminationDate.ToString("yyyy-MM-dd")
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.terminationReason)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.terminationRemark)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.terminationStatus)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.modifiedBy)
-            </td>
 
-        </tr>
-}
+    <tbody>
+        @foreach (var comp in Model.terminationModel.GroupBy(t =>
+                t.companyID))
+        {
+            <tr class="table-primary fw-bold">
+                <td colspan="9">@comp.FirstOrDefault().companyName</td>
+            </tr>
+
+            foreach (var dep in comp.GroupBy(t =>
+            t.departmentID))
+            {
+                <tr class="table-secondary fw-bold">
+                    <td colspan="9">@dep.FirstOrDefault().departmentName</td>
+                </tr>
+
+                foreach (var t in dep)
+                {
+                    
+
+                    <tr>
+                        <td>@t.FullName</td>
+                        <td>@((Models.Gender) t.personGender)</td>
+                        <td>@t.jobCategoryName</td>
+                        <td>@t.jobClassName</td>
+                        <td>@t.terminationReason</td>
+                        <td>@t.terminationStatus</td>
+                        <td>@t.terminationDate.ToString("MM/dd/yyyy")</td>
+                    </tr>
+                }
+            }
+        }
     </tbody>
 </table>
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="~/js/filter-department.js"></script>
+<script>
+        $("#resetBtn").click(function () {
+        $("#filterForm")[0].reset();
+    });
+
+</script>

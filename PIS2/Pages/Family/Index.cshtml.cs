@@ -25,7 +25,8 @@ namespace PIS2.Pages.Family
         public async Task OnGetAsync()
         {
             familyModel = await _context.Families
-                .Include(f => f.personModel).ToListAsync();
+                .Include(f => f.personModel)
+                .Include(f => f.personModel2).ToListAsync();
         }
     }
 }

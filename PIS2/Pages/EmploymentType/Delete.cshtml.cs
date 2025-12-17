@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using PIS2.Models;
 using System;
@@ -10,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace PIS2.Pages.EmploymentType
 {
-    [Authorize(Roles = "MIE\\PMS_HRMANAGER")]
+    
     public class DeleteModel : PageModel
     {
         private readonly PIS2.Models.PISContext _context;
@@ -25,6 +26,10 @@ namespace PIS2.Pages.EmploymentType
 
         public async Task<IActionResult> OnGetAsync(int? id)
         {
+            if (!User.IsInRole("MIE\\PMS_HRADMIN"))
+            {
+                return RedirectToPage("/Shared/AccessDenied");
+            }
             if (id == null)
             {
                 return NotFound();
@@ -45,6 +50,14 @@ namespace PIS2.Pages.EmploymentType
 
         public async Task<IActionResult> OnPostAsync(int? id)
         {
+            if (!User.IsInRole("MIE\\PMS_HRADMIN"))
+            {
+                return RedirectToPage("/Shared/AccessDenied");
+            }
+            var emps = _context.Employments.Any(e => e.employmentID == id);
+
+            if (emps) { TempData["ErrorMessage"] = "Can not delete employment type while there are existing employments with this employment type!"; return Page(); }
+
             if (id == null)
             {
                 return NotFound();

@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace PIS2.Pages.Holiday
 {
-    [Authorize(Roles = "MIE\\PMS_HRMANAGER,MIE\\PMS_HRCLERK")]
+    [Authorize(Roles = "MIE\\PMS_HRMANAGER,MIE\\PMS_HRCLERK, MIE\\PMS_HRADMIN")]
     public class CreateModel : PageModel
     {
         private readonly PIS2.Models.PISContext _context;
@@ -31,6 +31,9 @@ namespace PIS2.Pages.Holiday
         // For more information, see https://aka.ms/RazorPagesCRUD.
         public async Task<IActionResult> OnPostAsync()
         {
+            if (!(User.IsInRole("MIE\\PMS_HRADMIN") || User.IsInRole("MIE\\PMS_HRMANAGER"))) { return RedirectToPage("/Shared/AccessDenied"); }
+            ModelState.Clear();
+            holidayModel.modifiedBy = User.Identity.Name;
             if (!ModelState.IsValid)
             {
                 return Page();

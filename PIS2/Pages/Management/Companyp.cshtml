@@ -160,11 +160,11 @@
                             <div class="d-flex justify-content-between border-top border-opacity-25 pt-3">
                                 <div>
                                     <p class="small mb-1">Employees</p>
-                                    <h3 class="fw-bold text-info">@item.Employees.ToString("N0")</h3>
+                                    <h3 class="fw-bold text-info">@item.Employees?.ToString("N0")</h3>
                                 </div>
                                 <div>
                                     <p class="small mb-1">Shortage</p>
-                                    <h3 class="fw-bold text-info">@item.Employees.ToString("N0")</h3>
+                                    <h3 class="fw-bold text-info">@item.Employees?.ToString("N0")</h3>
                                 </div>
                                 
                             </div>
@@ -179,7 +179,7 @@
                                 </div>
                             </div>
                             <div class="mt-4">
-                                <h4 class="text-success display-8 fw-bold text-end">$@(item.Salary.ToString("N0"))</h4>
+                                <h4 class="text-success display-8 fw-bold text-end">$@(item.Salary?.ToString("N0"))</h4>
                                 <p class="small text-end mb-0">Total Monthly Payroll</p>
                             </div>
                         </div>

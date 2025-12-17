@@ -12,6 +12,7 @@ namespace PIS2.Models
         public decimal overtimeRate { get; set; }
         public virtual ICollection<overtimeRecordModel>? OvertimeRecords { get; set; }
         public string modifiedBy { get; set; }
+        public DateTime modifiedDate { get; set; } = DateTime.Now;
         public overtimeModel() { }
     }
 }

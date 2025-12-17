@@ -24,10 +24,7 @@ namespace PIS2.Pages.delegation
 
         public async Task<IActionResult> OnGetAsync(int? id)
         {
-            if (!User.IsInRole("MIE\\PMS_HRMANAGER"))
-            {
-                return RedirectToPage("/Shared/AccessDenied");
-            }
+            if (!(User.IsInRole("MIE\\PMS_MANAGEMENT") || User.IsInRole("MIE\\PMS_HRMANAGER"))) { return RedirectToPage("/Shared/AccessDenied"); }
 
             if (id == null)
             {

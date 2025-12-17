@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace PIS2.Pages.Shift
 {
-    [Authorize(Roles = "MIE\\PMS_HRMANAGER")]
+    [Authorize(Roles = "MIE\\PMS_HRADMIN")]
     public class EditModel : PageModel
     {
         private readonly PIS2.Models.PISContext _context;
@@ -44,6 +44,9 @@ namespace PIS2.Pages.Shift
         // For more information, see https://aka.ms/RazorPagesCRUD.
         public async Task<IActionResult> OnPostAsync()
         {
+            ModelState.Clear();
+            shiftModel.modifiedBy = User.Identity.Name;
+
             if (!ModelState.IsValid)
             {
                 return Page();

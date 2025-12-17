@@ -25,13 +25,13 @@
                     <div class="col-md-6 p-2">
                         <div class="form-group">
                             <label asp-for="company" class="control-label">Company</label>
-                            <select asp-for="company" class ="form-control" asp-items="ViewBag.companyID" id="companyID">
+                            <select asp-for="company" class ="form-control" asp-items="ViewBag.companyID" id="filter-company">
                             <option value="@Model.company">@Model.jobPlacementModel.departmentModel?.companyModel?.companyName</option>
                             </select>
                         </div>
                         <div class="form-group">
                             <label asp-for="jobPlacementModel.departmentID" class="control-label">Department</label>
-                            <select asp-for="jobPlacementModel.departmentID" class="form-control" id="departmentID">
+                            <select asp-for="jobPlacementModel.departmentID" class="form-control" id="filter-department">
                                 <option value="@Model.jobPlacementModel.departmentID">@Model.jobPlacementModel?.departmentModel?.departmentName</option>
                             </select>
 
@@ -40,16 +40,17 @@
                             <label asp-for="jobPlacementModel.jobID" class="control-label">Job Title</label>
                             <select asp-for="jobPlacementModel.jobID" class ="form-control" asp-items="ViewBag.jobID" id="jobID" readonly></select>
                         </div>
+                        <!--JOB GRADE,STEP AND SALARY-->
                         <div class="d-flex justify-content-between">
                             <div class="form-group">
                                 <label class="control-label">Job Grade</label>
-                                <select class="form-control" asp-items="ViewBag.jobGradeID" id="jobGradeID">
+                                <select class="form-control" asp-items="ViewBag.jobGradeID" asp-for="jobPlacementModel.jobStepModel.jobGradeID" id="jobGradeID" onchange="getJobSteps()">
                                     
                                 </select>
                             </div>
                             <div class="form-group">
                                 <label asp-for="jobPlacementModel.jobStepID" class="control-label">Job Step</label>
-                                <select asp-for="jobPlacementModel.jobStepID" class="form-control" id="jobStepID"></select>
+                                <select asp-for="jobPlacementModel.jobStepID" class="form-control" id="jobStepID" onchange="getSalary()"></select>
                             </div>
                             <div class="form-group">
                                 <span class="text-danger">*</span>
@@ -97,79 +98,45 @@
         </div>
     </div>
 
-
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
-        $(document).ready(function () {
-            $('#companyID').change(function () {
-                var companyID = $(this).val();
-                $('#departmentID').empty().append('<option value="">-- Loading --</option>');
-
-                if (companyID) {
-                    $.getJSON('?handler=DepartmentsByCompany&companyID=' + companyID, function (data) {
-                        $('#departmentID').empty().append('<option value="">-- Select Department --</option>');
-                        $.each(data, function (i, dept) {
-                            $('#departmentID').append($('<option>', {
-                                value: dept.departmentID,
-                                text: dept.departmentName
-                            }));
-                        });
+        function getJobSteps() {
+            var jobGradeID = $('#jobGradeID').val();
+            if (jobGradeID) {
+                $.getJSON('?handler=JobStep&jobGradeID=' + jobGradeID, function (data) {
+                    var $jobStep = $('#jobStepID');
+                    $jobStep.empty().append('');
+                    $.each(data, function (i, js) {
+                        $jobStep.append($('<option>', {
+                            value: js.jobStepID,
+                            text: js.jobStepNumber
+                        }));
                     });
-                } else {
-                    $('#departmentID').empty().append('<option value="">-- Select Department --</option>');
-                }
-            });
-            $('#jobID').change(function () {
-                var jobID = $(this).val();
-                if (jobID) {
-                    $.getJSON('?handler=JobGrade&jobID=' + jobID, function (data) {
-                        $('#jobGradeID').val(data).trigger('change');
-
-                    })
-                }
-            })
-            
-            function getJobSteps() {
-                var jobGradeID = $('#jobGradeID').val();
-                if (jobGradeID) {
-                    $.getJSON('?handler=JobStep&jobGradeID=' + jobGradeID, function (data) {
-                        var $jobStep = $('#jobStepID');
-                        $jobStep.empty().append('');
-                        $.each(data, function (i, js) {
-                            $jobStep.append($('<option>', {
-                                value: js.jobStepID,
-                                text: js.jobStepNumber
-                            }));
-                        });
-                        // Auto-select first option if available
-                        if (data.length > 0) {
-                            $jobStep.val(data[0].jobStepID).trigger('change'); // triggers getSalary
-                        }
-                    });
+                    // Auto-select first option if available
+                    if (data.length > 0) {
+                        $jobStep.val(data[0].jobStepID).trigger('change'); // triggers getSalary
+                    }
+                });
 
                     
-                }
             }
-            $('#jobGradeID').change(getJobSteps);
-            if ($('#jobGradeID').val()) getJobSteps();
+        }
 
-            function getSalary () {
-                var jobStepID = $('#jobStepID').val();
-                $('#salary').empty().append('0.00');
+        function getSalary () {
+            var jobStepID = $('#jobStepID').val();
+            $('#salary').empty().append('0.00');
                 
-                if (jobStepID) {
-                    $.getJSON('?handler=Salary&jobStepID=' + jobStepID, function (data) {
-                        $('#salary').val(data)
-                    })
-                }
+            if (jobStepID) {
+                $.getJSON('?handler=Salary&jobStepID=' + jobStepID, function (data) {
+                    $('#salary').val(data)
+                })
             }
-            $('#jobStepID').change(getSalary);
-            if ($('#jobStepID').val()) getSalary();
-        });
+        }
+            
        
     </script>
 }

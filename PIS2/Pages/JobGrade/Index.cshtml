@@ -5,13 +5,23 @@
     ViewData["Title"] = "Index";
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
+@await Html.PartialAsync("headerSimple", "")
+<h1 class="fw-bold">Job Grades</h1>
 
-<h1>Job Grades</h1>
-
-<p>
-    <a asp-page="Create">Add New Job Grade</a>
+<p class="d-print-none">
+    <a asp-page="Create" class="btn btn-primary">Add New Job Grade</a>
 </p>
-@await Html.PartialAsync("filter")
+<div class="d-flex justify-content-end d-print-none">
+    <form method="get" class="d-flex">
+        <label class="form-label fw-bold m-2">Status</label>
+        <select asp-for="JobGradeStatus" class="form-control m-2" asp-items="@Html.GetEnumSelectList<Models.mainStatus>()" onchange="this.form.submit()">
+            <option value="" selected> All</option>
+        </select>
+    </form>
+    <div class="me-2">@await Html.PartialAsync("filter")</div>
+    @await Html.PartialAsync("print")
+    <excel-export table="dataTable" filename="Companies_@(DateTime.UtcNow).xlsx"></excel-export>
+</div>
 <table class="table table-striped table-hover" id="dataTable">
     <thead>
         <tr class="bg-dark text-white">
@@ -22,10 +32,13 @@
                 Description
             </th>
             <th>
-                Basic Salary
+                Basic Monthly Salary
             </th>
             <th>
-                Maximum Salary
+                Basic Annual Salary
+            </th>
+            <th>
+                Maximum Annual Salary
             </th>
             <th>
                 Status
@@ -42,6 +55,7 @@
             <td>
                 @Html.DisplayFor(modelItem => item.jobGradeDescription)
             </td>
+            <td> @Math.Round(item.jobGradeBasicSalary/12, 2).ToString("N2")</td>
             <td>
                 @Html.DisplayFor(modelItem => item.jobGradeBasicSalary)
             </td>
@@ -49,14 +63,38 @@
                     @Html.DisplayFor(modelItem => item.jobGradeMaxSalary)
                 </td>
             <td>
-                @Html.DisplayFor(modelItem => item.jobGradeStatus)
+                @if (item.jobGradeStatus == Models.mainStatus.Active)
+                {
+                    <span class="badge bg-success">@Html.DisplayFor(modelItem => item.jobGradeStatus)</span>
+
+                }
+                else if (item.jobGradeStatus == Models.mainStatus.Suspended)
+                {
+                    <span class="badge bg-warning">@Html.DisplayFor(modelItem => item.jobGradeStatus)</span>
+                }
+                else
+                {
+                    <span class="badge bg-secondary">@Html.DisplayFor(modelItem => item.jobGradeStatus)</span>
+                }
+                
             </td>
             <td>
-                <a asp-page="./Edit" asp-route-id="@item.jobGradeID">Edit</a> |
-                <a asp-page="./Details" asp-route-id="@item.jobGradeID">Details</a> |
-                <a asp-page="./Delete" asp-route-id="@item.jobGradeID">Delete</a>
+                    <div class="btn-group" role="group">
+                        <a asp-page="./Details" asp-route-id="@item.jobGradeID" class="btn btn-sm btn-outline-primary" title="View Details">
+                            <i class="bi bi-eye"></i>
+                        </a>
+                        <a asp-page="./Edit" asp-route-id="@item.jobGradeID" class="btn btn-sm btn-outline-success" title="Edit">
+                            <i class="bi bi-pencil-square"></i>
+                        </a>
+                    </div>
             </td>
         </tr>
 }
     </tbody>
 </table>
+<div class="d-flex justify-content-end d-print-none">
+    
+    
+@await Html.PartialAsync("print")
+    <excel-export table="dataTable" filename="JobGrades_@(DateTime.UtcNow).xlsx"></excel-export>
+</div>

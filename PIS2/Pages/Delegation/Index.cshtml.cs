@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
@@ -9,6 +10,7 @@ using PIS2.Models;
 
 namespace PIS2.Pages.delegation
 {
+    
     public class IndexModel : PageModel
     {
         private readonly PIS2.Models.PISContext _context;

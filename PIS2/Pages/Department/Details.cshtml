@@ -5,342 +5,227 @@
     ViewData["Title"] = "Department Details";
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
+
 <form id="tokenForm">
     @Html.AntiForgeryToken()
 </form>
 
-<h1><b>@Model.departmentModel.departmentName</b> (@Model.departmentModel.departmentShort)</h1>
-@if (Model.departmentModel.departmentStatus == Models.mainStatus.Active && (Model.isManager || Model.isDelegatee))
-{
-    <div>
-        <div class="d-flex justify-content-between border-top border-bottom borber-1 border-primary m-2 p-2">
-        
-            <button type="button" class="flex-grow-1 btn btn-primary m-2 p-2 position-relative" data-bs-toggle="modal" data-bs-target="#LeaveModal">
-                Leaves
-                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                    @Model.leaveModel.Count()
-                    <span class="visually-hidden">Pending Leaves</span>
-                </span>
-            </button>
+<h1 class="fw-bold mb-3">@Model.departmentModel.departmentName <small class="text-muted">(@Model.departmentModel.departmentShort)</small></h1>
 
-            <button class="flex-grow-1 btn btn-primary m-2 p-2  position-relative" data-bs-toggle="modal" data-bs-target="#OTModal">
-            Overtime
-                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                    @Model.overtimeModel.Count()
-                    <span class="visually-hidden">Pending Overtime Records</span>
+<!-- =======================
+     BUTTONS
+     ======================= -->
+@if (Model.departmentModel.departmentStatus == Models.mainStatus.Active && (Model.isManager || Model.isDelegatee || Model.isMember))
+{
+    <div class="mb-3">
+        <div class="d-flex flex-wrap gap-2 border-top border-bottom border-1 border-primary p-2">
+            <button type="button" class="btn btn-primary flex-fill position-relative" data-bs-toggle="modal" data-bs-target="#LeaveModal">
+                Leaves <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                    @Model.leaveModel.Count() <span class="visually-hidden">Pending Leaves</span>
                 </span>
-            </button>
-            <a asp-page="/ShiftAssignment" class="flex-grow-1 btn btn-primary m-2 p-2">Shift & Work Location</a>
-            <a asp-page="/Penalty/Create" class="flex-grow-1 btn btn-primary m-2 p-2">Penalty</a>
-            <button class="btn flex-grow-1  btn-primary m-2 p-2">Evaluation</button>
-            <a asp-page="/Delegation/Create" asp-route-id="@Model.Employments" class="flex-grow-1 btn btn-primary m-2 p-2">Delegate</a>
-            <a asp-page="/JobRequirement/Create" asp-route-id="@Model.departmentModel.departmentID" class="flex-grow-1 btn btn-warning m-2 p-2">Employment Request</a>
+            </button> <button type="button" class="btn btn-primary flex-fill position-relative" data-bs-toggle="modal" data-bs-target="#OTModal">
+                Overtime <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                    @Model.overtimeModel.Count() <span class="visually-hidden">Pending Overtime Records</span>
+                </span>
+            </button> <a asp-page="/ShiftAssignment" class="btn btn-primary flex-fill">Shift & Work Location</a>
+            <a asp-page="/Penalty/Create" class="btn btn-primary flex-fill">Penalty</a>
+            <button type="button" class="btn btn-primary flex-fill">Evaluation</button>
+            <a asp-page="/Delegation/Create" asp-route-id="@Model.Employments" class="btn btn-primary flex-fill">Delegate</a>
+            <a asp-page="/JobRequirement/Create" asp-route-id="@Model.departmentModel.departmentID" class="btn btn-warning flex-fill">Employment Request</a>
         </div>
-     </div>
-}
-<div class="d-flex justify-content-between">
-    <!--DEPARTMENT DETAILS-->
-    <div class="flex-grow-1 p-2 m-2">
-        <h3 class="bg-dark text-white p-2"><b>Department Details</b></h3>
-        <dl class="d-flex flex-column flex-grow-1 m-2">
-        
-            <div class="flex-grow-0 m-1 ">
-                <dt class="">
-                    Department Code:
-                </dt>
-                <dd class="">
-                    @Html.DisplayFor(model => model.departmentModel.departmentShort)
-                </dd>
-            </div>
-            <div class="flex-grow-0 m-1">
-                <dt class="">
-                    Department Name:
-                </dt>
-                <dd class="">
-                    @Html.DisplayFor(model => model.departmentModel.departmentName)
-                </dd>
-            </div>
-            <div class="m-1 @((Model.departmentModel.departmentStatus == Models.mainStatus.Active)? "text-success" : "text-danger")">
-                <dt class="">
-                    Status:
-                </dt>
-                <dd class="">
-                    @Html.DisplayFor(model => model.departmentModel.departmentStatus)
-                </dd>
-            </div>
-            <div class="m-1">
-                <dt class="">
-                    Sub-Account:
-                </dt>
-                <dd class="">
-                    @Html.DisplayFor(model => model.departmentModel.subAccountModel.subAccountDescription)
-                </dd>
-            </div>
-            <div class="m-1">
-                <dt class="">
-                    Company:
-                </dt>
-                <dd class="">
-                    @Html.DisplayFor(model => model.departmentModel.companyModel.companyName)
-                </dd>
-            </div>
-            <div class="m-1">
-                <dt class="">
-                    Manager:
-                </dt>
-                <dd class="">
-                    @Model.departmentModel.employmentModel?.personModel?.personFullName
-                </dd>
-            </div>
-        </dl>
     </div>
-    <!--Payables summary-->  
+}
+
+<div class="row">
+    <!-- Department Details -->
+    <div class="col-md-4 mb-3">
+        <div class="card shadow-sm">
+            <div class="card-header bg-dark text-white fw-bold">Department Details</div>
+            <div class="card-body">
+                <dl class="row mb-0">
+                    <dt class="col-6">Department Code:</dt>
+                    <dd class="col-6">@Html.DisplayFor(m => m.departmentModel.departmentShort)</dd>
+
+                    <dt class="col-6">Department Name:</dt>
+                    <dd class="col-6">@Html.DisplayFor(m => m.departmentModel.departmentName)</dd>
+
+                    <dt class="col-6">Status:</dt>
+                    <dd class="col-6 badge @((Model.departmentModel.departmentStatus == Models.mainStatus.Active) ? "bg-success" : "bg-danger")">
+                        @Html.DisplayFor(m => m.departmentModel.departmentStatus)
+                    </dd>
+
+                    <dt class="col-6">Sub-Account:</dt>
+                    <dd class="col-6">@Html.DisplayFor(m => m.departmentModel.subAccountModel.subAccountDescription)</dd>
+
+                    <dt class="col-6">Company:</dt>
+                    <dd class="col-6">@Html.DisplayFor(m => m.departmentModel.companyModel.companyName)</dd>
+
+                    <dt class="col-6">Manager:</dt>
+                    <dd class="col-6">@Model.departmentModel.employmentModel?.personModel?.personFullName</dd>
+                </dl>
+            </div>
+        </div>
+    </div>
+
+    <!-- Payable Summary -->
     @if (Model.departmentModel.departmentStatus == Models.mainStatus.Active)
     {
-        <div class="d-flex flex-column flex-grow-1 p-2 m-2">
-            <h3 class="bg-dark text-white p-2"><b>Current Payable</b></h3>
-        <div class="d-flex justify-content-between">
-            <p class="small mb-1">Salary</p>
-            <h5 class="fw-bold">$@Math.Round((Model.EmploymentView.Sum(e => e.Job.jobPlacementSalary)), 2).ToString("N0")</h5>
-        </div>
-        <div class="d-flex justify-content-between">
-            <p class="small mb-1">Overtime</p>
-            <h5 class="fw-bold">$@Math.Round((Model.DepartmentSummary.Overtime), 2).ToString("N0")</h5>
-        </div>
-        <div class="d-flex justify-content-between">
-            <p class="small mb-1">Acc. Leaves</p>
-            <h5 class="fw-bold">$@Math.Round((Model.leaveCost), 2).ToString("N0")</h5>
-        </div>
-        <div class="d-flex justify-content-between">
-            <p class="small mb-1">Allowance</p>
-            <h5 class="fw-bold">$@Math.Round((Model.DepartmentSummary.Allowance), 2).ToString("N0")</h5>
-        </div>
-        <div class="d-flex justify-content-between">
-            <p class="small mb-1">Total</p>
-            <h4 class="fw-bold"><u>$@Math.Round((Model.DepartmentSummary.Total), 2).ToString("N0")</u></h4>
-        </div>
-    </div> 
-    }
-    <!-- Summary Points -->
-    @if(Model.departmentModel.departmentStatus == Models.mainStatus.Active)
-    {
-        <!--EMPLOYMENTS-->
-        <div class="d-flex flex-column flex-grow-1 p-2 m-2">
-
-            <div class="w-100">
-                <h3 class="bg-dark text-white p-2"><b>Employment Summary</b></h3>
-                <div class="d-flex">
-                    <h5 class="flex-grow-1 border border-success border-1 text-success p-2">Active Employees</h5>
-                    <h2 class="bg-success text-white rounded-end p-1">@Model.DepartmentSummary.Employees</h2>
-                </div>
-                <div class="d-flex">
-                    <h5 class="flex-grow-1 border border-info border-1 text-info p-1">Required Number of Employee</h5>
-                    <h2 class="bg-info text-white rounded-end p-1">@Model.Employments.Count()</h2>
-                </div>
-                <div class="d-flex">
-                    <h5 class="flex-grow-1 border border-danger border-1 text-danger p-1">Former Employees</h5>
-                    <h2 class="bg-danger text-white rounded-end p-1">@Model.DepartmentSummary.xEmployees</h2>
-                </div>
-                <div class="w-100">
-                    @foreach (var item in Model.EmploymentTypes)
-                    {
-                        <div class="d-flex">
-                            <h5 class="flex-grow-1 border border-success border-1 text-success p-1">@item.zName</h5>
-                            <h2 class="bg-success text-white rounded-end p-1">@item.zCount</h2>
-                        </div>
-
-                    }
-                    <div class="d-flex">
-                        <h5 class="flex-grow-1 border border-warning border-1 text-warning p-1">Employees On Leave</h5>
-                        <h2 class="bg-warning text-white rounded-end p-1">@Model.leaveEmployments</h2>
-                    </div>
+        <div class="col-md-4 mb-3">
+            <div class="card shadow-sm">
+                <div class="card-header bg-dark text-white fw-bold">Current Payable</div>
+                <div class="card-body">
+                    <div class="d-flex justify-content-between mb-1"><span>Salary</span><strong>$@Math.Round(Model.EmploymentView.Sum(e => e.Job.jobPlacementSalary), 2).ToString("N0")</strong></div>
+                    <div class="d-flex justify-content-between mb-1"><span>Overtime</span><strong>$@Math.Round(Model.DepartmentSummary.Overtime??0, 2).ToString("N0")</strong></div>
+                    <div class="d-flex justify-content-between mb-1"><span>Acc. Leaves</span><strong>$@Math.Round(Model.leaveCost, 2).ToString("N0")</strong></div>
+                    <div class="d-flex justify-content-between mb-1"><span>Allowance</span><strong>$@Math.Round(Model.DepartmentSummary.Allowance??0, 2).ToString("N0")</strong></div>
+                    <div class="d-flex justify-content-between mt-2"><span>Total</span><h5 class="fw-bold"><u>$@Math.Round(Model.DepartmentSummary.Total ??0, 2).ToString("N0")</u></h5></div>
                 </div>
             </div>
         </div>
-    
     }
-</div>
-@if(Model.departmentModel.departmentStatus == Models.mainStatus.Active)
+
+    <!-- Employment Summary -->
+    @if (Model.departmentModel.departmentStatus == Models.mainStatus.Active)
     {
-    <!--ACTIVE EMPLOYEES-->
-    <div class="">
-        <h3><b>Active Employees</b></h3>
-        <table class="table table-striped table-hover">
-            <thead class="bg-dark text-white">
-                <tr>
-                    <th>Employee ID</th>
-                    <th> Name</th>
-                    <th> Job Title</th>
-                    <th> Salary</th>
-                    <th> Allowed Leave</th>
-                    <th> Shift</th>
-                    <th> Work Location</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach(var item in Model.EmploymentView)
-                {
-                
-                    <tr>
-                        <td><a asp-page="/Employment/Details" asp-route-id="@item.Employment.employmentID" class="text-decoration-none text-dark">
-                            @item.Employment.givenID</a>
-                        </td>
-                        <td><a asp-page="/Employment/Details" asp-route-id="@item.Employment.employmentID" class="text-decoration-none text-dark">
-                            @item.Person.personFullName</a>
-                        </td>
-                        <td>
-                            @item.Job.jobModel?.jobTitle
-                        </td>
-                        <td>
-                            $@Math.Round(item.Job.jobPlacementSalary, 2)
-                        </td>
-                        <td>
-                            @Math.Round(item.Leave.AllowedLeave, 2)
-                        </td>
-                        <td>
-                            <div class="shift-wrapper position-relative d-inline-block">
-                                <select class="form-select shift-selector" data-focus="1" data-employment="@item.Employment.employmentID" @(Model.isManager || Model.isDelegatee ? "disabled" : "")>
-                                    <option value="">-- Select Shift --</option>
-                                    @foreach (var shift in Model.Shifts)
-                                    {
-                                        <option value="@shift.shiftID" selected="@(shift.shiftID == item.Shift?.shiftID ? "selected" : null)">
-                                            @shift.shiftName
-                                        </option>
-                                    }
-                                </select>
-                                <!-- notification box (hidden by default) -->
-                                <div class="shift-popup"></div>
-                            </div>
-                        </td>
-                        <td>
-                            <div class="shift-wrapper position-relative d-inline-block">
-                                <select class="form-select shift-selector" data-focus="2" data-employment="@item.Employment.employmentID" @(Model.isManager || Model.isDelegatee ? "disabled" : "")>
-                                    <option value="">-- Select Site --</option>
-                                    @foreach (var site in Model.WorkSites)
-                                    {
-                                        <option value="@site.workSiteID" selected="@(site.workSiteID == item.WorkSite.workSiteID ? "selected" : null)">
-                                            @site.workSiteName
-                                        </option>
-                                    }
-                                </select>
-                                <!-- notification box (hidden by default) -->
-                                <div class="shift-popup"></div>
-                            </div>
-                        </td>
-                    </tr>
-               
-                }
-            </tbody>
-        </table>
+        <div class="col-md-4 mb-3">
+            <div class="card shadow-sm">
+                <div class="card-header bg-dark text-white fw-bold">Employment Summary</div>
+                <div class="card-body">
+                    <div class="d-flex justify-content-between mb-1"><span class="text-success">Active Employees</span><span class="bg-success text-white rounded px-2">@Model.DepartmentSummary.Employees</span></div>
+                    <div class="d-flex justify-content-between mb-1"><span class="text-info">Required Employees</span><span class="bg-info text-white rounded px-2">@Model.RequiredEmployee</span></div>
+                    <div class="d-flex justify-content-between mb-1"><span class="text-danger">Former Employees</span><span class="bg-danger text-white rounded px-2">@Model.DepartmentSummary.xEmployees</span></div>
+
+                    @foreach (var item in Model.EmploymentTypes)
+                    {
+                        <div class="d-flex justify-content-between mb-1"><span class="text-success">@item.zName</span><span class="bg-success text-white rounded px-2">@item.zCount</span></div>
+                    }
+                    <div class="d-flex justify-content-between"><span class="text-warning">Employees On Leave</span><span class="bg-warning text-white rounded px-2">@Model.leaveEmployments</span></div>
+                </div>
+            </div>
+        </div>
+    }
+
+
+</div>
+
+<!-- Active Employees Table -->
+@if (Model.departmentModel.departmentStatus == Models.mainStatus.Active)
+{
+    <div class="card shadow-sm mb-3">
+        <div class="card-header bg-dark text-white fw-bold">Active Employees</div> <div class="card-body p-0">
+            <table class="table table-striped table-hover mb-0">
+                <thead class="table-dark"> <tr> <th>Employee ID</th> <th>Name</th> <th>Job Title</th> <th>Salary</th> <th>Allowed Leave</th> <th>Shift</th> <th>Work Location</th> </tr> </thead>
+                <tbody>
+                    @foreach (var item in Model.EmploymentView)
+                    {
+                        <tr>
+                            <td><a asp-page="/Employment/Details" asp-route-id="@item.Employment.employmentID" class="text-decoration-none text-dark">@item.Employment.givenID</a></td>
+                            <td><a asp-page="/Employment/Details" asp-route-id="@item.Employment.employmentID" class="text-decoration-none text-dark">@item.Person.personFullName</a></td>
+                            <td>@item.Job.jobModel?.jobTitle</td>
+                            <td>$@Math.Round(item.Job.jobPlacementSalary, 2)</td>
+                            <td>@Math.Round(item.Leave.AllowedLeave, 2)</td>
+                            <td>
+                                <div class="position-relative d-inline-block shift-wrapper">
+                                    <select class="form-select shift-selector" data-focus="1" data-employment="@item.Employment.employmentID" @(Model.isManager || Model.isDelegatee ? "disabled" : "")>
+                                        <option value="">-- Select Shift --</option>
+                                        @foreach (var shift in Model.Shifts)
+                                        {
+                                            <option value="@shift.shiftID" selected="@(shift.shiftID == item.Shift?.shiftID ? "selected" : null)">@shift.shiftName</option>
+                                        }
+                                    </select> <div class="shift-popup"></div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="position-relative d-inline-block shift-wrapper">
+                                    <select class="form-select shift-selector" data-focus="2" data-employment="@item.Employment.employmentID" @(Model.isManager || Model.isDelegatee ? "disabled" : "")>
+                                        <option value="">-- Select Site --</option>
+                                        @foreach (var site in Model.WorkSites)
+                                        {
+                                            <option value="@site.workSiteID" selected="@(site.workSiteID == item.WorkSite.workSiteID ? "selected" : null)">@site.workSiteName</option>
+                                        }
+                                    </select> <div class="shift-popup"></div>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
     </div>
 }
-    
 
-<!--LEAVE MANAGE-->
-<!-- Modal -->
-
+<!-- Modals -->
 @await Html.PartialAsync("_LeaveModal")
 @await Html.PartialAsync("_OvertimeModal")
-<div class="d-flex justify-content-end">
+
+<!-- Back / Print Buttons -->
+
+<div class="d-flex justify-content-end gap-2 mb-3">
     @await Html.PartialAsync("back")
-    
     @await Html.PartialAsync("print")
 </div>
+
 @section Scripts {
     <script>
-        document.addEventListener("change", e => {
-            if (!e.target.classList.contains("shift-selector")) return;
+                           document.addEventListener("change", e => {
+                           if (!e.target.classList.contains("shift-selector")) return;
 
-            const wrapper = e.target.closest(".shift-wrapper");
-            const popup = wrapper.querySelector(".shift-popup");
+                           
+                                   const wrapper = e.target.closest(".shift-wrapper");
+                                   const popup = wrapper.querySelector(".shift-popup");
+                                   const shiftId = e.target.value;
+                                   const employmentId = e.target.dataset.employment;
+                                   const target = e.target.dataset.focus;
+                                   const token = document.querySelector('#tokenForm input[name="__RequestVerificationToken"]').value;
 
-            const shiftId = e.target.value;                           // selected shiftID
-            const employmentId = e.target.dataset.employment;         // data-employment
-            const target = e.target.dataset.focus;
-            const token = document.querySelector('#tokenForm input[name="__RequestVerificationToken"]').value;
+                                   if (!shiftId) return;
 
-            if (!shiftId) return;
-            fetch("/Department/Details?handler=UpdateShift", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "RequestVerificationToken": token   // antiforgery token
-                },
-                body: JSON.stringify({ shiftId, employmentId, target })
-            })
-            .then(res => {
-                if (!res.ok) throw new Error("Network response was not ok " + res.statusText);
-                return res.json();
-            })
-            .then(data => {
-                console.log("Handler response:", data);
-                if (data.success) {
-                    showPopup(popup, "Updated", "success");
-                } else {
-                    showPopup(popup, "Update failed ⚠️", "error");
-                }
-            })
-            .catch(err => console.error("Error:", err));
-        });
+                                   fetch("/Department/Details?handler=UpdateShift", {
+                                       method: "POST",
+                                       headers: {
+                                           "Content-Type": "application/json",
+                                           "RequestVerificationToken": token
+                                       },
+                                       body: JSON.stringify({ shiftId, employmentId, target })
+                                   })
+                                   .then(res => {
+                                       if (!res.ok) throw new Error("Network response was not ok " + res.statusText);
+                                       return res.json();
+                                   })
+                                   .then(data => {
+                                       if (data.success) showPopup(popup, "Updated", "success");
+                                       else showPopup(popup, "Update failed ⚠️", "error");
+                                   })
+                                   .catch(err => console.error("Error:", err));
+                               });
 
-        function showPopup(popup, message, type) {
-            popup.textContent = message;
-            popup.className = "shift-popup " + type;
-            popup.style.display = "block";
+                               function showPopup(popup, message, type) {
+                                   popup.textContent = message;
+                                   popup.className = "shift-popup " + type;
+                                   popup.style.display = "block";
+                                   setTimeout(() => popup.style.display = "none", 2000);
+                               }
 
-            // hide after 2 seconds
-            setTimeout(() => {
-                popup.style.display = "none";
-            }, 2000);
-        }
+                               $(document).ready(function () {
+                                   $('.approval-radio').on('change', function () {
+                                       var leaveId = $(this).data('id');
+                                       var leaveAction = $(this).data('action');
+                                       var actionType = $(this).data('type');
+                                       const token = document.querySelector('#tokenForm input[name="__RequestVerificationToken"]').value;
+
+                                       $.ajax({
+                                           url: '@Url.Page("Details", "Approve")',
+                                           type: 'POST',
+                                           data: { leaveID: leaveId, actionID: leaveAction, actionType: actionType, __RequestVerificationToken: token },
+                                           success: function (response) {
+                                               if (response.success) $('input[name="approvalStatus_' + leaveId + '"]').prop('disabled', true);
+                                               else alert("Error: " + response.message);
+                                           },
+                                           error: function (xhr, status, error) { alert('Error: ' + error); }
+                                       });
+                                   });
+                               });
     </script>
-    <script>
-        $(document).ready(function () {
-            $('.approval-radio').on('change', function () {
-                var leaveId = $(this).data('id');
-                var button = $(this);
-                var leaveAction = $(this).data('action');
-                var actionType = $(this).data('type');
-                const token = document.querySelector('#tokenForm input[name="__RequestVerificationToken"]').value;
-                
-                const decision = {
-                    leaveId: leaveId,
-                    actionId: leaveAction,
-                    actionType: actionType
-                };
 
-                console.log("Sending:", decision);
 
-                $.ajax({
-                    url: '@Url.Page("Details", "Approve")', // Razor Page handler
-                    type: 'POST',
-                    data: {
-                        leaveID: leaveId,
-                        actionID: leaveAction,
-                        actionType: actionType,
-                        __RequestVerificationToken: token
-                    },
-                    success: function (response) {
-                        if (response.success) {
-                            // Disable both radios for this leaveID after posting
-                            $('input[name="approvalStatus_' + leaveId + '"]').prop('disabled', true);
-
-                            // Optional: update the label text
-                            //$('label[for="' + button.attr('id') + '"]').append(' ✔');
-
-                            // Bootstrap toast/alert instead of alert()
-                            console.log(response.message);
-                        } else {
-                            alert("Error: " + response.message);
-                        }
-                    },
-                    error: function (xhr, status, error) {
-                        alert('Error: ' + error);
-                    }
-                });
-            });
-        });
-
-    </script>
 }
-

@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
 using PIS2.Models;
 using System;
 using System.Collections.Generic;
@@ -19,13 +18,13 @@ namespace PIS2.Pages.OvertimeRecord
         {
             _context = context;
         }
-        public employmentModel Employment { get; set; }
+        public employmentModel Employment { get; set; } = new employmentModel();
         public int EmployeeID;
         public personModel Person { get; set; } = new personModel();
         [BindProperty(SupportsGet = true)]
         public string givenID { get; set; }
         public string message { get; set; }
-        public List<overtimeRecordModel> OtRecords { get; set; }
+        public List<overtimeRecordModel> OtRecords { get; set; } = new List<overtimeRecordModel>();
        
         public IActionResult OnGet(int id)
         {
@@ -84,15 +83,34 @@ namespace PIS2.Pages.OvertimeRecord
         // For more information, see https://aka.ms/RazorPagesCRUD.
         public async Task<IActionResult> OnPostAsync()
         {
-            int depID;
+            
             int empID = Convert.ToInt32(TempData["MyNumber"]);
+            TempData.Keep();
+            if (overtimeRecordModel.overtimeRecordReason == "")
+            {
+                ModelState.AddModelError("", "Overtime end time must be later than start time!");
+                LoadPageData(empID);
+                return Page();
+            }
+            var ol = HasOverlappingOvertime(empID, overtimeRecordModel.overtimeRecordDate, overtimeRecordModel.overtimeRecordStartTime, overtimeRecordModel.overtimeRecordEndTime);
+            if(ol != null)
+            {
+                TempData["ErrorMessage"] = $"Overlapping overtime record existed: Batch number={ol.overtimeRecordID}" +
+                    $" Start={ol.overtimeRecordStartTime}" +
+                    $" End={ol.overtimeRecordEndTime}";
+                LoadPageData(empID);
+                return Page();
+                
+            }
+            int depID;
+            
             var job = _context.JobPlacements
                 
                 .FirstOrDefault(j => j.employmentID == empID && j.jobPlacementStatus == mainStatus.Active) ?? new jobPlacementModel();
 
-            var shift = _context.ShiftAssignments.OrderByDescending(sa => sa.modifiedDate).FirstOrDefault(sa => sa.employmentID == empID).shiftModel ?? _context.Shifts.FirstOrDefault();
+            var shift = _context.ShiftAssignments.OrderByDescending(sa => sa.modifiedDate).FirstOrDefault(sa => sa.employmentID == empID)?.shiftModel ?? _context.Shifts.FirstOrDefault();
             Employment = _context.Employments.FirstOrDefault(e => e.employmentID == empID) ?? new employmentModel();
-            depID = _context.JobPlacements.FirstOrDefault(jp => jp.employmentID == Employment.employmentID).departmentID;
+            depID = _context.JobPlacements.FirstOrDefault(jp => jp.employmentID == Employment.employmentID)?.departmentID ?? 0;
 
             var nightOt = _context.Overtimes.FirstOrDefault(o => o.overtimeName.ToLower() == "night" && o.overtimeStatus == mainStatus.Active);
             var normalOt = _context.Overtimes.FirstOrDefault(o => o.overtimeName.ToLower() == "normal" && o.overtimeStatus == mainStatus.Active);
@@ -135,7 +153,7 @@ namespace PIS2.Pages.OvertimeRecord
             }
             else
             {
-
+                LoadPageData(empID);
                 return Page();
             }
         }
@@ -381,6 +399,24 @@ namespace PIS2.Pages.OvertimeRecord
             }
             return savedIds;
         }
+
+        public overtimeRecordModel? HasOverlappingOvertime(
+            int employmentID,
+            DateTime date,
+            TimeSpan newStart,
+            TimeSpan newEnd,
+            int? currentRecordID = null)
+        {
+            return _context.OvertimeRecords
+                .Where(o => o.employmentID == employmentID &&
+                            o.overtimeRecordDate.Date == date.Date &&
+                            (currentRecordID == null || o.overtimeRecordID != currentRecordID))
+                .FirstOrDefault(o =>
+                    o.overtimeRecordStartTime < newEnd &&
+                    o.overtimeRecordEndTime > newStart
+                );
+        }
+
 
     }
 }

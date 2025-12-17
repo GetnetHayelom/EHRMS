@@ -67,13 +67,28 @@ namespace PIS2.Models
         public virtual employmentModel? EmploymentModel { get; set; }
         public earningType? earningType { get; set; }
         public mainStatus earningStatus { get; set; }
-        public int earningIteration { get; set; } = 1; //no of monthe the deduction will recure
+        public int earningIteration { get; set; } = 1; //no of months the earning will recure
+        public int remainingIteration { get; set; } = 1;
         // Calculation method
         public bool IsPercentage { get; set; } // true = % of base value, false = fixed
-        public deductionBase earningBase { get; set; }
+        public earningBase earningBase { get; set; } = earningBase.NONE;
         public decimal earningAmount { get; set; }// e.g. 7 for 7%, or 500 for fixed
         public string modifiedBy { get; set; }
+        public virtual List<earningHistoryModel>? EarningHistories { get; set; }
         public earningModel() { }
+    }
+    public class earningHistoryModel
+    {
+        [Key]
+        public int earningHistoryID { get; set; }
+        public int earningID { get; set; }
+        public virtual earningModel? earningModel { get; set; }
+        public mainStatus earningStatus { get; set; }
+        public decimal earningAmount { get; set; }
+        public string modifiedBy { get; set; }
+        public DateTime modifiedDate { get; set; }
+
+        public earningHistoryModel() { }
     }
 
     public class earningRecordModel
@@ -99,6 +114,7 @@ namespace PIS2.Models
         public mainStatus earningTypeStatus { get; set; }
         public string? earningTypeDescription { get; set; }
         public string modifiedBy { get; set; }
+        public DateTime modifiedDate { get; set; } = DateTime.Now;
 
         public virtual ICollection<earningRecordModel>? Earnings { get; set; }
     }
@@ -113,12 +129,28 @@ namespace PIS2.Models
         public int employmentID { get; set; }
         public virtual employmentModel? EmploymentModel { get; set; }
         public int deductionIteration { get; set; } = 1; //no of month the deduction will recure
+        public int remainingIteration { get; set; } = 1;
         // Calculation method
         public bool IsPercentage { get; set; } // true = % of base value, false = fixed
         public decimal deductionAmount { get; set; }// e.g. 7 for 7%, or 500 for fixed
+        public deductionBase deductionBase { get; set; }
         public mainStatus deductionStatus { get; set; }
         public string modifiedBy { get; set; }
+        public virtual List<deductionHistoryModel>? DeductionHitroies { get; set; }
         public deductionModel() { }
+    }
+    public class deductionHistoryModel
+    {
+        [Key]
+        public int deductionHistoryID { get; set; }
+        public int deductionID { get; set; }
+        public virtual deductionModel? deductionModel { get; set; }
+        public mainStatus deductionStatus { get; set; }
+        public decimal deductionAmount { get; set; }
+        public string modifiedBy { get; set; }
+        public DateTime modifiedDate { get; set; }
+
+        public deductionHistoryModel() { }
     }
     public class deductionRecordModel
     {
@@ -141,12 +173,12 @@ namespace PIS2.Models
         public string deductionName { get; set; } // e.g. "Tax", "Pension", "Penalty"
         public deductionBase deductBase { get; set; }// e.g. "BasicSalary", "Gross", "Net", etc.
         public int dedcutionPriority { get; set; }//priority which to deduct first
-        public bool isRecurring { get; set; } // tax/pension = recurring, penalty = one-time
-      
+        public bool isRecurring { get; set; } // tax/pension = recurring, penalty = one-time 
         public mainStatus deductionStatus { get; set; }
         public bool isMandatory { get; set; }//would apply to everyone
         public virtual ICollection<deductionRecordModel>? Deductions { get; set; }
         public string modifiedBy {get; set;}
+        public DateTime modifiedDate { get; set; } = DateTime.Now;
         public deductionType() { }
     }
      
@@ -176,8 +208,16 @@ namespace PIS2.Models
     }
     public enum deductionBase
     {
-        Gross,
-        Salary,
-        Net
+        SALARY,
+        ALLOWANCE,
+        NET,
+        GROSS,
+        NONE
+    }
+    public enum earningBase
+    {
+        SALARY,
+        ALLOWANCE,
+        NONE
     }
 }

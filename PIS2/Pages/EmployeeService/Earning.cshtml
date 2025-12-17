@@ -8,13 +8,21 @@
 @await Html.PartialAsync("headerSimple", "")
 
 <h1 class="fw-bold">Earnings</h1>
-<h3 class="fw-bold">Earnings Detail </h3>
+<h3 class="fw-bold">Employee Current Earnings Detail </h3>
 <hr />
+
 <div class="">
     <form method="get" class="d-print-none">
-        <div class="d-flex justify-content-between">
-            @if(Model.EmpSelected){
-                <h4 class="fw-bold" onclick="location.href='@Url.Page("/Person/Details", new { id = Model.personModel.personID })'" style="cursor:pointer;"><u>@Model.personModel.personFullName</u></h4>
+        <div class="d-flex justify-content-between align-items-center">
+            @if (Model.EmpSelected)
+            {
+                <h4 class="fw-bold mb-0" onclick="location.href='@Url.Page("/Person/Details", new { id = Model.personModel.personID })'" style="cursor:pointer;">
+                    <u>@Model.personModel.personFullName</u>
+                </h4>
+            }
+            else
+            {
+                <div></div>
             }
             <div class="d-flex m-2">
                 <input asp-for="employmentModel.givenID" id="givenID" class="form-control me-2" placeholder="Enter Given ID" name="givenID" />
@@ -24,146 +32,507 @@
     </form>
 </div>
 
-@if(Model.EmpSelected){
+@if (Model.EmpSelected)
+{
+    var totalEarnings = Model.payrollPay?.EarningRecords?.Sum(e => e.earningAmount) ?? 0;
+    var totalDeductions = Model.payrollPay?.DeductionRecords?.Sum(d => d.deductionAmount) ?? 0;
+
     <div class="container print-full-width">
 
-    <!--personal info-->
-    <div class="row">
-        <h4 class="bg-dark text-white fw-bold p-2">Employment Information</h4>
-       
-           
-        <div class="d-flex flex-wrap">
-            <dl class="d-flex flex-wrap">
-                <div class="d-flex justify-content-start me-4">
-                    <dt class="">Employee ID:</dt>
-                    <dd class="text-decoration-underline fw-bold">@Model.employmentModel.givenID</dd>
+        <!-- Personal Info -->
+        <div class="row mb-4 g-3">
+            <div class="col-md-12">
+                <div class="card">
+                    <h4 class="card-header bg-dark text-white fw-bold p-2">Employment Information</h4>
+                    <div class="card-body">
+                        <div class="col">
+                            <div class="mb-2">
+                                <strong>Employee ID:</strong>
+                                <span class="text-decoration-underline fw-bold ms-2">@Model.employmentModel.givenID</span>
+                            </div>
+                            <div class="mb-2">
+                                <strong>Name:</strong>
+                                <span class="text-decoration-underline fw-bold ms-2">@Model.personModel.personFullName</span>
+                            </div>
+                            <div class="mb-2">
+                                <strong>Job Title:</strong>
+                                <span class="text-decoration-underline fw-bold ms-2">@Model.jobPlacementModel?.jobModel?.jobTitle</span>
+                            </div>
+                            <div class="mb-2">
+                                <strong>Salary:</strong>
+                                <span class="text-decoration-underline fw-bold ms-2">@Model.jobPlacementModel?.jobPlacementSalary</span>
+                            </div>
+                            <div class="mb-2">
+                                <strong>Grade:</strong>
+                                <span class="text-decoration-underline fw-bold ms-2">@Model.jobPlacementModel?.jobStepModel?.jobGradeModel?.jobGradeName</span>
+                            </div>
+                            <div class="mb-2">
+                                <strong>Step:</strong>
+                                <span class="text-decoration-underline fw-bold ms-2">@Model.jobPlacementModel?.jobStepModel?.jobStepName</span>
+                            </div>
+                            <div class="mb-2">
+                                <strong>Department:</strong>
+                                <span class="text-decoration-underline fw-bold ms-2">@Model.jobPlacementModel?.departmentModel?.departmentName</span>
+                            </div>
+                            <div class="mb-2">
+                                <strong>Company:</strong>
+                                <span class="text-decoration-underline fw-bold ms-2">@Model.jobPlacementModel?.departmentModel?.companyModel?.companyName</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="d-flex justify-content-start me-4">
-                    <dt class="">Name:</dt>
-                    <dd class="text-decoration-underline fw-bold">@Model.personModel.personFullName</dd>
-                </div>
-                <div class="d-flex justify-content-start me-4">
-                    <dt class="">Job Title:</dt>
-                    <dd class="text-decoration-underline fw-bold">@Model.jobPlacementModel?.jobModel?.jobTitle</dd>
-                </div>
-                    
-                <div class="d-flex justify-content-start me-4">
-                    <dt>Salary:</dt>
-                    <dd class="text-decoration-underline fw-bold">@Model.jobPlacementModel?.jobPlacementSalary</dd>
-                </div>
-                <div class="d-flex justify-content-start me-4">
-                    <dt class="">Grade:</dt>
-                    <dd class="text-decoration-underline fw-bold">@Model.jobPlacementModel?.jobStepModel?.jobGradeModel?.jobGradeName</dd>
-                </div>
-                <div class="d-flex justify-content-start me-4">
-                    <dt class="">Step:</dt>
-                    <dd class="text-decoration-underline fw-bold">@Model.jobPlacementModel?.jobStepModel?.jobStepName</dd>
-                </div>
-                <div class="d-flex justify-content-start me-4">
-                    <dt class="">Department:</dt>
-                    <dd class="text-decoration-underline fw-bold">@Model.jobPlacementModel?.departmentModel?.departmentName</dd>
-                </div>
-                <div class="d-flex justify-content-start me-4">
-                    <dt class="">Company:</dt>
-                    <dd class="text-decoration-underline fw-bold">@Model.jobPlacementModel?.departmentModel?.companyModel?.companyName</dd>
-                </div>
-            </dl>
-        </div>
-
-        <div>
-            <h4 class="bg-dark text-white fw-bold p-2">Allowance Details</h4>
-            <table class="table table-bordered table-striped table-hover">
-                <thead class="bg-info text-white">
-                    <tr>
-                        <th>S/No</th>
-                        <th>Allowance Type</th>
-                            <th>Allowance Amount</th>
-                            <th>Time Bounded</th>
-                        <th>start Date</th>
-                        <th>End Date</th>
-                            
-                    </tr>
-                </thead>
-                <tbody>
-                @{
-                    int index = 1;
-                }
-                @foreach (var item in Model.AllowanceAssignments)
-                {
-                    <tr>
-                        <td>@index</td>
-                        <td>@item.allowanceModel?.allowanceName</td>
-                        <td>@item.allowanceAssignmentAmount</td>
-                        <td>@item.allowanceModel?.allowanceDuration</td>
-                        <td>@item.allowanceAssignmentDate</td>
-                        <td>@item.allowanceAssignmentEndDate</td>
-                    </tr>
-                    index++;
-                }
-                
-                </tbody>
-            </table>
-        </div>
-
-            <div>
-                <h4 class="bg-dark text-white fw-bold p-2">Pending Overtime</h4>
-                <table class="table table-bordered table-striped table-hover">
-                    <thead class="bg-info text-white">
-                        <tr>
-                            <th>S/No</th>
-                            <th>Overtime Type</th>
-                            <th>Overtime Date</th>
-                            <th>Time</th>
-                            <th>Cost</th>
-
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @{
-                            int index1 = 1;
-                            foreach (var item in Model.OvertimeRecords)
-                            {
-                                <tr>
-                                    <td>@index1</td>
-                                    <td>@item.overtimeModel?.overtimeName</td>
-                                    <td>@item.overtimeRecordDate</td>
-                                    <td>@item.overtimeRecordEndTime - @item.overtimeRecordStartTime</td>
-                                    <td>@item.GetOtCost</td>
-                                   
-                                </tr>
-                                index1++;
-                            }
-                        }
-                    </tbody>
-                </table>
             </div>
+            
+        </div>
 
-            <hr />
-            <dl class="d-flex justify-content-between">
-                <div>
-                    <dt>Total Allowance</dt>
-                    <dd>@Math.Round(Model.AllowanceAssignments.Sum(aa => aa.allowanceAssignmentAmount),2)</dd>
+
+
+        <div class="row mb-4">
+            <!--EARNINGS-->
+            <div class="col-md-6 mb-3 mb-md-0">
+                <div class="card h-100">
+                    <div class="card-header bg-success text-white fw-bold">
+                        <h4 class="mb-0">Earnings</h4>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive" style="max-height: 300px; overflow-y: auto;">
+                            <table class="table table-hover align-middle mb-0">
+                                <thead class="table-success sticky-top">
+                                    <tr>
+                                        <th>Earning Name</th>
+                                        <th class="text-end">Amount</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @if (Model.payrollPay?.EarningRecords?.Any() == true)
+                                    {
+                                        @foreach (var item in Model.payrollPay.EarningRecords)
+                                        {
+                                            <tr>
+                                                <td>@(Model.EarningTypes.First(e => e.earningTypeID == item.earningTypeId).earningTypeName)</td>
+                                                <td class="text-end fw-bold">@item.earningAmount.ToString("N2")</td>
+                                            </tr>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <tr>
+                                            <td colspan="2" class="text-center text-muted">No earnings found</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                                <tfoot class="table-success">
+                                    <tr>
+                                        <th class="text-end">Total:</th>
+                                        <th class="text-end">@totalEarnings.ToString("N2")</th>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
                 </div>
-                <div>
-                    <dt>Total Overtime</dt>
-                    <dd>@Math.Round(Model.OvertimeRecords.Sum(otr => otr.GetOtCost),2)</dd>
+            </div>
+            <!--DEDUCTIONS-->
+            <div class="col-md-6">
+                <div class="card h-100">
+                    <div class="card-header bg-danger text-white fw-bold">
+                        <h4 class="mb-0">Deductions</h4>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive" style="max-height: 300px; overflow-y: auto;">
+                            <table class="table table-hover align-middle mb-0">
+                                <thead class="table-danger sticky-top">
+                                    <tr>
+                                        <th>Deduction Name</th>
+                                        <th class="text-end">Amount</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @if (Model.payrollPay?.DeductionRecords?.Any() == true)
+                                    {
+                                        @foreach (var item in Model.payrollPay.DeductionRecords)
+                                        {
+                                            <tr>
+                                                <td>@(Model.DeductionTypes.First(e => e.deductionTypeID == item.deductionTypeID).deductionName)</td>
+                                                <td class="text-end fw-bold">@item.deductionAmount?.ToString("N2")</td>
+                                            </tr>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <tr>
+                                            <td colspan="2" class="text-center text-muted">No deductions found</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                                <tfoot class="table-danger">
+                                    <tr>
+                                        <th class="text-end">Total:</th>
+                                        <th class="text-end">@totalDeductions.ToString("N2")</th>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
                 </div>
-                <div>
-                    <dt>Gross</dt>
-                    <dd>@Math.Round(Model.Gross, 2)</dd>
+            </div>
+        </div>
+
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="row text-center">
+                            <div class="col-md-6 mb-3 mb-md-0">
+                                <h4 class="fw-bold">Gross Pay: <span class="text-success">@(Model.payrollPay?.GrossPay.ToString("N2") ?? "0")</span></h4>
+                            </div>
+                            <div class="col-md-6">
+                                <h4 class="fw-bold">Net Pay: <span class="text-primary">@(Model.payrollPay?.NetPay.ToString("N2") ?? "0")</span></h4>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-            </dl>
-     
+            </div>
+        </div>
+
     </div>
- 
-</div>
 }
-<div class="d-flex justify-content-end d-print-none">
-    
+
+<div class="d-flex justify-content-end mb-2 d-print-none">
+    <a href="/EarningRecord/Create?id=@Model.employmentModel?.employmentID" class="btn btn-success text-white m-2">
+        <i class="bi bi-plus-circle"></i> Add Earning
+    </a>
+    <a href="/DeductionRecord/Create?id=@Model.employmentModel?.employmentID" class="btn btn-danger text-white m-2">
+        <i class="bi bi-plus-circle"></i> Add Deduction
+    </a>
     @await Html.PartialAsync("print")
 </div>
-<div class="d-print-none"><a asp-page="./Index">View All Employees List</a></div>
+
+<div class="d-print-none"><a asp-page="./Index">View All Employees Earnings</a></div>
+
+<!-- Three separate charts -->
+<div class="row mb-4 g-3">
+    <!-- Earnings Pie Chart -->
+    <div class="col-md-4">
+        <div class="card shadow-sm border-0 h-100">
+            <div class="card-header bg-success text-white">
+                <h5 class="fw-bold text-center mb-0">Earnings Breakdown</h5>
+            </div>
+            <div class="card-body">
+                <div style="position: relative; height: 250px;">
+                    <canvas id="earningsChart"></canvas>
+                </div>
+                <div class="text-center mt-2">
+                    <small class="text-muted">Total Earnings: @Model.payrollPay.EarningRecords?.Sum(e => e.earningAmount).ToString("N2") Br</small>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Deductions Pie Chart -->
+    <div class="col-md-4">
+        <div class="card shadow-sm border-0 h-100">
+            <div class="card-header bg-danger text-white">
+                <h5 class="fw-bold text-center mb-0">Deductions Breakdown</h5>
+            </div>
+            <div class="card-body">
+                <div style="position: relative; height: 250px;">
+                    <canvas id="deductionsChart"></canvas>
+                </div>
+                <div class="text-center mt-2">
+                    <small class="text-muted">Total Deductions: @(Model.payrollPay.DeductionRecords.Sum(d => d.deductionAmount)?.ToString("N2") ?? "0") Br</small>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Gross vs Net vs Deductions Chart -->
+    <div class="col-md-4">
+        <div class="card shadow-sm border-0 h-100">
+            <div class="card-header bg-primary text-white">
+                <h5 class="fw-bold text-center mb-0">Gross vs Net vs Deductions</h5>
+            </div>
+            <div class="card-body">
+                <div style="position: relative; height: 250px;">
+                    <canvas id="summaryChart"></canvas>
+                </div>
+                <div class="text-center mt-2">
+                    <small class="text-muted">Gross: @(Model.payrollPay?.GrossPay.ToString("N2") ?? "0") Br | Net: @(Model.payrollPay?.NetPay.ToString("N2") ?? "0") Br</small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        // Store chart instances
+        let earningsChartInstance = null;
+        let deductionsChartInstance = null;
+        let summaryChartInstance = null;
+
+        document.addEventListener('DOMContentLoaded', function() {
+            if (typeof Chart !== 'undefined') {
+                initializeCharts();
+            }
+        });
+
+        function initializeCharts() {
+            // Destroy existing chart instances
+            if (earningsChartInstance) earningsChartInstance.destroy();
+            if (deductionsChartInstance) deductionsChartInstance.destroy();
+            if (summaryChartInstance) summaryChartInstance.destroy();
+
+            // Check if we have data
+            @if (Model.EmpSelected && Model.payrollPay != null)
+            {
+                <text>
+                // Prepare data from C# model
+                const totalEarnings = @Model.payrollPay.EarningRecords.Sum(e => e.earningAmount);
+                const totalDeductions = @Model.payrollPay.DeductionRecords.Sum(d => d.deductionAmount);
+                const grossPay = @(Model.payrollPay?.GrossPay ?? 0);
+                const netPay = @(Model.payrollPay?.NetPay ?? 0);
+                
+                // Prepare earnings data with proper labels
+                            const earningsLabels = [
+                @if (Model.payrollPay?.EarningRecords != null)
+                {
+                        foreach (var earning in Model.payrollPay.EarningRecords)
+                        {
+                                <text>@Html.Raw(Json.Serialize(
+                                                        Model.EarningTypes.First(e => e.earningTypeID == earning.earningTypeId).earningTypeName
+                                                )),</text>
+                        }
+                }
+            ];
+
+                const earningsValues = [
+                    @if (Model.payrollPay?.EarningRecords != null)
+                    {
+                        foreach (var earning in Model.payrollPay.EarningRecords)
+                        {
+                            <text>@earning.earningAmount, </text>
+                        }
+                    }
+                ];
+
+                // Prepare deductions data with proper labels
+                            const deductionsLabels = [
+                @if (Model.payrollPay?.DeductionRecords != null)
+                {
+                        foreach (var deduction in Model.payrollPay.DeductionRecords)
+                        {
+                                <text>@Html.Raw(Json.Serialize(
+                                                        Model.DeductionTypes.First(d => d.deductionTypeID == deduction.deductionTypeID).deductionName
+                                                )),</text>
+                        }
+                }
+            ];
+
+                const deductionsValues = [
+                    @if (Model.payrollPay?.DeductionRecords != null)
+                    {
+                        foreach (var deduction in Model.payrollPay.DeductionRecords)
+                        {
+                            <text>@deduction.deductionAmount, </text>
+                        }
+                    }
+                ];
+
+                // Generate colors
+                const generateColors = (count, startHue = 0) => {
+                    const colors = [];
+                    const goldenAngle = 137.5;
+                    for (let i = 0; i < count; i++) {
+                        const hue = (startHue + (i * goldenAngle)) % 360;
+                        colors.push(`hsl(${hue}, 70%, 65%)`);
+                    }
+                    return colors;
+                };
+
+                // 1. Earnings Chart
+                if (earningsValues.length > 0 && totalEarnings > 0) {
+                    const earningsColors = generateColors(earningsValues.length, 120); // Green-ish hues
+                    
+                    earningsChartInstance = new Chart(document.getElementById('earningsChart'), {
+                        type: 'pie',
+                        data: {
+                            labels: earningsLabels,
+                            datasets: [{
+                                data: earningsValues,
+                                backgroundColor: earningsColors,
+                                borderWidth: 2,
+                                borderColor: '#fff'
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: {
+                                    display: earningsLabels.length, // Show legend only if not too many items
+                                    position: 'right',
+                                    labels: {
+                                        padding: 10,
+                                        usePointStyle: true,
+                                        font: {
+                                            size: 10
+                                        },
+                                        generateLabels: function(chart) {
+                                            const labels = Chart.defaults.plugins.legend.labels.generateLabels(chart);
+                                            labels.forEach((label, index) => {
+                                                const value = earningsValues[index];
+                                                const percentage = Math.round((value / totalEarnings) * 100);
+                                                label.text = `${label.text}: ${value.toLocaleString('en-US', {minimumFractionDigits: 2})} Br (${percentage}%)`;
+                                            });
+                                            return labels;
+                                        }
+                                    }
+                                },
+                                tooltip: {
+                                    callbacks: {
+                                        label: function(context) {
+                                            const label = context.label || '';
+                                            const value = context.raw || context.parsed;
+                                            const percentage = Math.round((value / totalEarnings) * 100);
+                                            return `${label}: ${value.toLocaleString('en-US', {minimumFractionDigits: 2})} Br (${percentage}%)`;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    });
+                } else {
+                    // No earnings data
+                    document.getElementById('earningsChart').parentElement.innerHTML = 
+                        '<div class="text-center text-muted p-4">No earnings data available</div>';
+                }
+
+                // 2. Deductions Chart
+                if (deductionsValues.length > 0 && totalDeductions > 0) {
+                    const deductionsColors = generateColors(deductionsValues.length, 0); // Red-ish hues
+                    
+                    deductionsChartInstance = new Chart(document.getElementById('deductionsChart'), {
+                        type: 'pie',
+                        data: {
+                            labels: deductionsLabels,
+                            datasets: [{
+                                data: deductionsValues,
+                                backgroundColor: deductionsColors,
+                                borderWidth: 2,
+                                borderColor: '#fff'
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: {
+                                    display: deductionsLabels.length <= 6,
+                                    position: 'right',
+                                    labels: {
+                                        padding: 10,
+                                        usePointStyle: true,
+                                        font: {
+                                            size: 10
+                                        },
+                                        generateLabels: function(chart) {
+                                            const labels = Chart.defaults.plugins.legend.labels.generateLabels(chart);
+                                            labels.forEach((label, index) => {
+                                                const value = deductionsValues[index];
+                                                const percentage = Math.round((value / totalDeductions) * 100);
+                                                label.text = `${label.text}: ${value.toLocaleString('en-US', {minimumFractionDigits: 2})} Br (${percentage}%)`;
+                                            });
+                                            return labels;
+                                        }
+                                    }
+                                },
+                                tooltip: {
+                                    callbacks: {
+                                        label: function(context) {
+                                            const label = context.label || '';
+                                            const value = context.raw || context.parsed;
+                                            const percentage = Math.round((value / totalDeductions) * 100);
+                                            return `${label}: ${value.toLocaleString('en-US', {minimumFractionDigits: 2})} Br (${percentage}%)`;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    });
+                } else {
+                    // No deductions data
+                    document.getElementById('deductionsChart').parentElement.innerHTML = 
+                        '<div class="text-center text-muted p-4">No deductions data available</div>';
+                }
+
+                // 3. Summary Chart (Gross vs Net vs Deductions)
+                if (grossPay > 0) {
+                    const summaryLabels = ['Net Pay', 'Total Deductions'];
+                    const summaryValues = [Math.max(netPay, 0.01), Math.max(totalDeductions, 0.01)];
+                    const summaryColors = ['#28a745', '#dc3545']; // Green for net, red for deductions
+                    
+                    // Calculate percentages
+                    const netPercentage = Math.round((netPay / grossPay) * 100);
+                    const deductionsPercentage = Math.round((totalDeductions / grossPay) * 100);
+                    
+                    summaryChartInstance = new Chart(document.getElementById('summaryChart'), {
+                        type: 'pie',
+                        data: {
+                            labels: summaryLabels,
+                            datasets: [{
+                                data: summaryValues,
+                                backgroundColor: summaryColors,
+                                borderWidth: 2,
+                                borderColor: '#fff'
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: {
+                                    position: 'bottom',
+                                    labels: {
+                                        padding: 10,
+                                        usePointStyle: true,
+                                        font: {
+                                            size: 11
+                                        },
+                                        generateLabels: function(chart) {
+                                            const labels = Chart.defaults.plugins.legend.labels.generateLabels(chart);
+                                            labels.forEach((label, index) => {
+                                                const value = summaryValues[index];
+                                                const percentage = index === 0 ? netPercentage : deductionsPercentage;
+                                                label.text = `${label.text}: ${value.toLocaleString('en-US', {minimumFractionDigits: 2})} Br (${percentage}%)`;
+                                            });
+                                            return labels;
+                                        }
+                                    }
+                                },
+                                tooltip: {
+                                    callbacks: {
+                                        label: function(context) {
+                                            const label = context.label || '';
+                                            const value = context.raw || context.parsed;
+                                            const percentage = context.dataIndex === 0 ? netPercentage : deductionsPercentage;
+                                            return `${label}: ${value.toLocaleString('en-US', {minimumFractionDigits: 2})} Br (${percentage}% of Gross)`;
+                                        },
+                                        afterLabel: function(context) {
+                                            return `Gross Pay: ${grossPay.toLocaleString('en-US', {minimumFractionDigits: 2})} Br`;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    });
+                } else {
+                    // No gross pay data
+                    document.getElementById('summaryChart').parentElement.innerHTML = 
+                        '<div class="text-center text-muted p-4">No payroll data available</div>';
+                }
+                </text>
+            }
+        }
+    </script>
 }

@@ -6,6 +6,7 @@
     ViewData["Title"] = "Work Locations";
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
+@await Html.PartialAsync("headerSimple", "")
 <div id="printDiv" class="col-12">
     <h1 class="fw-bold">Work Locations</h1>
     
@@ -13,59 +14,81 @@
         <a class="btn btn-primary d-print-none" asp-page="Create" >Add New Work Location</a>
     </p>
     @await Html.PartialAsync("filter")
-<table class="table table-striped table-hover" id="dataTable">
-    <thead>
-        <tr class="bg-dark text-white">
-            <th>
-                Work Location Name
-            </th>
-            <th>
-                Work Location Type
-            </th>
-            <th>
-                Establish Date
-            </th>
-            <th>
-                Status
-            </th>
-            <th>
-                Location
-            </th>
-                <th class="d-print-none">Actions</th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model.workSiteModel) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.workSiteName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.workSiteNature)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.workSiteEstablishDate)
-            </td>
-            <td>
-                        @if(item.workSiteStatus == Models.mainStatus.Active)
-                        {
-                            <p class="fw-bold text-success">@Html.DisplayFor(modelItem => item.workSiteStatus)</p>
-                        }
-                        else{
-                            <p class="fw-bold text-danger">@Html.DisplayFor(modelItem => item.workSiteStatus)</p>
-                        }
-                        
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.addressModel.addressFormatted)
-            </td>
-            <td class="d-print-none">
-                <a asp-page="./Edit" asp-route-id="@item.workSiteID">Edit</a> |
-                <a asp-page="./Details" asp-route-id="@item.workSiteID">Details</a> 
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+    <table class="table table-striped table-hover" id="dataTable">
+        <thead>
+            <tr class="bg-dark text-white">
+                <th>
+                    Work Location Type
+                </th>
+                <th>
+                    Work Location Name
+                </th>
+                
+                <th>
+                    Establish Date
+                </th>
+            
+                <th>
+                    Location
+                    </th>
+                    <th>
+                        Status
+                    </th>
+                    <th class="d-print-none">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var sites in Model.workSiteModel.GroupBy(w => w.workSiteNature))
+            {
+                <tr class="tabl-primary">
+                    <th colspan="6">@sites.FirstOrDefault().workSiteNature</th>
+                </tr>
+                @foreach (var item in sites.OrderBy(w => w.workSiteName))
+                {
+                    <tr>
+                        <td></td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.workSiteName)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.workSiteEstablishDate)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.addressModel.addressFormatted)
+                        </td>
+                        <td>
+                            @if (item.workSiteStatus == Models.mainStatus.Active)
+                            {
+                                <span class="badge bg-success">@Html.DisplayFor(modelItem => item.workSiteStatus)</span>
+
+                            }
+                            else if (item.workSiteStatus == Models.mainStatus.Suspended)
+                            {
+                                <span class="badge bg-warning">@Html.DisplayFor(modelItem => item.workSiteStatus)</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-secondary">@Html.DisplayFor(modelItem => item.workSiteStatus)</span>
+                            }
+
+                        </td>
+
+                        <td class="d-print-none">
+                            <div class="btn-group" role="group">
+                                <a asp-page="./Details" asp-route-id="@item.workSiteID" class="btn btn-sm btn-outline-primary" title="View Details">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                                <a asp-page="./Edit" asp-route-id="@item.workSiteID" class="btn btn-sm btn-outline-success" title="Edit">
+                                    <i class="bi bi-pencil-square"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                }
+
+            }
+            
+        </tbody>
+    </table>
 </div>
 <div class="d-flex justify-content-end">@await Html.PartialAsync("print")</div>

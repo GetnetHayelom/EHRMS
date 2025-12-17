@@ -10,7 +10,7 @@ public partial class workSiteModel
     public int workSiteID { get; set; }
 
     public string workSiteName { get; set; } = null!;
-    public string workSiteCode { get; set; } = null!;
+    public string? workSiteCode { get; set; } = null!;
     public string workSiteNature { get; set; } = null!;
     public string? mapLink { get; set; } = null!;
     public int? employmentID { get; set; }//Site Manager

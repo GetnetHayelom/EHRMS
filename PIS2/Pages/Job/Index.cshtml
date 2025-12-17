@@ -5,7 +5,7 @@
     ViewData["Title"] = "Jobs";
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
-
+@await Html.PartialAsync("headerSimple", "")
 <div class="container py-4 print-container">
     <div class="d-flex justify-content-between align-items-center mb-4 no-print">
         <div>
@@ -21,7 +21,31 @@
             </button>
         </div>
     </div>
+    <div class="row">
+        <div class="col-md-3 mb-3">
+            <label  class="form-label fw-semibold">Job Grade</label>
+            <select class="form-select" asp-items="ViewBag.jobGradeID" id="jobGrade">
+                <option value="" selected> All</option>
+            </select>
+        </div>
 
+        <div class="col-md-3 mb-3">
+            <label  class="form-label fw-semibold">Job Category</label>
+            <select class="form-select" asp-items="ViewBag.jobCategoryID" id="jobCategory"><option value="" selected> All</option></select>
+        </div>
+
+        <div class="col-md-3 mb-3">
+            <label  class="form-label fw-semibold">Job Class</label>
+            <select class="form-select" asp-items="ViewBag.jobClassID" id="jobClass"><option value="" selected> All</option></select>
+        </div>
+        <div class="col-md-2 mb-3">
+            <label class="form-label fw-semibold">Job Status</label>
+            <select class="form-select" asp-items="@Html.GetEnumSelectList<Models.mainStatus>()" id="jobStatus"><option value="" selected> All</option></select>
+        </div>
+        <div class="col-md-1 d-flex justify-content-end align-items-end mb-3">            
+            <button class="btn btn-primary" onclick="filterJobs()">Load</button>
+        </div>
+    </div>
     <div class="card shadow-sm border-0">
         <div class="card-body">
             @await Html.PartialAsync("filter")
@@ -40,7 +64,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach (var item in Model.jobModel)
+                        @foreach (var item in Model.jobModel.OrderBy(j => j.jobTitle))
                         {
                             <tr>
                                 <td>@Html.DisplayFor(modelItem => item.jobTitle)</td>
@@ -132,3 +156,30 @@
         }
     </style>
 }
+
+<script>
+    function filterJobs() {
+        var jobGrade = $("#jobGrade").val();
+        var jobCategory = $("#jobCategory").val();
+        var jobClass = $("#jobClass").val();
+        var jobStatus = $("#jobStatus").val();
+
+        $.ajax({
+            url: "@Url.Page("Index", "Filter")",
+            type: "GET",
+            data: {
+                jobGrade: jobGrade || null,
+                jobCategory: jobCategory || null,
+                jobClass: jobClass || null,
+                jobStatus: jobStatus || null
+            },
+            success: function (response) {
+                $("#dataTable tbody").html(response);
+            },
+            error: function () {
+                alert("Error loading filtered results.");
+            }
+        });
+    }
+</script>
+

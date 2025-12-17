@@ -39,8 +39,7 @@ namespace PIS2.Models
     public enum ServiceRequestStatus
     {
         Hold,
-        Posted,
-        Ready,
+        Reviewed,
         Completed
     }
     

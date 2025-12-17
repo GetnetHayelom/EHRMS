@@ -2,53 +2,92 @@
 @model PIS2.Pages.Family.CreateModel
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Create Family Relation";
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
 
-<h1>Create</h1>
+<div class="mb-4">
+    <h1 class="fw-bold text-dark">Family & Relations</h1>
+    <p class="text-muted mb-0">Add a new family relation for an employee.</p>
+</div>
 
-<h4>familyModel</h4>
 <hr />
-<div class="row">
-    <div class="col-md-4">
+
+<div class="row justify-content-center">
+    <div class="col-lg-6">
         <form method="post">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="familyModel.personID" class="control-label"></label>
-                <select asp-for="familyModel.personID" class ="form-control" asp-items="ViewBag.personID"></select>
+            <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+            <!-- Person -->
+            <div class="mb-3">
+                <label asp-for="familyModel.personID" class="form-label fw-semibold">
+                    <span class="text-danger">*</span> Person
+                </label>
+                <input type="text" class="form-control" list="personList" placeholder="Type to search..." oninput="selector(this, 'personIDHidden')" />
+                <input type="hidden" asp-for="familyModel.personID" id="personIDHidden" />
+                <datalist id="personList">
+                    @foreach (var person in (SelectList)ViewData["personID"])
+                    {
+                        <option data-id="@person.Value" value="@person.Text"></option>
+                    }
+                </datalist>
+                <span asp-validation-for="familyModel.personID" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="familyModel.personID2" class="control-label"></label>
-                <input asp-for="familyModel.personID2" class="form-control" />
+
+            <!-- Relative -->
+            <div class="mb-3">
+                <label asp-for="familyModel.personID2" class="form-label fw-semibold">
+                    <span class="text-danger">*</span> Relative
+                </label>
+                <input type="text" class="form-control" list="personList2" placeholder="Type to search..." oninput="selector(this, 'personID2Hidden')" />
+                <input type="hidden" asp-for="familyModel.personID2" id="personID2Hidden" />
+                <datalist id="personList2">
+                    @foreach (var person in (SelectList)ViewData["personID"])
+                    {
+                        <option data-id="@person.Value" value="@person.Text"></option>
+                    }
+                </datalist>
                 <span asp-validation-for="familyModel.personID2" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="familyModel.relation" class="control-label"></label>
-                <select asp-for="familyModel.relation" class="form-control"></select>
+
+            <!-- Relation -->
+            <div class="mb-3">
+                <label asp-for="familyModel.relation" class="form-label fw-semibold">
+                    <span class="text-danger">*</span> Relation
+                </label>
+                <select asp-for="familyModel.relation" class="form-select" asp-items="@Html.GetEnumSelectList<Models.familyRelation>()"></select>
                 <span asp-validation-for="familyModel.relation" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="familyModel.modifiedBy" class="control-label"></label>
-                <input asp-for="familyModel.modifiedBy" class="form-control" />
-                <span asp-validation-for="familyModel.modifiedBy" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="familyModel.modifiedDate" class="control-label"></label>
-                <input asp-for="familyModel.modifiedDate" class="form-control" />
-                <span asp-validation-for="familyModel.modifiedDate" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
+
+            <!-- Actions -->
+            <div class="d-flex justify-content-end mt-3">
+                <input type="submit" value="Save" class="btn btn-success px-4" />
             </div>
         </form>
     </div>
 </div>
-
-<div>
-    <a asp-page="Index">Back to List</a>
-</div>
-
+<a href="/Family/Index">View All Family and Relations</a>
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+        // Match typed text to datalist and set hidden input
+        function setPersonID(input, hiddenId) {
+            const value = input.value;
+            const datalist = input.getAttribute('list');
+            const options = document.querySelectorAll(`#${datalist} option`);
+            let found = false;
+            options.forEach(opt => {
+                if (opt.value === value) {
+                    document.getElementById(hiddenId).value = opt.dataset.id;
+                    found = true;
+                }
+            });
+            if (!found) {
+                document.getElementById(hiddenId).value = '';
+            }
+        }
+    </script>
 }

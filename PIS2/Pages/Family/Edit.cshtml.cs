@@ -45,9 +45,54 @@ namespace PIS2.Pages.Family
         // For more information, see https://aka.ms/RazorPagesCRUD.
         public async Task<IActionResult> OnPostAsync()
         {
+            if (!User.IsInRole("MIE\\PMS_HRCLERK"))
+                return RedirectToPage("/Shared/AccessDenied");
+
+            var famrel = _context.Families.FirstOrDefault(f => f.familyID == familyModel.familyID);
+
+            ModelState.Clear();
+            familyModel.modifiedBy = User.Identity.Name;
+            familyModel.modifiedDate = DateTime.Now;
+
             if (!ModelState.IsValid)
             {
                 return Page();
+            }
+            
+
+            // Ensure hidden inputs are valid integers
+            if (familyModel.personID == 0 || familyModel.personID2 == 0)
+            {
+                ModelState.AddModelError("", "Please select valid Person and Relative from the list.");
+                return Page();
+            }
+
+            if (familyModel.personID == familyModel.personID2)
+            {
+                ModelState.AddModelError("", "Person and Relative cannot be the same.");
+                return Page();
+            }
+
+            // Enforce relation constraints
+            if (familyModel.relation == familyRelation.Father)
+            {
+                bool exists = _context.Families.Any(f => (f.personID == familyModel.personID || f.personID2 ==familyModel.personID) && f.relation == familyRelation.Father);
+                if (exists)
+                {
+                    ModelState.AddModelError("", "This person already has a father assigned.");
+                    return Page();
+                }
+
+            }
+
+            if (familyModel.relation == familyRelation.Mother)
+            {
+                bool exists = _context.Families.Any(f => f.personID == familyModel.personID && f.relation == familyRelation.Mother);
+                if (exists)
+                {
+                    ModelState.AddModelError("", "This person already has a mother assigned.");
+                    return Page();
+                }
             }
 
             _context.Attach(familyModel).State = EntityState.Modified;

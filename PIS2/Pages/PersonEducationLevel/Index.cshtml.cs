@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -14,6 +15,7 @@ using System.Threading.Tasks;
 
 namespace PIS2.Pages.PersonEducationLevel
 {
+    [Authorize(Roles ="MIE\\PMS_CLERK, MIE\\PMS_MANAGEMENT, MIE\\PMS_HRMANAGER")]
     public class IndexModel : PageModel
     {
         private readonly PIS2.Models.PISContext _context;
@@ -39,6 +41,11 @@ namespace PIS2.Pages.PersonEducationLevel
         public int Female { get; set; }
         public int ActiveEmp { get; set; }
         public int TotalRecords { get; set; }
+        //
+        public int Male1 { get; set; }
+        public int Female1 { get; set; }
+        public int ActiveEmp1 { get; set; }
+        public int TotalRecords1 { get; set; }
         public List<string> EducationDescipline { get; set; }
         public async Task OnGetAsync()
         {
@@ -51,6 +58,19 @@ namespace PIS2.Pages.PersonEducationLevel
 
             personEducationLevelModel =new List<CertificationDetailsView>();
             personEducationLevelModel = await _context.CertificationDetailsView.ToListAsync();
+
+
+            Male = personEducationLevelModel.Count(t => t.PersonGender == Gender.Male);
+            Female = personEducationLevelModel.Count(t => t.PersonGender == Gender.Female);
+            ActiveEmp = personEducationLevelModel.Count(t => t.EmploymentStatus == mainStatus.Active);
+            TotalRecords = personEducationLevelModel.Count();
+
+            //
+            var Talent = _context?.TalentExperienceView.Distinct().AsQueryable();
+            Male1 = Talent.Count(t => t.PersonGender == Gender.Male);
+            Female1 = Talent.Count(t => t.PersonGender == Gender.Female);
+            ActiveEmp1 = Talent.Count(t => t.EmploymentStatus == mainStatus.Active);
+            TotalRecords1 = Talent.Count();
 
             SDate = personEducationLevelModel.Min(p => (DateTime?)p.EducationLevelDate) ?? DateTime.MinValue;
             EDate = personEducationLevelModel.Max(p => (DateTime?)p.EducationLevelDate) ?? DateTime.MinValue;
@@ -70,11 +90,11 @@ namespace PIS2.Pages.PersonEducationLevel
 
             if (_context?.TalentExperienceView == null)
             {
-                Male = 0;
-                Female = 0;
-                ActiveEmp = 0;
-                TotalRecords = 0;
-                return new JsonResult(new { tableHtml, Male, Female, ActiveEmp, TotalRecords });
+                Male1 = 0;
+                Female1 = 0;
+                ActiveEmp1 = 0;
+                TotalRecords1 = 0;
+                return new JsonResult(new { tableHtml, Male1, Female1, ActiveEmp1, TotalRecords1 });
             }
 
             var query = _context?.TalentExperienceView.AsQueryable();
@@ -100,10 +120,10 @@ namespace PIS2.Pages.PersonEducationLevel
             var filteredTalent = query.ToList() ?? new List<TalentExperienceView>();
 
 
-            Male = filteredTalent.Count(t => t.PersonGender == Gender.Male);
-            Female = filteredTalent.Count(t => t.PersonGender == Gender.Female);
-            ActiveEmp = filteredTalent.Count(t => t.EmploymentStatus == mainStatus.Active);
-            TotalRecords = filteredTalent.Count();
+            Male1 = filteredTalent.Count(t => t.PersonGender == Gender.Male);
+            Female1 = filteredTalent.Count(t => t.PersonGender == Gender.Female);
+            ActiveEmp1 = filteredTalent.Count(t => t.EmploymentStatus == mainStatus.Active);
+            TotalRecords1 = filteredTalent.Count();
             
             if (filteredTalent.Count() > 0)
             {
@@ -121,7 +141,7 @@ namespace PIS2.Pages.PersonEducationLevel
             }
             
 
-                return new JsonResult(new { tableHtml, Male, Female, ActiveEmp, TotalRecords });
+                return new JsonResult(new { tableHtml, Male1, Female1, ActiveEmp1, TotalRecords1 });
         }
  
         public JsonResult OnGetEducationReport(int? CompanyID, int? DepartmentID, int? Category, string? Discipline, string? Field, int? EmploymentStatus, DateTime? Start, DateTime? End)

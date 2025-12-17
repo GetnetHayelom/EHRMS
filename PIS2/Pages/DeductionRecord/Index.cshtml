@@ -1,0 +1,50 @@
+﻿@page
+@model PIS2.Pages.DeductionRecord.IndexModel
+@{
+}
+@{
+    ViewData["Title"] = "Deductions";
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3 class="fw-bold">Deduction Records</h3>
+        <a class="btn btn-primary" asp-page="Create">+ Add Deduction</a>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <table class="table table-striped table-hover align-middle">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Ref</th>
+                        <th>Type</th>
+                        <th>Employee</th>
+                        <th>Iteration</th>
+                        <th>Amount</th>
+                        <th>Is %</th>
+                        <th>Status</th>
+                        <th style="width: 130px;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.deductions)
+                    {
+                        <tr>
+                            <td>@item.deductionReference</td>
+                            <td>@item.DeductionType?.deductionName</td>
+                            <td>@item.EmploymentModel?.givenID</td>
+                            <td>@item.deductionIteration</td>
+                            <td>@item.deductionAmount</td>
+                            <td>@(item.IsPercentage ? "Yes" : "No")</td>
+                            <td>@item.deductionStatus</td>
+                            <td>
+                                <a asp-page="Edit" asp-route-id="@item.deductionID" class="btn btn-sm btn-warning">Edit</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

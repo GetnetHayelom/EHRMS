@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace PIS2.Pages.Department
 {
-    [Authorize(Roles = "MIE\\PMS_HRMANAGER")]
+    
     public class EditModel : PageModel
     {
         private readonly PIS2.Models.PISContext _context;
@@ -28,12 +28,18 @@ namespace PIS2.Pages.Department
 
         public async Task<IActionResult> OnGetAsync(int? id)
         {
+            if (!User.IsInRole("MIE\\PMS_HRADMIN"))
+            {
+                return RedirectToPage("/Shared/AccessDenied");
+            }
             if (id == null)
             {
                 return NotFound();
             }
 
-            var departmentmodel =  await _context.Departments.FirstOrDefaultAsync(m => m.departmentID == id);
+            var departmentmodel =  await _context.Departments
+                .Include(d=> d.employmentModel).ThenInclude(e => e.personModel)
+                .FirstOrDefaultAsync(m => m.departmentID == id);
             if (departmentmodel == null)
             {
                 return NotFound();
@@ -43,7 +49,7 @@ namespace PIS2.Pages.Department
 
           
             ViewData["companyID"] = new SelectList(_context.Companies, "companyID", "companyName");
-           ViewData["subAccountID"] = new SelectList(_context.SubAccounts, "subAccountID", "subAccountDescription");
+            ViewData["subAccountID"] = new SelectList(_context.SubAccounts, "subAccountID", "subAccountDescription");
             return Page();
         }
 
@@ -51,6 +57,10 @@ namespace PIS2.Pages.Department
         // For more information, see https://aka.ms/RazorPagesCRUD.
         public async Task<IActionResult> OnPostAsync()
         {
+            if (!User.IsInRole("MIE\\PMS_HRADMIN"))
+            {
+                return RedirectToPage("/Shared/AccessDenied");
+            }
             ModelState.Remove("departmentModel.modifiedBy");
             departmentModel.modifiedBy = User.Identity.Name;
 
@@ -64,10 +74,12 @@ namespace PIS2.Pages.Department
                     }
                     Console.WriteLine(kv.ToString());
                 }
+                //departmentModel = await _context.Departments
+                //.Include(d => d.employmentModel).ThenInclude(e => e.personModel)
+                //.FirstOrDefaultAsync(m => m.departmentID == departmentModel.departmentID);
                 return Page();
             }
-            if (User.IsInRole("MIE\\PMS_HRMANAGER"))
-                {
+            
 
                 _context.Attach(departmentModel).State = EntityState.Modified;
 
@@ -86,7 +98,7 @@ namespace PIS2.Pages.Department
                         throw;
                     }
                 }
-            }
+            
             return RedirectToPage("./Details", new {id = departmentModel.departmentID});
         }
 
@@ -94,5 +106,7 @@ namespace PIS2.Pages.Department
         {
             return _context.Departments.Any(e => e.departmentID == id);
         }
+
+
     }
 }

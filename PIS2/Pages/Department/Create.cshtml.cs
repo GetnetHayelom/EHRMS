@@ -21,7 +21,7 @@ namespace PIS2.Pages.Department
         public IActionResult OnGet(int? id)
         {
 
-            if (!User.IsInRole("MIE\\PMS_HRMANAGER"))
+            if (!User.IsInRole("MIE\\PMS_HRADMIN"))
             {
                 return RedirectToPage("/Shared/AccessDenied");
             }
@@ -34,7 +34,7 @@ namespace PIS2.Pages.Department
             }
             else
             {
-                ViewData["companyID"] = new SelectList(_context.Companies, "companyID", "companyName");
+                ViewData["companyID"] = new SelectList(_context.Companies.OrderBy(c => c.companyName).Where(c=> c.companyStatus == mainStatus.Active), "companyID", "companyName");
             }
                 
             ViewData["subAccountID"] = new SelectList(_context.SubAccounts, "subAccountID", "subAccountDescription");
@@ -47,7 +47,7 @@ namespace PIS2.Pages.Department
         // For more information, see https://aka.ms/RazorPagesCRUD.
         public async Task<IActionResult> OnPostAsync()
         {
-            if (!User.IsInRole("MIE\\PMS_HRMANAGER"))
+            if (!User.IsInRole("MIE\\PMS_HRADMIN"))
             {
                 return RedirectToPage("/Shared/AccessDenied");
             }

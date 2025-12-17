@@ -6,128 +6,243 @@
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
 
-<h1 class="fw-bold">Absentism</h1>
-<h4 class="fw-bold">Absentism Records for the last six months</h4>
+<h1 class="fw-bold">Absenteeism</h1>
+<h4 class="fw-bold">Absenteeism Records for the Last Six Months</h4>
 <hr />
-<p>
-    <a asp-page="Create" class="btn btn-primary text-decoration-none text-white">Add New Absentism Record</a>
-</p>
-<form method="POST" class="d-flex">
-    <div class="m-2 flex-wrap">
-        <label for="filter-status">Filter Status:</label>
-        <select asp-for="filter.Status" class="form-select" aria-label="Default select example" id="filter-status" onchange="filter()" asp-items="Html.GetEnumSelectList<Models.leaveStatus>()">
-            <option value="">All</option>
-        </select>
-    </div>
 
-    <div class="m-2 flex-wrap">
-        <label for="filter-department">Filter Department:</label>
-        <select asp-for="filter.Status" class="form-select" aria-label="Default select example" id="filter-department" onchange="filter()">
-            <option value="">All</option>
-            @foreach (var department in Model.Departments)
-            {
-                <option value="@department.departmentID">@department.departmentName</option>
-            }
-        </select>
+@if (User.IsInRole("MIE\\PMS_HRCLERK"))
+{
+    <p class="d-print-none">
+        <a asp-page="Create" class="btn btn-primary text-decoration-none text-white">Add New Absenteeism Record</a>
+    </p>
+}
+
+<!-- Summary Cards Section -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card shadow-sm border-start border-primary border-2">
+            <div class="card-body d-flex justify-content-between align-items-center">
+                <div>
+                    <p class="text-muted mb-1">Total Records</p>
+                    <h4 class="fw-bold">@Model.leaveModel.Count()</h4>
+                </div>
+                <i class="bi bi-collection fs-1 text-primary"></i>
+            </div>
+        </div>
     </div>
-    <div class="m-2 flex-wrap">
-        <label for="filter-company">Filter Company:</label>
-        <select asp-for="filter.Status" class="form-select" aria-label="Default select example" id="filter-company" onchange="filter()">
-            <option value="">All</option>
-            @foreach (var company in Model.Companies)
-            {
-                <option value="@company.companyID">@company.companyName</option>
-            }
-        </select>
+    <div class="col-md-3">
+        <div class="card shadow-sm border-start border-success border-2">
+            <div class="card-body d-flex justify-content-between align-items-center">
+                <div>
+                    <p class="text-muted mb-1">Posted</p>
+                    <h4 class="fw-bold">@Model.leaveModel.Count(x => x.LeaveStatus == Models.leaveStatus.Posted)</h4>
+                </div>
+                <i class="bi bi-check-circle fs-1 text-success"></i>
+            </div>
+        </div>
     </div>
-    <div class="m-2 flex-wrap">
-        <label for="filter-workLoc">Filter Work Location:</label>
-        <select asp-for="filter.Status" class="form-select" aria-label="Default select example" id="filter-workLoc" onchange="filterEmployees()">
-            <option value="">All</option>
-            @foreach (var workLocation in Model.WorkLocations)
-            {
-                <option value="@workLocation.workSiteID">@workLocation.workSiteName</option>
-            }
-        </select>
+    <div class="col-md-3">
+        <div class="card shadow-sm border-start border-warning border-2">
+            <div class="card-body d-flex justify-content-between align-items-center">
+                <div>
+                    <p class="text-muted mb-1">Completed</p>
+                    <h4 class="fw-bold">@Model.leaveModel.Count(x => x.LeaveStatus == Models.leaveStatus.Completed)</h4>
+                </div>
+                <i class="bi bi-flag fs-1 text-warning"></i>
+            </div>
+        </div>
     </div>
-    <div class="m-2 flex-wrap">
-        <label for="dateStart">Date From:</label>
-        <input asp-for="filter.Status" class="form-control" type="date" id="dateStart" onchange="filterEmployees()" asp-for="StartDate" />
+    <div class="col-md-3">
+        <div class="card shadow-sm border-start border-danger border-2">
+            <div class="card-body d-flex justify-content-between align-items-center">
+                <div>
+                    <p class="text-muted mb-1">Total Days Absent</p>
+                    <h4 class="fw-bold">@Model.leaveModel.Sum(x => x.LeaveDays)</h4>
+                </div>
+                <i class="bi bi-calendar-x fs-1 text-danger"></i>
+            </div>
+        </div>
     </div>
-    <div class="m-2 flex-wrap">
-        <label for="dateEnd">Date Upto:</label>
-        <input asp-for="filter.Status" class="form-control" type="date" id="dateEnd" onchange="filterEmployees()" asp-for="EndDate" />
-    </div>
-</form>
-<table class="table table-bordered table-striped table-hover">
+</div>
+
+<div class="card p-3 shadow-sm">
+    <form method="get" class="row g-3 d-flex align-items-end">
+
+        <div class="col-md-2">
+            <label for="filter-company">Company:</label>
+            <select asp-for="companyID" class="form-select" id="filter-company" asp-items="@(ViewData["Companies"] as SelectList)">
+                <option value="">All</option>
+            </select>
+        </div>
+
+        <div class="col-md-2">
+            <label for="filter-department">Department:</label>
+            <select asp-for="departmentID" class="form-select" id="filter-department">
+                <option value="">All</option>
+            </select>
+        </div>
+
+        <div class="col-md-2">
+            <label for="filter-type">Type:</label>
+            <select asp-for="leaveTypeID" class="form-select" id="filter-type" asp-items="@(ViewData["LeaveTypes"] as SelectList)">
+                <option value="">All</option>
+            </select>
+        </div>
+
+        <div class="col-md-2">
+            <label for="dateStart">Date From:</label>
+            <input class="form-control" type="date" id="dateStart" asp-for="StartDate" />
+        </div>
+
+        <div class="col-md-2">
+            <label for="dateEnd">Date Upto:</label>
+            <input class="form-control" type="date" id="dateEnd" asp-for="EndDate" />
+        </div>
+
+        <div class="col-md-2 d-grid">
+            <button type="submit" class="btn btn-primary">Load</button>
+        </div>
+
+    </form>
+</div>
+
+<div class="d-flex justify-content-end d-print-none mt-3">
+    <div class="me-2">@await Html.PartialAsync("filter")</div>
+    @await Html.PartialAsync("print")
+    <excel-export table="dataTable" filename="Absenteeism_@(DateTime.UtcNow).xlsx"></excel-export>
+</div>
+
+<table class="table table-bordered table-striped table-hover mt-3" id="dataTable">
     <thead class="bg-dark text-white">
         <tr>
-            <th>
-                Employee ID
-            </th>
-            <th>
-                Absentism Record Date
-            </th>
-            <th>
-                Absentism Start Date
-            </th>
-            <th>
-                Absentism End Date
-            </th>
-            <th>
-                Number Of Days
-            </th> 
-
-            <th>
-                Absentism Reason
-            </th>
-            <th>
-                Absentism Status
-            </th>
-            
+            <th>S/N</th>
+            <th>Employee ID</th>
+            <th>Record Date</th>
+            <th>Start Date</th>
+            <th>End Date</th>
+            <th>Days</th>
+            <th>Reason</th>
+            <th>Status</th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model.leaveModel) {
-            <tr onclick="location.href='@Url.Page("Details", new { id = item.leaveID })'" style="cursor:pointer;" )>
-            <td>
-                @Html.DisplayFor(modelItem => item.employmentModel.givenID)
-            </td>
-            <td>
-                @item.leaveRequestDate.ToString("MMM dd, yyyy")
-            </td>
-            <td>
-                @item.leaveStartDate.ToString("MMM dd, yyyy")
-            </td>
-            <td>
-                @item.leaveEndDate.ToString("MMM dd, yyyy")
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.leaveDays)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.leaveTypeModel.leaveTypeName)
-            </td>
-                @{
-                    string bg_color="";
-                    if (item.leaveStatus == Models.leaveStatus.Hold || item.leaveStatus == Models.leaveStatus.Approved)
-                    {
-                        bg_color = "bg-warning text-black";
-                    }
-                    else if (item.leaveStatus == Models.leaveStatus.Posted)
-                    {
-                        bg_color = "bg-success text-white";
-                    }
-                    else
-                    {
-                        bg_color = "bg-grey text-black";
-                    }
+        @{ int sn = 1; }
+        @foreach(var comps in Model.leaveModel.OrderBy(l => l.CompanyName).GroupBy(l => l.CompanyID))
+        {
+            <tr class="table-primary fw-bold">
+                <th colspan="8">@comps.FirstOrDefault().CompanyName</th>
+            </tr>
+            @foreach (var deps in comps.OrderBy(l => l.DepartmentName).GroupBy(c => c.DepartmentID))
+            {
+                <tr class="table-secondary fw-bold">
+                    <td></td>
+                    <th colspan="7">@deps.FirstOrDefault().DepartmentName</th>
+                </tr>
+                @foreach (var item in deps)
+                {
+                    <tr onclick="location.href='@Url.Page("Details", new { id = item.LeaveId })'" style="cursor:pointer;">
+                        <td>@sn</td>
+                        <td>@item.GivenID</td>
+                        <td>@item.LeaveRequestDate.ToString("MM/dd/yyyy")</td>
+                        <td>@item.LeaveStart.ToString("MM/dd/yyyy")</td>
+                        <td>@item.LeaveEnd.ToString("MM/dd/yyyy")</td>
+                        <td>@item.LeaveDays</td>
+                        <td>@item.LeaveType</td>
+                        <td>
+                            @if (item.LeaveStatus == Models.leaveStatus.Posted)
+                            {
+                                <span class="badge bg-success">Posted</span>
+                            }
+                            else if (item.LeaveStatus == Models.leaveStatus.Completed)
+                            {
+                                <span class="badge bg-warning">Completed</span>
+                            }
+                        </td>
+                    </tr>
+                    sn++;
                 }
-            <td class="@bg_color">
-                @Html.DisplayFor(modelItem => item.leaveStatus)
-            </td>
+            }
             
-        </tr>
-}
+
+        }
+            
     </tbody>
 </table>
+
+
+<div class="card p-3 my-3 shadow-sm">
+    <h4 class="fw-bold">Monthly Absenteeism Trend</h4>
+    <canvas id="monthlyChart" height="120"></canvas>
+</div>
+
+<div class="card p-3 my-3 shadow-sm">
+    <h4 class="fw-bold">Yearly Absenteeism Summary</h4>
+    <canvas id="yearlyChart" height="120"></canvas>
+</div>
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="~/js/filter-department.js"></script>
+
+<script>
+    const monthlyTrend = JSON.parse('@Html.Raw(ViewData["MonthlyTrend"])');
+    const yearlyTrend = JSON.parse('@Html.Raw(ViewData["YearlyTrend"])');
+
+    console.log("MonthlyTrend:", monthlyTrend);
+    console.log("YearlyTrend:", yearlyTrend);
+
+    // Extract unique months and types
+    const monthlyLabels = [...new Set(monthlyTrend.map(x => x.Period))];
+    const monthlyTypes = [...new Set(monthlyTrend.map(x => x.LeaveType))];
+
+    // Build datasets by leave type
+    const monthlyDatasets = monthlyTypes.map(type => ({
+        label: type,
+        data: monthlyLabels.map(m => {
+            const entry = monthlyTrend.find(x => x.Period === m && x.LeaveType === type);
+            return entry ? entry.TotalDays : 0;
+        }),
+        borderWidth: 2,
+        fill: false,
+        tension: 0.3
+    }));
+
+    new Chart(document.getElementById('monthlyChart'), {
+        type: 'line',
+        data: {
+            labels: monthlyLabels,
+            datasets: monthlyDatasets,
+            backgroundColor: 'rgba(63, 81, 181, 0.2)',
+            borderColor: 'rgba(63, 81, 181, 1)',
+            borderWidth: 3,
+            tension: 0.2,
+            pointBackgroundColor: 'rgba(63, 81, 181, 1)',
+            pointRadius: 4,
+            pointHoverRadius: 6,
+            fill: true,
+            yAxisID: 'y'
+        }
+    });
+
+    // Yearly Chart
+    const yearlyLabels = [...new Set(yearlyTrend.map(x => x.Period))];
+    const yearlyTypes = [...new Set(yearlyTrend.map(x => x.LeaveType))];
+
+    const yearlyDatasets = yearlyTypes.map(type => ({
+        label: type,
+        data: yearlyLabels.map(y => {
+            const entry = yearlyTrend.find(x => x.Period === y && x.LeaveType === type);
+            return entry ? entry.totalDays : 0;
+        }),
+        borderWidth: 2,
+        fill: false,
+        tension: 0.3
+    }));
+
+    new Chart(document.getElementById('yearlyChart'), {
+        type: 'line',
+        data: {
+            labels: yearlyLabels,
+            datasets: yearlyDatasets
+        }
+    });
+</script>

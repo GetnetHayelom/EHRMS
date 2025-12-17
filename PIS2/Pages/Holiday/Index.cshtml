@@ -5,13 +5,17 @@
     ViewData["Title"] = "Index";
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
+@await Html.PartialAsync("headerSimple", "")
+<h1 class="fw-bold">Holidays</h1>
 
-<h1>Holidays</h1>
-
-<p>
-    <a asp-page="Create">Add New Holiday</a>
+<p class="d-print-none">
+    <a asp-page="Create" class="btn btn-primary">Add New Holiday</a>
 </p>
-@await Html.PartialAsync("filter")
+<div class="d-flex justify-content-end d-print-none">
+    <div class="me-2">@await Html.PartialAsync("filter")</div>
+    @await Html.PartialAsync("print")
+    <excel-export table="dataTable" filename="Companies_@(DateTime.UtcNow).xlsx"></excel-export>
+</div>
 <table class="table table-striped table-hover" id="dataTable">
     <thead>
         <tr class="bg-dark text-white">
@@ -33,7 +37,7 @@
             <th>
                 Staus
             </th>
-            <th>Actions</th>
+            <th class="d-print-none">Actions</th>
         </tr>
     </thead>
     <tbody>
@@ -55,14 +59,38 @@
                 @Html.DisplayFor(modelItem => item.holidayCycle)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.holidayStatus)
+                    @if (item.holidayStatus == Models.mainStatus.Active)
+                    {
+                        <span class="badge bg-success">@Html.DisplayFor(modelItem => item.holidayStatus)</span>
+
+                    }
+                    else if (item.holidayStatus == Models.mainStatus.Suspended)
+                    {
+                        <span class="badge bg-warning">@Html.DisplayFor(modelItem => item.holidayStatus)</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-secondary">@Html.DisplayFor(modelItem => item.holidayStatus)</span>
+                    }
             </td>
-            <td>
-                <a asp-page="./Edit" asp-route-id="@item.holidayID">Edit</a> |
-                <a asp-page="./Details" asp-route-id="@item.holidayID">Details</a> |
-                <a asp-page="./Delete" asp-route-id="@item.holidayID">Delete</a>
+               
+                <td class="d-print-none">
+                    <div class="btn-group" role="group">
+                        <a asp-page="./Details" asp-route-id="@item.holidayID" class="btn btn-sm btn-outline-primary" title="View Details">
+                            <i class="bi bi-eye"></i>
+                        </a>
+                        <a asp-page="./Edit" asp-route-id="@item.holidayID" class="btn btn-sm btn-outline-success" title="Edit">
+                            <i class="bi bi-pencil-square"></i>
+                        </a>
+                    </div>
+                
             </td>
         </tr>
 }
     </tbody>
 </table>
+<div class="d-flex justify-content-end d-print-none">
+
+    @await Html.PartialAsync("print")
+    <excel-export table="dataTable" filename="Companies_@(DateTime.UtcNow).xlsx"></excel-export>
+</div>

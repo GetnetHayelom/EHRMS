@@ -17,6 +17,7 @@ namespace PIS2.Models
         //Navigation Property
         public virtual ICollection<allowanceAssignmentModel>? AllowanceAssignments { get; set; }
         public string modifiedBy { get; set; }
+        public DateTime modifiedDate { get; set; } = DateTime.Now;
         public allowanceModel() { }
     }
     public enum allowanceDuration{

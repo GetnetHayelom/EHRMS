@@ -19,11 +19,18 @@ namespace PIS2.Pages.SubAccount
         }
 
         public IList<subAccountModel> subAccountModel { get;set; } = default!;
-
+        [BindProperty(SupportsGet =true)]
+        public mainStatus? SubAccountStatus { get; set; }
         public async Task OnGetAsync()
         {
-            subAccountModel = await _context.SubAccounts
-                .Include(s => s.accountModel).ToListAsync();
+            var subs = _context.SubAccounts
+                .Include(s => s.accountModel).AsQueryable();
+              if(SubAccountStatus != null)
+            {
+                subs = subs.Where(s => s.subAccountStatus == SubAccountStatus);
+            }
+
+            subAccountModel = await subs.ToListAsync();
         }
     }
 }

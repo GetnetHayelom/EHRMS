@@ -24,6 +24,7 @@ namespace PIS2.Pages.EmploymentType
 
         public async Task OnGetAsync()
         {
+            ModelState.AddModelError(string.Empty, "You do not have permission to perform this action.");
             employmentTypeModel = await _context.EmploymentTypes.ToListAsync();
         }
     }

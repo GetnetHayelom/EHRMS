@@ -18,21 +18,79 @@ namespace PIS2.Pages.Structures
         public CreateModel(PISContext context){ _context = context;} 
 
         [BindProperty] public structureModel Structure { get; set; } = new();
+        public List<jobModel> Jobs { get; set; }
 
-        public IActionResult OnGet()
+
+        public IActionResult OnGet(int? id)
         {
-            ViewData["companyID"] = new SelectList(_context.Companies.Where(c => c.companyStatus == mainStatus.Active), "companyID", "companyName");
-            
-            ViewData["structureID"] = new SelectList(_context.Structures
-                .Include(s => s.departmentModel).ThenInclude(d => d.companyModel)
-                .Where(j => j.structureStatus == mainStatus.Active)
-                .OrderBy(j => j.departmentModel.departmentName)
-                , "structureID", "jobTitle");
+            Jobs = _context.Jobs.Where(j => j.jobStatus == mainStatus.Active).OrderBy(j => j.jobTitle).ToList();
+            Structure = new structureModel();
+
+            // Load companies
+            var companyList = _context.Companies
+                .Where(c => c.companyStatus == mainStatus.Active)
+                .OrderBy(c => c.companyName)
+                .ToList();
+
+            int? selectedCompanyId = null;
+
+            if (id != null)
+            {
+                // Get department and its company
+                var dept = _context.Departments
+                    .Include(d => d.companyModel)
+                    .FirstOrDefault(d => d.departmentID == id && d.departmentStatus == mainStatus.Active);
+
+                if (dept != null)
+                {
+                    selectedCompanyId = dept.companyID;          // Selected company
+                    Structure.departmentID = dept.departmentID;  // Selected department
+                }
+            }
+
+            // Put selected company into ViewData for dropdown preselect
+            ViewData["selectedCompanyID"] = selectedCompanyId;
+
+            // Build Company dropdown
+            ViewData["companyID"] = new SelectList(
+                companyList,
+                "companyID", "companyName",
+                selectedCompanyId   // <-- This pre-selects the company
+            );
+
+            // Load departments based on selected company
+            var departmentList = selectedCompanyId == null
+                ? new List<departmentModel>()  // empty list
+                : _context.Departments
+                    .Where(d => d.companyID == selectedCompanyId &&
+                                d.departmentStatus == mainStatus.Active)
+                    .OrderBy(d => d.departmentName)
+                    .ToList();
+
+            ViewData["departmentID"] = new SelectList(
+                departmentList,
+                "departmentID", "departmentName",
+                Structure.departmentID  // <-- Pre-select department
+            );
             return Page();
         }
 
         public async Task<IActionResult> OnPostAsync()
         {
+            var dep = _context.Departments.FirstOrDefault(d => d.departmentID == Structure.departmentID && d.departmentStatus == mainStatus.Active);
+            var job = _context.Jobs.FirstOrDefault(j => j.jobID == Structure.jobID && j.jobStatus == mainStatus.Active);
+
+            var exists = _context.Structures.Where(s => s.jobID == Structure.jobID && s.departmentID == Structure.departmentID).Any();
+
+            if(dep == null) { return Page(); }
+            if (job == null) { return Page(); }
+            if (exists) 
+            { 
+                Jobs = _context.Jobs.Where(j => j.jobStatus == mainStatus.Active).OrderBy(j => j.jobTitle).ToList(); 
+                TempData["SuccessMessage"] = "Structure already exists!"; 
+                return Page(); 
+            }
+
             ModelState.Remove("Structure.modifiedBy");
             Structure.modifiedBy = User?.Identity?.Name ?? "System";
 
@@ -86,6 +144,19 @@ namespace PIS2.Pages.Structures
                 .ToList();
 
             return new JsonResult(structures);
+        }
+        public async Task<IActionResult> OnGetJobsAsync(string term)
+        {
+            var jobs = await _context.Jobs
+                .Where(j => j.jobTitle.Contains(term))
+                .Select(j => new {
+                    jobID = j.jobID,
+                    jobTitle = j.jobTitle
+                })
+                .Take(20)
+                .ToListAsync();
+
+            return new JsonResult(jobs);
         }
     }
 }

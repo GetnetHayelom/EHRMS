@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -19,10 +20,17 @@ namespace PIS2.Pages.JobGrade
         }
 
         public IList<jobGradeModel> jobGradeModel { get;set; } = default!;
-
+        [BindProperty(SupportsGet=true)]
+        public mainStatus? JobGradeStatus { get; set; }
         public async Task OnGetAsync()
         {
-            jobGradeModel = await _context.JobGrades.ToListAsync();
+            var grades = _context.JobGrades.AsQueryable();
+
+            if(JobGradeStatus != null)
+            {
+                grades = grades.Where(g => g.jobGradeStatus == JobGradeStatus);
+            }
+            jobGradeModel = await grades.ToListAsync();
         }
     }
 }

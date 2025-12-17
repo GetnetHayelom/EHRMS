@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
 using PIS2.Models;
 using System;
 using System.Collections.Generic;
@@ -11,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace PIS2.Pages.OvertimeRecord
 {
-    [Authorize(Roles = "MIE\\PMS_HRCLERK")]
+    
     public class EditModel : PageModel
     {
         private readonly PIS2.Models.PISContext _context;
@@ -37,8 +38,12 @@ namespace PIS2.Pages.OvertimeRecord
                 return NotFound();
             }
             overtimeRecordModel = overtimerecordmodel;
-           ViewData["employmentID"] = new SelectList(_context.Employments, "employmentID", "givenID");
-           ViewData["overtimeID"] = new SelectList(_context.Overtimes, "overtimeID", "overtimeID");
+             if(overtimeRecordModel.overtimeRecordStatus != overtimeStatus.Hold && !(User.IsInRole("MIE\\PMS_HRCLERCK") || User.IsInRole("MIE\\PMS_HRMANAGER")))
+            {
+                return RedirectToPage("/Shared/AccessDenied");
+            }
+               ViewData["employmentID"] = new SelectList(_context.Employments, "employmentID", "givenID");
+               ViewData["overtimeID"] = new SelectList(_context.Overtimes, "overtimeID", "overtimeName");
             return Page();
         }
 
@@ -46,6 +51,16 @@ namespace PIS2.Pages.OvertimeRecord
         // For more information, see https://aka.ms/RazorPagesCRUD.
         public async Task<IActionResult> OnPostAsync()
         {
+            var ol = HasOverlappingOvertime(overtimeRecordModel.employmentID, overtimeRecordModel.overtimeRecordDate, overtimeRecordModel.overtimeRecordStartTime, overtimeRecordModel.overtimeRecordEndTime);
+            if (ol != null)
+            {
+                TempData["ErrorMessage"] = $"Overlapping overtime record existed: Batch number={ol.overtimeRecordID}" +
+                    $" Start={ol.overtimeRecordStartTime}" +
+                    $" End={ol.overtimeRecordEndTime}";
+                
+                return Page();
+
+            }
             if (!ModelState.IsValid)
             {
                 return Page();
@@ -75,6 +90,23 @@ namespace PIS2.Pages.OvertimeRecord
         private bool overtimeRecordModelExists(int id)
         {
             return _context.OvertimeRecords.Any(e => e.overtimeRecordID == id);
+        }
+
+        public overtimeRecordModel? HasOverlappingOvertime(
+            int employmentID,
+            DateTime date,
+            TimeSpan newStart,
+            TimeSpan newEnd,
+            int? currentRecordID = null)
+        {
+            return _context.OvertimeRecords
+                .Where(o => o.employmentID == employmentID &&
+                            o.overtimeRecordDate.Date == date.Date &&
+                            (currentRecordID == null || o.overtimeRecordID != currentRecordID))
+                .FirstOrDefault(o =>
+                    o.overtimeRecordStartTime < newEnd &&
+                    o.overtimeRecordEndTime > newStart
+                );
         }
     }
 }

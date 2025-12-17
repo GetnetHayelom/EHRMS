@@ -369,6 +369,11 @@ namespace PIS2.Pages
         }
         public async Task<IActionResult> OnPostHandleRequestAsync([FromBody] RequestDto request)
         {
+            if (request == null || string.IsNullOrWhiteSpace(request.requestType))
+            {
+                return new JsonResult(new { success = false, message = "Invalid request payload." });
+            }
+
             var currentUserName = User.Identity?.Name;
             var requestType = request.requestType;
             var employmentID = _context.Employments
@@ -403,6 +408,15 @@ namespace PIS2.Pages
             else
             {
                 return new JsonResult(new { success = false, message = "Invalid request type." });
+            }
+            bool exists = _context.ServiceRequests.Any(r =>
+                r.employmentID == employmentID &&
+                r.requestedService == ServiceRequestTypes.Exprience &&
+                r.serviceRequestStatus == ServiceRequestStatus.Hold);
+
+            if (exists)
+            {
+                return new JsonResult(new { success = false, message = "You already have a pending request." });
             }
 
             _context.ServiceRequests.Add(requestModel);

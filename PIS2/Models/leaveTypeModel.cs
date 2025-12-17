@@ -11,11 +11,12 @@ namespace PIS2.Models
         public leaveTypeImpact leaveTypeImpact { get; set; }
         public mainStatus leaveTypeStatus { get; set; }
         public virtual ICollection<leaveModel>? Leaves { get; set; }
-        public virtual leaveGroup leaveGroup { get; set; }
-        public string modifiedBy { get; set; }
+        public virtual leaveGroup leaveGroup { get; set; }        
         public string leaveAvailability { get; set; }
         public bool leaveJob { get; set; }
         public bool leaveLegality { get; set; }
+        public string modifiedBy { get; set; }
+        public DateTime modifiedDate { get; set; }
         public leaveTypeModel() { }
     }
     public enum leaveGroup

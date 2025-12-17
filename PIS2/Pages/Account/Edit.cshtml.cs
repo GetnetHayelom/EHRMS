@@ -1,15 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using PIS2.Models;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace PIS2.Pages.Account
 {
+    [Authorize(Roles = "MIE\\PMS_FINANCE")]
     public class EditModel : PageModel
     {
         private readonly PIS2.Models.PISContext _context;
@@ -24,7 +26,7 @@ namespace PIS2.Pages.Account
 
         public async Task<IActionResult> OnGetAsync(int? id)
         {
-            if (!User.IsInRole("MIE\\PMS_HRMANAGER"))
+            if (!User.IsInRole("MIE\\PMS_FINANCE"))
             {
                 return RedirectToPage("/Shared/AccessDenied");
             }
@@ -46,10 +48,12 @@ namespace PIS2.Pages.Account
         // For more information, see https://aka.ms/RazorPagesCRUD.
         public async Task<IActionResult> OnPostAsync()
         {
-            if (!User.IsInRole("MIE\\PMS_HRMANAGER"))
+            if (!User.IsInRole("MIE\\PMS_FINANCE"))
             {
                 return RedirectToPage("/Shared/AccessDenied");
             }
+            ModelState.Clear();
+            accountModel.modifiedBy = User.Identity.Name;
             if (!ModelState.IsValid)
             {
                 return Page();

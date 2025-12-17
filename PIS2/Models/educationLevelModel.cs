@@ -16,6 +16,7 @@ namespace PIS2.Models
         public virtual ICollection<jobModel>? Jobs { get; set; } = new List<jobModel>();
         public virtual ICollection<personEducationLevelModel>? PersonEducationLevels { get; set; }
         public string modifiedBy { get; set; }
+        public DateTime modifiedDate { get; set; } = DateTime.Now;
         public educationLevelModel()
         {
 

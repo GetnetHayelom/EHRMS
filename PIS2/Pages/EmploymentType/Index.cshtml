@@ -37,6 +37,9 @@
                 Severance
             </th>
             <th>
+                Pension
+            </th>
+            <th>
                 Status
             </th>
             <th>
@@ -72,6 +75,9 @@
             <td>
                 @Html.DisplayFor(modelItem => item.isSeveranceAllowed)
             </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.isPensionAllowed)
+                </td>
             <td>
                 @Html.DisplayFor(modelItem => item.employmentTypeStatus)
             </td>

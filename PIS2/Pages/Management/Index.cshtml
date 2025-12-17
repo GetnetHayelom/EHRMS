@@ -130,40 +130,77 @@
                 <i class="bi bi-cash-stack me-2"></i> Current Payable Summary
             </h4>
 
-            <div class="row g-3">
-                <div class="col-md-2">
-                    <div class="card text-center shadow-sm p-3 clickable" onclick="location.href='@Url.Page("/Report/JobPlacementReport")'">
-                        <p class="small mb-1 text-muted">Salary</p>
-                        <h5 class="fw-bold text-dark">$@Math.Round((decimal)(Model.CompanySummaries.Sum(c => c.Salary)), 2).ToString("N0")</h5>
+            <div class="d-flex flex-wrap gap-3">
+                <div class="flex-fill">
+                    <div class="card shadow-sm border-start border-primary border-3 p-3 clickable" onclick="location.href='@Url.Page("/Report/JobPlacementReport")'">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <p class="small mb-1 text-muted">Salary</p>
+                                <h5 class="fw-bold text-dark mb-0">
+                                    $@Math.Round((decimal)(Model.CompanySummaries.Sum(c => c.Salary)), 2).ToString("N0")
+                                </h5>
+                            </div>
+                            <i class="bi bi-cash-stack fs-2 text-primary"></i>
+                        </div>
                     </div>
                 </div>
 
-                <div class="col-md-2">
-                    <div class="card text-center shadow-sm p-3 clickable" onclick="location.href='@Url.Page("/Report/AllowanceAssignmentReport")'">
-                        <p class="small mb-1 text-muted">Allowance</p>
-                        <h5 class="fw-bold text-dark">$@Math.Round((decimal)(Model.CompanySummaries.Sum(c => c.Allowance)), 2).ToString("N0")</h5>
+                <div class="flex-fill">
+                    <div class="card shadow-sm p-3 border-start border-warning border-3 clickable" onclick="location.href='@Url.Page("/Report/AllowanceAssignmentReport")'">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <p class="small mb-1 text-muted">Allowance</p>
+                                <h5 class="fw-bold text-dark mb-0">
+                                    $@Math.Round((decimal)(Model.CompanySummaries.Sum(c => c.Allowance)), 2).ToString("N0")
+                                </h5>
+                            </div>
+                            <i class="bi bi-wallet2 fs-2 text-warning"></i>
+                        </div>
                     </div>
                 </div>
 
-                <div class="col-md-2">
-                    <div class="card text-center shadow-sm p-3 clickable" onclick="location.href='@Url.Page("/Report/OvertimeRecordReport")'">
-                        <p class="small mb-1 text-muted">Overtime</p>
-                        <h5 class="fw-bold text-dark">$@Math.Round((decimal)(Model.CompanySummaries.Sum(c => c.Overtime)), 2).ToString("N0")</h5>
-                    </div>
-                </div>
-                <div class="col-md-2">
-                    <div class="card text-center shadow-sm p-3 clickable" onclick="location.href='@Url.Page("/Report/OvertimeRecordReport")'">
-                        <p class="small mb-1 text-muted">Severance Pay</p>
-                        <h5 class="fw-bold text-dark">$@Math.Round((decimal)(Model.CompanySummaries.Sum(c => c.SeverancePayable)), 2).ToString("N0")</h5>
+                <div class="flex-fill">
+                    <div class="card shadow-sm p-3 border-start border-info border-3 clickable" onclick="location.href='@Url.Page("/Report/OvertimeRecordReport")'">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <p class="small mb-1 text-muted">Overtime</p>
+                                <h5 class="fw-bold text-dark mb-0">
+                                    $@Math.Round((decimal)(Model.CompanySummaries.Sum(c => c.Overtime)), 2).ToString("N0")
+                                </h5>
+                            </div>
+                            <i class="bi bi-clock-history fs-2 text-info"></i>
+                        </div>
                     </div>
                 </div>
 
-                <div class="col-md-3">
-                    <div class="card text-center shadow-sm bg-success text-white p-3">
-                        <p class="small mb-1">Total</p>
-                        <h4 class="fw-bold">$@Math.Round((decimal)(Model.CompanySummaries.Sum(c => c.Salary + c.Allowance + c.Overtime + c.SeverancePayable)), 2).ToString("N0")</h4>
+                <div class="flex-fill">
+                    <div class="card shadow-sm p-3 border-start border-danger border-3 clickable" onclick="location.href='@Url.Page("/Report/OvertimeRecordReport")'">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <p class="small mb-1 text-muted">Severance Pay</p>
+                                <h5 class="fw-bold text-dark mb-0">
+                                    $@Math.Round((decimal)(Model.CompanySummaries.Sum(c => c.SeverancePayable)), 2).ToString("N0")
+                                </h5>
+                            </div>
+                            <i class="bi bi-cash fs-2 text-danger"></i>
+                        </div>
                     </div>
                 </div>
+
+                <div class="flex-fill">
+                    <div class="card shadow-sm p-3 border-start border-success border-3">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <p class="small mb-1 text-success">Total</p>
+                                <h4 class="fw-bold mb-0">
+                                    $@Math.Round((decimal)(Model.CompanySummaries.Sum(c => c.Salary + c.Allowance + c.Overtime + c.SeverancePayable)), 2).ToString("N0")
+                                </h4>
+                            </div>
+                            <i class="bi bi-clipboard-data fs-2 text-success"></i>
+                        </div>
+                    </div>
+                </div>
+
             </div>
         </div>
 
@@ -302,12 +339,17 @@
     <div class="tab-pane fade" id="employmentStats">
         <h4 class="fw-bold">Employment Stats</h4>
         <!--ENPLOYMENT STATS-->
-        <div class="row d-flex  justify-content-center">
-            <!-- Employment Trends -->
-            <div class="p-2 m-2">
-                <canvas id="employmentHireChart" class="w-100">
+        <!-- Employment Trends -->
+        <div class="col-md-12">
+            <div class="card shadow-sm p-3">
+                <canvas id="employmentHireChart" height="300" class="w-100">
                 </canvas>
             </div>
+        </div>
+      
+        <div class="d-flex  justify-content-center">
+            
+           
         </div>
         <table class="table table-bordered table-striped table-hover">
             <thead class="bg-dark text-white">
@@ -422,605 +464,613 @@
 </div>
 <div class="d-flex justify-content-end">@await Html.PartialAsync("print")</div>
 
-<style>
-    .clickable:hover {
-        transform: scale(1.03);
-        transition: all 0.2s ease-in-out;
-        box-shadow: 0 0 10px rgba(0,0,0,0.15);
-    }
 
-    .hover-shadow:hover {
-        transform: translateY(-3px);
-        transition: all 0.25s ease-in-out;
-        box-shadow: 0 0 15px rgba(0,0,0,0.2);
-    }
 
-    table thead {
-        background: linear-gradient(90deg, #0d6efd, #6610f2);
-    }
+@section Scripts {
+    <style>
+                          .clickable:hover {
+                              transform: scale(1.03);
+                              transition: all 0.2s ease-in-out;
+                              box-shadow: 0 0 10px rgba(0,0,0,0.15);
+                          }
 
-    .nav-pills .nav-link.active {
-        background: linear-gradient(90deg, #0d6efd, #20c997);
-        color: white !important;
-    }
-</style>
-<style>
-    /* --- General Aesthetic Upgrades --- */
-    canvas {
-        background: #fff;
-        border-radius: 16px;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-        padding: 15px;
-        transition: transform 0.2s ease, box-shadow 0.3s ease;
-    }
+                          .hover-shadow:hover {
+                              transform: translateY(-3px);
+                              transition: all 0.25s ease-in-out;
+                              box-shadow: 0 0 15px rgba(0,0,0,0.2);
+                          }
 
-        canvas:hover {
-            transform: scale(1.01);
-            box-shadow: 0 6px 18px rgba(0,0,0,0.15);
+                          table thead {
+                              background: linear-gradient(90deg, #0d6efd, #6610f2);
+                          }
+
+                          .nav-pills .nav-link.active {
+                              background: linear-gradient(90deg, #0d6efd, #20c997);
+                              color: white !important;
+                          }
+    </style>
+    <style>
+        /* --- General Aesthetic Upgrades --- */
+        canvas {
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            padding: 15px;
+            transition: transform 0.2s ease, box-shadow 0.3s ease;
         }
 
-    /* Chart containers for layout */
-    .chart-card {
-        background: #f9fafb;
-        border-radius: 18px;
-        padding: 20px;
-        margin-bottom: 25px;
-        transition: all 0.3s ease;
-        border: 1px solid #e6e9ef;
-    }
-
-        .chart-card:hover {
-            background: #ffffff;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
-        }
-
-    /* Titles and Nav */
-    .nav-pills .nav-link.active {
-        background: linear-gradient(90deg, #0d6efd, #20c997);
-        color: white !important;
-        box-shadow: 0 3px 10px rgba(13, 110, 253, 0.4);
-    }
-
-    table thead {
-        background: linear-gradient(90deg, #0d6efd, #6610f2);
-        color: white;
-    }
-
-    .clickable:hover, .hover-shadow:hover {
-        transform: translateY(-3px) scale(1.03);
-        transition: all 0.25s ease-in-out;
-        box-shadow: 0 6px 15px rgba(0,0,0,0.2);
-    }
-</style>
-
-<script>
-    // Global Chart.js defaults for a consistent modern style
-    Chart.defaults.font.family = "'Inter', 'Helvetica Neue', 'Arial', sans-serif";
-    Chart.defaults.font.size = 13;
-    Chart.defaults.color = "#333";
-    Chart.defaults.plugins.legend.labels.usePointStyle = true;
-    Chart.defaults.plugins.legend.labels.boxWidth = 8;
-    Chart.defaults.plugins.title.font.weight = 'bold';
-    Chart.defaults.plugins.title.font.size = 18;
-    Chart.defaults.plugins.tooltip.backgroundColor = 'rgba(0, 0, 0, 0.8)';
-    Chart.defaults.plugins.tooltip.titleFont = { weight: 'bold', size: 14 };
-    Chart.defaults.plugins.tooltip.bodyFont = { size: 13 };
-    Chart.defaults.plugins.tooltip.cornerRadius = 6;
-    Chart.defaults.plugins.tooltip.padding = 12;
-</script>
-
-<!--EDUCATION LEVEL CHART SCRIPT-->
-<script>
-    var educationLevelData = @Html.Raw(Json.Serialize(Model.EduLevelSummary));
-    var Total = @Model.EduLevelSummary.Select(el => el.zCount).Sum();
-    var educationLevelLabels = educationLevelData.map(function (item) {
-        return Math.round((item.zCount/Total)*100) + '% ' + item.zName;
-    });
-    var educationLevelCategories = educationLevelData.map(item => item.educationLevelCategories);
-    var educationLevelCounts = educationLevelData.map(function (item) {
-        return item.zCount;
-    });
-
-    var ctx = document.getElementById('educationLevelPieChart').getContext('2d');
-    var educationLevelChart = new Chart(ctx, {
-        type: 'doughnut',
-        data: {
-            labels: educationLevelLabels,
-            datasets: [{
-                data: educationLevelCounts,
-                backgroundColor: [
-                    '#3B82F6', '#60A5FA', '#34D399', '#10B981', '#FBBF24',
-                    '#F59E0B', '#EF4444', '#EC4899', '#8B5CF6', '#6366F1',
-                    '#14B8A6', '#0EA5E9', '#F472B6', '#84CC16', '#EAB308'
-                ],
-                borderColor: '#fff',
-                borderWidth: 2,
-                hoverOffset: 15,
-                hoverBorderColor: '#333'
-            }]
-        },
-            options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        cutout: '60%', // more modern thin-ring look
-        plugins: {
-            title: {
-                display: true,
-                text: "Education Level",
-                color: "#111827",
-                padding: { top: 10, bottom: 25 }
-            },
-            legend: {
-                position: 'bottom',
-                labels: {
-                    color: "#374151",
-                    padding: 15,
-                    font: { size: 13, weight: '500' },
-                    generateLabels: function (chart) {
-                        const data = chart.data;
-                        return data.labels.map(function (label, i) {
-                            const meta = chart.getDatasetMeta(0);
-                            const style = meta.controller.getStyle(i);
-                            return {
-                                text: label,
-                                fillStyle: style.backgroundColor,
-                                strokeStyle: style.borderColor,
-                                lineWidth: 2,
-                                index: i
-                            };
-                        });
-                    }
-                },
-                onClick: (e, legendItem, legend) => {
-                    const index = legendItem.index;
-                    const chart = legend.chart;
-                    chart.toggleDataVisibility(index);
-                    chart.update();
-                }
-            },
-            tooltip: {
-                usePointStyle: true,
-                callbacks: {
-                    label: (context) => {
-                        const label = context.label || '';
-                        const value = context.raw || 0;
-                        const total = context.dataset.data.reduce((a, b) => a + b, 0);
-                        const percentage = Math.round((value / total) * 100);
-                        return `${label}: ${value} (${percentage}%)`;
-                    }
-                }
+            canvas:hover {
+                transform: scale(1.01);
+                box-shadow: 0 6px 18px rgba(0,0,0,0.15);
             }
-        },
-        animation: {
-            duration: 1200,
-            easing: 'easeOutQuart'
+
+        /* Chart containers for layout */
+        .chart-card {
+            background: #f9fafb;
+            border-radius: 18px;
+            padding: 20px;
+            margin-bottom: 25px;
+            transition: all 0.3s ease;
+            border: 1px solid #e6e9ef;
         }
-    }
 
-    });
-</script>
-
-
-<!--EMPLOYMENT RATES SCRIPT-->
-<script>
-    var ctx = document.getElementById("employmentHireChart").getContext("2d");
-    // Get the serialized data from the server
-    var hireData = @Html.Raw(Json.Serialize(Model.EmploymentHireRate));
-    var terminationData = @Html.Raw(Json.Serialize(Model.TerminationRate));
-    var manPowerRate = @Html.Raw(Json.Serialize(Model.ActiveEmployeeRate));
-    
-    const allYears = [...new Set([...hireData.map(item => item.zYear), ...terminationData.map(item => item.zYear)])].sort();
-
-    // Map hire counts to years, filling missing values with 0
-    const counts = allYears.map(year => {
-        const found = hireData.find(item => item.zYear === year);
-        return found ? found.zCount : 0;
-    });
-
-    // Map termination counts to years, filling missing values with 0
-    const tcounts = allYears.map(year => {
-        const found = terminationData.find(item => item.zYear === year);
-        return found ? found.zCount : 0;
-    });
-    //Man Power Map
-    const manPower = manPowerRate.map(item => item.zCount);
-
-    
-    new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: allYears,
-                datasets: [{
-                    label: 'Hires',
-                    data: counts,
-                    backgroundColor: 'rgba(63, 81, 181, 0.2)',
-                    borderColor: 'rgba(63, 81, 181, 1)',
-                    borderWidth: 3,
-                    tension: 0.2,
-                    pointBackgroundColor: 'rgba(63, 81, 181, 1)',
-                    pointRadius: 4,
-                    pointHoverRadius: 6,
-                    fill: true,
-                    yAxisID: 'y'
-                },
-                {
-                    label: 'Terminations',
-                    data: tcounts,
-                    backgroundColor: 'rgba(229, 57, 53, 0.2)',
-                    borderColor: 'rgba(229, 57, 53, 1)',
-                    borderWidth: 3,
-                    tension: 0.2,
-                    pointBackgroundColor: 'rgba(63, 81, 181, 1)',
-                    pointRadius: 4,
-                    pointHoverRadius: 6,
-                    fill: true,
-                    yAxisID: 'y'
-                },
-                {
-                    label: 'Active Man-power',
-                    data: manPower,
-                    backgroundColor: 'rgba(10, 250, 53, 0.2)',
-                    borderColor: 'rgba(10, 250, 53, 1)',
-                    borderWidth: 3,
-                    tension: 0.2,
-                    pointBackgroundColor: 'rgba(63, 81, 181, 1)',
-                    pointRadius: 4,
-                    pointHoverRadius: 6,
-                    fill: true,
-                    yAxisID: 'y'
-                }
-                ]
-            },
-
-                options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-            title: {
-                display: true,
-                text: 'Employment Trends',
-                color: '#111827'
-            },
-            legend: {
-                position: 'top',
-                labels: {
-                    color: '#374151',
-                    padding: 20,
-                    font: { size: 13, weight: '500' }
-                }
-            },
-            tooltip: {
-                mode: 'index',
-                intersect: false,
-                callbacks: {
-                    title: (context) => `Year: ${context[0].label}`,
-                    label: (context) => `${context.dataset.label}: ${context.parsed.y.toLocaleString()}`
-                }
+            .chart-card:hover {
+                background: #ffffff;
+                box-shadow: 0 10px 25px rgba(0,0,0,0.05);
             }
-        },
-        scales: {
-            x: {
-                title: {
-                    display: true,
-                    text: 'Year',
-                    color: '#111827',
-                    font: { weight: 'bold' }
-                },
-                grid: {
-                    display: false
-                }
-            },
-            y: {
-                title: {
-                    display: true,
-                    text: 'Number of Employees',
-                    color: '#111827',
-                    font: { weight: 'bold' }
-                },
-                ticks: {
-                    callback: (value) => value.toLocaleString(),
-                    color: '#6B7280'
-                },
-                grid: {
-                    color: 'rgba(209, 213, 219, 0.3)'
-                }
-            }
-        },
-        interaction: {
-            intersect: false,
-            mode: 'nearest'
-        },
-        animation: {
-            duration: 1500,
-            easing: 'easeOutQuart'
+
+        /* Titles and Nav */
+        .nav-pills .nav-link.active {
+            background: linear-gradient(90deg, #0d6efd, #20c997);
+            color: white !important;
+            box-shadow: 0 3px 10px rgba(13, 110, 253, 0.4);
         }
-    }
 
+        table thead {
+            background: linear-gradient(90deg, #0d6efd, #6610f2);
+            color: white;
+        }
+
+        .clickable:hover, .hover-shadow:hover {
+            transform: translateY(-3px) scale(1.03);
+            transition: all 0.25s ease-in-out;
+            box-shadow: 0 6px 15px rgba(0,0,0,0.2);
+        }
+    </style>
+
+    <script>
+        // Global Chart.js defaults for a consistent modern style
+        Chart.defaults.font.family = "'Inter', 'Helvetica Neue', 'Arial', sans-serif";
+        Chart.defaults.font.size = 13;
+        Chart.defaults.color = "#333";
+        Chart.defaults.plugins.legend.labels.usePointStyle = true;
+        Chart.defaults.plugins.legend.labels.boxWidth = 8;
+        Chart.defaults.plugins.title.font.weight = 'bold';
+        Chart.defaults.plugins.title.font.size = 18;
+        Chart.defaults.plugins.tooltip.backgroundColor = 'rgba(0, 0, 0, 0.8)';
+        Chart.defaults.plugins.tooltip.titleFont = { weight: 'bold', size: 14 };
+        Chart.defaults.plugins.tooltip.bodyFont = { size: 13 };
+        Chart.defaults.plugins.tooltip.cornerRadius = 6;
+        Chart.defaults.plugins.tooltip.padding = 12;
+    </script>
+
+    <!--EDUCATION LEVEL CHART SCRIPT-->
+    <script>
+        var educationLevelData = @Html.Raw(Json.Serialize(Model.EduLevelSummary));
+        var Total = @Model.EduLevelSummary.Select(el => el.zCount).Sum();
+        var educationLevelLabels = educationLevelData.map(function (item) {
+            return Math.round((item.zCount/Total)*100) + '% ' + item.zName;
         });
-</script>
+        var educationLevelCategories = educationLevelData.map(item => item.educationLevelCategories);
+        var educationLevelCounts = educationLevelData.map(function (item) {
+            return item.zCount;
+        });
 
-<!--JOB CATEGORY CHART SCRIPT-->
-<script>
-    var jobCategoryData = @Html.Raw(Json.Serialize(Model.JobCategorySummary));
-    var Total = @Model.JobCategorySummary.Select(el => el.zCount).Sum();
-    var jobCategoryLabels = jobCategoryData.map(function (item) {
-        return Math.round((item.zCount / Total) * 100) + '% ' + item.zName;
-    });
-    
-    var jobCategoryCounts = jobCategoryData.map(function (item) {
-        return item.zCount;
-    });
-
-    var ctx = document.getElementById('jobCategoryChart').getContext('2d');
-    var jobCategoryChart = new Chart(ctx, {
-        type: 'doughnut',
-        data: {
-            labels: jobCategoryLabels,
-            datasets: [{
-                data: jobCategoryCounts,
-                backgroundColor: [
-                    '#3B82F6', '#60A5FA', '#34D399', '#10B981', '#FBBF24',
-                    '#F59E0B', '#EF4444', '#EC4899', '#8B5CF6', '#6366F1',
-                    '#14B8A6', '#0EA5E9', '#F472B6', '#84CC16', '#EAB308'
-                ],
-                borderColor: '#fff',
-                borderWidth: 2,
-                hoverOffset: 15,
-                hoverBorderColor: '#333'
-            }]
-        },
-            options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        cutout: '60%', // more modern thin-ring look
-        plugins: {
-            title: {
-                display: true,
-                text: "Job Category",
-                color: "#111827",
-                padding: { top: 10, bottom: 25 }
+        var ctx = document.getElementById('educationLevelPieChart').getContext('2d');
+        var educationLevelChart = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: educationLevelLabels,
+                datasets: [{
+                    data: educationLevelCounts,
+                    backgroundColor: [
+                        '#3B82F6', '#60A5FA', '#34D399', '#10B981', '#FBBF24',
+                        '#F59E0B', '#EF4444', '#EC4899', '#8B5CF6', '#6366F1',
+                        '#14B8A6', '#0EA5E9', '#F472B6', '#84CC16', '#EAB308'
+                    ],
+                    borderColor: '#fff',
+                    borderWidth: 2,
+                    hoverOffset: 15,
+                    hoverBorderColor: '#333'
+                }]
             },
-            legend: {
-                position: 'bottom',
-                labels: {
-                    color: "#374151",
-                    padding: 15,
-                    font: { size: 13, weight: '500' },
-                    generateLabels: function (chart) {
-                        const data = chart.data;
-                        return data.labels.map(function (label, i) {
-                            const meta = chart.getDatasetMeta(0);
-                            const style = meta.controller.getStyle(i);
-                            return {
-                                text: label,
-                                fillStyle: style.backgroundColor,
-                                strokeStyle: style.borderColor,
-                                lineWidth: 2,
-                                index: i
-                            };
-                        });
-                    }
-                },
-                onClick: (e, legendItem, legend) => {
-                    const index = legendItem.index;
-                    const chart = legend.chart;
-                    chart.toggleDataVisibility(index);
-                    chart.update();
-                }
-            },
-            tooltip: {
-                usePointStyle: true,
-                callbacks: {
-                    label: (context) => {
-                        const label = context.label || '';
-                        const value = context.raw || 0;
-                        const total = context.dataset.data.reduce((a, b) => a + b, 0);
-                        const percentage = Math.round((value / total) * 100);
-                        return `${label}: ${value} (${percentage}%)`;
-                    }
-                }
-            }
-        },
-        animation: {
-            duration: 1200,
-            easing: 'easeOutQuart'
-        }
-    }
-
-    });
-</script>
-<!--WORKLOC CHART -->
-<script>
-    var jobCategoryData = @Html.Raw(Json.Serialize(Model.WorkSiteEmployees));
-    var Total = @Model.WorkSiteEmployees.Select(el => el.zCount).Sum();
-    var jobCategoryLabels = jobCategoryData.map(function (item) {
-        return Math.round(((item.zCount / Total) * 100)*100)/100 + '% ' + item.zName;
-    });
-
-    var jobCategoryCounts = jobCategoryData.map(function (item) {
-        return item.zCount;
-    });
-
-    var ctx = document.getElementById('workLocChart').getContext('2d');
-    var jobCategoryChart = new Chart(ctx, {
-        type: 'doughnut',
-        data: {
-            labels: jobCategoryLabels,
-            datasets: [{
-                data: jobCategoryCounts,
-                backgroundColor: [
-                    '#3B82F6', '#60A5FA', '#34D399', '#10B981', '#FBBF24',
-                    '#F59E0B', '#EF4444', '#EC4899', '#8B5CF6', '#6366F1',
-                    '#14B8A6', '#0EA5E9', '#F472B6', '#84CC16', '#EAB308'
-                ],
-                borderColor: '#fff',
-                borderWidth: 2,
-                hoverOffset: 15,
-                hoverBorderColor: '#333'
-            }]
-        },
-            options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        cutout: '60%', // more modern thin-ring look
-        plugins: {
-            title: {
-                display: true,
-                text: "Worksite Employee Distribution",
-                color: "#111827",
-                padding: { top: 10, bottom: 25 }
-            },
-            legend: {
-                position: 'bottom',
-                labels: {
-                    color: "#374151",
-                    padding: 15,
-                    font: { size: 13, weight: '500' },
-                    generateLabels: function (chart) {
-                        const data = chart.data;
-                        return data.labels.map(function (label, i) {
-                            const meta = chart.getDatasetMeta(0);
-                            const style = meta.controller.getStyle(i);
-                            return {
-                                text: label,
-                                fillStyle: style.backgroundColor,
-                                strokeStyle: style.borderColor,
-                                lineWidth: 2,
-                                index: i
-                            };
-                        });
-                    }
-                },
-                onClick: (e, legendItem, legend) => {
-                    const index = legendItem.index;
-                    const chart = legend.chart;
-                    chart.toggleDataVisibility(index);
-                    chart.update();
-                }
-            },
-            tooltip: {
-                usePointStyle: true,
-                callbacks: {
-                    label: (context) => {
-                        const label = context.label || '';
-                        const value = context.raw || 0;
-                        const total = context.dataset.data.reduce((a, b) => a + b, 0);
-                        const percentage = Math.round((value / total) * 100);
-                        return `${label}: ${value} (${percentage}%)`;
-                    }
-                }
-            }
-        },
-        animation: {
-            duration: 1200,
-            easing: 'easeOutQuart'
-        }
-    }
-
-    });
-</script>
-<!--JOB CLASS CHART -->
-<script>
-    var jobClassData = @Html.Raw(Json.Serialize(Model.WorkSiteEmployees));
-    var Total = @Model.WorkSiteEmployees.Select(el => el.zCount).Sum();
-
-    var jobClassLabels = jobClassData.map(function (item) {
-        return item.zName;
-    });
-
-    var jobClassCounts = jobClassData.map(function (item) {
-        return item.zCount;
-    });
-
-    var ctx = document.getElementById('none').getContext('2d');
-    var jobCategoryChart = new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: jobClassLabels,
-            datasets: [{
-                label: 'Number of Employees',
-                data: jobClassCounts,
-                backgroundColor: [
-                    '#FF6B6B', '#FF8E72', '#FFB74D', '#FFD54F', '#DCE775',
-                    '#A3E635', '#4CAF50', '#81C784', '#64B5F6', '#2196F3',
-                    '#1565C0', '#9575CD', '#BA68C8', '#F06292', '#EC407A'
-                ],
-                borderColor: '#fff',
-                borderWidth: 1
-            }]
-        },
-        options: {
+                options: {
             responsive: true,
             maintainAspectRatio: false,
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    ticks: {
-                        precision: 0,
-                        font: {
-                            size: 14
-                        }
-                    },
-                    title: {
-                        display: true,
-                        text: 'Number of Employees',
-                        font: {
-                            size: 16,
-                            weight: 'bold'
-                        }
-                    }
-                },
-                x: {
-                    ticks: {
-                        font: {
-                            size: 12
-                        },
-                        autoSkip: false,
-                        maxRotation: 45,
-                        minRotation: 45
-                    },
-                    title: {
-                        display: true,
-                        text: 'Job Classes',
-                        font: {
-                            size: 16,
-                            weight: 'bold'
-                        }
-                    }
-                }
-            },
+            cutout: '60%', // more modern thin-ring look
             plugins: {
-                legend: {
-                    display: false // Hide legend since we only have one dataset
-                },
-                tooltip: {
-                    callbacks: {
-                        label: function (context) {
-                            const value = context.raw || 0;
-                            const percentage = Math.round((value / Total) * 100);
-                            return `${value} people (${percentage}%)`;
-                        }
-                    },
-                    displayColors: false
-                },
                 title: {
                     display: true,
-                    text: 'Job Classes Distribution',
-                    font: {
-                        size: 18,
-                        weight: 'bold'
+                    text: "Education Level",
+                    color: "#111827",
+                    padding: { top: 10, bottom: 25 }
+                },
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        color: "#374151",
+                        padding: 15,
+                        font: { size: 13, weight: '500' },
+                        generateLabels: function (chart) {
+                            const data = chart.data;
+                            return data.labels.map(function (label, i) {
+                                const meta = chart.getDatasetMeta(0);
+                                const style = meta.controller.getStyle(i);
+                                return {
+                                    text: label,
+                                    fillStyle: style.backgroundColor,
+                                    strokeStyle: style.borderColor,
+                                    lineWidth: 2,
+                                    index: i
+                                };
+                            });
+                        }
                     },
-                    padding: {
-                        top: 10,
-                        bottom: 20
-                    },
-                    align: 'center'
+                    onClick: (e, legendItem, legend) => {
+                        const index = legendItem.index;
+                        const chart = legend.chart;
+                        chart.toggleDataVisibility(index);
+                        chart.update();
+                    }
+                },
+                tooltip: {
+                    usePointStyle: true,
+                    callbacks: {
+                        label: (context) => {
+                            const label = context.label || '';
+                            const value = context.raw || 0;
+                            const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                            const percentage = Math.round((value / total) * 100);
+                            return `${label}: ${value} (${percentage}%)`;
+                        }
+                    }
                 }
             },
             animation: {
-                duration: 1000,
-                easing: 'easeOutBounce'
+                duration: 1200,
+                easing: 'easeOutQuart'
             }
         }
-    });
-</script>
+
+        });
+    </script>
+
+
+    <!--EMPLOYMENT RATES SCRIPT-->
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var ctx = document.getElementById("employmentHireChart").getContext("2d");
+            // Get the serialized data from the server
+            var hireData = @Html.Raw(Json.Serialize(Model.EmploymentHireRate));
+            var terminationData = @Html.Raw(Json.Serialize(Model.TerminationRate));
+            var manPowerRate = @Html.Raw(Json.Serialize(Model.ActiveEmployeeRate));
+
+            const allYears = [...new Set([...hireData.map(item => item.zYear), ...terminationData.map(item => item.zYear)])].sort();
+
+            // Map hire counts to years, filling missing values with 0
+            const counts = allYears.map(year => {
+                const found = hireData.find(item => item.zYear === year);
+                return found ? found.zCount : 0;
+            });
+
+            // Map termination counts to years, filling missing values with 0
+            const tcounts = allYears.map(year => {
+                const found = terminationData.find(item => item.zYear === year);
+                return found ? found.zCount : 0;
+            });
+            //Man Power Map
+            const manPower = manPowerRate.map(item => item.zCount);
+
+
+            new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: allYears,
+                        datasets: [{
+                            label: 'Hires',
+                            data: counts,
+                            backgroundColor: 'rgba(63, 81, 181, 0.2)',
+                            borderColor: 'rgba(63, 81, 181, 1)',
+                            borderWidth: 3,
+                            tension: 0.2,
+                            pointBackgroundColor: 'rgba(63, 81, 181, 1)',
+                            pointRadius: 4,
+                            pointHoverRadius: 6,
+                            fill: true,
+                            yAxisID: 'y'
+                        },
+                        {
+                            label: 'Terminations',
+                            data: tcounts,
+                            backgroundColor: 'rgba(229, 57, 53, 0.2)',
+                            borderColor: 'rgba(229, 57, 53, 1)',
+                            borderWidth: 3,
+                            tension: 0.2,
+                            pointBackgroundColor: 'rgba(63, 81, 181, 1)',
+                            pointRadius: 4,
+                            pointHoverRadius: 6,
+                            fill: true,
+                            yAxisID: 'y'
+                        },
+                        {
+                            label: 'Active Man-power',
+                            data: manPower,
+                            backgroundColor: 'rgba(10, 250, 53, 0.2)',
+                            borderColor: 'rgba(10, 250, 53, 1)',
+                            borderWidth: 3,
+                            tension: 0.2,
+                            pointBackgroundColor: 'rgba(63, 81, 181, 1)',
+                            pointRadius: 4,
+                            pointHoverRadius: 6,
+                            fill: true,
+                            yAxisID: 'y'
+                        }
+                        ]
+                    },
+
+                        options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Employment Trends',
+                        color: '#111827'
+                    },
+                    legend: {
+                        position: 'top',
+                        labels: {
+                            color: '#374151',
+                            padding: 20,
+                            font: { size: 13, weight: '500' }
+                        }
+                    },
+                    tooltip: {
+                        mode: 'index',
+                        intersect: false,
+                        callbacks: {
+                            title: (context) => `Year: ${context[0].label}`,
+                            label: (context) => `${context.dataset.label}: ${context.parsed.y.toLocaleString()}`
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Year',
+                            color: '#111827',
+                            font: { weight: 'bold' }
+                        },
+                        grid: {
+                            display: false
+                        }
+                    },
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'Number of Employees',
+                            color: '#111827',
+                            font: { weight: 'bold' }
+                        },
+                        ticks: {
+                            callback: (value) => value.toLocaleString(),
+                            color: '#6B7280'
+                        },
+                        grid: {
+                            color: 'rgba(209, 213, 219, 0.3)'
+                        }
+                    }
+                },
+                interaction: {
+                    intersect: false,
+                    mode: 'nearest'
+                },
+                animation: {
+                    duration: 1500,
+                    easing: 'easeOutQuart'
+                }
+            }
+
+                });
+            });
+    </script>
+
+    <!--JOB CATEGORY CHART SCRIPT-->
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var jobCategoryData = @Html.Raw(Json.Serialize(Model.JobCategorySummary));
+            var Total = @Model.JobCategorySummary.Select(el => el.zCount).Sum();
+            var jobCategoryLabels = jobCategoryData.map(function (item) {
+                return Math.round((item.zCount / Total) * 100) + '% ' + item.zName;
+            });
+
+            var jobCategoryCounts = jobCategoryData.map(function (item) {
+                return item.zCount;
+            });
+
+            var ctx = document.getElementById('jobCategoryChart').getContext('2d');
+            var jobCategoryChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: jobCategoryLabels,
+                    datasets: [{
+                        data: jobCategoryCounts,
+                        backgroundColor: [
+                            '#3B82F6', '#60A5FA', '#34D399', '#10B981', '#FBBF24',
+                            '#F59E0B', '#EF4444', '#EC4899', '#8B5CF6', '#6366F1',
+                            '#14B8A6', '#0EA5E9', '#F472B6', '#84CC16', '#EAB308'
+                        ],
+                        borderColor: '#fff',
+                        borderWidth: 2,
+                        hoverOffset: 15,
+                        hoverBorderColor: '#333'
+                    }]
+                },
+                    options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '60%', // more modern thin-ring look
+                plugins: {
+                    title: {
+                        display: true,
+                        text: "Job Category",
+                        color: "#111827",
+                        padding: { top: 10, bottom: 25 }
+                    },
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            color: "#374151",
+                            padding: 15,
+                            font: { size: 13, weight: '500' },
+                            generateLabels: function (chart) {
+                                const data = chart.data;
+                                return data.labels.map(function (label, i) {
+                                    const meta = chart.getDatasetMeta(0);
+                                    const style = meta.controller.getStyle(i);
+                                    return {
+                                        text: label,
+                                        fillStyle: style.backgroundColor,
+                                        strokeStyle: style.borderColor,
+                                        lineWidth: 2,
+                                        index: i
+                                    };
+                                });
+                            }
+                        },
+                        onClick: (e, legendItem, legend) => {
+                            const index = legendItem.index;
+                            const chart = legend.chart;
+                            chart.toggleDataVisibility(index);
+                            chart.update();
+                        }
+                    },
+                    tooltip: {
+                        usePointStyle: true,
+                        callbacks: {
+                            label: (context) => {
+                                const label = context.label || '';
+                                const value = context.raw || 0;
+                                const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                const percentage = Math.round((value / total) * 100);
+                                return `${label}: ${value} (${percentage}%)`;
+                            }
+                        }
+                    }
+                },
+                animation: {
+                    duration: 1200,
+                    easing: 'easeOutQuart'
+                }
+            }
+
+            });
+        });
+    </script>
+    <!--WORKLOC CHART -->
+    <script>
+        var jobCategoryData = @Html.Raw(Json.Serialize(Model.WorkSiteEmployees));
+        var Total = @Model.WorkSiteEmployees.Select(el => el.zCount).Sum();
+        var jobCategoryLabels = jobCategoryData.map(function (item) {
+            return Math.round(((item.zCount / Total) * 100)*100)/100 + '% ' + item.zName;
+        });
+
+        var jobCategoryCounts = jobCategoryData.map(function (item) {
+            return item.zCount;
+        });
+
+        var ctx = document.getElementById('workLocChart').getContext('2d');
+        var jobCategoryChart = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: jobCategoryLabels,
+                datasets: [{
+                    data: jobCategoryCounts,
+                    backgroundColor: [
+                        '#3B82F6', '#60A5FA', '#34D399', '#10B981', '#FBBF24',
+                        '#F59E0B', '#EF4444', '#EC4899', '#8B5CF6', '#6366F1',
+                        '#14B8A6', '#0EA5E9', '#F472B6', '#84CC16', '#EAB308'
+                    ],
+                    borderColor: '#fff',
+                    borderWidth: 2,
+                    hoverOffset: 15,
+                    hoverBorderColor: '#333'
+                }]
+            },
+                options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            cutout: '60%', // more modern thin-ring look
+            plugins: {
+                title: {
+                    display: true,
+                    text: "Worksite Employee Distribution",
+                    color: "#111827",
+                    padding: { top: 10, bottom: 25 }
+                },
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        color: "#374151",
+                        padding: 15,
+                        font: { size: 13, weight: '500' },
+                        generateLabels: function (chart) {
+                            const data = chart.data;
+                            return data.labels.map(function (label, i) {
+                                const meta = chart.getDatasetMeta(0);
+                                const style = meta.controller.getStyle(i);
+                                return {
+                                    text: label,
+                                    fillStyle: style.backgroundColor,
+                                    strokeStyle: style.borderColor,
+                                    lineWidth: 2,
+                                    index: i
+                                };
+                            });
+                        }
+                    },
+                    onClick: (e, legendItem, legend) => {
+                        const index = legendItem.index;
+                        const chart = legend.chart;
+                        chart.toggleDataVisibility(index);
+                        chart.update();
+                    }
+                },
+                tooltip: {
+                    usePointStyle: true,
+                    callbacks: {
+                        label: (context) => {
+                            const label = context.label || '';
+                            const value = context.raw || 0;
+                            const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                            const percentage = Math.round((value / total) * 100);
+                            return `${label}: ${value} (${percentage}%)`;
+                        }
+                    }
+                }
+            },
+            animation: {
+                duration: 1200,
+                easing: 'easeOutQuart'
+            }
+        }
+
+        });
+    </script>
+    <!--JOB CLASS CHART -->
+    <script>
+        var jobClassData = @Html.Raw(Json.Serialize(Model.WorkSiteEmployees));
+        var Total = @Model.WorkSiteEmployees.Select(el => el.zCount).Sum();
+
+        var jobClassLabels = jobClassData.map(function (item) {
+            return item.zName;
+        });
+
+        var jobClassCounts = jobClassData.map(function (item) {
+            return item.zCount;
+        });
+
+        var ctx = document.getElementById('none').getContext('2d');
+        var jobCategoryChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: jobClassLabels,
+                datasets: [{
+                    label: 'Number of Employees',
+                    data: jobClassCounts,
+                    backgroundColor: [
+                        '#FF6B6B', '#FF8E72', '#FFB74D', '#FFD54F', '#DCE775',
+                        '#A3E635', '#4CAF50', '#81C784', '#64B5F6', '#2196F3',
+                        '#1565C0', '#9575CD', '#BA68C8', '#F06292', '#EC407A'
+                    ],
+                    borderColor: '#fff',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            precision: 0,
+                            font: {
+                                size: 14
+                            }
+                        },
+                        title: {
+                            display: true,
+                            text: 'Number of Employees',
+                            font: {
+                                size: 16,
+                                weight: 'bold'
+                            }
+                        }
+                    },
+                    x: {
+                        ticks: {
+                            font: {
+                                size: 12
+                            },
+                            autoSkip: false,
+                            maxRotation: 45,
+                            minRotation: 45
+                        },
+                        title: {
+                            display: true,
+                            text: 'Job Classes',
+                            font: {
+                                size: 16,
+                                weight: 'bold'
+                            }
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false // Hide legend since we only have one dataset
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function (context) {
+                                const value = context.raw || 0;
+                                const percentage = Math.round((value / Total) * 100);
+                                return `${value} people (${percentage}%)`;
+                            }
+                        },
+                        displayColors: false
+                    },
+                    title: {
+                        display: true,
+                        text: 'Job Classes Distribution',
+                        font: {
+                            size: 18,
+                            weight: 'bold'
+                        },
+                        padding: {
+                            top: 10,
+                            bottom: 20
+                        },
+                        align: 'center'
+                    }
+                },
+                animation: {
+                    duration: 1000,
+                    easing: 'easeOutBounce'
+                }
+            }
+        });
+    </script>
+}

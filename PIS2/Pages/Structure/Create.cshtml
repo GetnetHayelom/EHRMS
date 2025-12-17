@@ -4,40 +4,51 @@
 <h1 class="fw-bold">Structure</h1>
 <h4 class="fw-bold">New Structure</h4>
 <hr />
-<div class="col-md-4">
-    <form method="post">
-        <div class="form-group">
+<div>
+    <form method="post" class="d-flex gap-3">
+        <div class="col-md-6">
             <div class="form-group">
-                <label class="control-label">Company</label>
-                <select class="form-control" asp-items="ViewBag.companyID" id="companyID">
-                    <option value="">--Select Company--</option>
+                <div class="form-group">
+                    <label class="control-label">Company</label>
+                    <select class="form-control" asp-items="ViewBag.companyID" id="companyID">
+                        <option value="">--Select Company--</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label asp-for="Structure.departmentID">Department Name</label>
+                <select asp-for="Structure.departmentID" class="form-control" id="departmentID" asp-items="ViewBag.departmentID">
+                    <option value="">--Select Department--</option>
                 </select>
             </div>
-        </div>
-        <div class="form-group">
-            <label asp-for="Structure.departmentID">Department Name</label>
-            <select asp-for="Structure.departmentID" class="form-control" id="departmentID">
-                <option value="">--Select Department--</option>
-            </select>
-        </div>
-        <div class="form-group">
-            <label asp-for="Structure.jobID">Job Title</label>
-            <select asp-for="Structure.jobID" class="form-control" id="jobID">
-                <option value="">--Select Job--</option>
-            </select>
-        </div>
-        <div class="form-group">
-            <label asp-for="Structure.requiredNumber">Required Number</label>
-            <input asp-for="Structure.requiredNumber" class="form-control" />
-        </div>
-        <div class="form-group">
-            <label asp-for="Structure.structureStatus">Status</label>
-            <select asp-for="Structure.structureStatus" class="form-control" asp-items="@Html.GetEnumSelectList<Models.mainStatus>()"></select>
+
+            <div class="form-group">
+                <label for="filter-jobTitle">Job Title:</label>
+                <input list="jobTitleOptions" class="form-control" id="filter-jobTitle" placeholder="Type or select a job title" />
+                <!-- Hidden field where jobID is stored -->
+                <input type="hidden" id="jobID" name="Structure.jobID" />
+                <datalist id="jobTitleOptions">
+                    <option value="">All</option>
+                    @foreach (var job in Model.Jobs)
+                    {
+                        <option value="@job.jobTitle" data-id="@job.jobID"></option>
+                    }
+                </datalist>
+            </div>
+            <div class="form-group">
+                <label asp-for="Structure.requiredNumber">Required Number</label>
+                <input asp-for="Structure.requiredNumber" class="form-control" />
+            </div>
+            <div class="form-group">
+                <label asp-for="Structure.structureStatus">Status</label>
+                <select asp-for="Structure.structureStatus" class="form-control" asp-items="@Html.GetEnumSelectList<Models.mainStatus>()"></select>
+            </div>
         </div>
         
-        <div class="p-2 border-1 mt-2">
-        <h5 class="fw-bold m-0 p-0">Reports To</h5>
-        <hr/>
+        
+        <div class="p-2 border-1 mt-2 col-md-6">
+            <h5 class="fw-bold m-0 p-0">Reports To</h5>
+            <hr/>
             <div class="form-group">
                 <div class="form-group">
                     <label class="control-label">Company</label>
@@ -58,89 +69,121 @@
                     <option value="">--Select From Structure--</option>
                 </select>
             </div>
-            
+            <div class="d-flex justify-content-end m-2">
+                <button type="submit" class="btn btn-success m-2">Save</button>
+                <a asp-page="Index" class="btn btn-secondary m-2">Cancel</a>
+                @if (TempData["SuccessMessage"] != null)
+                {
+                    <div class="alert alert-success">
+                        @TempData["SuccessMessage"]
+                    </div>
+                }
+            </div>
         </div>
-        <div class="d-flex justify-content-end">
-            <button type="submit" class="btn btn-success m-2">Save</button>
-            <a asp-page="Index" class="btn btn-secondary m-2">Cancel</a>
-        </div>
+        
+        
     </form>
 </div>
-<script src="~/lib/jquery/dist/jquery.min.js"></script>
-<script>
-    $(document).ready(function () {
-        $('#companyID').change(function () {
-            var companyID = $(this).val();
-            $('#departmentID').empty().append('<option value="">-- Loading --</option>');
 
-            if (companyID) {
-                $.getJSON('?handler=DepartmentsByCompany&companyID=' + companyID, function (data) {
+
+
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('#companyID').change(function () {
+                var companyID = $(this).val();
+                $('#departmentID').empty().append('<option value="">-- Loading --</option>');
+
+                if (companyID) {
+                    $.getJSON('?handler=DepartmentsByCompany&companyID=' + companyID, function (data) {
+                        $('#departmentID').empty().append('<option value="">-- Select Department --</option>');
+                        $.each(data, function (i, dept) {
+                            $('#departmentID').append($('<option>', {
+                                value: dept.departmentID,
+                                text: dept.departmentName
+                            }));
+                        });
+                    });
+                } else {
                     $('#departmentID').empty().append('<option value="">-- Select Department --</option>');
-                    $.each(data, function (i, dept) {
-                        $('#departmentID').append($('<option>', {
-                            value: dept.departmentID,
-                            text: dept.departmentName
-                        }));
-                    });
-                });
-            } else {
-                $('#departmentID').empty().append('<option value="">-- Select Department --</option>');
-            }
-        });
-        $('#companyID2').change(function () {
-            var companyID = $(this).val();
-            $('#departmentID2').empty().append('<option value="">-- Loading --</option>');
+                }
+            });
+            $('#companyID2').change(function () {
+                var companyID = $(this).val();
+                $('#departmentID2').empty().append('<option value="">-- Loading --</option>');
 
-            if (companyID) {
-                $.getJSON('?handler=DepartmentsByCompany&companyID=' + companyID, function (data) {
+                if (companyID) {
+                    $.getJSON('?handler=DepartmentsByCompany&companyID=' + companyID, function (data) {
+                        $('#departmentID2').empty().append('<option value="">-- Select Department --</option>');
+                        $.each(data, function (i, dept) {
+                            $('#departmentID2').append($('<option>', {
+                                value: dept.departmentID,
+                                text: dept.departmentName
+                            }));
+                        });
+                    });
+                } else {
                     $('#departmentID2').empty().append('<option value="">-- Select Department --</option>');
-                    $.each(data, function (i, dept) {
-                        $('#departmentID2').append($('<option>', {
-                            value: dept.departmentID,
-                            text: dept.departmentName
-                        }));
+                }
+            });
+            $('#departmentID').change(function () {
+                var departmentID = $(this).val();
+                $('#jobID').empty().append('<option value="">-- Loading --</option>');
+
+                if (departmentID) {
+                    $.getJSON('?handler=AvailableJobs&departmentID=' + departmentID, function (data) {
+                        $('#jobID').empty().append('<option value="">-- Select Job --</option>');
+                        $.each(data, function (i, job) {
+                            $('#jobID').append($('<option>', {
+                                value: job.jobID,
+                                text: job.jobTitle
+                            }));
+                        });
                     });
-                });
-            } else {
-                $('#departmentID2').empty().append('<option value="">-- Select Department --</option>');
-            }
-        });
-
-        $('#departmentID').change(function () {
-            var departmentID = $(this).val();
-            $('#jobID').empty().append('<option value="">-- Loading --</option>');
-
-            if (departmentID) {
-                $.getJSON('?handler=AvailableJobs&departmentID=' + departmentID, function (data) {
+                } else {
                     $('#jobID').empty().append('<option value="">-- Select Job --</option>');
-                    $.each(data, function (i, job) {
-                        $('#jobID').append($('<option>', {
-                            value: job.jobID,
-                            text: job.jobTitle
-                        }));
-                    });
-                });
-            } else {
-                $('#jobID').empty().append('<option value="">-- Select Job --</option>');
-            }
-        });
-        $('#departmentID2').change(function () {
-            var departmentID = $(this).val();
-            $('#jobID2').empty().append('<option value="">-- Loading --</option>');
+                }
+            });
+            $('#departmentID2').change(function () {
+                var departmentID = $(this).val();
+                $('#jobID2').empty().append('<option value="">-- Loading --</option>');
 
-            if (departmentID) {
-                $.getJSON('?handler=ReportsTo&departmentID=' + departmentID, function (data) {
-                    $('#jobID2').empty().append('<option value="">-- Select Position --</option>');
-                    $.each(data, function (i, job) {
-                        $('#jobID2').append($('<option>', {
-                            value: job.structureID,
-                            text: job.jobTitle
-                        }));
+                if (departmentID) {
+                    $.getJSON('?handler=ReportsTo&departmentID=' + departmentID, function (data) {
+                        $('#jobID2').empty().append('<option value="">-- Select Position --</option>');
+                        $.each(data, function (i, job) {
+                            $('#jobID2').append($('<option>', {
+                                value: job.structureID,
+                                text: job.jobTitle
+                            }));
+                        });
                     });
-                });
-            } else {
-                $('#jobID2').empty().append('<option value="">-- Select Position --</option>');
+                } else {
+                    $('#jobID2').empty().append('<option value="">-- Select Position --</option>');
+                }
+            });
+        });
+    </script>
+<script>
+    document.getElementById('filter-jobTitle').addEventListener('change', function () {
+
+        let typedTitle = this.value.trim();
+        let options = document.querySelectorAll('#jobTitleOptions option');
+
+        let selectedID = "";
+
+        options.forEach(opt => {
+            if (opt.value === typedTitle) {
+                selectedID = opt.dataset.id;
             }
         });
+
+        document.getElementById('jobID').value = selectedID;
     });
 </script>
+
+
+ 
+
+

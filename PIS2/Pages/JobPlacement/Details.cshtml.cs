@@ -19,6 +19,7 @@ namespace PIS2.Pages.JobPlacement
         }
 
         public jobPlacementModel jobPlacementModel { get; set; } = default!;
+        public shiftModel? shiftAssigned { get; set; }
         public List<jobPlacementHistoryModel> jobPlacementHistoryList { get; set; } = default!;
 
         public async Task<IActionResult> OnGetAsync(int? id)
@@ -27,6 +28,7 @@ namespace PIS2.Pages.JobPlacement
             {
                 return NotFound();
             }
+           
 
             var jobplacementmodel = await _context.JobPlacements
                 .Include(j => j.jobModel).ThenInclude(j => j.jobGradeModel)
@@ -45,6 +47,9 @@ namespace PIS2.Pages.JobPlacement
                 jobPlacementModel = jobplacementmodel;
                 jobPlacementHistoryList = _context.JobPlacementHistories
                     .Include(jh => jh.departmentModel).Where(jh => jh.jobPlacementID == jobPlacementModel.jobPlacementID).ToList() ?? new List<jobPlacementHistoryModel>();
+
+                shiftAssigned = _context.ShiftAssignments
+                    .Where(s => s.employmentID == jobPlacementModel.employmentID)?.OrderBy(s => s.modifiedDate)?.LastOrDefault()?.shiftModel ?? new shiftModel();
 
             }
             return Page();

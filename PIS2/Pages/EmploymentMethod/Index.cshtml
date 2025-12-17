@@ -42,7 +42,19 @@
                 @Html.DisplayFor(modelItem => item.employmentMethodDescription)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.employmentMethodStatus)
+                    @if (item.employmentMethodStatus == Models.mainStatus.Active)
+                    {
+                        <span class="badge bg-success">@Html.DisplayFor(modelItem => item.employmentMethodStatus)</span>
+
+                    }
+                    else if (item.employmentMethodStatus == Models.mainStatus.Suspended)
+                    {
+                        <span class="badge bg-warning">@Html.DisplayFor(modelItem => item.employmentMethodStatus)</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-secondary">@Html.DisplayFor(modelItem => item.employmentMethodStatus)</span>
+                    }
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.modifiedDate)
@@ -51,8 +63,14 @@
                 @Html.DisplayFor(modelItem => item.modifiedBy)
             </td>
             <td>
-                <a asp-page="./Edit" asp-route-id="@item.employmentMethodID">Edit</a> |
-                <a asp-page="./Details" asp-route-id="@item.employmentMethodID">Details</a>
+                    <div class="btn-group" role="group">
+                        <a asp-page="./Details" asp-route-id="@item.employmentMethodID" class="btn btn-sm btn-outline-primary" title="View Details">
+                            <i class="bi bi-eye"></i>
+                        </a>
+                        <a asp-page="./Edit" asp-route-id="@item.employmentMethodID" class="btn btn-sm btn-outline-success" title="Edit">
+                            <i class="bi bi-pencil-square"></i>
+                        </a>
+                    </div>
                 
             </td>
         </tr>

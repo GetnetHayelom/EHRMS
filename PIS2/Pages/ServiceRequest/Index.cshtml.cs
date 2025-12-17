@@ -52,12 +52,9 @@ namespace PIS2.Pages.ServiceRequest
             //EndDate = _context.ServiceRequests.OrderBy(s => s.serviceRequestDate).FirstOrDefault().serviceRequestDate;
 
             var qry = _context.ServiceRequests
-                .Include(s => s.Employment).ThenInclude(e => e.SiteAssignments.OrderByDescending(sa =>sa.modifiedDate).FirstOrDefault())
-                    .Include(s => s.Employment).ThenInclude(e => e.JobPlacements)
-                        .ThenInclude(j => j.departmentModel)
-                            .ThenInclude(d => d.companyModel)
-                .Include(s => s.Employment)
-                    .ThenInclude(e => e.JobPlacements)
+                .Include(s => s.Employment).ThenInclude(e => e.SiteAssignments)
+                .Include(s => s.Employment).ThenInclude(e => e.JobPlacements).ThenInclude(j => j.departmentModel).ThenInclude(d => d.companyModel)
+                .Include(s => s.Employment).ThenInclude(e => e.JobPlacements)
                 .AsQueryable();
 
             if (!string.IsNullOrEmpty(status))
@@ -92,35 +89,6 @@ namespace PIS2.Pages.ServiceRequest
         }
 
 
-        //public async Task OnGetAsync()
-        //{
-        //    Departments = await _context.Departments
-        //        .Where(d => d.departmentStatus == mainStatus.Active)
-        //        .OrderBy(d => d.departmentName).ToListAsync();
-
-        //    WorkLocations = await _context.WorkSites
-        //        .Where(d => d.workSiteStatus == mainStatus.Active)
-        //        .OrderBy(w => w.workSiteName).ToListAsync();
-
-        //    Companies = await _context.Companies
-        //        .Where(d => d.companyStatus == mainStatus.Active)
-        //        .OrderBy(c => c.companyName).ToListAsync();
-
-        //    StartDate = DateTime.Now;
-
-        //    EndDate =DateTime.Now;
-
-        //    serviceRequestModel = await _context.ServiceRequests
-        //        .Include(s => s.Employment)
-        //            .ThenInclude(e => e.JobPlacements)
-        //                .ThenInclude(j => j.departmentModel)
-        //                    .ThenInclude(d =>d.companyModel)
-
-        //        .Include(s => s.Employment)
-        //            .ThenInclude(e => e.JobPlacements)
-        //                .ThenInclude(j => j.workSiteModel)
-        //        .ToListAsync();
-        //}
 
 
 

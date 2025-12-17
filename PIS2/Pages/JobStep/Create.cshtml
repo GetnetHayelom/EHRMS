@@ -38,8 +38,8 @@
                 <input asp-for="jobStepModel.modifiedBy" class="form-control" value="@User.Identity.Name" />
                 <span asp-validation-for="jobStepModel.modifiedBy" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary m-2" />
+            <div class="form-group d-flex-justify-content-end m-2">
+                <input type="submit" value="Save" class="btn btn-secondary" />
             </div>
         </form>
     </div>

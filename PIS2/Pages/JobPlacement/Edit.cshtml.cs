@@ -87,9 +87,20 @@ namespace PIS2.Pages.JobPlacement
 
                 return Page();
             }
-            
 
-            _context.Attach(jobPlacementModel).State = EntityState.Modified;
+            var jp = _context.JobPlacements.FirstOrDefault(j => j.jobPlacementID == jobPlacementModel.jobPlacementID);
+
+            if(jp != jobPlacementModel)
+            {
+                jp.departmentID = jobPlacementModel.departmentID;
+                jp.jobPlacementDate = jobPlacementModel.jobPlacementDate;
+                jp.jobPlacementReference = jobPlacementModel.jobPlacementReference;
+                jp.jobPlacementReason = jobPlacementModel.jobPlacementReason;
+                jp.jobPlacementStatus = jobPlacementModel.jobPlacementStatus;
+                jp.modifiedBy = User.Identity.Name;
+            }
+
+            _context.Attach(jp).State = EntityState.Modified;
             try
             {
                    
@@ -104,26 +115,13 @@ namespace PIS2.Pages.JobPlacement
             
            
         }
-        public JsonResult OnGetDepartmentsByCompany(int companyID)
-        {
-            var departments = _context.Departments
-                .Where(d => d.companyID == companyID && d.departmentStatus == mainStatus.Active)
-                .OrderBy(d => d.departmentName)
-                .Select(d => new { d.departmentID, d.departmentName })
-                .ToList();
-
-            return new JsonResult(departments);
-        }
+        
         public JsonResult OnGetSalary(int jobStepID)
         {
             var Salary = _context.JobSteps.FirstOrDefault(js => js.jobStepID == jobStepID).jobStepSalary;
             return new JsonResult(Salary);
         }
-        public JsonResult OnGetJobGrade(int jobID)
-        {
-            var jobGradeID = _context.Jobs.FirstOrDefault(j => j.jobID == jobID).jobGradeID;
-            return new JsonResult(jobGradeID);
-        }
+      
         public JsonResult OnGetJobStep(int jobGradeID)
         {
             var jobSteps = _context.JobSteps

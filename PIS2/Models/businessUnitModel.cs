@@ -19,6 +19,7 @@ namespace PIS2.Models
         public mainStatus businessUnitStatus { get; set; } = mainStatus.Suspended;
         public virtual ICollection<departmentModel>? Departments { get; set; } = null!;
         public string modifiedBy { get; set; }
+        public DateTime modifiedDate { get; set; } = DateTime.Now;
 
         public businessUnitModel() { }
 

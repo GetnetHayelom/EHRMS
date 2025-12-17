@@ -3,12 +3,11 @@
 @{
     ViewData["Title"] = "Edit Deduction Type";
 }
-
+<h1 class="fw-bold">Deduction Types</h1>
+<h4 class="mb-0 fw-bold text-dark"><i class="bi bi-pencil-square me-2 text-primary"></i>Edit Deduction Type</h4>
 <div class="container mt-5">
     <div class="card shadow-sm border-0">
-        <div class="card-header bg-primary text-white">
-            <h5 class="mb-0"><i class="bi bi-pencil-square me-2"></i>Edit Deduction Type</h5>
-        </div>
+
         <div class="card-body">
             <form method="post" class="needs-validation" novalidate>
                 <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
@@ -17,13 +16,13 @@
 
                 <div class="row mb-3">
                     <div class="col-md-6">
-                        <label asp-for="DeductionType.deductionName" class="form-label fw-semibold"></label>
+                        <label asp-for="DeductionType.deductionName" class="form-label fw-semibold">Deduction Name</label>
                         <input asp-for="DeductionType.deductionName" class="form-control" placeholder="Enter deduction name" />
                         <span asp-validation-for="DeductionType.deductionName" class="text-danger"></span>
                     </div>
 
                     <div class="col-md-6">
-                        <label asp-for="DeductionType.deductBase" class="form-label fw-semibold"></label>
+                        <label asp-for="DeductionType.deductBase" class="form-label fw-semibold">Deduction Base</label>
                         <select asp-for="DeductionType.deductBase" class="form-select" asp-items="Html.GetEnumSelectList<Models.deductionBase>()"></select>
                         <span asp-validation-for="DeductionType.deductBase" class="text-danger"></span>
                     </div>
@@ -31,7 +30,7 @@
 
                 <div class="row mb-3">
                     <div class="col-md-6">
-                        <label asp-for="DeductionType.dedcutionPriority" class="form-label fw-semibold"></label>
+                        <label asp-for="DeductionType.dedcutionPriority" class="form-label fw-semibold">Priority</label>
                         <input asp-for="DeductionType.dedcutionPriority" class="form-control" type="number" min="1" />
                         <span asp-validation-for="DeductionType.dedcutionPriority" class="text-danger"></span>
                     </div>
@@ -39,26 +38,26 @@
                     <div class="col-md-3">
                         <div class="form-check mt-4">
                             <input asp-for="DeductionType.isRecurring" class="form-check-input" type="checkbox" />
-                            <label asp-for="DeductionType.isRecurring" class="form-check-label fw-semibold"></label>
+                            <label asp-for="DeductionType.isRecurring" class="form-check-label fw-semibold">Is Recuring</label>
                         </div>
                     </div>
 
                     <div class="col-md-3">
                         <div class="form-check mt-4">
                             <input asp-for="DeductionType.isMandatory" class="form-check-input" type="checkbox" />
-                            <label asp-for="DeductionType.isMandatory" class="form-check-label fw-semibold"></label>
+                            <label asp-for="DeductionType.isMandatory" class="form-check-label fw-semibold">Is Mandatory</label>
                         </div>
                     </div>
                 </div>
 
                 <div class="row mb-4">
                     <div class="col-md-6">
-                        <label asp-for="DeductionType.deductionStatus" class="form-label fw-semibold"></label>
+                        <label asp-for="DeductionType.deductionStatus" class="form-label fw-semibold">Deduction Status</label>
                         <select asp-for="DeductionType.deductionStatus" class="form-select" asp-items="Html.GetEnumSelectList<Models.mainStatus>()"></select>
                     </div>
 
                     <div class="col-md-6">
-                        <label asp-for="DeductionType.modifiedBy" class="form-label fw-semibold"></label>
+                        <label asp-for="DeductionType.modifiedBy" class="form-label fw-semibold">User</label>
                         <input asp-for="DeductionType.modifiedBy" class="form-control" readonly />
                     </div>
                 </div>

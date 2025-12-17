@@ -1,0 +1,54 @@
+﻿@model IEnumerable<PIS2.Models.departmentModel>
+
+@foreach (var companyGroup in Model.OrderBy(d => d.companyModel?.companyName).GroupBy(d => d.companyModel?.companyName))
+{
+    <tr class=" bg-info text-dark fw-bold"><td colspan="7">@companyGroup.Key (@companyGroup.Count())</td> </tr>
+
+    @foreach (var item in companyGroup.OrderBy(c => c.departmentName))
+    {
+        <tr onclick="location.href='@Url.Page("Details", new { id = item.departmentID })'" style="cursor:pointer;">
+            <td class="fw-bold">
+                @Html.DisplayFor(modelItem => item.departmentName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.departmentShort)
+            </td>
+            
+            <td>
+                @if (item.departmentStatus == Models.mainStatus.Active)
+                {
+                    <span class="badge bg-success">@Html.DisplayFor(modelItem => item.departmentStatus)</span>
+
+                }
+                else if (item.departmentStatus == Models.mainStatus.Suspended)
+                {
+                    <span class="badge bg-warning">@Html.DisplayFor(modelItem => item.departmentStatus)</span>
+                }
+                else
+                {
+                    <span class="badge bg-secondary">@Html.DisplayFor(modelItem => item.departmentStatus)</span>
+                }
+
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.subAccountModel.subAccountDescription)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.companyModel.companyName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.employmentModel.personModel.personFullName)
+            </td>
+            <td class="d-print-none">
+                <div class="btn-group" role="group">
+                    <a asp-page="./Details" asp-route-id="@item.departmentID" class="btn btn-sm btn-outline-primary" title="View Details">
+                        <i class="bi bi-eye"></i>
+                    </a>
+                    <a asp-page="./Edit" asp-route-id="@item.departmentID" class="btn btn-sm btn-outline-success" title="Edit">
+                        <i class="bi bi-pencil-square"></i>
+                    </a>
+                </div>
+            </td>
+        </tr>
+    }
+}

@@ -11,9 +11,13 @@
         <h2 class="fw-bold text-dark">
             <i class="bi bi-megaphone-fill me-2"></i> Notice Board
         </h2>
-        <a asp-page="/Notice/Create" class="btn btn-sm btn-primary">
-            <i class="bi bi-file-plus-fill me-2"></i>New Notice
-        </a>
+        @if (User.IsInRole("MIE\\PMS_HRCLERK"))
+        {
+            <a asp-page="/Notice/Create" class="btn btn-sm btn-primary">
+                <i class="bi bi-file-plus-fill me-2"></i>New Notice
+            </a>
+        }
+        
     </div>
 
     @if (Model.Notices == null || !Model.Notices.Any())
@@ -62,20 +66,24 @@
                                 Expires: @notice.ExpiryDate?.ToString("dd MMM yyyy");
                                 }
                             </small>
+                            <div class="d-flex justify-content-end gap-3">
+                                @if (!string.IsNullOrWhiteSpace(notice.AttachmentPath))
+                                {
+                                    <a href="@notice.AttachmentPath" class="btn btn-sm btn-outline-primary" target="_blank">
+                                        <i class="bi bi-paperclip"></i> View Attachment
+                                    </a>
+                                }
+                                <a href="/Notice/Details/@notice.noticeID" class="btn btn-sm btn-primary">Open</a>
 
-                            @if (!string.IsNullOrWhiteSpace(notice.AttachmentPath))
-                            {
-                                <a href="@notice.AttachmentPath" class="btn btn-sm btn-outline-primary" target="_blank">
-                                    <i class="bi bi-paperclip"></i> View Attachment
-                                </a>
-                            }
-                            <a href="/Notice/Details/@notice.noticeID" class="btn btn-sm btn-primary">Open</a>
-
-                            @if (User.IsInRole("MIE\\PMS_HRCLERK"))
-                            {
-                                <a href="/Notice/Edit?id=@notice.noticeID" class="btn btn-sm btn-primary">
-                                    <i class="bi bi-pencil-fill me-2"></i>Edit</a>
-                            }
+                                @if (User.IsInRole("MIE\\PMS_HRCLERK"))
+                                {
+                                    <a href="/Notice/Edit?id=@notice.noticeID" class="btn btn-sm btn-primary">
+                                        <i class="bi bi-pencil-fill me-2"></i>Edit
+                                    </a>
+                                }
+                            </div>
+                            
+                        
                         </div>
                     </div>
                 </div>

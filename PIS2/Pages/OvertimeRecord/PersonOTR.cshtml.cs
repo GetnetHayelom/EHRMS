@@ -24,45 +24,56 @@ namespace PIS2.Pages.OvertimeRecord
         public int otCount { get; set; }
         public decimal TotalOtCost { get; set; }
 
-        public async Task OnGetAsync(List<int>? otrID, int? empID)
+        public async Task OnGetAsync(List<int>? otrID, int? empID, DateTime? date)
         {
            
             overtimeRecordModel = new List<overtimeRecordModel>();
+            employmentModel = new employmentModel();
+            departmentModel = new departmentModel();
+
             var otr = _context.OvertimeRecords
                 .Include(o => o.employmentModel).ThenInclude(e =>e.personModel)
                 .Include(o => o.overtimeModel)
                 .Include(o => o.departmentModel)
                 .Include(o => o.OvertimeHistories).AsQueryable();
+
             Console.WriteLine("################### ALL" + otr.Count());
-            if (otrID != null && otrID.Count>0) 
+
+            if (otrID != null && otrID.Any()) 
             {
-                overtimeRecordModel = await otr.Where(o => otrID.Contains(o.overtimeRecordID)).ToListAsync();
+                otr = otr.Where(o => otrID.Contains(o.overtimeRecordID));
                 
                 Console.WriteLine("################### From OTR " + overtimeRecordModel.Count());
 
             }
-            else if(empID != null && empID >0 && (otrID == null || otrID.Count==0))
+            if(empID.HasValue && empID >0 )
             {
-                overtimeRecordModel = await otr.Where(otr => otr.overtimeRecordStatus == overtimeStatus.Hold && otr.employmentID == empID).ToListAsync();
-                if (overtimeRecordModel == null || overtimeRecordModel.Count == 0)
-                {
-                    overtimeRecordModel = await otr.Where(otr => otr.employmentID == empID).ToListAsync();
-                }
+                otr = otr.Where(o => o.employmentID == empID.Value);
                 Console.WriteLine("################### From EP " + overtimeRecordModel.Count());
                
             }
-            if(overtimeRecordModel != null && overtimeRecordModel.Count > 0)
+            if (date.HasValue)
             {
-                employmentModel = overtimeRecordModel[0].employmentModel;
-                departmentModel = overtimeRecordModel[0].departmentModel;
+                otr = otr.Where(o => o.overtimeRecordDate == date.Value);
             }
-            else
+            overtimeRecordModel =await otr.ToListAsync();
+            // Protect from null / empty list
+            if (overtimeRecordModel.Count == 0)
             {
-                return ;
+                otCount = 0;
+                TotalOtCost = 0;
+                return; // Avoid processing empty data
             }
+            var first = overtimeRecordModel.First();
+
+            employmentModel = first.employmentModel ?? new employmentModel();
+            departmentModel = first.departmentModel ?? new departmentModel();
+
+           
             otCount = overtimeRecordModel.Count;
             TotalOtCost = overtimeRecordModel.Sum(ot => ot.GetOtCost);
 
+            return ;
         }
     }
 }

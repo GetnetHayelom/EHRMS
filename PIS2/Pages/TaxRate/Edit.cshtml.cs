@@ -29,6 +29,7 @@ namespace PIS2.Pages.TaxRate
 
         public async Task<IActionResult> OnPostAsync()
         {
+            ModelState.Remove("TaxRate.modifiedBy");
             if (!ModelState.IsValid) return Page();
 
             var existingTaxRate = await _context.TaxRates.FirstOrDefaultAsync(t => t.taxRateID == TaxRate.taxRateID);

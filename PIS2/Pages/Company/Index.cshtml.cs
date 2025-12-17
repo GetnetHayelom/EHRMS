@@ -20,10 +20,21 @@ namespace PIS2.Pages.Company
 
         public IList<companyModel> companyModel { get;set; } = default!;
 
+        [BindProperty(SupportsGet = true)]
+        public mainStatus? CompanyStatus { get; set; }
+
         public async Task OnGetAsync()
         {
-            companyModel = await _context.Companies
-                .Include(c => c.addressModel).OrderBy(c => c.companyName).ToListAsync();
+          
+            var query = _context.Companies.Include(c => c.addressModel).OrderBy(c => c.companyName).AsQueryable();
+
+            // Apply filter only if selected
+            if (CompanyStatus != null)
+            {
+                query = query.Where(c => c.companyStatus == CompanyStatus);
+            }
+
+            companyModel = await query.ToListAsync();
         }
     }
 }

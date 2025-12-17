@@ -43,6 +43,16 @@ namespace PIS2.Pages.Leave
         // For more information, see https://aka.ms/RazorPagesCRUD.
         public async Task<IActionResult> OnPostAsync()
         {
+            var leave = _context.Leaves.FirstOrDefault(l => l.leaveID == leaveModel.leaveID);
+
+            if(leave?.leaveStatus== leaveStatus.Completed) { TempData["ErrorMessage"] = "Can not update a complete leave/attendance record!"; return Page(); }
+            if(leave?.leaveStatus == leaveStatus.Approved && !User.IsInRole("MIE\\PMS_HRCLERK")) { TempData["ErrorMessage"] = "Only HR personel can update an approved leave/attendance record!"; return Page(); }
+            if(leave?.leaveStatus == leaveStatus.Posted && !(User.IsInRole("MIE\\PMS_HRCLERK") || User.IsInRole("MIE\\PMS_HRMANAGER"))) { TempData["ErrorMessage"] = "Only hr personel can update an approved leave/attendance record!"; return Page(); }
+            if ((leave?.leaveStatus == leaveStatus.Approved || leave?.leaveStatus == leaveStatus.Approved)
+                && leaveModel.leaveStatus == leaveStatus.Posted && !User.IsInRole("MIE\\PMS_MANAGEMENT"))
+
+            { TempData["ErrorMessage"] = "Only a member of a management can update an approve leave/attendance record!"; return Page(); }
+            
             ModelState.Remove("leaveModel.modifiedBy");
             leaveModel.modifiedBy = User.Identity.Name;
 

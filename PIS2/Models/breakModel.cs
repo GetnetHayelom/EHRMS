@@ -15,6 +15,7 @@ namespace PIS2.Models
         public string breakName { get; set; }
         public mainStatus breakStatus { get; set; }
         public string modifiedBy { get; set; }
+        public DateTime modifiedDate { get; set; }
         public breakModel() { }
 
     }

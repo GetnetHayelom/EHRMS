@@ -2,328 +2,363 @@
 @model PIS2.Pages.Employment.DetailsModel
 
 @{
-    ViewData["Title"] = "Employee Details";
+    ViewData["Title"] = "Employment Details";
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
 
-<h1 class="fw-bold">Employments</h1>
-@if (Model.isSelf)
-{
-    <!--top buttons -->
-    <div class="m-3 d-flex justify-content-lg-between bg-primary text-white d-print-none">
-        @if (Model.employmentModel.employmentStatus == Models.mainStatus.Active)
-        {
-            <!--Leave Request button-->
-            <a role="button" class="text-white nav-link flex-grow-1" asp-page="/Leave/Create">Leave Request</a>
-
-            <!--Ovetime Button-->
-            <a role="button" class="text-white nav-link flex-grow-1" asp-page="/OvertimeRecord/Create">Overtime Record</a>
-
-        }
-
-        <!--leave report-->
-        @if (Model.employmentModel.Leaves != null && Model.employmentModel.Leaves.Any())
-        {
-            <a role="button" class="text-white nav-link flex-grow-1" id="leaveHistory" data-bs-toggle="collapse" data-bs-target="#leaveHistoryView" >Leave History</a>
-            <a role="button" class="text-white nav-link flex-grow-1" id="leaveAggrigate" data-bs-toggle="collapse" data-bs-target="#leaveAggrigate" >Leave Summary</a>
-            <a role="button" class="text-white nav-link flex-grow-1" id="overtimeHistory" data-bs-toggle="collapse" data-bs-target="#overtimeHistoryView">Overtime History</a>
-
-        }
-        <a role="button" class="text-white nav-link flex-grow-1">Evaluation</a>
-
-    </div>
-}
-<div class="d-flex flex-column" id="employmentDetail">
-    <div class="">
-        <form method="get" class="d-print-none">
-            <div class="d-flex justify-content-between">
-                <h4 class="fw-bold">Full Name</h4>
-                <div class="d-flex">
-                    <input asp-for="employmentModel.givenID" id="givenID" class="form-control me-2" placeholder="Enter Given ID" name="givenID"/>
-                    <button type="submit" class="btn btn-primary" id="goButton">Go</button>
-                </div>
-            </div>
-        </form>
-    </div>
-    <hr />
-    <div class="">
-        <h5 class="fw-bold">Personal Information</h5>
-        <hr />
-        <div class="d-flex flex-wrap">
-            <dl class="d-flex d-print-flex ">
-                <div class="d-flex m-2">
-                    <dt class="me-1">
-                        Full Name:
-                    </dt>
-                    <dd>
-                        <u onclick="location.href='@Url.Page("/Person/Details", new {id = Model.employmentModel.personID})'" style="cursor:pointer;">@Html.DisplayFor(model => model.employmentModel.personModel.personFullName)</u>
-                    </dd>
-                </div>
-                <div class="d-flex m-2">
-                    <dt class="me-1">
-                        Phone Number:
-                    </dt>
-                    <dd>
-                        <u>@Html.DisplayFor(model => model.employmentModel.personModel.personPhoneNumber)</u>
-                    </dd>
-                </div>
-                <div class="d-flex m-2">
-                    <dt class="me-1">
-                        Email:
-                    </dt>
-                    <dd>
-                        <u>@Html.DisplayFor(model => model.employmentModel.personModel.personEmailAddress)</u>
-                    </dd>
-                </div>
-                <div class="d-flex m-2">
-                    <dt class="me-1">
-                        Date Of Birth:
-                    </dt>
-                    <dd>
-                        <u>@Model.employmentModel.personModel.personDoB.ToString("MMM dd, yyyy")</u>
-                    </dd>
-                </div>
-                <div class="d-flex m-2">
-                    <dt class="me-1">
-                        Address:
-                    </dt>
-                    <dd>
-                        <u>@Html.DisplayFor(model => model.employmentModel.personModel.addressModel.addressFormatted)</u>
-                    </dd>
-                </div>
-            
-            </dl>
-
-            @if (Model.employmentModel.personModel.PersonEducationLevels?.Any() != null)
-            {
-                <div class="flex-grow-1 print-full-width">
-                    <h5 class="fw-bold">Education Background and Certification</h5>
-                    <table class="table table-striped table-hover flex-grow-1 print-full-width">
-                        <thead class="bg-dark text-white">
-                            <tr>
-                                <th>Name</th>
-                                <th>Grade</th>
-                                <th>Category</th>
-                                <th>Field of Study</th>
-                                <th>GPA</th>
-                                <th>Institution</th>
-                                <th>Date</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var item in Model.employmentModel.personModel.PersonEducationLevels)
-                            {
-                                <tr>
-                                    <td>@item.educationLevelModel.educationLevelName</td>
-                                    <td>@item.educationLevelModel.educationLevelGrade</td>
-                                    <td>@item.educationLevelModel.educationLevelCategory</td>
-                                    <td>@item.educationField</td>
-                                    <td>@item.educationLevelMark</td>
-                                    <td>@item.educationLevelInstitutionName</td>
-                                    <td>@item.educationLevelDate.ToString("MMM dd, yyyy")</td>
-                                </tr>
-                            }
-                        </tbody>
-                    </table>
-                </div>
-            }
+<div class="container-fluid py-4">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-4 d-print-none gap-3">
+        <div>
+            <h2 class="fw-bold m-0 text-dark">Employment Record</h2>
+            <small class="text-muted">Manage employee leave, overtime, and job history</small>
+        </div>
+        <!--EMPLOYEE LOOKUP-->
+        <div class="card shadow-sm border-0 px-3 py-2">
+            <form method="get" class="d-flex align-items-center gap-2">
+                <label for="givenID" class="text-nowrap small fw-bold text-uppercase text-muted mb-0">Find Employee:</label>
+                <input asp-for="employmentModel.givenID" id="givenID" class="form-control form-control-sm" placeholder="Enter ID..." name="givenID" style="width: 150px;" />
+                <button type="submit" class="btn btn-sm btn-primary px-3" id="goButton">Go</button>
+            </form>
         </div>
     </div>
-    <div class="">
-    <hr />
-        @if(Model.employmentModel.employmentStatus == Models.mainStatus.Active)
-        {
-            <h5 class="fw-bold text-success p-2">Employment Information</h5>
-        }
-        else
-        {
-            <h5 class="fw-bold text-danger  p-2">Employment Information</h5>
-        }
 
-        <hr />
-        <dl class="d-flex flex-wrap flex-grow-1 gap-3 d-print-flex">
-            
-            <div class="d-flex me-3">
-                <dt class="me-1">
-                    Employee ID:
-                </dt>
-                <dd>
-                    <u>@Html.DisplayFor(model => model.employmentModel.givenID)</u>
-                </dd>
-            </div>
-
-            <div class="d-flex me-3">
-                <dt class="me-1">
-                    Hire Date:
-                </dt>
-                <dd>
-                    <u>@Model.employmentModel.employmentDate.ToString("MMM dd, yyy")</u>
-                </dd>
-            </div>
-            <div class="d-flex me-3">
-                <dt class="me-1">
-                    Employment Type:
-                </dt>
-                <dd>
-                    <u>@Html.DisplayFor(model => model.employmentModel.employmentTypeModel.employmentTypeName)</u>
-                </dd>
-            </div>
-            <div class="d-flex me-3">
-                <dt class="me-1">
-                    Employment Position:
-                </dt>
-                <dd>
-                    <u>@Html.DisplayFor(model => model.employmentModel.employmentPosition)</u>
-                </dd>
-            </div>
-            <div class="d-flex me-3">
-                <dt class="me-1">
-                    Status:
-                </dt>
-                <dd>
-                    <u>@Html.DisplayFor(model => model.employmentModel.employmentStatus)</u>
-                </dd>
-            </div>
-            <div class="d-flex me-3">
-                <dt class="me-1">
-                    Reference:
-                </dt>
-                <dd>
-                    <u>@Html.DisplayFor(model => model.employmentModel.employmentReference)</u>
-                </dd>
-            </div>
-            <div class="d-flex me-3">
-                <dt class="me-1">
-                    Exprience:
-                </dt>
-                <dd>
-                    <u>@Model.Exprience</u>
-                </dd>
-            </div>
-            <div class="d-flex me-3">
-                <dt class="me-1">
-                    Age:
-                </dt>
-                <dd>
-                    <u>@Model.Age</u>
-                </dd>
-            </div>
-            <div class="d-flex me-3">
-                <dt class="me-1">
-                    Severance:
-                </dt>
-                <dd>
-                    <u>@(Math.Round(Model.Severance, 2).ToString("N2")) Br</u>
-                </dd>
-            </div>
-
-            @if (Model.employmentModel.employmentStatus == Models.mainStatus.Inactive)
-            {
-                <div class="d-flex me-3">
-                    <dt class="me-1">
-                        Termination Date:
-                    </dt>
-                    <dd>
-                        <u>@Model.employmentModel.TerminationModel.terminationDate.ToString("MMM dd, yyyy")</u>
-                    </dd>
-                </div>
-                <div class="d-flex me-3">
-                    <dt class="me-1">
-                        Termination Reason;
-                    </dt>
-                    <dd>
-                        <u>@Model.employmentModel.TerminationModel.terminationReason</u>
-                    </dd>
-                </div>
-                
-            }
-            else
-            {
-               
-                
-            }
-        </dl>
-        <div class="d-flex justify-content-end">
-            <a asp-page="/EmployeeService/Earning" asp-route-id="@Model.employmentModel.employmentID" class="btn btn-primary">View Earnings</a>
-        </div>
-    </div>
-    <div class="w-100">
-    <hr />
-        <h4 class="fw-bold">Employment History</h4>
-        <table class="table table-striped table-hover print-full-width">
-            <thead>
-                <tr class="bg-dark text-white">
-                    <th>Date</th>
-                    <th>Type</th>
-                    <th>Position</th>
-                    <th>Status</th>
-                    <th>Remark</th>
-                    <th>User</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach(var item in Model.employmentModel.EmploymentHistories)
-                {
-                    <tr>
-                        <td>@item.modifiedDate.ToString("MMM dd, yyyy")</td>
-                        <td>@item.employmentTypeModel.employmentTypeName</td>
-                        <td>@item.employmentPosition</td>
-                        <td>@item.employmentStatus</td>
-                        
-                        <td>@item.employmentHistoryRemark</td>
-
-                        <td>@item.modifiedBy</td>
-                    </tr>
-                }
-                </tbody>
-            </table>
-
-        @if (Model.employmentModel.JobPlacements != null && Model.employmentModel.JobPlacements.Any())
-        {
-            <h4 class="fw-bold">Job Placements History</h4>
-            <table class="table table-stripped table-hover print-full-width">
-                <thead>
-                    <tr class="bg-info text-white">
-                        <th>Date</th>
-                        <th>Job Title</th>
-                        <th>Grade</th>
-                        <th>Step</th>
-                        <th>Salary</th>
-                        <th>Department</th>
-                        <th>Company</th>
-                        <th>Work Location</th>
-                        <th>Status</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var item in Model.employmentModel.JobPlacements)
+    <!--CALL TO ACTION-->
+    <div class="card shadow-sm border-0 mb-4 d-print-none">
+        <div class="card-body p-2 d-flex flex-wrap gap-2 justify-content-center justify-content-md-start">
+            <ul class="nav nav-pills gap-2" id="employmentTab" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="btn btn-outline-primary btn-sm active" id="details-tab" data-bs-toggle="tab" data-bs-target="#details-content" type="button" role="tab">
+                        <i class="bi bi-person-lines-fill me-1"></i> Employment Details
+                    </button>
+                </li>
+                    @if (Model.employmentModel.employmentStatus == Models.mainStatus.Active)
                     {
-                        <tr onclick="location.href='@Url.Page("/JobPlacement/Details", new {id = item.jobPlacementID})'" style="cursor:pointer">
-                            <td>@item.jobPlacementDate.ToString("MMM dd, yyyy")</td>
-                            <td>@item.jobModel?.jobTitle</td>
-                            <td>@item.jobModel?.jobGradeModel?.jobGradeName</td>
-                            <td>@item.jobStepModel?.jobStepNumber</td>
-                            <td>@item.jobPlacementSalary</td>
-                            <td>@item.departmentModel?.departmentName</td>
-                            <td>@item.departmentModel?.companyModel?.companyName</td>
-                            <td></td>
-                            <td>@item.jobPlacementStatus</td>
-                        </tr>
+                        <li class="nav-item">
+                            <a class="btn btn-outline-primary btn-sm" asp-page="/Leave/Create?id=@Model.employmentModel.employmentID"><i class="bi bi-calendar-plus"></i> Leave Request</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="btn btn-outline-primary btn-sm" asp-page="/OvertimeRecord/Create?id=@Model.employmentModel.employmentID"><i class="bi bi-clock-history"></i> Overtime Record</a>
+                        </li>  
                     }
-                </tbody>
-            </table>
-        }
+
+                    @if (Model.employmentModel.Leaves != null && Model.employmentModel.Leaves.Any())
+                    {
+                        <li class="nav-item" role="presentation">
+                            <button class="btn btn-light btn-sm border" data-bs-toggle="tab" data-bs-target="#leaveHistoryView" role="tab"><i class="bi bi-list-check"></i> Leave History</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="btn btn-light btn-sm border" data-bs-toggle="tab" data-bs-target="#leaveSummaryView" role="tab"><i class="bi bi-pie-chart"></i> Leave Summary</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="btn btn-light btn-sm border" data-bs-toggle="tab" data-bs-target="#overtimeHistoryView" role="tab"><i class="bi bi-stopwatch"></i> Overtime History</button>
+                        </li>
+                    }
+                    <li class="nav-item">
+                        <button class="btn btn-light btn-sm border"><i class="bi bi-star"></i> Evaluation</button>
+                    </li>
+            </ul>
+        </div>
+    </div>
+
+    <!--BODY-->
+    <div class="row">
+
+        <!--PERSON INFORMATION CARD-->
+        <div class="col-lg-4">
+            
+            @await Html.PartialAsync("_PersonalInfoPartial", Model.Person)
+
+            <!--SERVICE YEAR AND SEVERANCE-->
+            <div class="row g-3 mb-4">
+                <div class="col-6">
+                    <div class="card border-0 shadow-sm text-center p-3 h-100">
+                        <small class="text-muted text-uppercase fw-bold" style="font-size: 0.7rem;">Service</small>
+                        <h4 class="fw-bold m-0 text-primary">@Model.Exprience</h4>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="card border-0 shadow-sm text-center p-3 h-100">
+                        <small class="text-muted text-uppercase fw-bold" style="font-size: 0.7rem;">Severance</small>
+                        <h4 class="fw-bold m-0 text-success">@Math.Round(Model.Severance, 2).ToString("N2")</h4>
+                        <small class="text-muted small">ETB</small>
+                    </div>
+                </div>
+            </div>
+            <!--LEAVE AND LEAVE PAYABLE-->
+            <div class="row g-3 mb-4">
+                <div class="col-6">
+                    <div class="card border-0 shadow-sm text-center p-3 h-100">
+                        <small class="text-muted text-uppercase fw-bold" style="font-size: 0.7rem;">Allowed Leave</small>
+                        <h4 class="fw-bold m-0 text-primary">@Model.LeaveDetail?.AllowedLeave.ToString("N1")</h4>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="card border-0 shadow-sm text-center p-3 h-100">
+                        <small class="text-muted text-uppercase fw-bold" style="font-size: 0.7rem;">Leave Payable</small>
+                        <h4 class="fw-bold m-0 text-success">@Math.Round(Model.LeaveDetail.leaveCost, 2).ToString("N2")</h4>
+                        <small class="text-muted small">ETB</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="tab-content col-lg-8" id="employmentTabContent">
+            <!--EMPLOYMENT STATUS-->
+            <div class="tab-pane fade show active" id="details-content" role="tabpanel" aria-labelledby="details-tab">
+                <div class="card shadow-sm border-0 mb-4">
+                    <div class="card-header bg-white py-3">
+                        <h5 class="card-title fw-bold m-0 text-primary">Employment Status</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <label class="text-muted small d-block">Employee ID</label>
+                                <span class="fw-bold">#@Model.employmentModel.givenID</span>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="text-muted small d-block">Hire Date</label>
+                                <span class="fw-bold">@Model.employmentModel.employmentDate.ToString("MMM dd, yyyy")</span>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="text-muted small d-block">Type</label>
+                                <span class="badge bg-light text-dark border fw-medium">@Model.employmentModel.employmentTypeModel.employmentTypeName</span>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="text-muted small d-block">Current Position</label>
+                                <span class="fw-bold text-uppercase">@Model.employmentModel.employmentPosition</span>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="text-muted small d-block">Age</label>
+                                <span class="fw-bold">@Model.Age Years</span>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="text-muted small d-block">Reference</label>
+                                <span class="fw-bold">@Model.employmentModel.employmentReference</span>
+                            </div>
+
+                            @if (Model.employmentModel.employmentStatus == Models.mainStatus.Inactive)
+                            {
+                                <div class="col-12 mt-3">
+                                    <div class="bg-danger bg-opacity-10 border border-danger border-opacity-25 rounded p-3">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <label class="text-danger small fw-bold">Termination Date</label>
+                                                <div class="fw-bold">@Model.employmentModel.TerminationModel.terminationDate.ToString("MMM dd, yyyy")</div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="text-danger small fw-bold">Termination Reason</label>
+                                                <div class="fw-bold">@Model.employmentModel.TerminationModel.terminationReason</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                        <div class="text-end mt-4">
+                            <a asp-page="/EmployeeService/Earning" asp-route-id="@Model.employmentModel.employmentID" class="btn btn-outline-primary">
+                                <i class="bi bi-wallet2"></i> View Earnings Details
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <!--ACCORDION-->
+                <div class="accordion accordion-flush border rounded shadow-sm overflow-hidden bg-white" id="employmentHistoryAccordion">
+
+                    <!--EMPLOYMENT HISTORY-->
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#histCollapse">
+                                Employment History Log
+                            </button>
+                        </h2>
+                        <div id="histCollapse" class="accordion-collapse collapse" data-bs-parent="#employmentHistoryAccordion">
+                            <div class="accordion-body p-0">
+                                <div class="table-responsive">
+                                    <table class="table table-hover align-middle mb-0 small">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th class="ps-3">Date</th>
+                                                <th>Type</th>
+                                                <th>Position</th>
+                                                <th>Status</th>
+                                                <th>Modified By</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (var item in Model.employmentModel.EmploymentHistories)
+                                            {
+                                                <tr>
+                                                    <td class="ps-3">@item.modifiedDate.ToString("MMM dd, yyyy")</td>
+                                                    <td class="fw-bold">@item.employmentTypeModel.employmentTypeName</td>
+                                                    <td>@item.employmentPosition</td>
+                                                    <td><span class="badge @(item.employmentStatus == Models.mainStatus.Active ? "bg-success" : "bg-secondary")">@item.employmentStatus</span></td>
+                                                    <td class="text-muted">@item.modifiedBy</td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!--JOB PLACEMENT-->
+                    @if (Model.employmentModel.JobPlacements?.Any() == true)
+                    {
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#jobCollapse">
+                                    Job Placements History
+                                </button>
+                            </h2>
+                            <div id="jobCollapse" class="accordion-collapse collapse" data-bs-parent="#employmentHistoryAccordion">
+                                <div class="accordion-body p-0">
+                                    <div class="table-responsive">
+                                        <table class="table table-hover align-middle mb-0 small">
+                                            <thead class="table-light text-nowrap">
+                                                <tr>
+                                                    <th class="ps-3">Date</th>
+                                                    <th>Title</th>
+                                                    <th>Grade/Step</th>
+                                                    <th>Salary</th>
+                                                    <th>Dept/Company</th>
+                                                    <th>Status</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach (var item in Model.employmentModel.JobPlacements)
+                                                {
+                                                    <tr onclick="location.href='@Url.Page("/JobPlacement/Details", new { id = item.jobPlacementID })'" style="cursor:pointer">
+                                                        <td class="ps-3">@item.jobPlacementDate.ToString("MM/dd/yy")</td>
+                                                        <td class="fw-bold">@item.jobModel?.jobTitle</td>
+                                                        <td>@item.jobModel?.jobGradeModel?.jobGradeName / @item.jobStepModel?.jobStepNumber</td>
+                                                        <td class="text-success fw-bold">@item.jobPlacementSalary</td>
+                                                        <td>
+                                                            <div class="fw-bold">@item.departmentModel?.departmentName</div>
+                                                            <div class="text-muted small">@item.departmentModel?.companyModel?.companyName</div>
+                                                        </td>
+                                                        <td><span class="badge border text-dark">@item.jobPlacementStatus</span></td>
+                                                    </tr>
+                                                }
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+
+
+                    <!--EDUCATION AND CERTIFICATION-->
+                    @if (Model.employmentModel.personModel.PersonEducationLevels?.Any() == true)
+                    {
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#eduCollapse">
+                                    Education & Certifications
+                                </button>
+                            </h2>
+                            <div id="eduCollapse" class="accordion-collapse collapse" data-bs-parent="#employmentHistoryAccordion">
+                                <div class="accordion-body p-0">
+                                    <div class="table-responsive">
+                                        <table class="table table-hover align-middle mb-0 small">
+                                            <thead class="table-light text-nowrap">
+                                                <tr>
+                                                    <th class="ps-3">Category/Level</th>
+                                                    <th>Field of Study</th>
+                                                    <th>Grade/GPA</th>
+                                                    <th>Institution</th>
+                                                    <th>Date</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach (var item in Model.employmentModel.personModel.PersonEducationLevels)
+                                                {
+                                                    <tr>
+                                                        <td class="ps-3 fw-bold">@item.educationLevelModel.educationLevelCategory (@item.educationLevelModel.educationLevelName)</td>
+                                                        <td>@item.educationField</td>
+                                                        <td><span class="badge bg-secondary">@item.educationLevelMark</span></td>
+                                                        <td>@item.educationLevelInstitutionName</td>
+                                                        <td>@item.educationLevelDate.ToString("yyyy")</td>
+                                                    </tr>
+                                                }
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+
+                </div>
+            </div>
+            
+            <!--LEAVE HISTORY-->
+            <div class="tab-pane fade" id="leaveHistoryView" role="tabpanel" aria-labelledby="leave-tab">
+                <div class="card shadow-sm border-0">
+                    <div class="card-body">
+                        <h5 class="fw-bold mb-3">Leave History & Summary</h5>
+                        
+                        @if (Model.employmentModel.Leaves != null)
+                        {
+                            @await Html.PartialAsync("_LeaveHistoryPartial", Model.Leaves)
+                        }
+                        else
+                        {
+                            <p class="text-muted">No leave records found.</p>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <!--LEAVE SUMMARY-->
+            <div class="tab-pane fade" id="leaveSummaryView" role="tabpanel" aria-labelledby="leave-tab">
+                <div class="card shadow-sm border-0">
+                    <div class="card-body">
+                        <h5 class="fw-bold mb-3">Leave History & Summary</h5>
+
+                        @if (Model.employmentModel.Leaves != null)
+                        {
+                            @await Html.PartialAsync("_LeaveSummaryPartial", Model.LeaveDetail)
+                        }
+                        else
+                        {
+                            <p class="text-muted">No leave records found.</p>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <!--OVERTIME HISTORY-->
+            <div class="tab-pane fade" id="overtimeHistoryView" role="tabpanel" aria-labelledby="overtime-tab">
+                <div class="card shadow-sm border-0">
+                    <div class="card-body">
+                        <h5 class="fw-bold mb-3">Overtime Records</h5>
+                        @if (Model.employmentModel.OvertimeRecords != null)
+                        {
+                            @await Html.PartialAsync("_OvertimeHistoryPartial", Model.Overtimes)
+                        }
+                        else
+                        {
+                            <p class="text-muted">No overtime records found.</p>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+
 
     </div>
 
-</div>
-
-<div class="d-print-none d-flex justify-content-end">
-    @if (User.IsInRole("PMS_HRCLERK"))
-    {
-        <a class="btn btn-primary m-2" asp-page="./Edit" asp-route-id="@Model.employmentModel.employmentID">Edit</a>
-    }
-    
-    <a class = "btn btn-primary m-2" asp-page="./Index">View All Employee List</a> 
-    @await Html.PartialAsync("print")
+    <div class="mt-4 pt-3 border-top d-print-none d-flex justify-content-between align-items-center">
+        <a class="btn btn-outline-secondary" asp-page="./Index"><i class="bi bi-arrow-left"></i> Back to Employee List</a>
+        <div class="d-flex gap-2">
+            @if (User.IsInRole("PMS_HRCLERK"))
+            {
+                <a class="btn btn-primary m-2" asp-page="./Edit" asp-route-id="@Model.employmentModel.employmentID">Edit Record</a>
+            }
+            @await Html.PartialAsync("print")
+        </div>
+    </div>
 </div>

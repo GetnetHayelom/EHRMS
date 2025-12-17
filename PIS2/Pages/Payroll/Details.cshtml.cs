@@ -20,21 +20,24 @@ namespace PIS2.Pages.Payroll
 
         public payrollModel Payroll { get; set; } = new payrollModel();
         public IList<payrollPay> PayrollPays { get; set; } = new List<payrollPay>();
+        public List<earningType> EarningTypes { get; set; }
+        public List<deductionType> DeductionTypes { get; set; }
 
         [Authorize(Roles = @"MIE\PMS_HRCLERK,MIE\PMS_HRMANAGER,MIE\PMS_PAYROLL")]
         public async Task<IActionResult> OnGetAsync(int id)
         {
-            Payroll = await _db.Payrolls
-                .Include(p => p.companyModel)
-                .FirstOrDefaultAsync(p => p.payrollID == id);
+            EarningTypes = await _db.EarningTypes.ToListAsync();
+            DeductionTypes = await _db.DeductionTypes.ToListAsync();
+
+            Payroll = await _db.Payrolls.Include(p => p.companyModel).FirstOrDefaultAsync(p => p.payrollID == id);
 
             if (Payroll == null) return NotFound();
 
             if (Payroll.payrollStatus == payrollStatus.POSTED || Payroll.payrollStatus == payrollStatus.COMPLETED)
             {
                 PayrollPays = await _db.PayrollPays
-                    .Include(pp => pp.EmploymentModel)
-                    .ThenInclude(e => e.JobPlacements)
+                    .Include(pp => pp.EmploymentModel).ThenInclude(e => e.personModel)
+                    .Include(pp => pp.EmploymentModel).ThenInclude(e => e.JobPlacements)
                     .Include(e => e.EarningRecords).ThenInclude(er => er.earningType)
                     .Include(e => e.DeductionRecords).ThenInclude(dr => dr.DeductionType)
                     .Where(pp => pp.payrollID == id)
@@ -46,7 +49,7 @@ namespace PIS2.Pages.Payroll
 
         public async Task<IActionResult> OnPostApproveAsync(int id)
         {
-            if (!User.IsInRole("MIE\\PMS_PAYROLL") || !User.IsInRole("MIE\\PMS_PAYROLL")) return RedirectToPage("/Shared/AccessDenied");
+            if (!User.IsInRole("MIE\\PMS_PAYROLL")) return RedirectToPage("/Shared/AccessDenied");
             var payroll = await _db.Payrolls.FirstOrDefaultAsync(p => p.payrollID == id);
             if (payroll == null) return NotFound();
 
@@ -59,6 +62,7 @@ namespace PIS2.Pages.Payroll
 
         public async Task<IActionResult> OnPostPostAsync(int id)
         {
+            if (!User.IsInRole("MIE\\PMS_PAYROLL")) return RedirectToPage("/Shared/AccessDenied");
             var payroll = await _db.Payrolls.FirstOrDefaultAsync(p => p.payrollID == id);
             if (payroll == null) return NotFound();
             if (payroll.payrollStatus == payrollStatus.PENDING) return BadRequest("Payroll must be approved first.");

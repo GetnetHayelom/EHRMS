@@ -60,16 +60,13 @@ namespace PIS2.Models {
 
                 _db.PayrollPays.Add(pay);
 
-                ////
-                //DeductionRecords.AddRange(pay.DeductionRecords);
-                //EarningRecords.AddRange(pay.EarningRecords);
-
+                
                 totalGross += pay.GrossPay;
                 totalNet += pay.NetPay;
                 totalTax += pay.DeductionRecords.Where(d => d.DeductionType != null && d.DeductionType.deductionName.ToLower().Contains("tax")).Sum(d => d.deductionAmount ?? 0);
-                totalPenEmp += pay.DeductionRecords.Where(d => d.DeductionType != null && d.DeductionType.deductionName.ToLower().Contains("pension") && d.DeductionType.isMandatory).Sum(d => d.deductionAmount ?? 0);
+                totalPenEmp += pay.DeductionRecords.Where(d => d.DeductionType != null && d.DeductionType.deductionName.ToLower().Contains("pension")).Sum(d => d.deductionAmount ?? 0);
                 // employer pension is not part of employee deductions; compute separately:
-                totalPenEmpr += pay.GrossPay * 0.11M;
+                totalPenEmpr += _db.JobPlacements.First(j => j.employmentID == emp.employmentID).jobPlacementSalary  * 0.11M;
 
                 totalEmployees++;
             }
@@ -95,39 +92,10 @@ namespace PIS2.Models {
                 _logger.LogError(ex, "Payroll generation failed");
                 throw;
             }
-            //
-            ////Rese earning and deduction record IDs so they are treated like new entities
-            //var earnRec = EarningRecords.Select(er => new earningRecordModel
-            //{
-            //    earningAmount = er.earningAmount,
-            //    earningReference = er.earningReference,
-            //    earningTypeId = er.earningTypeId,
-            //    payrollPayID = er.payrollPayID,
-            //    modifiedBy = modifiedBy
-            //}).ToList();
-
-            //var dedRec = DeductionRecords.Select(dr => new deductionRecordModel
-            //{
-            //    payrollPayID = dr.payrollPayID,
-            //    deductionAmount = dr.deductionAmount,
-            //    deductionReference =dr.deductionReference,
-            //    deductionTypeID = dr.deductionTypeID,
-            //    modifiedBy = modifiedBy
-
-            //}).ToList();
-
-            //// Add history using SQL Trigger
-            //_db.EarningRecords.AddRange(earnRec);
-            //await _db.SaveChangesAsync();
-
-            //_db.DeductionRecords.AddRange(dedRec);
-            //await _db.SaveChangesAsync();
+            
         }
         //
-        //??
-        //
-        //??
-       // ??
+      
 
         public async Task<payrollPay> CalculateEmployeePayAsync(employmentModel emp, payrollModel payroll)
         {
@@ -140,34 +108,43 @@ namespace PIS2.Models {
             {
                 start = emp.employmentDate;
             }
-            if (emp.employmentStatus > mainStatus.Inactive)
+            if (emp.employmentStatus == mainStatus.Inactive)
             {
                 end = emp.employmentTerminationDate ?? end;
             }
-
-            // Recurring earnings (salary + allowances)
-            // Example: base salary from employment or earning records
+            //-----------------------------------------------------------
+            // CALCULATE SALARY EARNING
+            //-----------------------------------------------------------
             decimal baseSalary = _db.JobPlacements.FirstOrDefault(j => j.jobPlacementStatus == mainStatus.Active && j.employmentID == emp.employmentID)?.jobPlacementSalary ?? 0m; // assumes monthly
             decimal hourlyRate = baseSalary / 208;
-            Console.WriteLine("#########BaseSalary-----------is--------" + baseSalary);
+            //
+            //-----------------------------------------------------------
             // Work hour calculations
             // find total working days in payroll period (business days) - implement according to your calendar
+            //-----------------------------------------------------------
             int workingDaysInPeriod = await GetWorkingDaysInPeriod(start, end);
             decimal hoursPerDay = 8m;
-            decimal totalPossibleHours = workingDaysInPeriod * hoursPerDay;
-            Console.WriteLine("#########B----WorkingDays-----------is--------" + workingDaysInPeriod);
-            // absent hours
+            decimal totalPossibleHours = workingDaysInPeriod > 0? workingDaysInPeriod * hoursPerDay :0;
+            //
+            //-----------------------------------------------------------
+            // GET ABSENT DAYS
+            //-----------------------------------------------------------
             var absences = await _db.Leaves
                 .Where(l => l.employmentID == emp.employmentID && l.leaveStartDate >= start && l.leaveEndDate <= end && l.leaveStatus == leaveStatus.Posted && l.leaveTypeModel.leaveGroup == leaveGroup.Absentism)
                 .ToListAsync();
             decimal absentHours = absences.Sum(a => a.leaveDays * hoursPerDay); // ensure AbsentHours exists
-            Console.WriteLine("#########-------------Absent Hours-----------is--------" + absentHours);
-            // worked hours
+            //
+            //-----------------------------------------------------------
+            // GET WORKED HOURS
+            //-----------------------------------------------------------
             decimal workedHours = Math.Max(0, totalPossibleHours - absentHours);
 
             //
             //
             var earnings = new List<earningRecordModel>();
+            //-----------------------------------------------------------
+            //ADD UNKNOWN EARNING TYPE IF IT DOES NOT EXIST
+            //-----------------------------------------------------------
             var earningType = await _db.EarningTypes.FirstOrDefaultAsync(e => e.earningTypeName.ToLower() == "Unknown");
             if(earningType == null)
             {
@@ -181,8 +158,9 @@ namespace PIS2.Models {
                 });
                 _db.SaveChangesAsync();
             }
-            //
-            // overtime within period
+            //-----------------------------------------------------------
+            // OVERTIME WITHIN PERIOD
+            //-----------------------------------------------------------
             var overtimeRecords = await _db.OvertimeRecords
                 .Where(o => o.employmentID == emp.employmentID && o.overtimeRecordDate >= start && o.overtimeRecordDate <= end && o.overtimeRecordStatus == overtimeStatus.Posted)
                 .ToListAsync();
@@ -191,21 +169,28 @@ namespace PIS2.Models {
 
             if (overtimeAmount > 0)
             {
+                earningType = new earningType();
                 earningType = await _db.EarningTypes.FirstOrDefaultAsync(d => d.earningTypeName.ToLower().Contains("overtime"));
                 earnings.Add(new earningRecordModel { earningAmount = overtimeAmount, earningTypeId = earningType.earningTypeID, earningReference = 0, modifiedBy = "system" });
             }
-            // Allowances (earnings)
+            //-----------------------------------------------------------
+            // ALLOWANCES (earnings)
+            //------------------------------------------------------------
             var allowances = await _db.AllowanceAssignments
+                .Include(a => a.allowanceModel)
                 .Where(a => a.employmentID == emp.employmentID && a.allowanceStatus == mainStatus.Active)
                 .ToListAsync();
+
+            var taxableAllowances = allowances.Where(a => a.allowanceModel?.allowanceTaxable == true).ToList();
             decimal allowancesSum = allowances.Sum(a => a.allowanceAssignmentAmount);
             if (allowancesSum > 0)
             {
+                earningType = new earningType();
                 earningType = await _db.EarningTypes.FirstOrDefaultAsync(d => d.earningTypeName.ToLower().Contains("allowance"));
                 earnings.Add(new earningRecordModel { earningAmount = allowancesSum, earningTypeId = earningType.earningTypeID, earningReference = 0, modifiedBy = "system" });
             }
             
-            // compute base pay: if salaried, pro-rate monthly salary by workedHours/totalPossibleHours
+            // BASE SALARY: if salaried, pro-rate monthly salary by workedHours/totalPossibleHours
             decimal basePay = 0m;
             if (empType.isSalaryAllowed)
             {
@@ -213,58 +198,49 @@ namespace PIS2.Models {
             }
             if (basePay > 0)
             {
+                earningType = new earningType();
                 earningType = await _db.EarningTypes.FirstOrDefaultAsync(d => d.earningTypeName.ToLower().Contains("salary"));
                 earnings.Add(new earningRecordModel { earningAmount = basePay, earningTypeId = earningType.earningTypeID, earningReference = 0, modifiedBy = "system" });
             }
-            // other earnings (Bonus)
+
+            // GET OTHER EARNINGS (Bonus)
 
             var empEarnings = await _db.Earnings.Where(e => e.employmentID == emp.employmentID && e.earningStatus == mainStatus.Active).ToListAsync();
 
-            // add other earnings
+            // ADD OTHER EARNINGS
             foreach (var od in empEarnings)
             {
                 // copy to new earning record attached to payroll computation
                 earnings.Add(new earningRecordModel
                 {
                     earningTypeId = od.earningTypeId,
-                    earningAmount = od.earningAmount,
+                    earningAmount = CalculateEarningValue(od, baseSalary, allowancesSum),
                     modifiedBy = "system"
                 });
             }
 
+            //GROSS EARNING
             decimal gross = earnings.Sum(e => e.earningAmount);
+
+
+            //
+            //*******************************
+            //DEDUCTIONS
+            //*******************************
+            //PREPARE LIST FOR HOLDING DEDUCTIONS
+            var deductions = new List<deductionRecordModel>();
+
+            // PENSION FROM BASE SALARY
             decimal pensionEmployee = 0;
             decimal pensionEmployer = 0;
-            // Compute pension employee (deduct before tax)
             if (empType.isPensionAllowed)
             {
                 pensionEmployee = Math.Round(baseSalary * 0.07m, 2);//OR FROM BASE PAY##############################
                 pensionEmployer = Math.Round(baseSalary * 0.11m, 2);//######################################
-            }
-            pensionEmployee = Math.Round(baseSalary * 0.07m, 2);
-            // Taxable income = gross - pensionEmployee
-            //############################################################################################
-            decimal taxable = gross - pensionEmployee;
-
-            // tax lookup
-            var taxRate = await _db.TaxRates
-                .Where(t => t.from <= taxable && (t.ceiling == 0 || t.ceiling >= taxable))
-                .OrderBy(t => t.from)
-                .FirstOrDefaultAsync();
-
-            decimal tax = 0m;
-            if (taxRate != null)
-            {
-                tax = Math.Max(0, Math.Round((taxable * taxRate.taxRate/100) - taxRate.deduction, 2));
-                if (tax < 0) tax = 0;
+               
             }
 
-            //
-            //
-            // Build payroll deductions list (pension + tax + any mandatory deductions)
-            var deductions = new List<deductionRecordModel>();
-
-            // pension
+            // ADD PENSION TO DEDUCTIONS
             var pensionDedType = await _db.DeductionTypes.FirstOrDefaultAsync(d => d.deductionName.ToLower().Contains("pension"));
             deductions.Add(new deductionRecordModel
             {
@@ -272,8 +248,37 @@ namespace PIS2.Models {
                 deductionAmount = pensionEmployee,
                 modifiedBy = "system"
             });
+            //
+            //TAX
+            //TAXABLE EARNINGS WITHOUT SALARY, OVERTIME,AND ALLOWANCE
+            decimal taxableEarnings = empEarnings.Where(e => e.earningType?.isTaxable == true)
+                .Sum(e => CalculateEarningValue(e, baseSalary, allowancesSum));
 
-            // tax
+            foreach(var e in empEarnings.Where(e => e.earningType?.isTaxable == true)){ Console.WriteLine("******************--- Taxable Earnings" + e.earningAmount); }
+
+            //
+            //ALL TAXABLE EARNING
+            decimal taxable = basePay + overtimeAmount + taxableEarnings + allowances.Where(a => a.allowanceModel?.allowanceTaxable == true).Sum(a => a.allowanceAssignmentAmount);
+            Console.WriteLine("#######-taxable======" + taxable);
+
+            // TAX RATE LOOKUP
+            var taxRate = await _db.TaxRates
+                .Where(t => t.from <= taxable && (t.ceiling == 0 || t.ceiling >= taxable) && t.taxStatus == mainStatus.Active)
+                .OrderBy(t => t.from)
+                .FirstOrDefaultAsync() ?? new taxRateModel { taxRate = 0, deduction = 0 }; ;
+
+            // GET TAX AMOUNT
+            decimal tax = 0m;
+            if (taxRate != null)
+            {
+                tax = Math.Max(0, Math.Round((taxable * taxRate.taxRate/100) - taxRate.deduction, 2));
+                if (tax < 0) tax = 0;
+            }
+            Console.WriteLine("+=======================================================================================================================================+");
+            Console.WriteLine("EMP ID = "+emp.givenID + " BASE= "+basePay + " WORKH = " + workedHours + " RATE = " + empEarnings + " TAXABLE = " + taxableEarnings + " DEDUCTABLE = " + taxRate.deduction + "**** TAX = " + tax);
+            Console.WriteLine("+=======================================================================================================================================+");
+            //
+            // ADD TAX DEDUCTION TO DEDUCTIONS
             var taxDedType = await _db.DeductionTypes.FirstOrDefaultAsync(d => d.deductionName.ToLower().Contains("tax"));
             deductions.Add(new deductionRecordModel
             {
@@ -281,28 +286,36 @@ namespace PIS2.Models {
                 deductionAmount = tax,
                 modifiedBy = "system"
             });
-
-            // other deductions (loans, penalties)
+            //
+            //GET NET PAY AFTER TAX AND PENSION
+            decimal netPay = gross - tax - pensionEmployee;
+            //
+            //
+            // OTHER DEDUCTIONS (loans, penalties)
             var otherDeds = await _db.Deductions
                 .Include(d => d.DeductionType)
                 .Where(d => d.employmentID == emp.employmentID && d.deductionStatus == mainStatus.Active)
                 .ToListAsync();
 
-            // add other deductions (respect priority)
+            // ADD OTHER DEDUCTIONS TO DEDUCTION HOLDER (respect priority)
             foreach (var od in otherDeds.OrderBy(d => d.DeductionType?.dedcutionPriority))
             {
                 // copy to new deduction record attached to payroll computation
                 deductions.Add(new deductionRecordModel
                 {
                     deductionTypeID = od.deductionTypeID,
-                    deductionAmount = od.deductionAmount,
+                    deductionAmount = CalculateDeductionValue(od, baseSalary, allowancesSum, gross, netPay),
                     modifiedBy = "system"
                 });
             }
 
+            //TOTAL DEDUCTIONS AMOUNT
             decimal totalDeductions = deductions.Sum(d => d.deductionAmount ?? 0);
+
+            //TOTAL NET PAYABLE
             decimal net = gross - totalDeductions;
 
+            //CREATE A PAYROLL ROW FOR THE EMPLOYEE
             var payrollPay = new payrollPay
             {
                 employmentID = emp.employmentID,
@@ -322,6 +335,9 @@ namespace PIS2.Models {
         {
             // implement business calendar logic (exclude weekends, public holidays from a table if you have)
             int days = (end.Date - start.Date).Days + 1;
+
+            if(start > end) { return 0; }
+
             int workingDays = 0;
             for (int i = 0; i < days; i++)
             {
@@ -370,6 +386,35 @@ namespace PIS2.Models {
                 leaves.ForEach(l => l.leaveStatus = leaveStatus.Completed);
                 _db.Leaves.UpdateRange(leaves);
 
+                var earnings = await _db.Earnings.Where(e => e.earningStatus == mainStatus.Active && empIds.Contains(e.employmentID)).ToListAsync();
+                foreach (var e in earnings)
+                {
+                    // Decrement remainingIteration
+                    e.remainingIteration -= 1;
+
+                    // If remainingIteration reaches 0, mark as inactive
+                    if (e.remainingIteration <= 0)
+                    {
+                        e.earningStatus = mainStatus.Inactive;
+                        e.remainingIteration = 0; // optional: prevent negative
+                    }
+                }
+
+                var deductions = await _db.Deductions.Where(e => e.deductionStatus == mainStatus.Active && empIds.Contains(e.employmentID)).ToListAsync();
+                foreach (var e in deductions)
+                {
+                    // Decrement remainingIteration
+                    e.remainingIteration -= 1;
+
+                    // If remainingIteration reaches 0, mark as inactive
+                    if (e.remainingIteration <= 0)
+                    {
+                        e.deductionStatus = mainStatus.Inactive;
+                        e.remainingIteration = 0; // optional: prevent negative
+                    }
+                }
+
+
                 await _db.SaveChangesAsync();
                 await tx.CommitAsync();
             }
@@ -380,5 +425,40 @@ namespace PIS2.Models {
                 throw;
             }
         }
+
+        private decimal CalculateDeductionValue(deductionModel d, decimal baseSalary, decimal allowancesSum, decimal gross, decimal netPay)
+        {
+            decimal baseValue = d.deductionBase switch
+            {
+                deductionBase.NONE => 100,         // Fixed percentage base
+                deductionBase.SALARY => baseSalary,
+                deductionBase.ALLOWANCE => allowancesSum,
+                deductionBase.GROSS => gross,
+                deductionBase.NET => netPay,
+                _ => 0
+            };
+
+            if (d.IsPercentage)
+                return (d.deductionAmount / 100m) * baseValue;
+
+            return d.deductionAmount; // Fixed amount
+        }
+
+        private decimal CalculateEarningValue(earningModel e, decimal baseSalary, decimal allowancesSum)
+        {
+            decimal baseValue = e.earningBase switch
+            {
+                earningBase.NONE => 100,         // Fixed percentage base
+                earningBase.SALARY => baseSalary,
+                earningBase.ALLOWANCE => allowancesSum,
+                _ => 0
+            };
+
+            if (e.IsPercentage)
+                return (e.earningAmount / 100m) * baseValue;
+
+            return e.earningAmount; // Fixed amount
+        }
+
     }
 }

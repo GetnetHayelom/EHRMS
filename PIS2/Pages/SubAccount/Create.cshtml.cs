@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace PIS2.Pages.SubAccount
 {
-    [Authorize(Roles = "MIE\\PMS_HRMANAGER")]
+    [Authorize(Roles = "MIE\\PMS_FINANCE")]
     public class CreateModel : PageModel
     {
         private readonly PIS2.Models.PISContext _context;
@@ -32,6 +32,13 @@ namespace PIS2.Pages.SubAccount
         // For more information, see https://aka.ms/RazorPagesCRUD.
         public async Task<IActionResult> OnPostAsync()
         {
+            if (!User.IsInRole("MIE\\PMS_FINANCE"))
+            {
+                return RedirectToPage("/Shared/AccessDenied");
+            }
+            ModelState.Clear();
+            subAccountModel.modifiedBy = User.Identity.Name;
+
             if (!ModelState.IsValid)
             {
                 return Page();

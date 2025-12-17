@@ -27,7 +27,13 @@ namespace PIS2.Pages.Exprience
         public List<experienceModel> Experiences { get; set; } = default!;
         public IActionResult OnGet(int? id)
         {
-            if(id != null)
+            Experiences = new List<experienceModel>();
+
+            if (!User.IsInRole("MIE\\PMS_HRCLERK"))
+            {
+                return RedirectToPage("/Shared/AccessDenied");
+            }
+            if (id != null)
             {
                 experienceModel = new experienceModel();
                 experienceModel.personID = id ?? 0;
@@ -43,6 +49,11 @@ namespace PIS2.Pages.Exprience
         // For more information, see https://aka.ms/RazorPagesCRUD.
         public async Task<IActionResult> OnPostAsync()
         {
+            if (!User.IsInRole("MIE\\PMS_HRCLERK"))
+            {
+                return RedirectToPage("/Shared/AccessDenied");
+            }
+
             if (!ModelState.IsValid)
             {
                 return Page();

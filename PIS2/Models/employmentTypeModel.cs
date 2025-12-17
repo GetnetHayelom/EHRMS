@@ -22,11 +22,13 @@ namespace PIS2.Models
         public int employmentMinAge { get; set; } = 18;
         public int employmentMaxAge { get; set; } = 60;
         public double? maxLeaveIncrement { get; set; } = 40;
-            
+        public int? probationDays = 45;
+         
         public ICollection<employmentHistoryModel>? EmploymentHistories { get; set; } = null!;
         public ICollection<employmentModel>? Employments { get; set; } = null!;
         public virtual ICollection<employmentRequestModel>? EmploymentRequests { get; set; }
         public string modifiedBy { get; set; }
+        public DateTime modifiedDate { get; set; } = DateTime.Now;
         public employmentTypeModel()
         {
 

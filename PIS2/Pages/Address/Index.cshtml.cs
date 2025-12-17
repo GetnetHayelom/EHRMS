@@ -19,9 +19,16 @@ namespace PIS2.Pages.Address
         }
 
         public IList<addressModel> addressModel { get;set; } = default!;
-
+        [BindProperty(SupportsGet =true)]
+        public mainStatus? AddressStatus { get; set; }
         public async Task OnGetAsync()
         {
+            var address = _context.Addresses.AsQueryable();
+            
+            if(AddressStatus != null)
+            {
+                address = address.Where(a => a.addressStatus == AddressStatus);
+            }
             addressModel = await _context.Addresses.ToListAsync();
         }
     }

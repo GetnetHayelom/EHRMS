@@ -1,0 +1,81 @@
+﻿@page "{id:int}"
+@model PIS2.Pages.EarningRecord.EditModel
+@{
+
+    ViewData["Title"] = "Edit Earning";
+}
+
+<div class="container mt-4">
+    <div class="card shadow-lg">
+        <div class="card-header bg-warning text-dark">
+            <h4 class="mb-0">Edit Earning</h4>
+        </div>
+
+        <div class="card-body">
+            <form method="post">
+                @Html.AntiForgeryToken()
+
+                <input type="hidden" asp-for="Earning.earningID" />
+
+                <div class="row g-3">
+
+                    <div class="col-md-4">
+                        <label class="form-label">Earning Type</label>
+                        <select asp-for="Earning.earningTypeId" class="form-select" asp-items="Model.EarningTypes"></select>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label">Employee</label>
+                        <select asp-for="Earning.employmentID" class="form-select" asp-items="Model.Employees"></select>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label">Iteration</label>
+                        <input asp-for="Earning.earningIteration" type="number" class="form-control" />
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label">Amount</label>
+                        <input asp-for="Earning.earningAmount" type="number" step="0.01" class="form-control" />
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label">Is Percentage?</label>
+                        <select asp-for="Earning.IsPercentage" class="form-select">
+                            <option value="true">Yes</option>
+                            <option value="false">No (Fixed)</option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label">Earning Base</label>
+                        <select asp-for="Earning.earningBase" class="form-select">
+                            @foreach (var baseVal in Enum.GetValues(typeof(Models.deductionBase)))
+                            {
+                                <option value="@baseVal">@baseVal</option>
+                            }
+                        </select>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label">Status</label>
+                        <select asp-for="Earning.earningStatus" class="form-select">
+                            @foreach (var st in Enum.GetValues(typeof(Models.mainStatus)))
+                            {
+                                <option value="@st">@st</option>
+                            }
+                        </select>
+                    </div>
+
+                </div>
+
+                <div class="mt-4 d-flex justify-content-end gap-2">
+                    <a asp-page="Index" class="btn btn-secondary">Cancel</a>
+                    <button type="submit" class="btn btn-warning">Update Earning</button>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>
+

@@ -5,13 +5,17 @@
     ViewData["Title"] = "Index";
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
+@await Html.PartialAsync("headerSimple", "")
+<h1 class="fw-bold">Education/Academic Levels</h1>
 
-<h1>Education/Academic Levels</h1>
-
-<p>
-    <a asp-page="Create">Add New Academic Level</a>
+<p class="d-print-none">
+    <a asp-page="Create" class="btn btn-primary">Add New Academic Level</a>
 </p>
-@await Html.PartialAsync("filter")
+<div class="d-flex justify-content-end d-print-none">
+    <div class="me-2">@await Html.PartialAsync("filter")</div>
+    @await Html.PartialAsync("print")
+    <excel-export table="dataTable" filename="Companies_@(DateTime.UtcNow).xlsx"></excel-export>
+</div>
 <table class="table table-striped table-hover" id="dataTable">
     <thead>
         <tr class="bg-dark text-white">
@@ -30,33 +34,66 @@
             <th>
                 Status
             </th>
-            <th>Actions</th>
+            <th class="d-print-none">Actions</th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model.educationLevelModel) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.educationLevelName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.educationLevelGrade)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.educationLevelCategory)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.educationLevelDescription)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.educationLevelStatus)
-            </td>
-            <td>
-                <a asp-page="./Edit" asp-route-id="@item.educationLevelID">Edit</a> |
-                <a asp-page="./Details" asp-route-id="@item.educationLevelID">Details</a> |
-                <a asp-page="./Delete" asp-route-id="@item.educationLevelID">Delete</a>
-            </td>
-        </tr>
-}
+        @foreach (var levels in Model.educationLevelModel.GroupBy(e => e.educationLevelCategory)) 
+        {
+            <tr class="table-primary">
+                <th>@levels.FirstOrDefault().educationLevelCategory</th>
+                <th colspan="5"></th>
+            </tr>
+            @foreach (var item in levels) 
+            {
+                <tr>
+                    <td>
+                        
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.educationLevelName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.educationLevelGrade)
+                    </td>
+                
+                    <td>
+                        @Html.DisplayFor(modelItem => item.educationLevelDescription)
+                    </td>
+                    <td>
+                
+                            @if (item.educationLevelStatus == Models.mainStatus.Active)
+                            {
+                                <span class="badge bg-success">@Html.DisplayFor(modelItem => item.educationLevelStatus)</span>
+
+                            }
+                            else if (item.educationLevelStatus == Models.mainStatus.Suspended)
+                            {
+                                <span class="badge bg-warning">@Html.DisplayFor(modelItem => item.educationLevelStatus)</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-secondary">@Html.DisplayFor(modelItem => item.educationLevelStatus)</span>
+                            }
+                    </td>   
+                    <td class="d-print-none">
+                        <div class="btn-group" role="group">
+                            <a asp-page="./Details" asp-route-id="@item.educationLevelID" class="btn btn-sm btn-outline-primary" title="View Details">
+                                <i class="bi bi-eye"></i>
+                            </a>
+                            <a asp-page="./Edit" asp-route-id="@item.educationLevelID" class="btn btn-sm btn-outline-success" title="Edit">
+                                <i class="bi bi-pencil-square"></i>
+                            </a>
+                        </div>
+                </td>
+            </tr>
+            } 
+        }
+        
     </tbody>
 </table>
+<div class="d-flex justify-content-end d-print-none">
+  
+    @await Html.PartialAsync("print")
+    <excel-export table="dataTable" filename="Companies_@(DateTime.UtcNow).xlsx"></excel-export>
+</div>

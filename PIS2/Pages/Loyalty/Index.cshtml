@@ -6,13 +6,13 @@
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
 
-<h1>Loyalty</h1>
+<h1 class="fw-bold">Loyalty</h1>
 
 <p>
-    <a asp-page="Create">Add New Loyalty</a>
+    <a asp-page="Create" class="btn btn-primary">Add New Loyalty</a>
 </p>
-<table class="table" id="dataTable">
-    <thead>
+<table class="table table-hover table-striped" id="dataTable">
+    <thead class="bg-dark text-white">
         <tr>
             <th>
                 Loyalty Name
@@ -42,12 +42,29 @@
                 @Html.DisplayFor(modelItem => item.loyaltyCounter)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.loyaltyStatus)
+                    @if (item.loyaltyStatus == Models.mainStatus.Active)
+                    {
+                        <span class="badge bg-success">@Html.DisplayFor(modelItem => item.loyaltyStatus)</span>
+
+                    }
+                    else if (item.loyaltyStatus == Models.mainStatus.Suspended)
+                    {
+                        <span class="badge bg-warning">@Html.DisplayFor(modelItem => item.loyaltyStatus)</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-secondary">@Html.DisplayFor(modelItem => item.loyaltyStatus)</span>
+                    }
             </td>
             <td>
-                <a asp-page="./Edit" asp-route-id="@item.loyaltyID">Edit</a> |
-                <a asp-page="./Details" asp-route-id="@item.loyaltyID">Details</a> |
-                <a asp-page="./Delete" asp-route-id="@item.loyaltyID">Delete</a>
+                    <div class="btn-group" role="group">
+                        <a asp-page="./Details" asp-route-id="@item.loyaltyID" class="btn btn-sm btn-outline-primary" title="View Details">
+                            <i class="bi bi-eye"></i>
+                        </a>
+                        <a asp-page="./Edit" asp-route-id="@item.loyaltyID" class="btn btn-sm btn-outline-success" title="Edit">
+                            <i class="bi bi-pencil-square"></i>
+                        </a>
+                    </div>
             </td>
         </tr>
 }

@@ -102,5 +102,17 @@ namespace PIS2.Controllers
 
             return Ok(jobs);
         }
+
+        [HttpGet("JobsByJobTitle/{jobTitle}")]
+        public IActionResult GetJobsByJobClass(string jobTitle)
+        {
+            var jobs = _context.Jobs
+                .Where(d => d.jobTitle.Contains(jobTitle))
+                .OrderBy(d => d.jobTitle)
+                .Select(d => new { d.jobID, d.jobTitle })
+                .ToList();
+
+            return Ok(jobs);
+        }
     }
 }

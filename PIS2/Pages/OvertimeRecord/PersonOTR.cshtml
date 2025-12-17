@@ -7,20 +7,31 @@
     int num = 0;
 }
 @await Html.PartialAsync("headerSimple", "")
-<h1 class="fw-bold">Overtime Request</h1>
 
-<p class="d-flex">
-    <div class="col-md-5">
-        <a asp-page="Create" class="btn btn-primary me-2 mb-2 d-print-none">Add New Overtime Record</a>
-        <hr />
-        @if (Model.overtimeRecordModel.Count > 10)
+
+<div class="d-flex justify-content-around">
+    <h1 class="fw-bold col-5">Overtime Request</h1>
+    <div class="col-md-5 d-print-none d-flex">
+       
+       
+        @if (Model.overtimeRecordModel.Any())
         {
-            @await Html.PartialAsync("filter")
+            <div class="m-2">@await Html.PartialAsync("filter")</div>
+            
         }
+        <div class="m-2 d-flex flex-grow">
+            <a asp-page="Create" class="btn btn-primary m-2 d-print-none"><i class="bi bi-plus-circle-fill"></i>New Overtime</a>
+            
+        </div>
+        <div class="m-2 d-flex">
+            
+            @await Html.PartialAsync("print");
+        </div>
         
     </div>
-    
-</p>
+    <hr />
+</div>
+<!--SUMMARY DATA-->
 <div class="d-flex">
     <dl class="d-flex">
         <div class="d-flex me-4">
@@ -45,9 +56,16 @@
         </div>
     </dl>
 </div>
-<table class="table">
+<table class="table" id="dataTable">
     <thead class="bg-dark text-white">
         <tr>
+            <th>
+                Date of Overtime
+            </th>
+            <th>
+                Reason
+            </th>
+            
             <th>
                 No
             </th>
@@ -58,12 +76,7 @@
             <th>
                 Overtime Type
             </th>
-            <th>
-                Reason
-            </th>
-            <th>
-                Date of Overtime
-            </th>
+            
             <th>
                 Start Time
             </th>
@@ -92,22 +105,34 @@
         </tr>
     </thead>
     <tbody>
-        @foreach (var item in Model.overtimeRecordModel) {
+        @foreach (var gr in Model.overtimeRecordModel.OrderByDescending(or => or.overtimeRecordDate).GroupBy(o => o.overtimeRecordDate))
+        {
+            bool first = true;
+
+            @foreach (var item in gr.OrderByDescending(or => or.overtimeRecordStartTime))
+            {
             num++;
             <tr onclick="location.href='@Url.Page("Details", new { id = item.overtimeRecordID })'" style="cursor:pointer;">
-                <td>@num</td>
+                    
+                    @if (first)
+                    {
+                        <th rowspan="@gr.Count()">
+                            @gr.Key.ToString("MM/dd/yyyy")
+                        </th>
+                        <td rowspan="@gr.Count()">
+                            @gr.First().overtimeRecordReason
+                        </td>
+                        first = false;
+                    
+                    }<td>@num</td>
+
                 <td>
                     @Html.DisplayFor(modelItem => item.overtimeRecordID)
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.overtimeModel.overtimeName)
                 </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.overtimeRecordReason)
-                </td>
-                <td>
-                    @item.overtimeRecordDate.ToString("dd MMM, yyyy")
-                </td>
+                
                 <td>
                     @item.overtimeRecordStartTime.ToString(@"hh\:mm")
                 </td>
@@ -115,7 +140,23 @@
                     @item.overtimeRecordEndTime.ToString(@"hh\:mm")
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.overtimeRecordStatus)
+                    @if (item.overtimeRecordStatus == Models.overtimeStatus.Posted)
+                    {
+                        <span class="badge bg-success">@Html.DisplayFor(modelItem => item.overtimeRecordStatus)</span>
+
+                    }
+                    else if (item.overtimeRecordStatus == Models.overtimeStatus.Hold)
+                    {
+                        <span class="badge bg-warning">@Html.DisplayFor(modelItem => item.overtimeRecordStatus)</span>
+                    }
+                    else if (item.overtimeRecordStatus == Models.overtimeStatus.Approved)
+                    {
+                        <span class="badge bg-primary">@Html.DisplayFor(modelItem => item.overtimeRecordStatus)</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-secondary">@Html.DisplayFor(modelItem => item.overtimeRecordStatus)</span>
+                    }
                 </td>
                 <td>
                     @Math.Round(item.overtimeRecordEmploymentRate,2)
@@ -135,11 +176,15 @@
                       
             </tr>
         }
+    
+        }
+    
     </tbody>
 </table>
 <div class="d-flex justify-content-end">
     @await Html.PartialAsync("back")
     @await Html.PartialAsync("print")
 </div>
-@await Html.PartialAsync("signature")
+<div class="print-full-width">@await Html.PartialAsync("signature")</div>
+
 

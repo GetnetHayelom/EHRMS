@@ -47,6 +47,7 @@ namespace PIS2.Pages.Absentism
             {
                 return RedirectToPage("/Shared/AccessDenied");
             }
+            if(leaveModel.leaveStatus == leaveStatus.Completed) { return Page(); }
             if (id == null)
             {
                 return NotFound();

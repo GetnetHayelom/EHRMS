@@ -43,7 +43,10 @@ namespace PIS2.Pages.Employment
         public bool EmpSelected { get; set; } = true;
         public async Task<IActionResult> OnGetAsync(int? id)
         {
-
+            if (!User.IsInRole("MIE\\PMS_HRCLERK"))
+            {
+                return RedirectToPage("/Shared/AccessDenied");
+            }
             if (!string.IsNullOrEmpty(givenID) && id == null)
             {
                 var emp = await _context.Employments
@@ -68,6 +71,7 @@ namespace PIS2.Pages.Employment
             var employmentmodel =  await _context.Employments
                 .Include(e => e.personModel).ThenInclude(p => p.addressModel)
                 .Include(e => e.JobPlacements).ThenInclude(jp => jp.jobModel)
+                .Include(e => e.JobPlacements).ThenInclude(j => j.departmentModel)
                 .FirstOrDefaultAsync(m => m.employmentID == id);
 
             
@@ -109,6 +113,10 @@ namespace PIS2.Pages.Employment
         // For more information, see https://aka.ms/RazorPagesCRUD.
         public async Task<IActionResult> OnPostUpdateEmploymentAsync()
         {
+            if (!User.IsInRole("MIE\\PMS_HRCLERK"))
+            {
+                return RedirectToPage("/Shared/AccessDenied");
+            }
             populateViewBags();
             ModelState.Clear();
             employmentModel.modifiedBy = User.Identity.Name;
@@ -149,7 +157,10 @@ namespace PIS2.Pages.Employment
         }
         public async Task<IActionResult> OnPostUpdatePerson(int id)
         {
-
+            if (!User.IsInRole("MIE\\PMS_HRCLERK"))
+            {
+                return RedirectToPage("/Shared/AccessDenied");
+            }
             personModel existing =new personModel();
             existing = _context.Persons.AsNoTracking().FirstOrDefault(p => p.personID == personModel.personID);
             if (IsSamePerson(personModel, existing))
@@ -188,6 +199,10 @@ namespace PIS2.Pages.Employment
         }
         public async Task<IActionResult> OnPostSaveJobPlacement(int id)
         {
+            if (!User.IsInRole("MIE\\PMS_HRCLERK"))
+            {
+                return RedirectToPage("/Shared/AccessDenied");
+            }
             populateViewBags();
             ModelState.Clear();
             jobPlacementModel.modifiedBy = User.Identity.Name;
@@ -204,22 +219,21 @@ namespace PIS2.Pages.Employment
                 return Page();
             }
 
-            var currentJP = await _context.JobPlacements.AsNoTracking().FirstOrDefaultAsync( j => j.jobPlacementID == jobPlacementModel.jobPlacementID);
-            if (currentJP == null)
+            var jp = await _context.JobPlacements.AsNoTracking().FirstOrDefaultAsync( j => j.jobPlacementID == jobPlacementModel.jobPlacementID);
+            
+            if (jp != jobPlacementModel)
             {
-                currentJP = new jobPlacementModel();
-                jobPlacementModel.jobPlacementID = 0;
+                jp.departmentID = jobPlacementModel.departmentID;
+                jp.jobPlacementDate = jobPlacementModel.jobPlacementDate;
+                jp.jobPlacementReference = jobPlacementModel.jobPlacementReference;
+                jp.jobPlacementReason = jobPlacementModel.jobPlacementReason;
+                jp.jobPlacementStatus = jobPlacementModel.jobPlacementStatus;
+                jp.modifiedBy = User.Identity.Name;
             }
 
-            if (currentJP.jobID != jobPlacementModel.jobID)
-            {
-                jobPlacementModel.jobPlacementID = 0;
-                _context.JobPlacements.Add(jobPlacementModel);
-            }
-            else
-            {
-                _context.Attach(jobPlacementModel).State = EntityState.Modified;
-            }
+            
+                _context.Attach(jp).State = EntityState.Modified;
+            
 
             try
             {
@@ -240,7 +254,11 @@ namespace PIS2.Pages.Employment
             return RedirectToPage("Edit", new {id = jobPlacementModel.employmentID});
         }
         public async Task<IActionResult> OnPostAddExperience(int id)
-        {             
+        {
+            if (!User.IsInRole("MIE\\PMS_HRCLERK"))
+            {
+                return RedirectToPage("/Shared/AccessDenied");
+            }
             ModelState.Clear();
             experienceModel.modifiedBy = User.Identity.Name;
 
@@ -312,8 +330,9 @@ namespace PIS2.Pages.Employment
         {
             ViewData["personID"] = new SelectList(_context.Persons, "personID", "personFullName");
             ViewData["employmentTypeID"] = new SelectList(_context.EmploymentTypes, "employmentTypeID", "employmentTypeName");
-            ViewData["departmentID"] = new SelectList(_context.Departments.Where(d => d.departmentStatus ==mainStatus.Active), "departmentID", "departmentName");
-            ViewData["jobID"] = new SelectList(_context.Jobs.Where(j => j.jobStatus == mainStatus.Active), "jobID", "jobTitle");
+            ViewData["departmentID"] = new SelectList(_context.Departments.OrderBy(c => c.departmentName).Where(d => d.departmentStatus ==mainStatus.Active), "departmentID", "departmentName");
+            ViewData["companyID"] = new SelectList(_context.Companies.OrderBy(c => c.companyName).Where(d => d.companyStatus == mainStatus.Active), "companyID", "companyName");
+            ViewData["jobID"] = new SelectList(_context.Jobs.OrderBy(j => j.jobTitle).Where(j => j.jobStatus == mainStatus.Active), "jobID", "jobTitle");
             ViewData["jobStepID"] = new SelectList(_context.JobSteps, "jobStepID", "jobStepName");
             ViewData["shiftID"] = new SelectList(_context.Shifts.Where(s => s.shiftStatus == mainStatus.Active), "shiftID", "shiftName");
             ViewData["addressID"] = new SelectList(_context.Addresses.Where(a => a.addressStatus == mainStatus.Active), "addressID", "addressFormatted");

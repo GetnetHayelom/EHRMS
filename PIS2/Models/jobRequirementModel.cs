@@ -18,7 +18,7 @@ namespace PIS2.Models
         public int? hiredNumber { get; set; }
         public jobReqStatus jobRequirementStatus { get; set; }
         public string modifiedBy { get; set; }
-        public string modifiedDate { get; set; }
+        public DateTime modifiedDate { get; set; } = DateTime.Now;
         public virtual ICollection<jobRequirementHistoryModel>? JobRequirementHistories { get; set; }
         public virtual ICollection<jobReqCost>? JobReqCosts { get; set; }
         public jobRequirementModel() { }
@@ -52,7 +52,7 @@ namespace PIS2.Models
         public double jobReqCostActual { get; set; }
         public double jobReqCostReference { get; set; }
         public string modifiedBy { get; set; }
-        public DateTime modifiedDate { get; set; }
+        public DateTime modifiedDate { get; set; } = DateTime.Now;
 
         public jobReqCost() { }
 

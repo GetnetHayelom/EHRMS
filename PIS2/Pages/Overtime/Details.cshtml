@@ -38,7 +38,8 @@
         </dd>
     </dl>
 </div>
+@if (TempData["ErrorMessage"] != null) { }
 <div>
     <a asp-page="./Edit" asp-route-id="@Model.overtimeModel.overtimeID">Edit</a> |
-    <a asp-page="./Index">Back to List</a>
+    <a asp-page="./Index">View All Overtime Types</a>
 </div>

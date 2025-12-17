@@ -13,6 +13,7 @@ namespace PIS2.Models
 
         public virtual ICollection<jobModel>? Jobs { get; set; }
         public string modifiedBy { get; set; }
+        public DateTime modifiedDate { get; set; } = DateTime.Now;
 
         public jobClassModel() { }
     }

@@ -23,7 +23,7 @@ namespace PIS2.Pages.Address
 
         public async Task<IActionResult> OnGetAsync(int? id)
         {
-            if (!User.IsInRole("MIE\\PMS_HRMANAGER"))
+            if (!(User.IsInRole("MIE\\PMS_HRMANAGER")|| User.IsInRole("MIE\\PMS_HRADMIN")))
             {
                 return RedirectToPage("/Shared/AccessDenied");
             }

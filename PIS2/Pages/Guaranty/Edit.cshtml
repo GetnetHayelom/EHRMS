@@ -2,65 +2,109 @@
 @model PIS2.Pages.Guaranty.EditModel
 
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = "Edit Guaranty";
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
+@{
+    bool isReadOnly = !(Model.isSelf &&
+                        Model.guarantyModel.guarantyStatus == Models.mainStatus.Suspended);
+}
 
-<h1>Edit</h1>
+<!-- Page Header -->
+<div class="mb-4">
+    <h1 class="fw-bold text-dark">Edit Guaranty</h1>
+    <p class="text-muted mb-0">Update guaranty details for the selected employee</p>
+</div>
 
-<h4>guarantyModel</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form method="post">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="guarantyModel.guarantyID" />
-            <div class="form-group">
-                <label asp-for="guarantyModel.employmentID" class="control-label"></label>
-                <select asp-for="guarantyModel.employmentID" class="form-control" asp-items="ViewBag.employmentID"></select>
-                <span asp-validation-for="guarantyModel.employmentID" class="text-danger"></span>
+<!-- Form Card -->
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card shadow-sm border-0">
+            <div class="card-body p-4">
+
+                <form method="post">
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+                    <input type="hidden" asp-for="guarantyModel.guarantyID" />
+
+                    <div class="row g-3">
+
+                        <div class="col-md-6">
+                            <label asp-for="guarantyModel.employmentID" class="form-label fw-semibold">Employment ID</label>
+                            <input asp-for="guarantyModel.employmentID" class="form-control" readonly hidden/>
+                            <input class="form-control" readonly value="@Model.employmentModel.givenID"/>
+                            <span asp-validation-for="guarantyModel.employmentID" class="text-danger"></span>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label asp-for="guarantyModel.guarantyType" class="form-label fw-semibold">Guaranty Type</label>
+                            <select asp-for="guarantyModel.guarantyType" class="form-control" asp-items="@Html.GetEnumSelectList<Models.GuarantyTypes>()" readonly="@isReadOnly"></select>
+                            <span asp-validation-for="guarantyModel.guarantyType" class="text-danger"></span>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label asp-for="guarantyModel.guarantyStartDate" class="form-label fw-semibold">Start</label>
+                            <input asp-for="guarantyModel.guarantyStartDate" class="form-control" type="date" readonly="@isReadOnly" />
+                            <span asp-validation-for="guarantyModel.guarantyStartDate" class="text-danger"></span>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label asp-for="guarantyModel.guarantyEndDate" class="form-label fw-semibold">End</label>
+                            <input asp-for="guarantyModel.guarantyEndDate" class="form-control" type="date" readonly="@isReadOnly" />
+                            <span asp-validation-for="guarantyModel.guarantyEndDate" class="text-danger"></span>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label asp-for="guarantyModel.guarantyAmount" class="form-label fw-semibold">Amount</label>
+                            <input asp-for="guarantyModel.guarantyAmount" class="form-control" readonly="@isReadOnly" />
+                            <span asp-validation-for="guarantyModel.guarantyAmount" class="text-danger"></span>
+                        </div>
+                        @if (User.IsInRole("MIE\\PMS_HRCLERK"))
+                        {
+                            <div class="col-md-6">
+                                <label asp-for="guarantyModel.guarantyStatus" class="form-label fw-semibold">Status</label>
+                                <select asp-for="guarantyModel.guarantyStatus"
+                                        class="form-select"
+                                        asp-items="@Html.GetEnumSelectList<Models.mainStatus>()">
+                                </select>
+                                <span asp-validation-for="guarantyModel.guarantyStatus" class="text-danger"></span>
+                            </div>
+                        }
+                        
+
+                        <div class="col-12">
+                            <label asp-for="guarantyModel.guarantyFor" class="form-label fw-semibold">Guaranty For</label>
+                            <input asp-for="guarantyModel.guarantyFor" class="form-control" readonly="@isReadOnly" />
+                            <span asp-validation-for="guarantyModel.guarantyFor" class="text-danger"></span>
+                        </div>
+                        <div class="col-12">
+                            <label asp-for="guarantyModel.guarantyBeneficiary" class="form-label fw-semibold">Beneficairy</label>
+                            <input asp-for="guarantyModel.guarantyBeneficiary" class="form-control" readonly="@isReadOnly" />
+                            <span asp-validation-for="guarantyModel.guarantyBeneficiary" class="text-danger"></span>
+                        </div>
+
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="d-flex justify-content-between mt-4">
+                        <a asp-page="./Index" class="btn btn-outline-secondary">
+                            ← Back to List
+                        </a>
+
+                        <button type="submit" class="btn btn-primary px-4">
+                            Save Changes
+                        </button>
+                    </div>
+
+                </form>
+
             </div>
-            <div class="form-group">
-                <label asp-for="guarantyModel.guarantyStartDate" class="control-label"></label>
-                <input asp-for="guarantyModel.guarantyStartDate" class="form-control" />
-                <span asp-validation-for="guarantyModel.guarantyStartDate" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="guarantyModel.guarantyEndDate" class="control-label"></label>
-                <input asp-for="guarantyModel.guarantyEndDate" class="form-control" />
-                <span asp-validation-for="guarantyModel.guarantyEndDate" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="guarantyModel.guarantyAmount" class="control-label"></label>
-                <input asp-for="guarantyModel.guarantyAmount" class="form-control" />
-                <span asp-validation-for="guarantyModel.guarantyAmount" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="guarantyModel.guarantyType" class="control-label"></label>
-                <input asp-for="guarantyModel.guarantyType" class="form-control" />
-                <span asp-validation-for="guarantyModel.guarantyType" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="guarantyModel.guarantyFor" class="control-label"></label>
-                <input asp-for="guarantyModel.guarantyFor" class="form-control" />
-                <span asp-validation-for="guarantyModel.guarantyFor" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="guarantyModel.guarantyStatus" class="control-label"></label>
-                <select asp-for="guarantyModel.guarantyStatus" class="form-control"></select>
-                <span asp-validation-for="guarantyModel.guarantyStatus" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
-            </div>
-        </form>
+        </div>
     </div>
 </div>
 
-<div>
-    <a asp-page="./Index">Back to List</a>
-</div>
-
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }

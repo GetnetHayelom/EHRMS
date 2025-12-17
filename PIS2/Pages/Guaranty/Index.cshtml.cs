@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace PIS2.Pages.Guaranty
 {
-    [Authorize(Roles = "MIE\\PMS_HRCLERK")]
+    [Authorize(Roles = "MIE\\PMS_HRCLERK, MIE\\PMS_HRMANAGER")]
     public class IndexModel : PageModel
     {
         private readonly PIS2.Models.PISContext _context;

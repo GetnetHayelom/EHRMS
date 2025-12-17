@@ -15,14 +15,20 @@ namespace PIS2.Pages.Guaranty
     public class EditModel : PageModel
     {
         private readonly PIS2.Models.PISContext _context;
+        private readonly PIS2.Models.Core _core;
 
-        public EditModel(PIS2.Models.PISContext context)
+        public EditModel(PIS2.Models.PISContext context, Core core)
         {
             _context = context;
+            _core = core;
         }
 
         [BindProperty]
         public guarantyModel guarantyModel { get; set; } = default!;
+
+        public employmentModel employmentModel { get; set; }
+
+        public bool isSelf { get; set; }
 
         public async Task<IActionResult> OnGetAsync(int? id)
         {
@@ -37,7 +43,9 @@ namespace PIS2.Pages.Guaranty
                 return NotFound();
             }
             guarantyModel = guarantymodel;
-           ViewData["employmentID"] = new SelectList(_context.Employments, "employmentID", "givenID");
+            employmentModel = _context.Employments.Include(e => e.personModel).FirstOrDefault(e => e.employmentID == guarantyModel.employmentID);
+            isSelf = _core.IsSelf(User.Identity.Name, employmentModel?.employmentID);
+
             return Page();
         }
 
@@ -45,12 +53,31 @@ namespace PIS2.Pages.Guaranty
         // For more information, see https://aka.ms/RazorPagesCRUD.
         public async Task<IActionResult> OnPostAsync()
         {
+            ModelState.Clear();
+            
+            if (!User.IsInRole("MIE\\PMS_HRCLERK"))
+            {
+                return RedirectToPage("/Shared/AccessDenied");
+            }
+
+            var guaranty = _context.Guaranties.FirstOrDefault(g => g.guarantyID == guarantyModel.guarantyID);
+
+            if(guaranty == guarantyModel)
+            {
+                return Page();
+            }
+
+            guaranty.guarantyStatus = guarantyModel.guarantyStatus;
+            guaranty.guarantyStartDate = guarantyModel.guarantyStartDate;
+            guaranty.guarantyEndDate = guarantyModel.guarantyEndDate;
+            guaranty.modifiedBy = User.Identity.Name;
+
             if (!ModelState.IsValid)
             {
                 return Page();
             }
 
-            _context.Attach(guarantyModel).State = EntityState.Modified;
+            _context.Attach(guaranty).State = EntityState.Modified;
 
             try
             {

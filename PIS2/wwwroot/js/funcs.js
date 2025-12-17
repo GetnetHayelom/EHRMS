@@ -232,4 +232,26 @@ function exportTableToExcel(tableID, filename = 'export.xlsx') {
 }
 
 
+// Match typed text to datalist and set hidden input
+/**
+ * Maps a visible input value to a hidden ID based on a datalist match.
+ * @param {string} hiddenId - The ID of the hidden input to store the ID.
+ 
+ */
+// Match typed text to datalist and set hidden input
+function selector(input, hiddenId) {
+    const value = input.value;
+    const datalist = input.getAttribute('list');
+    const options = document.querySelectorAll(`#${datalist} option`);
+    let found = false;
+    options.forEach(opt => {
+        if (opt.value === value) {
+            document.getElementById(hiddenId).value = opt.dataset.id;
+            found = true;
+        }
+    });
+    if (!found) {
+        document.getElementById(hiddenId).value = '';
+    }
+}
 

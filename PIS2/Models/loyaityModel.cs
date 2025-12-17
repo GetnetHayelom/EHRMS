@@ -13,6 +13,7 @@ namespace PIS2.Models
         public mainStatus loyaltyStatus { get; set; }
         public virtual ICollection<loyaltyHistoryModel>? LoyaltyHistories { get; set; }
         public string modifiedBy { get; set; }
+        public DateTime? modifiedDate { get; set; } = DateTime.Now;
         public loyaltyModel() { }
     }
 }

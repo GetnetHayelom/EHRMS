@@ -33,6 +33,7 @@ namespace PIS2.Models
         public virtual ICollection<workSiteModel>? WorkSites { get; set; }
         //public virtual companyModel? companyModel { get; set; }
         public string modifiedBy { get; set; }
+        public DateTime modifiedDate { get; set; } = DateTime.Now;
         public addressModel() { }
       
     }

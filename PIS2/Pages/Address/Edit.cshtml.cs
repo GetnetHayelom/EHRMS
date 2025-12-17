@@ -24,7 +24,7 @@ namespace PIS2.Pages.Address
 
         public async Task<IActionResult> OnGetAsync(int? id)
         {
-            if (!User.IsInRole("MIE\\PMS_HRMANAGER"))
+            if (!(User.IsInRole("MIE\\PMS_HRMANAGER") || User.IsInRole("MIE\\PMS_HRADMIN")))
             {
                 return RedirectToPage("/Shared/AccessDenied");
             }
@@ -46,7 +46,7 @@ namespace PIS2.Pages.Address
         // For more information, see https://aka.ms/RazorPagesCRUD.
         public async Task<IActionResult> OnPostAsync()
         {
-            if (!User.IsInRole("MIE\\PMS_HRMANAGER"))
+            if (!(User.IsInRole("MIE\\PMS_HRMANAGER") || User.IsInRole("MIE\\PMS_HRADMIN")))
             {
                 return RedirectToPage("/Shared/AccessDenied");
             }

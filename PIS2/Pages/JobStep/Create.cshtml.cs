@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace PIS2.Pages.JobStep
 {
-    [Authorize(Roles = "MIE\\PMS_HRMANAGER")]
+    [Authorize(Roles = "MIE\\PMS_HRADMIN")]
     public class CreateModel : PageModel
     {
         private readonly PIS2.Models.PISContext _context;

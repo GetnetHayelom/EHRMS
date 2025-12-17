@@ -1,17 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Azure;
+﻿using Azure;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Hosting;
 using PIS2.Models;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using static PIS2.Pages.OvertimeRecord.IndexModel;
 
 namespace PIS2.Pages.Leave
 {
+    [Authorize(Roles = "MIE\\PMS_HRCLERK, MIE\\PMS_HRMANAGER")]
     public class IndexModel : PageModel
     {
         private readonly PIS2.Models.PISContext _context;
@@ -46,7 +48,6 @@ namespace PIS2.Pages.Leave
         public async Task OnGetAsync()
         {
             var userID = _context.Users.FirstOrDefault(u => u.userName == User.Identity.Name)?.userID ?? 0;
-
 
             var empID = _core.getUserEmp(User.Identity.Name);
            

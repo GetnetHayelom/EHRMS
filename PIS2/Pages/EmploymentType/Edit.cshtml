@@ -78,6 +78,11 @@
                         Severance<input class="form-check-input" asp-for="employmentTypeModel.isSeveranceAllowed" />
                     </label>
                 </div>
+                <div class="form-group form-check m-2">
+                    <label class="form-check-label">
+                        Pension<input class="form-check-input" asp-for="employmentTypeModel.isPensionAllowed" />
+                    </label>
+                </div>
             </div>
             <div class="form-group m-4" id="txtIncrement">
                 <label asp-for="employmentTypeModel.annualAccrualRate" class="control-label">Leave Increment Rate</label>
@@ -93,6 +98,11 @@
                 <label asp-for="employmentTypeModel.maxLeaveIncrement" class="control-label">Maximum Leave Increment</label>
                 <input asp-for="employmentTypeModel.maxLeaveIncrement" class="form-control"/>
                 <span asp-validation-for="employmentTypeModel.maxLeaveIncrement" class="text-danger"></span>
+            </div>
+            <div class="form-group" id="txtMaxLeave">
+                <label asp-for="employmentTypeModel.probationDays" class="control-label">Probation Period</label>
+                <input asp-for="employmentTypeModel.probationDays" class="form-control" />
+                <span asp-validation-for="employmentTypeModel.probationDays" class="text-danger"></span>
             </div>
             <div class="form-group d-flex justify-content-end">
                 <input type="submit" value="Save" class="btn btn-success m-2" />

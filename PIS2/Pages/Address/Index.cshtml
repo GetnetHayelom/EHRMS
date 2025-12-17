@@ -5,13 +5,23 @@
     ViewData["Title"] = "Index";
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
-
+@await Html.PartialAsync("headerSimple", "")
 <h1 class="fw-bold">Addresses</h1>
 
-<p>
+<p class="d-print-none">
     <a asp-page="Create" class="btn btn-primary">Add New Address</a>
 </p>
-@await Html.PartialAsync("filter")
+<div class="d-flex justify-content-end d-print-none">
+    <form method="get" class="d-flex">
+        <label class="form-label m-2 "> Status</label>
+        <select asp-for="AddressStatus" class="form-control m-2" asp-items="@Html.GetEnumSelectList<Models.mainStatus>()" onchange="this.form.submit()">
+            <option value="" selected> All</option>
+        </select>
+    </form>
+    <div class="me-2">@await Html.PartialAsync("filter")</div>
+    @await Html.PartialAsync("print")
+    <excel-export table="dataTable" filename="Adresses_@(DateTime.UtcNow).xlsx"></excel-export>
+</div>
 <table class="table table-stripped table-hover" id="dataTable">
     <thead>
         <tr class="bg-dark text-white">
@@ -33,7 +43,9 @@
             <th>
                 Status
             </th>
-            
+            <th class="d-print-none">
+                Actions
+            </th>
         </tr>
     </thead>
     <tbody>
@@ -55,9 +67,30 @@
                     @Html.DisplayFor(modelItem => item.addressTabya)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.addressStatus)
+                    @if (item.addressStatus == Models.mainStatus.Active)
+                    {
+                        <span class="badge bg-success">@Html.DisplayFor(modelItem => item.addressStatus)</span>
+
+                    }
+                    else if (item.addressStatus == Models.mainStatus.Suspended)
+                    {
+                        <span class="badge bg-warning">@Html.DisplayFor(modelItem => item.addressStatus)</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-secondary">@Html.DisplayFor(modelItem => item.addressStatus)</span>
+                    }
                 </td>
-                    
+                <td class="d-print-none">
+                      <div class="btn-group" role="group">
+                        <a asp-page="./Details" asp-route-id="@item.addressID" class="btn btn-sm btn-outline-primary" title="View Details">
+                            <i class="bi bi-eye"></i>
+                        </a>
+                        <a asp-page="./Edit" asp-route-id="@item.addressID" class="btn btn-sm btn-outline-success" title="Edit">
+                            <i class="bi bi-pencil-square"></i>
+                        </a>
+                    </div>
+                </td>  
             </tr>
         }
     </tbody>

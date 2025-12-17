@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace PIS2.Pages.Job
 {
-    [Authorize(Roles = "MIE\\PMS_HRMANAGER")]
+    [Authorize(Roles = "MIE\\PMS_HRADMIN")]
     public class CreateModel : PageModel
     {
         private readonly PIS2.Models.PISContext _context;
@@ -22,9 +22,9 @@ namespace PIS2.Pages.Job
 
         public IActionResult OnGet()
         {
-        ViewData["jobCategoryID"] = new SelectList(_context.JobCategories, "jobCategoryID", "jobCategoryName");
-        ViewData["jobClassID"] = new SelectList(_context.JobClasses, "JobClassId", "JobClassName");
-        ViewData["jobGradeID"] = new SelectList(_context.JobGrades, "jobGradeID", "jobGradeName");
+        ViewData["jobCategoryID"] = new SelectList(_context.JobCategories.OrderBy(j => j.jobCategoryName), "jobCategoryID", "jobCategoryName");
+        ViewData["jobClassID"] = new SelectList(_context.JobClasses.OrderBy(j => j.JobClassName), "JobClassId", "JobClassName");
+        ViewData["jobGradeID"] = new SelectList(_context.JobGrades.OrderBy(j => j.jobGradeName), "jobGradeID", "jobGradeName");
             return Page();
         }
 

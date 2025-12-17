@@ -16,7 +16,7 @@
                 <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#annualLeaveView">Annual Leave Summary</button>
             </li>
             <li class="nav-item">
-                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#absentismView">Absentism</button>
+                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#absentismView">Absenteeism</button>
             </li>
             <li class="nav-item">
                 <button class="nav-link" data-bs-toggle="tab" data-bs-target="#detailLeaveView">Custom Attendance Report</button>
@@ -97,95 +97,138 @@
         </table>
     </div>
 
-    <!--ABSENTISM REPORT-->
+    <!--ABSENTEEISM REPORT-->
     <div class="tab-pane fade" id="absentismView">
         <h4 class="fw-bold">Absentism Summary</h4>
 
         <!--SUMMARY POINTS-->
-        <div class="d-flex justify-content-between">
-            <div class="card m-2 p-2 shadow flex-grow-1">
-                <p>Employees</p>
-                <h6 class="fw-bold"><u id="employees"></u> </h6>
+        <div class="d-flex gap-3 mb-4 d-print-flex">
+
+            <div class="flex-fill">
+                <div class="card shadow-sm border-start border-info border-3">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <small class="text-muted">Employees</small>
+                                <h3 class="fw-bold mb-0"><u id="employees"></u></h3>
+                            </div>
+                            <div><i class="bi bi-people fs-2 text-info"></i></div>
+                        </div>
+                    </div>
+                </div>
             </div>
-            
-            <div class="card m-2 p-2 shadow flex-grow-1">
-                <p>Total Absence (Days) </p>
-                <h6 class="fw-bold">
-                    <u id="totalDays"></u>
-                </h6>
+
+            <div class="flex-fill">
+                <div class="card shadow-sm border-start border-primary border-3">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <small class="text-muted">Total Absence (Days)</small>
+                                <h3 class="fw-bold mb-0"><u id="totalDays"></u></h3>
+                            </div>
+                            <div><i class="bi bi-calendar-x fs-2 text-primary"></i></div>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="card m-2 p-2 shadow flex-grow-1">
-                <p> Avg (Per Employee)</p>
-                <h6 class="fw-bold">
-                    <u id="perEmployee"></u>
-                </h6>
+
+            <div class="flex-fill">
+                <div class="card shadow-sm border-start border-warning border-3">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <small class="text-muted">Avg (Per Employee)</small>
+                                <h3 class="fw-bold mb-0"><u id="perEmployee"></u></h3>
+                            </div>
+                            <div><i class="bi bi-calculator fs-2 text-warning"></i></div>
+                        </div>
+                    </div>
+                </div>
             </div>
-            
-            <div class="card m-2 p-2 shadow flex-grow-1">
-                <p>Total Absence Records (Count) </p>
-                <h6 class="fw-bold"><u id="countAbsentism"></u> </h6>
-             </div>
-            <div class="card m-2 p-2 shadow flex-grow-1">
-                <p> Absentism Rate</p>
-                <h6 class="fw-bold">
-                    <u id="absentismRate">
-                        
-                    </u>
-                </h6>
+
+            <div class="flex-fill">
+                <div class="card shadow-sm border-start border-success border-3">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <small class="text-muted">Total Absence Records (Count)</small>
+                                <h3 class="fw-bold mb-0"><u id="countAbsentism"></u></h3>
+                            </div>
+                            <div><i class="bi bi-card-list fs-2 text-success"></i></div>
+                        </div>
+                    </div>
+                </div>
             </div>
-            
-            
+
+            <div class="flex-fill">
+                <div class="card shadow-sm border-start border-danger border-3">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <small class="text-muted">Absenteeism Rate</small>
+                                <h3 class="fw-bold mb-0"><u id="absentismRate"></u></h3>
+                            </div>
+                            <div><i class="bi bi-speedometer2 fs-2 text-danger"></i></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </div>
+
         <hr />
         <!--ABSENTISM FILTER CONTROLS-->
-        <form id="absentismForm" class="d-flex flex-wrap m-2 d-print-none gap-3">
-            <div class="col-3">
-                <label for="CompanyID">Company:</label>
-                <select class="form-select" aria-label="Default select company" name="CompanyID" asp-for="CompanyID">
-                    <option value="0">All</option>
-                    @foreach (var company in Model.Companies)
-                    {
-                        <option value="@company.companyID">@company.companyName</option>
-                    }
-                </select>
-            </div>
-            <div class="col-3">
-                <label for="LeaveTypeID">Type/Reason:</label>
-                <select class="form-select" aria-label="Default select leave type" name="LeaveTypeID" asp-for="LeaveTypeID">
-                    <option value="0">All</option>
-                    @foreach (var leave in Model.LeaveTypes)
-                    {
-                        <option value="@leave.leaveTypeID">@leave.leaveTypeName</option>
-                    }
-                </select>
-            </div>
-            <div class="col-3">
-                <label for="LeaveGroup">Group:</label>
-                <select class="form-select" aria-label="Default select leave group" name="LeaveGroup" asp-for="LeaveGroup" asp-items="@Html.GetEnumSelectList<Models.leaveGroup>()">
-                    <option value="0" selected>All</option>
-                </select>
-            </div>
-            <div class="col-3">
-                <label for="Legality">Legality:</label>
-                <select class="form-select" aria-label="Default select leave legality" name="Legality" asp-for="Legality">
-                    <option value="">All</option>
-                    <option value="true">Legal</option>
-                    <option value="false">Illegal</option>
-                </select>
-            </div>
-            <div class="col-3">
-                <label for="dateStart">Date of Start From:</label>
-                <input class="form-control" type="date" id="dateStart-absentism" asp-for="StartDate" name="StartDate" value="@Model.SDate?.ToString("yyyy-MM-dd")" />
-            </div>
-            <div class="col-3 d-print-none">
-                <label for="dateEnd">Date of End Upto:</label>
-                <input class="form-control" type="date" id="dateEnd-absentism" name="EndDate" asp-for="EndDate" value="@Model.EDate?.ToString("yyyy-MM-dd")" />
-            </div>
-            <div class="d-flex align-items-end">
-                <button type="submit" value="Filter" class="btn btn-primary m-2">Load</button>
-            </div>
-            
-        </form>
+        <div class="card p-3 mb-2">
+            <form id="absentismForm" class="d-flex flex-wrap m-2 d-print-none gap-3">
+                <div class="col-3">
+                    <label for="CompanyID">Company:</label>
+                    <select class="form-select" aria-label="Default select company" name="CompanyID" asp-for="CompanyID">
+                        <option value="0">All</option>
+                        @foreach (var company in Model.Companies)
+                        {
+                            <option value="@company.companyID">@company.companyName</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-3">
+                    <label for="LeaveTypeID">Type/Reason:</label>
+                    <select class="form-select" aria-label="Default select leave type" name="LeaveTypeID" asp-for="LeaveTypeID">
+                        <option value="0">All</option>
+                        @foreach (var leave in Model.LeaveTypes)
+                        {
+                            <option value="@leave.leaveTypeID">@leave.leaveTypeName</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-3">
+                    <label for="LeaveGroup">Group:</label>
+                    <select class="form-select" aria-label="Default select leave group" name="LeaveGroup" asp-for="LeaveGroup" asp-items="@Html.GetEnumSelectList<Models.leaveGroup>()">
+                        <option value="" selected>All</option>
+                    </select>
+                </div>
+                <div class="col-3">
+                    <label for="Legality">Legality:</label>
+                    <select class="form-select" aria-label="Default select leave legality" name="Legality" asp-for="Legality">
+                        <option value="">All</option>
+                        <option value="true">Legal</option>
+                        <option value="false">Illegal</option>
+                    </select>
+                </div>
+                <div class="col-3">
+                    <label for="dateStart">Date of Start From:</label>
+                    <input class="form-control" type="date" id="dateStart-absentism" asp-for="StartDate" name="StartDate" value="@Model.SDate?.ToString("yyyy-MM-dd")" />
+                </div>
+                <div class="col-3 d-print-none">
+                    <label for="dateEnd">Date of End Upto:</label>
+                    <input class="form-control" type="date" id="dateEnd-absentism" name="EndDate" asp-for="EndDate" value="@Model.EDate?.ToString("yyyy-MM-dd")" />
+                </div>
+                <div class="d-flex align-items-end">
+                    <button type="submit" value="Filter" class="btn btn-primary m-2">Load</button>
+                </div>
+
+            </form>
+        </div>
+        
         <div class="d-none d-print-flex justify-content-between">
             <h6 class="fw-bold m-2">Company: <u>@Model.companyName</u></h6>
             <div class="d-flex">
@@ -222,28 +265,80 @@
         
         
          <!--SUMMARY POINTS-->   
-        <div class="d-flex justify-content-between">
-            <div class="card m-2 p-2 shadow flex-grow-1">
-                <p>Total Records</p>
-                <h6 class="fw-bold"><u id="totalRecords">@Model.totalCount.ToString("N2")</u> </h6>
+        <div class="d-flex gap-3 mb-4 d-print-flex">
+
+            <div class="flex-fill">
+                <div class="card shadow-sm border-start border-info border-3">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <small class="text-muted">Total Records</small>
+                                <h3 class="fw-bold mb-0"><u id="totalRecords">@Model.totalCount.ToString("N2")</u></h3>
+                            </div>
+                            <div><i class="bi bi-file-text fs-2 text-info"></i></div>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="card m-2 p-2 shadow flex-grow-1">
-                <p>Total Records In Days</p>
-                <h6 class="fw-bold"><u id="totalDays1">@Model.totalDays.ToString("N2")</u> </h6>
+
+            <div class="flex-fill">
+                <div class="card shadow-sm border-start border-primary border-3">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <small class="text-muted">Total Records In Days</small>
+                                <h3 class="fw-bold mb-0"><u id="totalDays1">@Model.totalDays.ToString("N2")</u></h3>
+                            </div>
+                            <div><i class="bi bi-calendar fs-2 text-primary"></i></div>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="card m-2 p-2 shadow flex-grow-1">
-                <p>Total Records unposted</p>
-                <h6 class="fw-bold"><u id="totalUnposted">@Model.CountUnposted.ToString("N2")</u> </h6>
+
+            <div class="flex-fill">
+                <div class="card shadow-sm border-start border-warning border-3">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <small class="text-muted">Total Records Unposted</small>
+                                <h3 class="fw-bold mb-0"><u id="totalUnposted">@Model.CountUnposted.ToString("N2")</u></h3>
+                            </div>
+                            <div><i class="bi bi-exclamation-circle fs-2 text-warning"></i></div>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="card m-2 p-2 shadow flex-grow-1">
-                <p>Records Per Employee</p>
-                <h6 class="fw-bold"><u id="recordsPerEmployee">@Model.recordsPerEmployee.ToString("N2")</u> </h6>
+
+            <div class="flex-fill">
+                <div class="card shadow-sm border-start border-success border-3">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <small class="text-muted">Records Per Employee</small>
+                                <h3 class="fw-bold mb-0"><u id="recordsPerEmployee">@Model.recordsPerEmployee.ToString("N2")</u></h3>
+                            </div>
+                            <div><i class="bi bi-people fs-2 text-success"></i></div>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="card m-2 p-2 shadow flex-grow-1">
-                <p>Days Per Employee</p>
-                <h6 class="fw-bold"><u id="daysPerEmployee">@Model.daysPerEmployee.ToString("N2")</u> </h6>
+
+            <div class="flex-fill">
+                <div class="card shadow-sm border-start border-danger border-3">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <small class="text-muted">Days Per Employee</small>
+                                <h3 class="fw-bold mb-0"><u id="daysPerEmployee">@Model.daysPerEmployee.ToString("N2")</u></h3>
+                            </div>
+                            <div><i class="bi bi-clock fs-2 text-danger"></i></div>
+                        </div>
+                    </div>
+                </div>
             </div>
+
         </div>
+
 
         
         <!--FILTER CONTROLS-->

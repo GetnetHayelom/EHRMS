@@ -11,6 +11,7 @@ namespace PIS2.Models
         public mainStatus jobCategoryStatus { get; set; }
         public virtual ICollection<jobModel>? Jobs { get; set; }
         public string modifiedBy { get; set; }
+        public DateTime modifiedDate { get; set; } = DateTime.Now;
         public jobCategoryModel() { }
     }
 }

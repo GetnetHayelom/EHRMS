@@ -25,9 +25,12 @@ namespace PIS2.Pages.JobRequirement
             if (id != null)
             {
                 var selectedDepartment = _context.Departments.FirstOrDefault(d => d.departmentID ==id);
+                
                 if (selectedDepartment != null)
                 {
-                    ViewData["departmentID"] = new SelectList(_context.Departments.Where(d => d.departmentStatus == mainStatus.Active).OrderBy(d => d.departmentName), "departmentID", "departmentName", selectedDepartment);
+                    ViewData["departmentID"] = new SelectList(_context.Departments
+                        .Where(d => d.departmentStatus == mainStatus.Active)
+                        .OrderBy(d => d.departmentName), "departmentID", "departmentName", selectedDepartment.departmentID);
                 }
                
             }

@@ -24,6 +24,11 @@ namespace PIS2.Pages.Deduction
 
         public async Task<IActionResult> OnPostAsync()
         {
+            if (!User.IsInRole("MIE\\PMS_HRADMIN"))
+            {
+                return RedirectToPage("/Shared/AccessDenied");
+            }
+
             ModelState.Remove("DeductionType.modifiedBy");
             if (!ModelState.IsValid) return Page();
 

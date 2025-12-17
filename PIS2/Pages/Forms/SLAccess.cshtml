@@ -166,22 +166,23 @@
                         <i class="bi bi-search"></i>
                     </button>
                 </div>
+                <div id="statusMessage"></div>
             </div>
             <div class="d-print-flex">
-                <label for="EmployeeName" class="form-label">Employee Name:</label>
-                <input type="text" class="form-control" id="EmployeeName" asp-for="EmployeeName" required readonly/>
+                <label class="form-label">Employee Name:</label>
+                <input type="text" class="form-control" id="employeeName" required />
             </div>
             <div class="d-print-flex">
-                <label for="JobTitle" class="form-label">Job Title:</label>
-                <input type="text" class="form-control" id="JobTitle" asp-for="JobTitle" required readonly />
+                <label class="form-label">Job Title:</label>
+                <input type="text" class="form-control" id="jobTitle" />
             </div>
             <div class="col-md-3 d-print-flex">
-                <label for="Department" class="form-label">Department:</label>
-                <input type="text" class="form-control" id="Department" asp-for="Department" required readonly />
+                <label class="form-label">Department:</label>
+                <input type="text" class="form-control" id="department" required readonly />
             </div>
             <div class="col-md-3 d-print-flex">
-                <label for="Company" class="form-label">Company:</label>
-                <input type="text" class="form-control" id="Company" asp-for="Company" required readonly />
+                <label class="form-label">Company:</label>
+                <input type="text" class="form-control" id="company" required readonly />
             </div>
 
         </div>

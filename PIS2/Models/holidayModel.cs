@@ -16,6 +16,7 @@ namespace PIS2.Models
         public string holidayCycle { get; set; }
         public mainStatus holidayStatus { get; set; }
         public string modifiedBy { get; set; }
+        public DateTime modifiedDate { get; set; } = DateTime.Now;
         public holidayModel() { }
     }
 }

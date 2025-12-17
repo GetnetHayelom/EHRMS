@@ -17,6 +17,7 @@ namespace PIS2.Models
         public string? bankBranch { get; set; }
         public mainStatus bankInfoStatus { get; set; }
         public string modifiedBy { get; set; }
+        public DateTime modifiedDate { get; set; } = DateTime.Now;
 
         public bankInfoModel() { }
     }

@@ -1,17 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Policy;
-using System.Threading.Tasks;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.EntityFrameworkCore;
 using PIS2.Models;
 using PIS2.Pages.Company;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Security.Policy;
+using System.Threading.Tasks;
 
 namespace PIS2.Pages.HRClerck
 {
+        [Authorize(Roles = "MIE\\PMS_HRMANAGER")]
     public class IndexModel : PageModel
     {
         private readonly PIS2.Models.PISContext _context;

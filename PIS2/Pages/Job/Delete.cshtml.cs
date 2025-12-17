@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace PIS2.Pages.Job
 {
-    [Authorize(Roles = "MIE\\PMS_HRMANAGER")]
+    [Authorize(Roles = "MIE\\PMS_HRADMIN")]
     public class DeleteModel : PageModel
     {
         private readonly PIS2.Models.PISContext _context;
@@ -45,6 +45,11 @@ namespace PIS2.Pages.Job
 
         public async Task<IActionResult> OnPostAsync(int? id)
         {
+            var job = _context.JobPlacements.Any(j => j.jobID == id);
+            if (job)
+            {
+                TempData["ErrorMessage"] = "Can not delete job while there are existing job placement with this job!"; return Page();
+            }
             if (id == null)
             {
                 return NotFound();

@@ -17,6 +17,7 @@ namespace PIS2.Models
         public penaltyStatus penaltyStatus { get; set; }
         public virtual penaltyTypeModel? penaltyTypeModel { get; set; }
         public string modifiedBy { get; set; }
+        public DateTime modifiedDate { get; set; } = DateTime.Now;
         public virtual ICollection<penaltyHistoryModel>? PenaltyHistories { get; set; } 
 
         public penaltyModel() { }
@@ -42,7 +43,8 @@ namespace PIS2.Models
         // Calculation method
         public bool IsPercentage { get; set; } // true = % of base value, false = fixed
         public decimal penaltyAmount { get; set; }// e.g. 7 for 7%, or 500 for fixed
-        public decimal penaltyValidity { get; set; }
+        public decimal penaltyValidity { get; set; }//
+        public penaltyBase penaltyBase { get; set; }//Salary, Allowance, gross
         public DateTime modifiedDate { get; set; }
         public string modifiedBy { get; set; }
         public virtual List<penaltyModel>? Penalties { get; set; }
@@ -54,6 +56,7 @@ namespace PIS2.Models
     {
         Hold,
         Post,
+        Pending,
         Complete,
         Void
     }
@@ -63,5 +66,13 @@ namespace PIS2.Models
         Deciplinary,
         PerformanceRelated,
         PolicyViolation
+    }
+    public enum penaltyBase
+    {
+        SALARY,
+        ALLOWANCE,
+        NET,
+        GROSS,
+        NONE
     }
 }

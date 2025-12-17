@@ -5,7 +5,7 @@
     ViewData["Title"] = "Index";
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
-
+@await Html.PartialAsync("headerSimple", "")
 <h1 class="fw-bold">Penalty Types</h1>
 
 <p>
@@ -23,9 +23,7 @@
             <th>
                 Penalty Name
             </th>
-            <th>
-                Status
-            </th>
+         
             <th>
                 Method
             </th>
@@ -36,12 +34,15 @@
                 Validty
             </th>
             <th>
+                Status
+            </th>
+            <th>
                 Modified Date
             </th>
             <th>
                 Modified By
             </th>
-            <th></th>
+            <th class="d-print-none">Actions</th>
         </tr>
     </thead>
     <tbody>
@@ -50,9 +51,7 @@
             <td>
                 @Html.DisplayFor(modelItem => item.penaltyName)
             </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.penaltyTypeStatus)
-            </td>
+            
                 <td>
                     @Html.DisplayFor(modelItem => item.IsPercentage)
                 </td>
@@ -62,15 +61,36 @@
                 <td>
                     @Html.DisplayFor(modelItem => item.penaltyValidity)
                 </td>
+                <td>
+                    @if (item.penaltyTypeStatus == Models.mainStatus.Active)
+                    {
+                        <span class="badge bg-success">@Html.DisplayFor(modelItem => item.penaltyTypeStatus)</span>
+
+                    }
+                    else if (item.penaltyTypeStatus == Models.mainStatus.Suspended)
+                    {
+                        <span class="badge bg-warning">@Html.DisplayFor(modelItem => item.penaltyTypeStatus)</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-secondary">@Html.DisplayFor(modelItem => item.penaltyTypeStatus)</span>
+                    }
+                </td>
             <td>
                 @Html.DisplayFor(modelItem => item.modifiedDate)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.modifiedBy)
             </td>
-            <td>
-                <a asp-page="./Edit" asp-route-id="@item.penaltyTypeID">Edit</a> |
-                <a asp-page="./Details" asp-route-id="@item.penaltyTypeID">Details</a> 
+            <td class="d-print-none">
+                    <div class="btn-group" role="group">
+                        <a asp-page="./Details" asp-route-id="@item.penaltyTypeID" class="btn btn-sm btn-outline-primary" title="View Details">
+                            <i class="bi bi-eye"></i>
+                        </a>
+                        <a asp-page="./Edit" asp-route-id="@item.penaltyTypeID" class="btn btn-sm btn-outline-success" title="Edit">
+                            <i class="bi bi-pencil-square"></i>
+                        </a>
+                    </div>
                 
             </td>
         </tr>

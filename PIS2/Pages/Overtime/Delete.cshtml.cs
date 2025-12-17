@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace PIS2.Pages.Overtime
 {
-    [Authorize(Roles = "MIE\\PMS_HRMANAGER")]
+    [Authorize(Roles = "MIE\\PMS_HRADMIN")]
     public class DeleteModel : PageModel
     {
         private readonly PIS2.Models.PISContext _context;
@@ -45,6 +45,9 @@ namespace PIS2.Pages.Overtime
 
         public async Task<IActionResult> OnPostAsync(int? id)
         {
+            var overtime = _context.OvertimeRecords.Any(o => o.overtimeID == id);
+            if(overtime) { TempData["ErrorMessage"] = "Can not delete overtime type while there are existing overtime records with this overtime type!"; return Page(); }
+
             if (id == null)
             {
                 return NotFound();

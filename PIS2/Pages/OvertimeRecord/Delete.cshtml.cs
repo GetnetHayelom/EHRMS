@@ -10,14 +10,16 @@ using System.Threading.Tasks;
 
 namespace PIS2.Pages.OvertimeRecord
 {
-    [Authorize(Roles = "MIE\\PMS_HRCLERK")]
+    [Authorize(Roles = "MIE\\PMS_HRCLERK, MIE\\PMS_HRMANAGER")]
     public class DeleteModel : PageModel
     {
         private readonly PIS2.Models.PISContext _context;
+        private readonly PIS2.Models.Core _core;
 
-        public DeleteModel(PIS2.Models.PISContext context)
+        public DeleteModel(PIS2.Models.PISContext context, Core core)
         {
             _context = context;
+            _core = core;
         }
 
         [BindProperty]
@@ -45,6 +47,9 @@ namespace PIS2.Pages.OvertimeRecord
 
         public async Task<IActionResult> OnPostAsync(int? id)
         {
+            var otr = _context.OvertimeRecords.FirstOrDefault(o => o.overtimeRecordID == id);
+            if(otr.overtimeRecordStatus != overtimeStatus.Hold) { TempData["ErrorMessage"] = "Can not delete Apprved, Posted or Completed overtime record!"; return Page(); }
+            
             if (id == null)
             {
                 return NotFound();
@@ -53,6 +58,7 @@ namespace PIS2.Pages.OvertimeRecord
             var overtimerecordmodel = await _context.OvertimeRecords.FindAsync(id);
             if (overtimerecordmodel != null)
             {
+                if((!_core.IsSelf(User.Identity?.Name ?? "", overtimerecordmodel.employmentID) ||!(User.IsInRole("MIE\\PMS_HRCLERK") || User.IsInRole("MIE\\PMS_HRMANAGER")) && !(overtimeRecordModel.overtimeRecordStatus == overtimeStatus.Hold)))
                 overtimeRecordModel = overtimerecordmodel;
                 _context.OvertimeRecords.Remove(overtimeRecordModel);
                 await _context.SaveChangesAsync();

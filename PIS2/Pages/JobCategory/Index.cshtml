@@ -5,14 +5,18 @@
     ViewData["Title"] = "Index";
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
+@await Html.PartialAsync("headerSimple", "")
+<h1 class="fw-bold">Job Categories</h1>
 
-<h1>Job Categories</h1>
-
-<p>
-    <a asp-page="Create">Add New Job Category</a>
+<p class="d-print-none">
+    <a asp-page="Create" class="btn btn-primary">Add New Job Category</a>
 </p>
-@await Html.PartialAsync("filter")
-<table class="table table-striped table-hover" id="dataTable">
+<div class="d-flex justify-content-end d-print-none">
+    <div class="me-2">@await Html.PartialAsync("filter")</div>
+    @await Html.PartialAsync("print")
+    <excel-export table="dataTable" filename="JobCategories_@(DateTime.UtcNow).xlsx"></excel-export>
+</div>
+<table class="table table-striped table-hover print-full-width" id="dataTable">
     <thead>
         <tr class="bg-dark text-white">
             <th>
@@ -24,11 +28,11 @@
             <th>
                 Status
             </th>
-            <th>Actions</th>
+            <th class="d-print-none">Actions</th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model.jobCategoryModel) {
+    @foreach (var item in Model.jobCategoryModel) {
         <tr>
             <td>
                 @Html.DisplayFor(modelItem => item.jobCategoryName)
@@ -37,14 +41,37 @@
                 @Html.DisplayFor(modelItem => item.jobCategoryDescription)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.jobCategoryStatus)
+                    @if (item.jobCategoryStatus == Models.mainStatus.Active)
+                    {
+                        <span class="badge bg-success">@Html.DisplayFor(modelItem => item.jobCategoryStatus)</span>
+
+                    }
+                    else if (item.jobCategoryStatus == Models.mainStatus.Suspended)
+                    {
+                        <span class="badge bg-warning">@Html.DisplayFor(modelItem => item.jobCategoryStatus)</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-secondary">@Html.DisplayFor(modelItem => item.jobCategoryStatus)</span>
+                    }
+
             </td>
-            <td>
-                <a asp-page="./Edit" asp-route-id="@item.jobCategoryID">Edit</a> |
-                <a asp-page="./Details" asp-route-id="@item.jobCategoryID">Details</a> |
-                <a asp-page="./Delete" asp-route-id="@item.jobCategoryID">Delete</a>
+                <td class="d-print-none">
+                    <div class="btn-group" role="group">
+                        <a asp-page="./Details" asp-route-id="@item.jobCategoryID" class="btn btn-sm btn-outline-primary" title="View Details">
+                            <i class="bi bi-eye"></i>
+                        </a>
+                        <a asp-page="./Edit" asp-route-id="@item.jobCategoryID" class="btn btn-sm btn-outline-success" title="Edit">
+                            <i class="bi bi-pencil-square"></i>
+                        </a>
+                    </div>
             </td>
         </tr>
-}
+    }
     </tbody>
 </table>
+<div class="d-flex justify-content-end d-print-none">
+    
+    @await Html.PartialAsync("print")
+    <excel-export table="dataTable" filename="JobCategories_@(DateTime.UtcNow).xlsx"></excel-export>
+</div>

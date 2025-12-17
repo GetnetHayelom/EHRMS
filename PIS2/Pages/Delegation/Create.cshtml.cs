@@ -55,7 +55,8 @@ namespace PIS2.Pages.delegation
         // For more information, see https://aka.ms/RazorPagesCRUD.
         public async Task<IActionResult> OnPostAsync()
         {
-            if(delegationModel.delegationFrom == delegationModel.delegationTo)
+            if (!(User.IsInRole("MIE\\PMS_HRMANAGER") || User.IsInRole("MIE\\PMS_MANAGEMENT"))) { return RedirectToPage("/Shared/AccessDenied"); }
+            if (delegationModel.delegationFrom == delegationModel.delegationTo)
             {
                 ModelState.AddModelError("", "Delegator and Delegatee can not be the same.");
                 Employments = _context.Employments.Include(e => e.personModel).Where(e => e.employmentStatus == mainStatus.Active)

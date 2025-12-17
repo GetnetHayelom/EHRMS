@@ -21,6 +21,11 @@
                 <span asp-validation-for="workSiteModel.workSiteName" class="text-danger"></span>
             </div>
             <div class="form-group">
+                <label asp-for="workSiteModel.workSiteCode" class="control-label">Site Alias</label>
+                <input asp-for="workSiteModel.workSiteCode" class="form-control" />
+                <span asp-validation-for="workSiteModel.workSiteCode" class="text-danger"></span>
+            </div>
+            <div class="form-group">
                 <label asp-for="workSiteModel.workSiteNature" class="control-label">Site Type</label>
                 <input asp-for="workSiteModel.workSiteNature" class="form-control" />
                 <span asp-validation-for="workSiteModel.workSiteNature" class="text-danger"></span>
@@ -29,6 +34,16 @@
                 <label asp-for="workSiteModel.workSiteEstablishDate" class="control-label">Date</label>
                 <input asp-for="workSiteModel.workSiteEstablishDate" class="form-control" type="date"/>
                 <span asp-validation-for="workSiteModel.workSiteEstablishDate" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="workSiteModel.mapLink" class="control-label">Location Coordinates</label>
+                <input asp-for="workSiteModel.mapLink" class="form-control" type="text" value="N/A" />
+                <span asp-validation-for="workSiteModel.mapLink" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="workSiteModel.subAccountID" class="control-label">Sub Account</label>
+                <input asp-for="workSiteModel.subAccountID" class="form-control" type="text" />
+                <span asp-validation-for="workSiteModel.subAccountID" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="workSiteModel.workSiteStatus" class="control-label">Status</label>
@@ -40,8 +55,9 @@
                 <select asp-for="workSiteModel.addressID" class="form-control" asp-items="ViewBag.addressID"></select>
                 <span asp-validation-for="workSiteModel.addressID" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
+            <div class="form-group d-flex justify-content-end m-2">
+                @await Html.PartialAsync("back")
+                <input type="submit" value="Save" class="btn btn-success m-2" />
             </div>
         </form>
     </div>
@@ -50,29 +66,34 @@
             <thead>
                 <tr>
                     <th>
-                        @Html.DisplayNameFor(model => model.workSiteHistoryModel[0].workSiteModel)
+                        Site Name
                     </th>
                     <th>
-                        @Html.DisplayNameFor(model => model.workSiteHistoryModel[0].workSiteHistoryAction)
+                        History Action
                     </th>
                     <th>
-                        @Html.DisplayNameFor(model => model.workSiteHistoryModel[0].modifiedDate)
+                        Status
                     </th>
-                   
+                    <th>
+                        Modified Date
+                    </th>
                 </tr>
             </thead>
             <tbody>
-                @foreach (var item in Model.workSiteModel.WorkSiteHistories)
+                @foreach (var item in Model?.workSiteModel?.WorkSiteHistories)
                 {
                     <tr>
                         <td>
-                            @Html.DisplayFor(modelItem => item.workSiteModel.workSiteName)
+                            @item.workSiteModel?.workSiteName
                         </td>
                         <td>
-                            @Html.DisplayFor(modelItem => item.workSiteHistoryAction)
+                            @item.workSiteHistoryAction
                         </td>
                         <td>
-                            @Html.DisplayFor(modelItem => item.modifiedDate)
+                            @item.modifiedBy
+                        </td>
+                        <td>
+                            @(item.modifiedDate)
                         </td>
                         
                     </tr>
@@ -83,7 +104,7 @@
 </div>
 
 <div>
-    <a asp-page="./Index">Back to List</a>
+    <a asp-page="./Index">View All Work Sites</a>
 </div>
 
 @section Scripts {

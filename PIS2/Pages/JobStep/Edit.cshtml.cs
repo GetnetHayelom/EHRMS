@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace PIS2.Pages.JobStep
 {
-    [Authorize(Roles = "MIE\\PMS_HRMANAGER")]
+    [Authorize(Roles = "MIE\\PMS_HRADMIN")]
     public class EditModel : PageModel
     {
         private readonly PIS2.Models.PISContext _context;
@@ -26,6 +26,7 @@ namespace PIS2.Pages.JobStep
 
         public async Task<IActionResult> OnGetAsync(int? id)
         {
+            if (!(User.IsInRole("MIE\\PMS_HRADMIN") || User.IsInRole("MIE\\PMS_HRMANAGER"))) { return RedirectToPage("/Shared/AccessDenied"); }
             if (id == null)
             {
                 return NotFound();
@@ -37,7 +38,7 @@ namespace PIS2.Pages.JobStep
                 return NotFound();
             }
             jobStepModel = jobstepmodel;
-           ViewData["jobGradeID"] = new SelectList(_context.JobGrades, "jobGradeID", "jobGradeID");
+           ViewData["jobGradeID"] = new SelectList(_context.JobGrades, "jobGradeID", "jobGradeName");
             return Page();
         }
 
@@ -45,6 +46,9 @@ namespace PIS2.Pages.JobStep
         // For more information, see https://aka.ms/RazorPagesCRUD.
         public async Task<IActionResult> OnPostAsync()
         {
+            if (!(User.IsInRole("MIE\\PMS_HRADMIN") || User.IsInRole("MIE\\PMS_HRMANAGER"))) { return RedirectToPage("/Shared/AccessDenied"); }
+            ModelState.Clear();
+            jobStepModel.modifiedBy = User.Identity.Name;
             if (!ModelState.IsValid)
             {
                 return Page();

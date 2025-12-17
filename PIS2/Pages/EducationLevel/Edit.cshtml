@@ -40,7 +40,7 @@
                 <select asp-for="educationLevelModel.educationLevelStatus" class="form-control" asp-items="Html.GetEnumSelectList<Models.mainStatus>()"></select>
                 <span asp-validation-for="educationLevelModel.educationLevelStatus" class="text-danger"></span>
             </div>
-            <div class="form-group d-flex justify-content-end">
+            <div class="form-group d-flex justify-content-end m-2">
                 <input type="submit" value="Save" class="btn btn-success" />
             </div>
         </form>
@@ -48,7 +48,7 @@
 </div>
 
 <div>
-    <a asp-page="./Index">Back to List</a>
+    <a asp-page="./Index">View All Education Levels</a>
 </div>
 
 @section Scripts {

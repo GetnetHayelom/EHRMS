@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace PIS2.Pages.Holiday
 {
-    [Authorize(Roles = "MIE\\PMS_HRMANAGER,MIE\\PMS_HRCLERK")]
+    [Authorize(Roles = "MIE\\PMS_HRMANAGER,MIE\\PMS_HRCLERK, MIE\\PMS_HRADMIN")]
     public class DeleteModel : PageModel
     {
         private readonly PIS2.Models.PISContext _context;
@@ -45,6 +45,7 @@ namespace PIS2.Pages.Holiday
 
         public async Task<IActionResult> OnPostAsync(int? id)
         {
+            if (!(User.IsInRole("MIE\\PMS_HRADMIN") || User.IsInRole("MIE\\PMS_HRMANAGER"))) { return RedirectToPage("/Shared/AccessDenied"); }
             if (id == null)
             {
                 return NotFound();

@@ -16,8 +16,8 @@ namespace PIS2.Models
         public int companyID { get; set; }
         public virtual companyModel? companyModel { get; set; } = null!;
         //Manager
-        public int? employmentID { get; set; }
-        public virtual employmentModel? employmentModel { get; set; }
+        public int? employmentID { get; set; }//DEPARTMENT MANAGER/HEAD
+        public virtual employmentModel? employmentModel { get; set; }//DEPARTMENT MANAGER/HEAD
         public int? businessUnitID { get; set; }
         public virtual businessUnitModel? businessUnitModel { get; set; }
         public ICollection<jobPlacementModel>? JobPlacements { get; set; } = null!;

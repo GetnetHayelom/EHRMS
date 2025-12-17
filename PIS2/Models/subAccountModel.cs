@@ -26,5 +26,6 @@ namespace PIS2.Models
             this.subAccountStatus = status;
         }
         public string modifiedBy { get; set; }
+        public DateTime modifiedDate { get; set; } = DateTime.Now;
     }
 }

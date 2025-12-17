@@ -21,9 +21,8 @@ namespace PIS2.Models
             modelBuilder.Entity<accessModel>(entity =>
             {
                 entity.HasKey(a => a.accessID);
-
-                entity.HasOne(a => a.userModel).WithMany(u => u.Accesses).HasForeignKey(a => a.userID).OnDelete(DeleteBehavior.Cascade);
-                entity.HasOne(a => a.CompanyModel).WithMany(c => c.Accesses).HasForeignKey(a => a.companyID).OnDelete(DeleteBehavior.SetNull);
+                entity.HasOne(a => a.userModel).WithMany(u => u.Accesses).HasForeignKey(a => a.userID).OnDelete(DeleteBehavior.NoAction);
+                entity.HasOne(a => a.CompanyModel).WithMany(c => c.Accesses).HasForeignKey(a => a.companyID).OnDelete(DeleteBehavior.NoAction);
                 entity.Property(a => a.modifiedBy).IsRequired().HasMaxLength(100);
 
                 entity.ToTable(t => t.UseSqlOutputClause(false));
@@ -36,7 +35,7 @@ namespace PIS2.Models
             {
                 entity.HasKey(h => h.accessHistoryID);
 
-                entity.HasOne(h => h.accessModel).WithMany(a => a.AccessHistories).HasForeignKey(h => h.accessID).OnDelete(DeleteBehavior.Cascade);             
+                entity.HasOne(h => h.accessModel).WithMany(a => a.AccessHistories).HasForeignKey(h => h.accessID).OnDelete(DeleteBehavior.NoAction);             
                 entity.Property(h => h.modifiedBy).IsRequired().HasMaxLength(100);
 ;
             });
@@ -44,14 +43,8 @@ namespace PIS2.Models
 
             modelBuilder.Entity<accountModel>(entity =>
             {
-                entity.Property(e => e.accountID).HasColumnName("accountID");
-                entity.Property(e => e.accountNumber).HasColumnName("accountNumber");
-                entity.Property(e => e.accountDescription).HasColumnName("accountDescription");
-                entity.Property(e => e.accountName).HasColumnName("accountName");
-                entity.Property(e => e.accountStatus).HasColumnName("accountStatus").HasConversion<int>();
-                entity.Property(e => e.modifiedBy).HasColumnName("modifiedBy");
                 
-                entity.HasMany(e => e.SubAccounts).WithOne(p => p.accountModel).HasForeignKey(e => e.accountID).OnDelete(DeleteBehavior.Cascade);
+                entity.HasMany(e => e.SubAccounts).WithOne(p => p.accountModel).HasForeignKey(e => e.accountID).OnDelete(DeleteBehavior.NoAction);
 
                 entity.HasIndex(e => e.accountNumber).IsUnique();
                 entity.HasIndex(e =>e.accountName).IsUnique();
@@ -59,38 +52,21 @@ namespace PIS2.Models
 
             modelBuilder.Entity<addressModel>(entity =>
             {
-                entity.Property(e => e.addressID).HasColumnName("addressID");
-                entity.Property(e => e.addressCountry).HasColumnName("addressCountry");
-                entity.Property(e => e.addressRegion).HasColumnName("addressRegion");
-                entity.Property(e => e.addressStatus).HasColumnName("addressStatus");
-                entity.Property(e => e.addressTabya).HasColumnName("addressTabya");
-                entity.Property(e => e.addressWoreda).HasColumnName("addressWoreda");
-                entity.Property(e => e.addressZone).HasColumnName("addressZone");
-                entity.Property(e => e.modifiedBy).HasColumnName("modifiedBy");
-
+                
                 entity.HasMany(e => e.Persons).WithOne(p => p.addressModel).HasForeignKey(p => p.addressID);
                 entity.HasMany(e => e.WorkSites).WithOne(p => p.addressModel).HasForeignKey(p => p.addressID);
                 entity.HasMany(e => e.Companies).WithOne(p => p.addressModel).HasForeignKey(p => p.addressID);
 
                 entity.HasIndex(e => new { e.addressCountry, e.addressRegion, e.addressZone, e.addressWoreda, e.addressTabya }).IsUnique();
+                entity.ToTable(tb => tb.UseSqlOutputClause(false));
             });
 
             modelBuilder.Entity<allowanceModel>(entity =>
             {
-                entity.Property(e => e.allowanceID).HasColumnName("allowanceID");
-                entity.Property(e => e.allowanceAmount)
-                    .HasColumnType("decimal(8, 2)")
-                    .HasColumnName("allowanceAmount");
-                entity.Property(e => e.allowanceDescription).HasColumnName("allowanceDescription");
-                entity.Property(e => e.allowanceName).HasColumnName("allowanceName");
-                entity.Property(e => e.allowanceStatus).HasColumnName("allowanceStatus");
-                entity.Property(e => e.allowanceTaxable).HasColumnName("allowanceTaxable");
-                entity.Property(e => e.allowanceDuration).HasColumnName("allowanceDuration");
-                entity.Property(e => e.modifiedBy).HasColumnName("modifiedBy");
-
-                entity.HasMany(e => e.AllowanceAssignments).WithOne(p => p.allowanceModel).HasForeignKey(e => e.allowanceID).OnDelete(DeleteBehavior.Cascade);
+                entity.HasMany(e => e.AllowanceAssignments).WithOne(p => p.allowanceModel).HasForeignKey(e => e.allowanceID).OnDelete(DeleteBehavior.NoAction);
 
                 entity.HasIndex(e => e.allowanceName).IsUnique();
+                entity.ToTable(tb => tb.UseSqlOutputClause(false));
             });
 
             modelBuilder.Entity<allowanceAssignmentModel>(entity =>
@@ -104,9 +80,9 @@ namespace PIS2.Models
                 entity.Property(e => e.allowanceAssignmentEndDate).HasColumnName("allowanceAssignmentEndDate").IsRequired(false);
                 entity.Property(e => e.modifiedBy).HasColumnName("modifiedBy");
 
-                entity.HasOne(d => d.allowanceModel).WithMany(p => p.AllowanceAssignments).HasForeignKey(d => d.allowanceID);
-                entity.HasMany(d => d.AllowanceAssignmentHistories).WithOne(p => p.allowanceAssignmentModel).HasForeignKey(p => p.allowanceAssignmentID).OnDelete(DeleteBehavior.Cascade);
-                entity.HasOne(a => a.employmentModel).WithMany(e => e.AllowanceAssignments).HasForeignKey(d => d.employmentID).OnDelete(DeleteBehavior.Cascade);
+                entity.HasOne(d => d.allowanceModel).WithMany(p => p.AllowanceAssignments).HasForeignKey(d => d.allowanceID).OnDelete(DeleteBehavior.NoAction);
+                entity.HasMany(d => d.AllowanceAssignmentHistories).WithOne(p => p.allowanceAssignmentModel).HasForeignKey(p => p.allowanceAssignmentID).OnDelete(DeleteBehavior.NoAction);
+                entity.HasOne(a => a.employmentModel).WithMany(e => e.AllowanceAssignments).HasForeignKey(d => d.employmentID).OnDelete(DeleteBehavior.NoAction);
 
 
                 entity.HasIndex(d => new { d.allowanceID, d.employmentID, d.allowanceStatus }).IsUnique().HasFilter("[allowanceStatus] = 1");
@@ -124,98 +100,52 @@ namespace PIS2.Models
                 entity.Property(e => e.allowanceAssignmentEndDate).HasColumnName("allowanceAssignmentEndDate").IsRequired(false); 
                 entity.Property(e => e.modifiedBy).HasColumnName("modifiedBy");
 
-                entity.HasOne(e=>e.allowanceAssignmentModel).WithMany(d=>d.AllowanceAssignmentHistories).HasForeignKey(e => e.allowanceAssignmentID);
+                entity.HasOne(e=>e.allowanceAssignmentModel).WithMany(d=>d.AllowanceAssignmentHistories).HasForeignKey(e => e.allowanceAssignmentID).OnDelete(DeleteBehavior.NoAction);
 
             });
             modelBuilder.Entity<AuditLog>(entity =>
-            {
-                entity.Property(e => e.AuditID).HasColumnName("AuditID");
-                entity.Property(e => e.TableName).HasColumnName("TableName");
-                entity.Property(e => e.RecordID).HasColumnName("RecordID");
-                entity.Property(e => e.ColumnName).HasColumnName("ColumnName");
-                entity.Property(e => e.OldValue).HasColumnName("OldValue");
-                entity.Property(e => e.NewValue).HasColumnName("NewValue");
-                entity.Property(e => e.ModifiedBy).HasColumnName("ModifiedBy");
-                entity.Property(e => e.ModifiedDate).HasColumnName("ModifiedDate");
-
-            });
+            {});
 
 
             modelBuilder.Entity<bankInfoModel>(entity =>
             {
                 entity.HasIndex(e => e.personID, "IX_BankInfos_personModelpersonID");
+                entity.HasOne(d => d.personModel).WithMany(p => p.Banks).HasForeignKey(d => d.personID).OnDelete(DeleteBehavior.NoAction);
 
-                entity.Property(e => e.bankInfoID).HasColumnName("bankInfoID");
-                entity.Property(e => e.bankAccountNumber).HasColumnName("bankAccountNumber");
-                entity.Property(e => e.bankBranch).HasColumnName("bankBranch");
-                entity.Property(e => e.bankName).HasColumnName("bankName");
-                entity.Property(e => e.personID).HasColumnName("personID");
-                entity.Property(e => e.bankInfoStatus).HasColumnName("bankInfoStatus");
-                entity.Property(e => e.modifiedBy).HasColumnName("modifiedBy");
-
-                entity.HasOne(d => d.personModel).WithMany(p => p.Banks).HasForeignKey(d => d.personID).OnDelete(DeleteBehavior.Cascade);
-                
-                //entity.HasIndex(d => new { d.personID, d.bankName, d.bankInfoStatus}).IsUnique().HasFilter("[bankInfoStatus] = 1");
-                //entity.HasIndex(d => new { d.bankAccountNumber, d.personID, d.bankName, d.bankInfoStatus }).IsUnique();
+                entity.ToTable(tb => tb.UseSqlOutputClause(false));
             });
 
             modelBuilder.Entity<breakModel>(entity =>
             {
                 entity.HasIndex(e => e.shiftID, "IX_Breaks_shiftModelshiftID");
 
-                entity.Property(e => e.breakID).HasColumnName("breakID");
-                entity.Property(e => e.breakEnd).HasColumnName("breakEnd");
-                entity.Property(e => e.breakName).HasColumnName("breakName");
-                entity.Property(e => e.breakStart).HasColumnName("breakStart");
-                entity.Property(e => e.breakStatus).HasColumnName("breakStatus");
-                entity.Property(e => e.shiftID).HasColumnName("shiftID");
-                entity.Property(e => e.modifiedBy).HasColumnName("modifiedBy");
-
-                entity.HasOne(d => d.shiftModel).WithMany(p => p.Breaks).HasForeignKey(d => d.shiftID).OnDelete(DeleteBehavior.Cascade);
+                entity.HasOne(d => d.shiftModel).WithMany(p => p.Breaks).HasForeignKey(d => d.shiftID).OnDelete(DeleteBehavior.NoAction);
 
                 entity.HasIndex(d => new { d.breakEnd, d.breakStart, d.shiftID }).IsUnique();
+                entity.ToTable(tb => tb.UseSqlOutputClause(false));
             });
 
             modelBuilder.Entity<businessUnitModel>(entity =>
             {
-
-                entity.Property(e => e.businessUnitID).HasColumnName("businessUnitID");
-                entity.Property(e => e.addressID).HasColumnName("addressID");
-                entity.Property(e => e.businessUnitName).HasColumnName("businessUnitName");
-                entity.Property(e => e.businessUnitAlias).HasColumnName("businessUnitAlias");
-                entity.Property(e => e.businessUnitStatus).HasColumnName("businessUnitStatus");
-                entity.Property(e => e.employmentID).HasColumnName("employmentID");
-                entity.Property(e => e.modifiedBy).HasColumnName("modifiedBy");
-
                 entity.HasMany(e => e.Departments).WithOne(p => p.businessUnitModel).HasForeignKey(p => p.businessUnitID).OnDelete(DeleteBehavior.NoAction);
                 entity.HasOne(e => e.companyModel).WithMany(p => p.BusinessUnits).HasForeignKey(p => p.companyID).OnDelete(DeleteBehavior.NoAction);
                 entity.HasIndex(e => e.businessUnitName).IsUnique();
                 entity.HasIndex(e => e.businessUnitAlias).IsUnique();
 
-                //entity.HasOne(e => e.employmentModel).WithOne(p => p.companyModel).HasForeignKey<companyModel>(p => p.employmentID).OnDelete(DeleteBehavior.ClientSetNull); ;
+                entity.ToTable(tb => tb.UseSqlOutputClause(false));
             });
             modelBuilder.Entity<companyModel>(entity =>
             {
-                
-                entity.Property(e => e.companyID).HasColumnName("companyID");
-                entity.Property(e => e.addressID).HasColumnName("addressID");
-                entity.Property(e => e.companyName).HasColumnName("companyName");
-                entity.Property(e => e.companyAlias).HasColumnName("companyAlias");
-                entity.Property(e => e.companyStatus).HasColumnName("companyStatus");
-                entity.Property(e => e.employmentID).HasColumnName("employmentID");
-                entity.Property(e => e.modifiedBy).HasColumnName("modifiedBy");
-
-                entity.HasMany(e => e.Departments).WithOne(p => p.companyModel).HasForeignKey(p => p.companyID).OnDelete(DeleteBehavior.Restrict);
-                entity.HasMany(e => e.BusinessUnits).WithOne(p => p.companyModel).HasForeignKey(p => p.companyID);
-                entity.HasOne(e => e.addressModel).WithMany(p => p.Companies).HasForeignKey(p => p.addressID);
+                entity.HasMany(e => e.Departments).WithOne(p => p.companyModel).HasForeignKey(p => p.companyID).OnDelete(DeleteBehavior.NoAction);
+                entity.HasMany(e => e.BusinessUnits).WithOne(p => p.companyModel).HasForeignKey(p => p.companyID).OnDelete(DeleteBehavior.NoAction);
+                entity.HasOne(e => e.addressModel).WithMany(p => p.Companies).HasForeignKey(p => p.addressID).OnDelete(DeleteBehavior.NoAction);
 
                 entity.HasIndex(e => e.companyName).IsUnique();
-                
-                //entity.HasOne(e => e.employmentModel).WithOne(p => p.companyModel).HasForeignKey<companyModel>(p => p.employmentID).OnDelete(DeleteBehavior.ClientSetNull); ;
+
+                entity.ToTable(tb => tb.UseSqlOutputClause(false));
             });
             modelBuilder.Entity<contractModel>(entity =>
             {
-
                 entity.Property(e => e.contractID).HasColumnName("contractID");
                 entity.Property(e => e.employmentID).HasColumnName("employmentID");
                 entity.Property(e => e.startDate).HasColumnName("startDate");
@@ -224,8 +154,8 @@ namespace PIS2.Models
                 entity.Property(e => e.modifiedDate).HasColumnName("modifiedDate");
                 entity.Property(e => e.modifiedBy).HasColumnName("modifiedBy");
 
-                entity.HasMany(c => c.ContractHistories).WithOne(ch => ch.contractModel).HasForeignKey(p => p.contractID).OnDelete(DeleteBehavior.Cascade);
-                entity.HasOne(c => c.employmentModel).WithOne(e => e.contractModel).HasForeignKey<contractModel>(p => p.employmentID).OnDelete(DeleteBehavior.Cascade);
+                entity.HasMany(c => c.ContractHistories).WithOne(ch => ch.contractModel).HasForeignKey(p => p.contractID).OnDelete(DeleteBehavior.NoAction);
+                entity.HasOne(c => c.employmentModel).WithOne(e => e.contractModel).HasForeignKey<contractModel>(p => p.employmentID).OnDelete(DeleteBehavior.NoAction);
 
                 entity.ToTable(t => t.UseSqlOutputClause(false));
                
@@ -241,7 +171,7 @@ namespace PIS2.Models
                 entity.Property(e => e.modifiedDate).HasColumnName("modifiedDate");
                 entity.Property(e => e.modifiedBy).HasColumnName("modifiedBy");
 
-                entity.HasOne(ch => ch.contractModel).WithMany(c => c.ContractHistories).HasForeignKey(p => p.contractID);
+                entity.HasOne(ch => ch.contractModel).WithMany(c => c.ContractHistories).HasForeignKey(p => p.contractID).OnDelete(DeleteBehavior.NoAction);
                 
             });
             modelBuilder.Entity<delegationModel>(entity =>
@@ -256,9 +186,9 @@ namespace PIS2.Models
                 entity.Property(e => e.modifiedBy).HasColumnName("modifiedBy");
                 entity.Property(e => e.modifiedDate).HasColumnName("modifiedDate");
 
-                entity.HasOne(e => e.FromEmployment).WithMany(e => e.delegationsFrom).HasForeignKey(e => e.delegationFrom).OnDelete(DeleteBehavior.Restrict);
-                entity.HasOne(e => e.ToEmployment).WithMany(e => e.delegationsTo).HasForeignKey(e => e.delegationTo).OnDelete(DeleteBehavior.Restrict);
-                entity.HasMany(d => d.DelegationHistories).WithOne(d => d.delegationModel).HasForeignKey(d => d.delegationID);
+                entity.HasOne(e => e.FromEmployment).WithMany(e => e.delegationsFrom).HasForeignKey(e => e.delegationFrom).OnDelete(DeleteBehavior.NoAction);
+                entity.HasOne(e => e.ToEmployment).WithMany(e => e.delegationsTo).HasForeignKey(e => e.delegationTo).OnDelete(DeleteBehavior.NoAction);
+                entity.HasMany(d => d.DelegationHistories).WithOne(d => d.delegationModel).HasForeignKey(d => d.delegationID).OnDelete(DeleteBehavior.NoAction);
 
             });
             modelBuilder.Entity<delegationHistoryModel>(entity =>
@@ -271,12 +201,11 @@ namespace PIS2.Models
                 entity.Property(e => e.modifiedBy).HasColumnName("modifiedBy");
                 entity.Property(e => e.modifiedDate).HasColumnName("modifiedDate");
 
-                entity.HasOne(e => e.delegationModel).WithMany(e => e.DelegationHistories).HasForeignKey(e => e.delegationID);
+                entity.HasOne(e => e.delegationModel).WithMany(e => e.DelegationHistories).HasForeignKey(e => e.delegationID).OnDelete(DeleteBehavior.NoAction);
                
             });
             modelBuilder.Entity<departmentModel>(entity =>
             {
-
                 entity.HasIndex(e => e.employmentID, "IX_Departments_employmentModelemploymentID");
 
                 entity.HasIndex(e => e.subAccountID, "IX_Departments_subAccountModelsubAccountID");
@@ -291,16 +220,16 @@ namespace PIS2.Models
                 entity.Property(e => e.businessUnitID).HasColumnName("businessUnitID");
                 entity.Property(e => e.modifiedBy).HasColumnName("modifiedBy");
 
-                entity.HasOne(d => d.companyModel).WithMany(p => p.Departments).HasForeignKey(d => d.companyID).OnDelete(DeleteBehavior.Cascade);
-                entity.HasOne(d => d.businessUnitModel).WithMany(p => p.Departments).HasForeignKey(d => d.businessUnitID);
+                entity.HasOne(d => d.companyModel).WithMany(p => p.Departments).HasForeignKey(d => d.companyID).OnDelete(DeleteBehavior.NoAction);
+                entity.HasOne(d => d.businessUnitModel).WithMany(p => p.Departments).HasForeignKey(d => d.businessUnitID).OnDelete(DeleteBehavior.NoAction);
 
                 // entity.HasOne(d => d.employmentModel).WithOne(p => p.departmentModel)
                 //    .HasForeignKey<departmentModel>(d => d.employmentID)
                 //  .OnDelete(DeleteBehavior.ClientSetNull);
 
-                entity.HasOne(d => d.subAccountModel).WithMany(p => p.Departments).HasForeignKey(d => d.subAccountID);
-                entity.HasMany(e =>e.JobPlacements).WithOne(p => p.departmentModel).HasForeignKey(d => d.departmentID);
-                entity.HasMany(d => d.OvertimeRecords).WithOne(or => or.departmentModel).HasForeignKey(d => d.departmentID);
+                entity.HasOne(d => d.subAccountModel).WithMany(p => p.Departments).HasForeignKey(d => d.subAccountID).OnDelete(DeleteBehavior.NoAction);
+                entity.HasMany(e =>e.JobPlacements).WithOne(p => p.departmentModel).HasForeignKey(d => d.departmentID).OnDelete(DeleteBehavior.NoAction);
+                entity.HasMany(d => d.OvertimeRecords).WithOne(or => or.departmentModel).HasForeignKey(d => d.departmentID).OnDelete(DeleteBehavior.NoAction);
                 entity.HasOne(d => d.businessUnitModel).WithMany(p => p.Departments).HasForeignKey(d => d.businessUnitID).OnDelete(DeleteBehavior.NoAction);
 
                 entity.HasIndex(e => new { e.companyID, e.departmentName}).IsUnique();
@@ -318,7 +247,7 @@ namespace PIS2.Models
                 entity.Property(e => e.modifiedDate).HasColumnName("modifiedDate");
                 entity.Property(e => e.modifiedBy).HasColumnName("modifiedBy");
 
-                entity.HasOne(e => e.departmentModel).WithMany(e => e.DepartmentHistories).HasForeignKey(d => d.departmentID);
+                entity.HasOne(e => e.departmentModel).WithMany(e => e.DepartmentHistories).HasForeignKey(d => d.departmentID).OnDelete(DeleteBehavior.NoAction);
                 
             });
 
@@ -328,26 +257,19 @@ namespace PIS2.Models
                 entity.Property(e => e.disciplineName)
                       .IsRequired()
                       .HasMaxLength(100);
+                entity.ToTable(tb => tb.UseSqlOutputClause(false));
             });
-
 
 
             modelBuilder.Entity<educationLevelModel>(entity =>
             {
                 entity.HasIndex(e => e.educationLevelName, "IX_EducationLevels_personModelpersonID").IsUnique();
 
-                entity.Property(e => e.educationLevelID).HasColumnName("educationLevelID");
-                entity.Property(e => e.educationLevelCategory).HasColumnName("educationLevelCategory");
-                entity.Property(e => e.educationLevelDescription).HasColumnName("educationLevelDescription");
-                entity.Property(e => e.educationLevelGrade).HasColumnName("educationLevelGrade");
-                entity.Property(e => e.educationLevelName).HasColumnName("educationLevelName");
-                entity.Property(e => e.educationLevelStatus).HasColumnName("educationLevelStatus");
-                entity.Property(e => e.modifiedBy).HasColumnName("modifiedBy");
-
-                entity.HasMany(d => d.PersonEducationLevels).WithOne(p => p.educationLevelModel).OnDelete(DeleteBehavior.Cascade);
+                entity.HasMany(d => d.PersonEducationLevels).WithOne(p => p.educationLevelModel).OnDelete(DeleteBehavior.NoAction);
                 entity.HasMany(d => d.Jobs).WithMany(p => p.EducationLevels);
 
                 entity.HasIndex(d => d.educationLevelName).IsUnique();
+                entity.ToTable(tb => tb.UseSqlOutputClause(false));
             });
 
             modelBuilder.Entity<employmentModel>(entity =>
@@ -366,16 +288,16 @@ namespace PIS2.Models
                 entity.Property(e => e.modifiedBy).HasColumnName("modifiedBy");
                 entity.Property(e => e.employmentPosition).HasColumnName("employmentPosition");
 
-                entity.HasOne(d => d.personModel).WithMany(p => p.Employments).HasForeignKey(d => d.personID);
-                entity.HasMany(d => d.EmploymentHistories).WithOne(e => e.employmentModel).HasForeignKey(d => d.employmentID).OnDelete(DeleteBehavior.Cascade);
-                entity.HasMany(d => d.OvertimeRecords).WithOne(e => e.employmentModel).HasForeignKey(d => d.employmentID).OnDelete(DeleteBehavior.Cascade);
-                entity.HasMany(d => d.JobPlacements).WithOne(e => e.employmentModel).HasForeignKey(d => d.employmentID).OnDelete(DeleteBehavior.Cascade);
-                entity.HasMany(d => d.Leaves).WithOne(e => e.employmentModel).HasForeignKey(d => d.employmentID).OnDelete(DeleteBehavior.Cascade);
-                entity.HasMany(d => d.AllowanceAssignments).WithOne(e => e.employmentModel).HasForeignKey(d => d.employmentID).OnDelete(DeleteBehavior.Cascade);
-                entity.HasMany(d => d.LoyaltyHistories).WithOne(e => e.employmentModel).HasForeignKey(d => d.employmentID).OnDelete(DeleteBehavior.Cascade);
-                entity.HasMany(d => d.WorkSites).WithOne(e => e.employmentModel).HasForeignKey(d => d.employmentID);
-                entity.HasOne(e => e.employmentMethodModel).WithMany(em => em.Employments).HasForeignKey(d => d.employmentID);
-                entity.HasOne(e => e.employmentRequestModel).WithMany(er => er.Employments).HasForeignKey(d => d.employmentRequestID);
+                entity.HasOne(d => d.personModel).WithMany(p => p.Employments).HasForeignKey(d => d.personID).OnDelete(DeleteBehavior.NoAction);
+                entity.HasMany(d => d.EmploymentHistories).WithOne(e => e.employmentModel).HasForeignKey(d => d.employmentID).OnDelete(DeleteBehavior.NoAction);
+                entity.HasMany(d => d.OvertimeRecords).WithOne(e => e.employmentModel).HasForeignKey(d => d.employmentID).OnDelete(DeleteBehavior.NoAction);
+                entity.HasMany(d => d.JobPlacements).WithOne(e => e.employmentModel).HasForeignKey(d => d.employmentID).OnDelete(DeleteBehavior.NoAction);
+                entity.HasMany(d => d.Leaves).WithOne(e => e.employmentModel).HasForeignKey(d => d.employmentID).OnDelete(DeleteBehavior.NoAction);
+                entity.HasMany(d => d.AllowanceAssignments).WithOne(e => e.employmentModel).HasForeignKey(d => d.employmentID).OnDelete(DeleteBehavior.NoAction);
+                entity.HasMany(d => d.LoyaltyHistories).WithOne(e => e.employmentModel).HasForeignKey(d => d.employmentID).OnDelete(DeleteBehavior.NoAction);
+                entity.HasMany(d => d.WorkSites).WithOne(e => e.employmentModel).HasForeignKey(d => d.employmentID).OnDelete(DeleteBehavior.NoAction);
+                entity.HasOne(e => e.employmentMethodModel).WithMany(em => em.Employments).HasForeignKey(d => d.employmentID).OnDelete(DeleteBehavior.NoAction);
+                entity.HasOne(e => e.employmentRequestModel).WithMany(er => er.Employments).HasForeignKey(d => d.employmentRequestID).OnDelete(DeleteBehavior.NoAction);
                 
 
                 entity.HasOne(d => d.employmentTypeModel).WithMany(e => e.Employments).HasForeignKey(d => d.employmentTypeID).OnDelete(DeleteBehavior.NoAction);
@@ -395,8 +317,8 @@ namespace PIS2.Models
                 entity.Property(e => e.modifiedBy).HasColumnName("modifiedBy");
                 entity.Property(e => e.modifiedDate).HasColumnName("modifiedDate");
 
-                entity.HasOne(e => e.employmentModel).WithMany(d => d.EmploymentHistories).HasForeignKey(p => p.employmentID).OnDelete(DeleteBehavior.Cascade);
-                entity.HasOne(e => e.employmentTypeModel).WithMany(d => d.EmploymentHistories).HasForeignKey(p => p.employmentID);
+                entity.HasOne(e => e.employmentModel).WithMany(d => d.EmploymentHistories).HasForeignKey(p => p.employmentID).OnDelete(DeleteBehavior.NoAction);
+                entity.HasOne(e => e.employmentTypeModel).WithMany(d => d.EmploymentHistories).HasForeignKey(p => p.employmentID).OnDelete(DeleteBehavior.NoAction);
             });
             modelBuilder.Entity<employmentMethodModel>(entity =>
             {
@@ -407,8 +329,8 @@ namespace PIS2.Models
                 entity.Property(e => e.modifiedDate).HasColumnName("modifiedDate");
                 entity.Property(e => e.modifiedBy).HasColumnName("modifiedBy");
 
-                entity.HasMany(em => em.Employments).WithOne(e => e.employmentMethodModel).HasForeignKey(p => p.employmentMethodID);
-                entity.HasMany(em => em.EmploymentMethodHistories).WithOne(emh => emh.employmentMethodModel).HasForeignKey(p => p.employmentMethodID);
+                entity.HasMany(em => em.Employments).WithOne(e => e.employmentMethodModel).HasForeignKey(p => p.employmentMethodID).OnDelete(DeleteBehavior.NoAction);
+                entity.HasMany(em => em.EmploymentMethodHistories).WithOne(emh => emh.employmentMethodModel).HasForeignKey(p => p.employmentMethodID).OnDelete(DeleteBehavior.NoAction);
 
                 entity.HasIndex(d => d.employmentMethodName).IsUnique();
 
@@ -416,8 +338,6 @@ namespace PIS2.Models
             });
             modelBuilder.Entity<employmentMethodHistoryModel>(entity =>
             {
-                
-
                 entity.Property(e => e.employmentMethodHistoryID).HasColumnName("employmentMethodHistoryID");
                 entity.Property(e => e.employmentMethodID).HasColumnName("employmentMethodID");
                 entity.Property(e => e.employmentMethodName).HasColumnName("employmentMethodName");
@@ -426,7 +346,7 @@ namespace PIS2.Models
                 entity.Property(e => e.modifiedDate).HasColumnName("modifiedDate");
                 entity.Property(e => e.modifiedBy).HasColumnName("modifiedBy");
 
-                entity.HasOne(emh => emh.employmentMethodModel).WithMany(em => em.EmploymentMethodHistories).HasForeignKey(p => p.employmentMethodID);
+                entity.HasOne(emh => emh.employmentMethodModel).WithMany(em => em.EmploymentMethodHistories).HasForeignKey(p => p.employmentMethodID).OnDelete(DeleteBehavior.NoAction);
             });
             modelBuilder.Entity<employmentRequestModel>(entity =>
             {
@@ -438,10 +358,10 @@ namespace PIS2.Models
                 entity.Property(e => e.requestStatus).HasColumnName("requestStatus");
                 entity.Property(e => e.modifiedBy).HasColumnName("modifiedBy");
 
-                entity.HasOne(er => er.employmentTypeModel).WithMany(et => et.EmploymentRequests).HasForeignKey(p => p.employmentTypeID);
-                entity.HasOne(er => er.jobModel).WithMany(j => j.EmploymentRequests).HasForeignKey(p => p.jobID);
-                entity.HasMany(er => er.Employments).WithOne(e => e.employmentRequestModel).HasForeignKey(p => p.employmentRequestID);
-                entity.HasMany(er => er.EmploymentRequestHistories).WithOne(erh => erh.employmentRequestModel).HasForeignKey(p => p.employmentRequestID);
+                entity.HasOne(er => er.employmentTypeModel).WithMany(et => et.EmploymentRequests).HasForeignKey(p => p.employmentTypeID).OnDelete(DeleteBehavior.NoAction);
+                entity.HasOne(er => er.jobModel).WithMany(j => j.EmploymentRequests).HasForeignKey(p => p.jobID).OnDelete(DeleteBehavior.NoAction);
+                entity.HasMany(er => er.Employments).WithOne(e => e.employmentRequestModel).HasForeignKey(p => p.employmentRequestID).OnDelete(DeleteBehavior.NoAction);
+                entity.HasMany(er => er.EmploymentRequestHistories).WithOne(erh => erh.employmentRequestModel).HasForeignKey(p => p.employmentRequestID).OnDelete(DeleteBehavior.NoAction);
 
                 entity.ToTable(t => t.UseSqlOutputClause(false));
             });
@@ -455,78 +375,41 @@ namespace PIS2.Models
                 entity.Property(e => e.requestStatus).HasColumnName("requestStatus");
                 entity.Property(e => e.modifiedBy).HasColumnName("modifiedBy");
 
-                entity.HasOne(erh => erh.employmentRequestModel).WithMany(er => er.EmploymentRequestHistories).HasForeignKey(p => p.employmentRequestID).OnDelete(DeleteBehavior.Cascade);
+                entity.HasOne(erh => erh.employmentRequestModel).WithMany(er => er.EmploymentRequestHistories).HasForeignKey(p => p.employmentRequestID).OnDelete(DeleteBehavior.NoAction);
                 
             });
             modelBuilder.Entity<employmentTypeModel>(entity =>
             {
-                entity.Property(e => e.employmentTypeID).HasColumnName("employmentTypeID");
-                entity.Property(e => e.annualAccrualRate).HasColumnName("annualAccrualRate");
-                entity.Property(e => e.employmentBaseLeave).HasColumnName("employmentBaseLeave");
-                entity.Property(e => e.employmentTypeDescription).HasColumnName("employmentTypeDescription");
-                entity.Property(e => e.employmentTypeName).HasColumnName("employmentTypeName");
-                entity.Property(e => e.employmentTypeStatus).HasColumnName("employmentTypeStatus");
-                entity.Property(e => e.isExprienceCount).HasColumnName("isExprienceCount");
-                entity.Property(e => e.isLeaveCount).HasColumnName("isLeaveCount");
-                entity.Property(e => e.isLoyalityAllowed).HasColumnName("isLoyalityAllowed");
-                entity.Property(e => e.isSalaryAllowed).HasColumnName("isSalaryAllowed");
-                entity.Property(e => e.isSeveranceAllowed).HasColumnName("isSeveranceAllowed");
-                entity.Property(e => e.isCarrierAllowed).HasColumnName("isCarrierAllowed");
-                entity.Property(e => e.isStepAllowed).HasColumnName("isStepAllowed");
-                entity.Property(e => e.isPensionAllowed).HasColumnName("isPensionAllowed");
-                entity.Property(e => e.employmentMinAge).HasColumnName("employmentMinAge");
-                entity.Property(e => e.employmentMaxAge).HasColumnName("employmentMaxAge");
-                entity.Property(e => e.maxLeaveIncrement).HasColumnName("maxLeaveIncrement");
-                entity.Property(e => e.modifiedBy).HasColumnName("modifiedBy");
-
-                entity.HasMany(e => e.EmploymentHistories).WithOne(p => p.employmentTypeModel).HasForeignKey(p => p.employmentTypeID);
-                entity.HasMany(e => e.Employments).WithOne(p => p.employmentTypeModel).HasForeignKey(p => p.employmentTypeID);
-                entity.HasMany(et => et.EmploymentRequests).WithOne(er => er.employmentTypeModel).HasForeignKey(p =>p.employmentTypeID);
+                entity.HasMany(e => e.EmploymentHistories).WithOne(p => p.employmentTypeModel).HasForeignKey(p => p.employmentTypeID).OnDelete(DeleteBehavior.NoAction);
+                entity.HasMany(e => e.Employments).WithOne(p => p.employmentTypeModel).HasForeignKey(p => p.employmentTypeID).OnDelete(DeleteBehavior.NoAction);
+                entity.HasMany(et => et.EmploymentRequests).WithOne(er => er.employmentTypeModel).HasForeignKey(p =>p.employmentTypeID).OnDelete(DeleteBehavior.NoAction);
 
                 entity.HasIndex(e => e.employmentTypeName).IsUnique();
+                entity.ToTable(tb => tb.UseSqlOutputClause(false));
             });
 
             modelBuilder.Entity<experienceModel>(e =>
             {
-                e.Property(e => e.experienceID).HasColumnName("exprienceID");
-                e.Property(e => e.personID).HasColumnName("personID");
-                e.Property(e => e.experienceStartDate).HasColumnName("experienceStartDate");
-                e.Property(e => e.experienceEndDate).HasColumnName("experienceEndDate");
-                e.Property(e => e.jobTitle).HasColumnName("jobTitle");
-                e.Property(e => e.jobGrade).HasColumnName("jobGrade");
-                e.Property(e => e.jobStep).HasColumnName("jobStep");
-                e.Property(e => e.jobSalary).HasColumnName("jobSalary");
-                e.Property(e => e.jobDepartment).HasColumnName("jobDepartment");
-                e.Property(e => e.experienceType).HasColumnName("experienceType");
-                e.Property(e => e.modifiedBy).HasColumnName("modifiedBy");
-                e.Property(e => e.modifiedDate).HasColumnName("modifiedDate");
+                modelBuilder.Entity<experienceModel>()
+                    .HasOne(e => e.personModel)
+                    .WithMany(p => p.Experiences) // optional if person has a collection of experiences
+                    .HasForeignKey(e => e.personID).OnDelete(DeleteBehavior.NoAction);
+
+                e.ToTable(tb => tb.UseSqlOutputClause(false));
 
             });
             modelBuilder.Entity<familyModel>(entity =>
             {
-                entity.Property(e => e.familyID).HasColumnName("familyID");
-                entity.Property(e => e.personID2).HasColumnName("personID2");
-                entity.Property(e => e.personID).HasColumnName("personID");
-                entity.Property(e => e.relation).HasColumnName("relation");
-                entity.Property(e => e.modifiedBy).HasColumnName("modifiedBy");
-                entity.Property(e => e.modifiedDate).HasColumnName("modifiedDate");
-
-                //entity.HasOne(e => e.personModel2).WithMany(e => e.Families).HasForeignKey(e => e.personID2);
-                entity.HasOne(e => e.personModel).WithMany(e => e.Families).HasForeignKey(e => e.personID);
+                entity.HasOne(e => e.personModel).WithMany(e => e.Families).HasForeignKey(e => e.personID).OnDelete(DeleteBehavior.NoAction);
 
                 entity.HasIndex(e => new { e.personID, e.personID2 }).IsUnique();
+                entity.ToTable(tb => tb.UseSqlOutputClause(false));
+
             });
             modelBuilder.Entity<holidayModel>(entity =>
             {
-                entity.Property(e => e.holidayID).HasColumnName("holidayID");
-                entity.Property(e => e.holidayEnd).HasColumnName("holidayEnd");
-                entity.Property(e => e.holidayName).HasColumnName("holidayName");
-                entity.Property(e => e.holidayCycle).HasColumnName("holidayRepition");
-                entity.Property(e => e.holidayStart).HasColumnName("holidayStart");
-                entity.Property(e => e.holidayStatus).HasColumnName("holidayStatus");
-                entity.Property(e => e.holidayType).HasColumnName("holidayType");
-
                 entity.HasIndex(e => e.holidayName).IsUnique();
+                entity.ToTable(tb => tb.UseSqlOutputClause(false));
             });
 
             modelBuilder.Entity<guarantyModel>(entity =>
@@ -543,8 +426,8 @@ namespace PIS2.Models
                 entity.Property(e => e.modifiedBy).HasColumnName("modifiedBy");
                 entity.Property(e => e.serviceRequestID).HasColumnName("serviceRequestID");
 
-                entity.HasMany(e => e.GuarantyHistories).WithOne(g => g.guarantyModel).HasForeignKey(g => g.guarantyID);
-                entity.HasOne(g => g.Employment).WithMany(e => e.Guaranties).HasForeignKey(g => g.employmentID);
+                entity.HasMany(e => e.GuarantyHistories).WithOne(g => g.guarantyModel).HasForeignKey(g => g.guarantyID).OnDelete(DeleteBehavior.NoAction);
+                entity.HasOne(g => g.Employment).WithMany(e => e.Guaranties).HasForeignKey(g => g.employmentID).OnDelete(DeleteBehavior.NoAction);
 
                 entity.HasIndex(d => new { d.employmentID, d.guarantyType, d.guarantyStatus }).HasFilter("guarantyStatus = 1").IsUnique();
 
@@ -559,7 +442,7 @@ namespace PIS2.Models
                 entity.Property(e => e.modifiedBy).HasColumnName("modifiedBy");
                 entity.Property(e => e.modifiedDate).HasColumnName("modifiedDate");
 
-                entity.HasOne(g => g.guarantyModel).WithMany(e => e.GuarantyHistories).HasForeignKey(g => g.guarantyID);
+                entity.HasOne(g => g.guarantyModel).WithMany(e => e.GuarantyHistories).HasForeignKey(g => g.guarantyID).OnDelete(DeleteBehavior.NoAction);
             });
 
             modelBuilder.Entity<jobModel>(entity =>
@@ -569,52 +452,27 @@ namespace PIS2.Models
 
                 entity.HasIndex(e => e.jobClassID, "IX_Jobs_jobClassModelJobClassId");
 
-                entity.Property(e => e.jobID).HasColumnName("jobID");
-                entity.Property(e => e.jobCategoryID).HasColumnName("jobCategoryID");
-                entity.Property(e => e.jobClassID).HasColumnName("jobClassID");
-                entity.Property(e => e.jobDescription).HasColumnName("jobDescription");
-                entity.Property(e => e.jobGradeID).HasColumnName("jobGradeID");                
-                entity.Property(e => e.jobStatus).HasColumnName("jobStatus");
-                entity.Property(e => e.jobTitle).HasColumnName("jobTitle");
-                entity.Property(e => e.jobCode).HasColumnName("jobCode");
-                entity.Property(e => e.jobQualifications).HasColumnName("jobQualifications");
-                entity.Property(e => e.jobExperience).HasColumnName("jobExperience");
-                entity.Property(e => e.modifiedBy).HasColumnName("modifiedBy");
-
-                entity.HasOne(d => d.jobCategoryModel).WithMany(p => p.Jobs).HasForeignKey(p => p.jobCategoryID);
-                entity.HasOne(d => d.jobClassModel).WithMany(p => p.Jobs).HasForeignKey(d => d.jobClassID);
+                entity.HasOne(d => d.jobCategoryModel).WithMany(p => p.Jobs).HasForeignKey(p => p.jobCategoryID).OnDelete(DeleteBehavior.NoAction);
+                entity.HasOne(d => d.jobClassModel).WithMany(p => p.Jobs).HasForeignKey(d => d.jobClassID).OnDelete(DeleteBehavior.NoAction);
                 entity.HasMany(d => d.EducationLevels).WithMany(p => p.Jobs);
-                entity.HasOne(d => d.jobGradeModel).WithMany(e => e.Jobs).HasForeignKey(p => p.jobGradeID);
-                entity.HasMany(j => j.EmploymentRequests).WithOne(er => er.jobModel).HasForeignKey(p => p.jobID);
-
-                //entity.HasIndex(d => d.jobTitle).HasFilter("jobStatus =1").IsUnique();
+                entity.HasOne(d => d.jobGradeModel).WithMany(e => e.Jobs).HasForeignKey(p => p.jobGradeID).OnDelete(DeleteBehavior.NoAction);
+                entity.HasMany(j => j.EmploymentRequests).WithOne(er => er.jobModel).HasForeignKey(p => p.jobID).OnDelete(DeleteBehavior.NoAction);
+                
                 entity.HasIndex(d => d.jobCode).IsUnique().HasFilter("[jobCode] IS NOT NULL");
+                entity.ToTable(tb => tb.UseSqlOutputClause(false));
             });
             modelBuilder.Entity<jobGradeModel>(entity =>
             {
-                entity.Property(e => e.jobGradeID).HasColumnName("jobGradeID");
-                entity.Property(e => e.jobGradeName).HasColumnName("jobGradeName");
-                entity.Property(e => e.jobGradeDescription).HasColumnName("jobGradeDescription");
-                entity.Property(e => e.jobGradeBasicSalary).HasColumnName("jobGradeBasicSalary");
-                entity.Property(e => e.jobGradeMidSalary).HasColumnName("jobGradeMidSalary");
-                entity.Property(e => e.jobGradeMaxSalary).HasColumnName("jobGradeMaxSalary"); 
-                entity.Property(e => e.jobGradeStatus).HasColumnName("jobGradeStatus");
-                entity.Property(e => e.modifiedBy).HasColumnName("modifiedBy");
-
-                entity.HasMany(e => e.Jobs).WithOne(d => d.jobGradeModel).HasForeignKey(d => d.jobGradeID);
+                entity.HasMany(e => e.Jobs).WithOne(d => d.jobGradeModel).HasForeignKey(d => d.jobGradeID).OnDelete(DeleteBehavior.NoAction);
 
                 entity.HasIndex(e => e.jobGradeName).IsUnique();
+                entity.ToTable(tb => tb.UseSqlOutputClause(false));
             });
 
             modelBuilder.Entity<jobCategoryModel>(entity =>
             {
-                entity.Property(e => e.jobCategoryID).HasColumnName("jobCategoryID");
-                entity.Property(e => e.jobCategoryDescription).HasColumnName("jobCategoryDescription");
-                entity.Property(e => e.jobCategoryName).HasColumnName("jobCategoryName");
-                entity.Property(e => e.jobCategoryStatus).HasColumnName("jobCategoryStatus");
-                entity.HasMany(e => e.Jobs).WithOne(p => p.jobCategoryModel).HasForeignKey(p => p.jobCategoryID);
-
                 entity.HasIndex(e => e.jobCategoryName).IsUnique();
+                entity.ToTable(tb => tb.UseSqlOutputClause(false));
             });
 
             modelBuilder.Entity<jobPlacementModel>(entity =>
@@ -637,10 +495,9 @@ namespace PIS2.Models
                 entity.Property(e => e.jobStepID).HasColumnName("jobStepID");
                 entity.Property(e => e.modifiedBy).HasColumnName("modifiedBy");
 
-                entity.HasOne(d => d.departmentModel).WithMany(p => p.JobPlacements)
-                    .HasForeignKey(d => d.departmentID);
+                entity.HasOne(d => d.departmentModel).WithMany(p => p.JobPlacements).HasForeignKey(d => d.departmentID).OnDelete(DeleteBehavior.NoAction);
 
-                entity.HasOne(d => d.employmentModel).WithMany(p => p.JobPlacements).HasForeignKey(d => d.employmentID).OnDelete(DeleteBehavior.Cascade);
+                entity.HasOne(d => d.employmentModel).WithMany(p => p.JobPlacements).HasForeignKey(d => d.employmentID).OnDelete(DeleteBehavior.NoAction);
                     
 
                 entity.HasOne(d => d.jobModel).WithMany(p => p.JobPlacements).HasForeignKey(d => d.jobID);
@@ -664,7 +521,7 @@ namespace PIS2.Models
                 entity.Property(e => e.modifiedBy).HasColumnName("modifiedBy");
                 entity.Property(e => e.modifiedDate).HasColumnName("modifiedDate");
 
-                entity.HasOne(e => e.jobPlacementModel).WithMany(e => e.JobPlacementHistories).HasForeignKey(e => e.jobPlacementID);
+                entity.HasOne(e => e.jobPlacementModel).WithMany(e => e.JobPlacementHistories).HasForeignKey(e => e.jobPlacementID).OnDelete(DeleteBehavior.NoAction);
                 entity.HasOne(e => e.jobStepModel).WithMany(e => e.JobPlacementHistories).HasForeignKey(e => e.jobStepID).OnDelete(DeleteBehavior.NoAction);
                 entity.HasOne(e => e.departmentModel).WithMany(e => e.JobPlacementHistories).HasForeignKey(e => e.departmentID).OnDelete(DeleteBehavior.NoAction); 
             });
@@ -679,9 +536,9 @@ namespace PIS2.Models
                 entity.Property(e => e.jobRequirementStatus).HasColumnName("jobRequirementStatus");
                 entity.Property(e => e.modifiedBy).HasColumnName("modifiedBy");
 
-                entity.HasMany(e => e.JobRequirementHistories).WithOne(p => p.JobRequirementModel).HasForeignKey(p => p.jobRequirementID);
-                entity.HasOne(jr => jr.DepartmentModel).WithMany(d => d.JobRequirements).HasForeignKey(jr => jr.departmentID);
-                entity.HasOne(jr => jr.JobModel).WithMany(j => j.JobRequirements).HasForeignKey(j => j.jobID);
+                entity.HasMany(e => e.JobRequirementHistories).WithOne(p => p.JobRequirementModel).HasForeignKey(p => p.jobRequirementID).OnDelete(DeleteBehavior.NoAction);
+                entity.HasOne(jr => jr.DepartmentModel).WithMany(d => d.JobRequirements).HasForeignKey(jr => jr.departmentID).OnDelete(DeleteBehavior.NoAction);
+                entity.HasOne(jr => jr.JobModel).WithMany(j => j.JobRequirements).HasForeignKey(j => j.jobID).OnDelete(DeleteBehavior.NoAction);
 
                 entity.ToTable(t => t.UseSqlOutputClause(false));
 
@@ -695,7 +552,7 @@ namespace PIS2.Models
                 entity.Property(e => e.modifiedBy).HasColumnName("modifiedBy");
                 entity.Property(e => e.modifiedDate).HasColumnName("modifiedDate");
 
-                entity.HasOne(jr => jr.JobRequirementModel).WithMany(jr => jr.JobRequirementHistories).HasForeignKey(jr => jr.jobRequirementID).OnDelete(DeleteBehavior.Cascade);
+                entity.HasOne(jr => jr.JobRequirementModel).WithMany(jr => jr.JobRequirementHistories).HasForeignKey(jr => jr.jobRequirementID).OnDelete(DeleteBehavior.NoAction);
                 
             });
 
@@ -703,17 +560,8 @@ namespace PIS2.Models
 
             modelBuilder.Entity<jobReqCost>(entity =>
             {
-                entity.Property(e => e.jobReqCostID).HasColumnName("jobReqCostID");
-                entity.Property(e => e.jobRequirementID).HasColumnName("jobRequiremenetID");
-                entity.Property(e => e.jobReqStatus).HasColumnName("jobReqStatus");
-                entity.Property(e => e.jobReqCostReason).HasColumnName("jobReqCostReason");
-                entity.Property(e => e.jobReqCostEstimate).HasColumnName("jobReqCostEstimate");
-                entity.Property(e => e.jobReqCostActual).HasColumnName("jobReqCostActual");
-                entity.Property(e => e.jobReqCostReference).HasColumnName("jobRequirementStatus");
-                entity.Property(e => e.modifiedBy).HasColumnName("modifiedBy");
-                entity.Property(e => e.modifiedDate).HasColumnName("modifiedDate");
-
-                entity.HasOne(jr => jr.JobRequirementModel).WithMany(jr => jr.JobReqCosts).HasForeignKey(jr => jr.jobRequirementID);
+                entity.HasOne(jr => jr.JobRequirementModel).WithMany(jr => jr.JobReqCosts).HasForeignKey(jr => jr.jobRequirementID).OnDelete(DeleteBehavior.NoAction);
+                entity.ToTable(tb => tb.UseSqlOutputClause(false));
             });
             modelBuilder.Entity<jobStepModel>(entity =>
             {
@@ -725,8 +573,8 @@ namespace PIS2.Models
                 entity.Property(e => e.jobStepStatus).HasColumnName("jobStepStatus");
                 entity.Property(e => e.modifiedBy).HasColumnName("modifiedBy");
 
-                entity.HasMany(e => e.JobStepHistories).WithOne(e => e.jobStepModel).HasForeignKey(e => e.jobStepID);
-                entity.HasOne(e => e.jobGradeModel).WithMany(e => e.JobSteps).HasForeignKey(e => e.jobGradeID);
+                entity.HasMany(e => e.JobStepHistories).WithOne(e => e.jobStepModel).HasForeignKey(e => e.jobStepID).OnDelete(DeleteBehavior.NoAction);
+                entity.HasOne(e => e.jobGradeModel).WithMany(e => e.JobSteps).HasForeignKey(e => e.jobGradeID).OnDelete(DeleteBehavior.NoAction);
 
                 entity.HasIndex(d => new { d.jobStepName }).IsUnique();
                 entity.HasIndex(d => new { d.jobGradeID, d.jobStepNumber, d.jobStepStatus }).IsUnique();
@@ -745,7 +593,7 @@ namespace PIS2.Models
                 entity.Property(e => e.modifiedBy).HasColumnName("modifiedBy");
                 entity.Property(e => e.modifiedDate).HasColumnName("modifiedDate");
 
-                entity.HasOne(e => e.jobStepModel).WithMany(e => e.JobStepHistories).HasForeignKey(e => e.jobStepID);
+                entity.HasOne(e => e.jobStepModel).WithMany(e => e.JobStepHistories).HasForeignKey(e => e.jobStepID).OnDelete(DeleteBehavior.NoAction);
 
             });
             modelBuilder.Entity<leaveModel>(entity =>
@@ -768,18 +616,10 @@ namespace PIS2.Models
                 entity.Property(e => e.ratePerHour).HasColumnName("ratePerHour");
                 entity.Property(e => e.modifiedBy).HasColumnName("modifiedBy");
                 
-                entity.HasOne(d => d.employmentModel).WithMany(p => p.Leaves).HasForeignKey(d => d.employmentID).OnDelete(DeleteBehavior.Cascade);
-                entity.HasOne(d => d.leaveTypeModel).WithMany(p => p.Leaves).HasForeignKey(d => d.leaveTypeID).OnDelete(DeleteBehavior.Cascade);
-                entity.HasMany(d => d.LeaveHistories).WithOne(p => p.leaveModel).HasForeignKey(d => d.leaveID).OnDelete(DeleteBehavior.Cascade);
-                
-
-                //entity.HasCheckConstraint("CK_Leave_leaveEndDate",
-                //    "[leaveEndDate]>=[leaveStartDate]");
-
-                //entity.HasCheckConstraint("CK_Leave_NumberOfDays",
-                //    "leaveDays>0 AND leaveDays <= DATEDIFF(DAY, leaveStartDate, leaveEndDate)+1");
-
-                //entity.HasIndex(d => new { d.employmentID, d.leaveStartDate, d.leaveEndDate}).IsUnique();
+                entity.HasOne(d => d.employmentModel).WithMany(p => p.Leaves).HasForeignKey(d => d.employmentID).OnDelete(DeleteBehavior.NoAction);
+                entity.HasOne(d => d.leaveTypeModel).WithMany(p => p.Leaves).HasForeignKey(d => d.leaveTypeID).OnDelete(DeleteBehavior.NoAction);
+                entity.HasMany(d => d.LeaveHistories).WithOne(p => p.leaveModel).HasForeignKey(d => d.leaveID).OnDelete(DeleteBehavior.NoAction);
+ 
 
                 entity.ToTable(tb => tb.UseSqlOutputClause(false));
             });
@@ -791,37 +631,23 @@ namespace PIS2.Models
                 entity.Property(e => e.modifiedDate).HasColumnName("modifiedDate");
                 entity.Property(e => e.modifiedBy).HasColumnName("modifiedBy");
 
-                entity.HasOne(e => e.leaveModel).WithMany(p => p.LeaveHistories).HasForeignKey(e => e.leaveID).OnDelete(DeleteBehavior.Cascade);
+                entity.HasOne(e => e.leaveModel).WithMany(p => p.LeaveHistories).HasForeignKey(e => e.leaveID).OnDelete(DeleteBehavior.NoAction);
             });
 
             modelBuilder.Entity<leaveTypeModel>(entity =>
             {
-                entity.Property(e => e.leaveTypeID).HasColumnName("leaveTypeID");
-                entity.Property(e => e.leaveTypeImpact).HasColumnName("leaveTypeImpact");
-                entity.Property(e => e.leaveTypeName).HasColumnName("leaveTypeName");
-                entity.Property(e => e.leaveTypeStatus).HasColumnName("leaveTypeStatus");
-                entity.Property(e => e.modifiedBy).HasColumnName("modifiedBy");
-                entity.Property(e => e.leaveAvailability).HasColumnName("leaveAvailability");
-                entity.Property(e => e.leaveGroup).HasColumnName("leaveGroup");
-                entity.Property(e => e.leaveJob).HasColumnName("leaveJob");
-                entity.Property(e => e.leaveLegality).HasColumnName("leaveLegality");
 
-                entity.HasMany(p => p.Leaves).WithOne(e => e.leaveTypeModel).HasForeignKey(p => p.leaveTypeID).OnDelete(DeleteBehavior.Cascade);
+                entity.HasMany(p => p.Leaves).WithOne(e => e.leaveTypeModel).HasForeignKey(p => p.leaveTypeID).OnDelete(DeleteBehavior.NoAction);
 
                 entity.HasIndex(e => e.leaveTypeName).IsUnique();
+                entity.ToTable(tb => tb.UseSqlOutputClause(false));
             });
             modelBuilder.Entity<loyaltyModel>(entity =>
             {
-                entity.Property(e => e.loyaltyID).HasColumnName("loyaltyID");
-                entity.Property(e => e.loyaltyName).HasColumnName("loyaltyName");
-                entity.Property(e => e.loyaltyAmount).HasColumnName("loyaltyAmount");
-                entity.Property(e => e.loyaltyCounter).HasColumnName("loyaltyCounter");
-                entity.Property(e => e.loyaltyStatus).HasColumnName("loyaltyStatus");
-                entity.Property(e => e.modifiedBy).HasColumnName("modifiedBy");
-
-                entity.HasMany(e => e.LoyaltyHistories).WithOne(d => d.loyaltyModel).HasForeignKey(e => e.loyaltyID).OnDelete(DeleteBehavior.Cascade);
+                entity.HasMany(e => e.LoyaltyHistories).WithOne(d => d.loyaltyModel).HasForeignKey(e => e.loyaltyID).OnDelete(DeleteBehavior.NoAction);
 
                 entity.HasIndex(e =>e.loyaltyName).IsUnique();
+                entity.ToTable(tb => tb.UseSqlOutputClause(false));
 
             });
             modelBuilder.Entity<loyaltyHistoryModel>(entity =>
@@ -834,10 +660,11 @@ namespace PIS2.Models
                 entity.Property(e => e.modifiedBy).HasColumnName("modifiedBy");
                 entity.Property(e => e.modifiedDate).HasColumnName("modifiedDate");
 
-                entity.HasOne(e => e.employmentModel).WithMany(d => d.LoyaltyHistories).HasForeignKey(e => e.employmentID).OnDelete(DeleteBehavior.Cascade);
-                entity.HasOne(e => e.loyaltyModel).WithMany(p => p.LoyaltyHistories).HasForeignKey(e => e.loyaltyID).OnDelete(DeleteBehavior.Cascade);
+                entity.HasOne(e => e.employmentModel).WithMany(d => d.LoyaltyHistories).HasForeignKey(e => e.employmentID).OnDelete(DeleteBehavior.NoAction);
+                entity.HasOne(e => e.loyaltyModel).WithMany(p => p.LoyaltyHistories).HasForeignKey(e => e.loyaltyID).OnDelete(DeleteBehavior.NoAction);
 
                 entity.HasIndex(d => new {d.loyaltyID, d.employmentID}).IsUnique();
+                entity.ToTable(tb => tb.UseSqlOutputClause(false));
             });
 
             modelBuilder.Entity<NoticeModel>(entity =>
@@ -887,18 +714,10 @@ namespace PIS2.Models
 
             modelBuilder.Entity<overtimeModel>(entity =>
             {
-                entity.Property(e => e.overtimeID).HasColumnName("overtimeID");
-                entity.Property(e => e.overtimeDescription).HasColumnName("overtimeDescription");
-                entity.Property(e => e.overtimeName).HasColumnName("overtimeName");
-                entity.Property(e => e.overtimeRate)
-                    .HasColumnType("decimal(18, 2)")
-                    .HasColumnName("overtimeRate");
-                entity.Property(e => e.overtimeStatus).HasColumnName("overtimeStatus");
-                entity.Property(e => e.modifiedBy).HasColumnName("modifiedBy");
-              
-                entity.HasMany(e => e.OvertimeRecords).WithOne(p => p.overtimeModel).HasForeignKey(d => d.overtimeID).OnDelete(DeleteBehavior.Cascade);
+                entity.HasMany(e => e.OvertimeRecords).WithOne(p => p.overtimeModel).HasForeignKey(d => d.overtimeID).OnDelete(DeleteBehavior.NoAction);
 
                 entity.HasIndex(e => e.overtimeName).IsUnique();
+                entity.ToTable(tb => tb.UseSqlOutputClause(false));
             });
 
             modelBuilder.Entity<overtimeRecordModel>(entity =>
@@ -920,10 +739,10 @@ namespace PIS2.Models
                 entity.Property(e => e.oldBatchNbr).HasColumnName("oldBatchNbr");
                 entity.Property(e => e.modifiedBy).HasColumnName("modifiedBy");
 
-                entity.HasOne(d => d.employmentModel).WithMany(p => p.OvertimeRecords).HasForeignKey(d => d.employmentID).OnDelete(DeleteBehavior.Cascade);
-                entity.HasMany(e => e.OvertimeHistories).WithOne(p => p.overtimeRecordModel).HasForeignKey(d => d.overtimeRecordID).OnDelete(DeleteBehavior.Cascade);
-                entity.HasOne(d => d.overtimeModel).WithMany(p => p.OvertimeRecords).HasForeignKey(d => d.overtimeID).OnDelete(DeleteBehavior.Cascade);
-                entity.HasOne(or => or.departmentModel).WithMany(d => d.OvertimeRecords).HasForeignKey(d => d.departmentID).OnDelete(DeleteBehavior.Cascade);
+                entity.HasOne(d => d.employmentModel).WithMany(p => p.OvertimeRecords).HasForeignKey(d => d.employmentID).OnDelete(DeleteBehavior.NoAction);
+                entity.HasMany(e => e.OvertimeHistories).WithOne(p => p.overtimeRecordModel).HasForeignKey(d => d.overtimeRecordID).OnDelete(DeleteBehavior.NoAction);
+                entity.HasOne(d => d.overtimeModel).WithMany(p => p.OvertimeRecords).HasForeignKey(d => d.overtimeID).OnDelete(DeleteBehavior.NoAction);
+                entity.HasOne(or => or.departmentModel).WithMany(d => d.OvertimeRecords).HasForeignKey(d => d.departmentID).OnDelete(DeleteBehavior.NoAction);
 
                 entity.HasIndex(d => new { d.employmentID, d.overtimeRecordDate, d.overtimeRecordStartTime, d.overtimeRecordEndTime}).IsUnique();
                 
@@ -939,19 +758,23 @@ namespace PIS2.Models
                 entity.Property(e => e.overtimeHistoryAction).HasColumnName("overtimeHistoryAction");
                 entity.Property(e => e.modifiedBy).HasColumnName("modifiedBy");
 
-                entity.HasOne(e => e.overtimeRecordModel).WithMany(p => p.OvertimeHistories).HasForeignKey(d => d.overtimeRecordID).OnDelete(DeleteBehavior.Cascade);
+                entity.HasOne(e => e.overtimeRecordModel).WithMany(p => p.OvertimeHistories).HasForeignKey(d => d.overtimeRecordID).OnDelete(DeleteBehavior.NoAction);
             });
 
             modelBuilder.Entity<penaltyModel>(entity => {
                
-                entity.HasOne(e => e.employmentModel).WithMany(e => e.Penalties).HasForeignKey(e => e.employmentID);
-                entity.HasOne(e => e.penaltyTypeModel).WithMany(e => e.Penalties).HasForeignKey(e => e.penaltyTypeID);
-                entity.HasMany(e => e.PenaltyHistories).WithOne(e => e.penaltyModel).HasForeignKey(e => e.penaltyID);
+                entity.HasOne(e => e.employmentModel).WithMany(e => e.Penalties).HasForeignKey(e => e.employmentID).OnDelete(DeleteBehavior.NoAction);
+                entity.HasOne(e => e.penaltyTypeModel).WithMany(e => e.Penalties).HasForeignKey(e => e.penaltyTypeID).OnDelete(DeleteBehavior.NoAction);
+                entity.HasMany(e => e.PenaltyHistories).WithOne(e => e.penaltyModel).HasForeignKey(e => e.penaltyID).OnDelete(DeleteBehavior.NoAction);
 
                 entity.ToTable(t => t.UseSqlOutputClause(false));
+               
             });
             modelBuilder.Entity<penaltyHistoryModel>();
-            modelBuilder.Entity<penaltyTypeModel>();
+            modelBuilder.Entity<penaltyTypeModel>(entity =>
+            {
+                entity.ToTable(tb => tb.UseSqlOutputClause(false));
+            });
 
             modelBuilder.Entity<personModel>(entity =>
             {
@@ -979,9 +802,9 @@ namespace PIS2.Models
                 entity.Property(e => e.modifiedBy).HasColumnName("modifiedBy");
 
                 entity.HasOne(d => d.addressModel).WithMany(p => p.Persons).HasForeignKey(d => d.addressID).OnDelete(DeleteBehavior.ClientSetNull);
-                entity.HasMany(d => d.Employments).WithOne(p => p.personModel).HasForeignKey(f => f.personID).OnDelete(DeleteBehavior.Cascade);
-                entity.HasMany(d => d.PersonEducationLevels).WithOne(p => p.personModel).HasForeignKey(f => f.personID).OnDelete(DeleteBehavior.Cascade);
-                entity.HasMany(e =>e.Banks).WithOne(p => p.personModel).HasForeignKey(d => d.personID).OnDelete(DeleteBehavior.Cascade);
+                entity.HasMany(d => d.Employments).WithOne(p => p.personModel).HasForeignKey(f => f.personID).OnDelete(DeleteBehavior.NoAction);
+                entity.HasMany(d => d.PersonEducationLevels).WithOne(p => p.personModel).HasForeignKey(f => f.personID).OnDelete(DeleteBehavior.NoAction);
+                entity.HasMany(e =>e.Banks).WithOne(p => p.personModel).HasForeignKey(d => d.personID).OnDelete(DeleteBehavior.NoAction);
 
                 entity.HasIndex(e => new { e.personIDType, e.personIDNumber }).IsUnique();
 
@@ -1006,8 +829,8 @@ namespace PIS2.Models
                 entity.Property(e => e.modifiedBy).HasColumnName("modifiedBy");
                 entity.Property(e => e.modifiedDate).HasColumnName("modifiedDate");
 
-                entity.HasOne(d => d.personModel).WithMany(p => p.PersonHistories).HasForeignKey(d => d.personID).OnDelete(DeleteBehavior.Cascade);
-                entity.HasOne(d => d.addressModel).WithMany(p => p.PersonHistories).HasForeignKey(d => d.addressID);
+                entity.HasOne(d => d.personModel).WithMany(p => p.PersonHistories).HasForeignKey(d => d.personID).OnDelete(DeleteBehavior.NoAction);
+                entity.HasOne(d => d.addressModel).WithMany(p => p.PersonHistories).HasForeignKey(d => d.addressID).OnDelete(DeleteBehavior.NoAction);
                 
             });
 
@@ -1016,24 +839,12 @@ namespace PIS2.Models
                 entity.HasIndex(e => e.educationLevelID, "IX_PersonEducationLevels_educationLevelModeleducationLevelID");
 
                 entity.HasIndex(e => e.personID, "IX_PersonEducationLevels_personModelpersonID");
-
-                entity.Property(e => e.personEducationLevelID).HasColumnName("personEducationLevelID");
-                entity.Property(e => e.educationLevelDate).HasColumnName("educationLevelDate");
-                entity.Property(e => e.educationLevelID).HasColumnName("educationLevelID");
-                entity.Property(e => e.educationLevelMark).HasColumnName("educationLevelMark");
-                entity.Property(e => e.educationLevelNumber).HasColumnName("educationLevelNumber");
-                entity.Property(e => e.personID).HasColumnName("personID");
-                entity.Property(e => e.educationLevelInstitutionName).HasColumnName("educationLevelInstitutionName");
-                entity.Property(e => e.educationField).HasColumnName("educationField");
-                entity.Property(e => e.educationDomain).HasColumnName("educationDomain");
-                entity.Property(e => e.educationDiscipline).HasColumnName("educationDiscipline");
-                entity.Property(e => e.modifiedBy).HasColumnName("modifiedBy");
-                entity.Property(e => e.modifiedDate).HasColumnName("modifiedDate");
-
-                entity.HasOne(d => d.educationLevelModel).WithMany(p => p.PersonEducationLevels).HasForeignKey(d => d.educationLevelID).OnDelete(DeleteBehavior.Cascade);
-                entity.HasOne(d => d.personModel).WithMany(e => e.PersonEducationLevels).HasForeignKey(d => d.personID).OnDelete(DeleteBehavior.Cascade);
+               
+                entity.HasOne(d => d.educationLevelModel).WithMany(p => p.PersonEducationLevels).HasForeignKey(d => d.educationLevelID).OnDelete(DeleteBehavior.NoAction);
+                entity.HasOne(d => d.personModel).WithMany(e => e.PersonEducationLevels).HasForeignKey(d => d.personID).OnDelete(DeleteBehavior.NoAction);
 
                 entity.HasIndex(d => new { d.educationLevelID, d.personID, d.educationField}).IsUnique();
+                entity.ToTable(tb => tb.UseSqlOutputClause(false));
             });
             modelBuilder.Entity<prohibitionModel>(e =>
             {
@@ -1047,8 +858,8 @@ namespace PIS2.Models
                 e.Property(e => e.prohibitionRemark).HasColumnName("prohibitionRemark");
                 e.Property(e => e.modifiedBy).HasColumnName("modifiedBy");
 
-                e.HasMany(p => p.ProhibitionHistories).WithOne(p => p.prohibitionModel).HasForeignKey(p => p.prohibitionID);
-                e.HasOne(p => p.employmentModel).WithMany(p => p.Prohibitions).HasForeignKey(p => p.employmentID);
+                e.HasMany(p => p.ProhibitionHistories).WithOne(p => p.prohibitionModel).HasForeignKey(p => p.prohibitionID).OnDelete(DeleteBehavior.NoAction);
+                e.HasOne(p => p.employmentModel).WithMany(p => p.Prohibitions).HasForeignKey(p => p.employmentID).OnDelete(DeleteBehavior.NoAction);
 
                 e.HasIndex(d => new { d.employmentID, d.prohibitionStart, d.prohibitionEnd, d.prohibitionType }).HasFilter("prohibitionStatus=1").IsUnique();
 
@@ -1067,7 +878,7 @@ namespace PIS2.Models
                 e.Property(e => e.modifiedBy).HasColumnName("modifiedBy");
                 e.Property(e => e.modifiedDate).HasColumnName("modifiedDate");
 
-                e.HasOne(p => p.prohibitionModel).WithMany(p => p.ProhibitionHistories).HasForeignKey(p => p.prohibitionID);               
+                e.HasOne(p => p.prohibitionModel).WithMany(p => p.ProhibitionHistories).HasForeignKey(p => p.prohibitionID).OnDelete(DeleteBehavior.NoAction);               
 
             });
 
@@ -1080,8 +891,8 @@ namespace PIS2.Models
                 entity.Property(e => e.serviceRequestStatus).HasColumnName("serviceRequestStatus");
                 entity.Property(e => e.modifiedBy).HasColumnName("modifiedBy");
 
-                entity.HasOne(e => e.Employment).WithMany(e => e.ServiceRequests).HasForeignKey(e => e.employmentID);
-                entity.HasMany(e => e.ServiceRequestHistoies).WithOne(e => e.ServiceRequest).HasForeignKey(e => e.serviceRequestID);
+                entity.HasOne(e => e.Employment).WithMany(e => e.ServiceRequests).HasForeignKey(e => e.employmentID).OnDelete(DeleteBehavior.NoAction);
+                entity.HasMany(e => e.ServiceRequestHistoies).WithOne(e => e.ServiceRequest).HasForeignKey(e => e.serviceRequestID).OnDelete(DeleteBehavior.NoAction);
 
                 entity.HasIndex(d => new { d.employmentID, d.requestedService }).HasFilter("serviceRequestStatus =1");
 
@@ -1096,24 +907,17 @@ namespace PIS2.Models
                 entity.Property(e => e.modifiedBy).HasColumnName("modifiedBy");
                 entity.Property(e => e.modifiedDate).HasColumnName("modifiedDate");
 
-                entity.HasOne(e => e.ServiceRequest).WithMany(e => e.ServiceRequestHistoies).HasForeignKey(e => e.serviceRequestID);
+                entity.HasOne(e => e.ServiceRequest).WithMany(e => e.ServiceRequestHistoies).HasForeignKey(e => e.serviceRequestID).OnDelete(DeleteBehavior.NoAction);
 
             });
 
             modelBuilder.Entity<shiftModel>(entity =>
             {
-                entity.Property(e => e.shiftID).HasColumnName("shiftID");
-                entity.Property(e => e.shiftEnd).HasColumnName("shiftEnd");
-                entity.Property(e => e.shiftName).HasColumnName("shiftName");
-                entity.Property(e => e.shiftStart).HasColumnName("shiftStart");
-                entity.Property(e => e.shiftStatus).HasColumnName("shiftStatus");
-                entity.Property(e => e.modifiedBy).HasColumnName("modifiedBy");
-
-                
-                entity.HasMany(e => e.Breaks).WithOne(p => p.shiftModel).HasForeignKey(e => e.shiftID).OnDelete(DeleteBehavior.Cascade);
+                entity.HasMany(e => e.Breaks).WithOne(p => p.shiftModel).HasForeignKey(e => e.shiftID).OnDelete(DeleteBehavior.NoAction);
 
                 entity.HasIndex(e => e.shiftName).IsUnique();
                 entity.HasIndex(e => new { e.shiftStart, e.shiftEnd }).IsUnique();
+                entity.ToTable(tb => tb.UseSqlOutputClause(false));
             });
 
             modelBuilder.Entity<shiftAssignmentModel>(entity =>
@@ -1124,8 +928,8 @@ namespace PIS2.Models
                 entity.Property(e => e.modifiedBy).HasColumnName("modifiedBy");
                 entity.Property(e => e.modifiedDate).HasColumnName("modifiedDate");
 
-                entity.HasOne(e => e.shiftModel).WithMany(e => e.ShiftAssignments).HasForeignKey(e => e.shiftID);
-                entity.HasOne(e => e.EmploymentModel).WithMany(e => e.ShiftAssignments).HasForeignKey(e => e.employmentID);
+                entity.HasOne(e => e.shiftModel).WithMany(e => e.ShiftAssignments).HasForeignKey(e => e.shiftID).OnDelete(DeleteBehavior.NoAction);
+                entity.HasOne(e => e.EmploymentModel).WithMany(e => e.ShiftAssignments).HasForeignKey(e => e.employmentID).OnDelete(DeleteBehavior.NoAction);
 
 
             });
@@ -1137,8 +941,8 @@ namespace PIS2.Models
                 entity.Property(e => e.modifiedBy).HasColumnName("modifiedBy");
                 entity.Property(e => e.modifiedDate).HasColumnName("modifiedDate");
 
-                entity.HasOne(e => e.workSiteModel).WithMany(e => e.SiteAssignments).HasForeignKey(e => e.workSiteID);
-                entity.HasOne(e => e.employmentModel).WithMany(e => e.SiteAssignments).HasForeignKey(e => e.employmentID);
+                entity.HasOne(e => e.workSiteModel).WithMany(e => e.SiteAssignments).HasForeignKey(e => e.workSiteID).OnDelete(DeleteBehavior.NoAction);
+                entity.HasOne(e => e.employmentModel).WithMany(e => e.SiteAssignments).HasForeignKey(e => e.employmentID).OnDelete(DeleteBehavior.NoAction);
 
             });
 
@@ -1152,11 +956,11 @@ namespace PIS2.Models
                 entity.Property(e => e.reportsTo).HasColumnName("reportsTo");
                 entity.Property(e => e.modifiedBy).HasColumnName("modifiedBy");
 
-                entity.HasMany(e => e.StructureHistories).WithOne(e => e.structureModel).HasForeignKey(e => e.structureID);
-                entity.HasOne(e => e.departmentModel).WithMany(e => e.Structures).HasForeignKey(e => e.departmentID);
-                entity.HasOne(e => e.jobModel).WithMany(e => e.Structures).HasForeignKey(e => e.jobID);
+                entity.HasMany(e => e.StructureHistories).WithOne(e => e.structureModel).HasForeignKey(e => e.structureID).OnDelete(DeleteBehavior.NoAction);
+                entity.HasOne(e => e.departmentModel).WithMany(e => e.Structures).HasForeignKey(e => e.departmentID).OnDelete(DeleteBehavior.NoAction);
+                entity.HasOne(e => e.jobModel).WithMany(e => e.Structures).HasForeignKey(e => e.jobID).OnDelete(DeleteBehavior.NoAction);
                 
-                entity.HasOne(s => s.ReportsTo).WithMany(s => s.Subordinates).HasForeignKey(s => s.reportsTo).OnDelete(DeleteBehavior.Restrict);
+                entity.HasOne(s => s.ReportsTo).WithMany(s => s.Subordinates).HasForeignKey(s => s.reportsTo).OnDelete(DeleteBehavior.NoAction);
 
                 entity.ToTable(t => t.UseSqlOutputClause(false));
 
@@ -1164,46 +968,24 @@ namespace PIS2.Models
 
             modelBuilder.Entity<structureHistoryModel>(entity =>
             {
-                entity.Property(e => e.structureHistoryID).HasColumnName("structureHistoryID");
-                entity.Property(e => e.structureID).HasColumnName("structureID");
-                entity.Property(e => e.structureStatus).HasColumnName("structureStatus");
-                entity.Property(e => e.requiredNumber).HasColumnName("requiredNumber");
-                entity.Property(e => e.reportsTo).HasColumnName("reportsTo");
-                entity.Property(e => e.modifiedBy).HasColumnName("modifiedBy");
-                entity.Property(e => e.modifiedDate).HasColumnName("modifiedDate");
-
-                entity.HasOne(e => e.structureModel).WithMany(e => e.StructureHistories).HasForeignKey(e => e.structureID);
+                entity.HasOne(e => e.structureModel).WithMany(e => e.StructureHistories).HasForeignKey(e => e.structureID).OnDelete(DeleteBehavior.NoAction);
             });
             modelBuilder.Entity<subAccountModel>(entity =>
             {
                 entity.HasIndex(e => e.subAccountID, "IX_SubAccounts_accountModelaccountID");
 
-                entity.Property(e => e.subAccountID).HasColumnName("subAccountID");
-                entity.Property(e => e.accountID).HasColumnName("accountID");
-                entity.Property(e => e.subAccountDescription).HasColumnName("subAccountDescription");
-                entity.Property(e => e.subAccountName).HasColumnName("subAccountName");
-                entity.Property(e => e.subAccountStatus).HasColumnName("subAccountStatus");
-                entity.Property(e => e.modifiedBy).HasColumnName("modifiedBy");
-
-                entity.HasOne(d => d.accountModel).WithMany(p => p.SubAccounts).HasForeignKey(d => d.accountID).OnDelete(DeleteBehavior.Cascade);
-                entity.HasMany(e => e.Departments).WithOne(p => p.subAccountModel).HasForeignKey(d => d.subAccountID);
-                entity.HasMany(e => e.WorkSites).WithOne(p => p.subAccountModel).HasForeignKey(d => d.subAccountID);
+                entity.HasOne(d => d.accountModel).WithMany(p => p.SubAccounts).HasForeignKey(d => d.accountID).OnDelete(DeleteBehavior.NoAction);
+                entity.HasMany(e => e.Departments).WithOne(p => p.subAccountModel).HasForeignKey(d => d.subAccountID).OnDelete(DeleteBehavior.NoAction);
+                entity.HasMany(e => e.WorkSites).WithOne(p => p.subAccountModel).HasForeignKey(d => d.subAccountID).OnDelete(DeleteBehavior.NoAction);
 
                 entity.HasIndex(e => e.subAccountName).IsUnique();
             });
             modelBuilder.Entity<terminationModel>(entity =>
             {
-                entity.Property(e => e.terminationID).HasColumnName("terminationID");
-                entity.Property(e => e.terminationDate).HasColumnName("terminationDate");
-                entity.Property(e => e.employmentID).HasColumnName("employmentID");
-                entity.Property(e => e.terminationReason).HasColumnName("terminationReason");
-                entity.Property(e => e.terminationRemark).HasColumnName("terminationRemark");
-                entity.Property(e => e.terminationStatus).HasColumnName("terminationStatus");
-                entity.Property(e => e.modifiedBy).HasColumnName("modifiedBy");
-
-                entity.HasOne(t => t.EmploymentModel).WithOne(e => e.TerminationModel).HasForeignKey<terminationModel>(d => d.employmentID).OnDelete(DeleteBehavior.Cascade);
+                entity.HasOne(t => t.EmploymentModel).WithOne(e => e.TerminationModel).HasForeignKey<terminationModel>(d => d.employmentID).OnDelete(DeleteBehavior.NoAction);
 
                 entity.HasIndex(e => e.employmentID).IsUnique();
+                entity.ToTable(tb => tb.UseSqlOutputClause(false));
                 entity.ToTable(tb => tb.UseSqlOutputClause(false));
             });
 
@@ -1217,8 +999,8 @@ namespace PIS2.Models
                 entity.Property(e => e.modifiedDate).HasColumnName("modifiedDate");
                 entity.Property(e => e.modifiedBy).HasColumnName("modifiedBy");
 
-                entity.HasOne(e => e.personModel).WithOne(p => p.userModel).HasForeignKey<userModel>(d => d.personID).OnDelete(DeleteBehavior.Cascade);
-                entity.HasMany(e => e.UserHistories).WithOne(u => u.userModel).HasForeignKey(d => d.userID);
+                entity.HasOne(e => e.personModel).WithOne(p => p.userModel).HasForeignKey<userModel>(d => d.personID).OnDelete(DeleteBehavior.NoAction);
+                entity.HasMany(e => e.UserHistories).WithOne(u => u.userModel).HasForeignKey(d => d.userID).OnDelete(DeleteBehavior.NoAction);
 
                 entity.HasIndex(d => d.userName).IsUnique();
 
@@ -1234,7 +1016,7 @@ namespace PIS2.Models
                 entity.Property(e => e.modifiedDate).HasColumnName("modifiedDate");
                 entity.Property(e => e.modifiedBy).HasColumnName("modifiedBy");
 
-                entity.HasOne(e => e.userModel).WithMany(u => u.UserHistories).HasForeignKey(d => d.userID).OnDelete(DeleteBehavior.Cascade);
+                entity.HasOne(e => e.userModel).WithMany(u => u.UserHistories).HasForeignKey(d => d.userID).OnDelete(DeleteBehavior.NoAction);
             });
             modelBuilder.Entity<workSiteModel>(entity =>
             {
@@ -1244,35 +1026,16 @@ namespace PIS2.Models
 
                 entity.HasIndex(e => e.addressID, "IX_workSiteModel_AddressModeladdressID");
 
-                entity.Property(e => e.workSiteID).HasColumnName("workSiteID");
-                entity.Property(e => e.addressID).HasColumnName("addressID");
-                entity.Property(e => e.employmentID).HasColumnName("employmentID");
-                entity.Property(e => e.mapLink).HasColumnName("mapLink");
-                entity.Property(e => e.workSiteEstablishDate).HasColumnName("workSiteEstablishDate");
-                entity.Property(e => e.workSiteName).HasColumnName("workSiteName");
-                entity.Property(e => e.workSiteNature).HasColumnName("workSiteNature");
-                entity.Property(e => e.workSiteStatus).HasColumnName("worksiteStatus");
-                entity.Property(e => e.workSiteCode).HasColumnName("workSiteCode");
-                entity.Property(e => e.modifiedBy).HasColumnName("modifiedBy");
-
-                entity.HasOne(d => d.addressModel).WithMany(p => p.WorkSites).HasForeignKey(d => d.addressID);
-                entity.HasMany(d => d.WorkSiteHistories).WithOne(p => p.workSiteModel).HasForeignKey(d => d.workSiteID).OnDelete(DeleteBehavior.Cascade);
-                entity.HasOne(d => d.employmentModel).WithMany(e => e.WorkSites).HasForeignKey(d => d.employmentID);
+                entity.HasOne(d => d.addressModel).WithMany(p => p.WorkSites).HasForeignKey(d => d.addressID).OnDelete(DeleteBehavior.NoAction);
+                entity.HasMany(d => d.WorkSiteHistories).WithOne(p => p.workSiteModel).HasForeignKey(d => d.workSiteID).OnDelete(DeleteBehavior.NoAction);
+                entity.HasOne(d => d.employmentModel).WithMany(e => e.WorkSites).HasForeignKey(d => d.employmentID).OnDelete(DeleteBehavior.NoAction);
                 
                 entity.HasIndex(d => d.workSiteName).IsUnique();
                 entity.ToTable(tb => tb.UseSqlOutputClause(false));
             });
             modelBuilder.Entity<workSiteHistoryModel>(entity =>
             {
-                entity.Property(e => e.workSiteHistoryID).HasColumnName("workSiteHistoryID");
-                entity.Property(e => e.workSiteID).HasColumnName("workSiteID");
-                entity.Property(e => e.workSiteHistoryAction).HasColumnName("workSiteHistoryAction");
-                entity.Property(e => e.modifiedDate).HasColumnName("modifiedDate");
-                entity.Property(e => e.worksiteName).HasColumnName("workSiteName");
-                entity.Property(e => e.addressID).HasColumnName("addressID");
-                entity.Property(e => e.modifiedBy).HasColumnName("modifiedBy");
-
-                entity.HasOne(e => e.workSiteModel).WithMany(p => p.WorkSiteHistories).HasForeignKey(d => d.workSiteID).OnDelete(DeleteBehavior.Cascade);
+                entity.HasOne(e => e.workSiteModel).WithMany(p => p.WorkSiteHistories).HasForeignKey(d => d.workSiteID).OnDelete(DeleteBehavior.NoAction);
             });
             //
             /// <summary>
@@ -1281,7 +1044,7 @@ namespace PIS2.Models
             // payrollModel
             modelBuilder.Entity<payrollModel>(entity =>
             {
-                entity.HasMany(e => e.payrollHistories).WithOne(p => p.payrollModel).HasForeignKey(p => p.payrollID).OnDelete(DeleteBehavior.Cascade);
+                entity.HasMany(e => e.payrollHistories).WithOne(p => p.payrollModel).HasForeignKey(p => p.payrollID).OnDelete(DeleteBehavior.NoAction);
             });
 
             // payrollHistory
@@ -1290,60 +1053,59 @@ namespace PIS2.Models
                 entity.Property(e => e.payrollHistoryID).HasColumnName("payrollHistoryID");
                 entity.Property(e => e.payrollID).HasColumnName("payrollID");
                 entity.Property(e => e.payrollStatus).HasColumnName("payrollStatus");
-                entity.Property(e => e.modifiedDate).HasColumnName("modfiedDate");
+                entity.Property(e => e.modifiedDate).HasColumnName("modifiedDate");
                 entity.Property(e => e.modifiedBy).HasColumnName("modifiedBy");
 
-                entity.HasOne(e => e.payrollModel)
-                      .WithMany(p => p.payrollHistories)
-                      .HasForeignKey(e => e.payrollID)
-                      .OnDelete(DeleteBehavior.Cascade);
+                entity.HasOne(e => e.payrollModel).WithMany(p => p.payrollHistories).HasForeignKey(e => e.payrollID).OnDelete(DeleteBehavior.NoAction);
             });
 
             // payrollPay
             modelBuilder.Entity<payrollPay>(entity =>
             {
-                entity.Property(e => e.payrollPayID).HasColumnName("payrollPayID");
-                entity.Property(e => e.payrollID).HasColumnName("payrollID");
-                entity.Property(e => e.employmentID).HasColumnName("employmentID");
-                entity.Property(e => e.GrossPay).HasColumnName("GrossPay");
-                entity.Property(e => e.NetPay).HasColumnName("NetPay");
-                entity.Property(e => e.modifiedBy).HasColumnName("modifiedBy");
-
-                entity.HasOne(e => e.payrollModel).WithMany().HasForeignKey(e => e.payrollID).OnDelete(DeleteBehavior.Cascade);
-
-                entity.HasOne(e => e.EmploymentModel).WithMany().HasForeignKey(e => e.employmentID).OnDelete(DeleteBehavior.Cascade);
-                entity.HasMany(e => e.DeductionRecords).WithOne().HasForeignKey(e => e.payrollPayID).OnDelete(DeleteBehavior.Cascade);
-                entity.HasMany(e => e.EarningRecords).WithOne().HasForeignKey(e => e.payrollPayID).OnDelete(DeleteBehavior.Cascade);
+                entity.HasOne(e => e.payrollModel).WithMany().HasForeignKey(e => e.payrollID).OnDelete(DeleteBehavior.NoAction);
+                entity.HasOne(e => e.EmploymentModel).WithMany().HasForeignKey(e => e.employmentID).OnDelete(DeleteBehavior.NoAction);
+                entity.HasMany(e => e.DeductionRecords).WithOne().HasForeignKey(e => e.payrollPayID).OnDelete(DeleteBehavior.NoAction);
+                entity.HasMany(e => e.EarningRecords).WithOne().HasForeignKey(e => e.payrollPayID).OnDelete(DeleteBehavior.NoAction);
 
             });
             //earningModel
-            modelBuilder.Entity<earningModel>();
+            modelBuilder.Entity<earningModel>(e=> 
+            { e.ToTable(tb => tb.UseSqlOutputClause(false)); });
+
+            //earningModel
+            modelBuilder.Entity<earningHistoryModel>();
             // earningRecordModel
             modelBuilder.Entity<earningRecordModel>(entity =>
             {
-                entity.HasOne(e => e.earningType).WithMany(p => p.Earnings).HasForeignKey(e => e.earningTypeId).OnDelete(DeleteBehavior.Cascade);
-           
+                entity.HasOne(e => e.earningType).WithMany(p => p.Earnings).HasForeignKey(e => e.earningTypeId).OnDelete(DeleteBehavior.NoAction);           
             });
 
             // earningType
-            modelBuilder.Entity<earningType>();
+            modelBuilder.Entity<earningType>(entity =>
+            {
+                entity.ToTable(tb => tb.UseSqlOutputClause(false));
+            });
             //deductionModel
-            modelBuilder.Entity<deductionModel>();
+            modelBuilder.Entity<deductionModel>(e =>
+            { e.ToTable(tb => tb.UseSqlOutputClause(false)); });
+            modelBuilder.Entity<deductionHistoryModel>();
             // deductionRecordModel
             modelBuilder.Entity<deductionRecordModel>(entity =>
             {
-                entity.HasOne(e => e.DeductionType).WithMany(p => p.Deductions).HasForeignKey(e => e.deductionTypeID).OnDelete(DeleteBehavior.Cascade);
-                
+                entity.HasOne(e => e.DeductionType).WithMany(p => p.Deductions).HasForeignKey(e => e.deductionTypeID).OnDelete(DeleteBehavior.NoAction);               
             });
 
             // deductionType
-            modelBuilder.Entity<deductionType>();
+            modelBuilder.Entity<deductionType>(entity =>
+            {
+                entity.ToTable(tb => tb.UseSqlOutputClause(false));
+            });
 
             //tax rates
             modelBuilder.Entity<taxRateModel>(entity =>
             {
                 entity.ToTable("TaxRates");
-                
+                entity.ToTable(tb => tb.UseSqlOutputClause(false));
             });
 
 
@@ -1418,6 +1180,21 @@ namespace PIS2.Models
             modelBuilder.Entity<CertificationDetailsView>()
             .HasNoKey()
             .ToView("vw_CertificationDetails");
+
+            /// <summary>
+            /// Structure View
+            ///</summary>
+            modelBuilder.Entity<StructureView>()
+            .HasNoKey()
+            .ToView("vw_StructureView");
+
+            /// <summary>
+            /// Termination Detail View
+            ///</summary>
+            modelBuilder.Entity<TerminationDetailView>()
+            .HasNoKey()
+            .ToView("vw_TerminationDetail");
+
 
         }
 
@@ -1503,9 +1280,11 @@ namespace PIS2.Models
         public DbSet<payrollHistory> PayrollHistories { get; set; }
         public DbSet<payrollPay> PayrollPays { get; set; }
         public DbSet<earningModel> Earnings { get; set; }
+        public DbSet<earningHistoryModel> EarningHistories { get; set; }
         public DbSet<earningRecordModel> EarningRecords { get; set; }
         public DbSet<earningType> EarningTypes { get; set; }
         public DbSet<deductionModel> Deductions { get; set; }
+        public DbSet<deductionHistoryModel> DeductionHistories { get; set; }
         public DbSet<deductionRecordModel> DeductionRecords { get; set; }
         public DbSet<deductionType> DeductionTypes { get; set; }
         public DbSet<taxRateModel> TaxRates { get; set; }
@@ -1530,6 +1309,8 @@ namespace PIS2.Models
         public DbSet<TalentExperienceView> TalentExperienceView { get; set; } = default!;
         public DbSet<CertificationDetailsView> CertificationDetailsView { get; set; } = default!;
         public DbSet<LeaveReportCompany> LeaveReportCompany { get; set; } = default!;
+        public DbSet<StructureView> StructureView { get; set; } = default!;
+        public DbSet<TerminationDetailView> TerminationDetailView { get; set; } = default!;
     }
     
 }

@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace PIS2.Pages.LeaveType
 {
-    [Authorize(Roles = "MIE\\PMS_HRMANAGER")]
+    [Authorize(Roles = "MIE\\PMS_HRADMIN")]
     public class DeleteModel : PageModel
     {
         private readonly PIS2.Models.PISContext _context;
@@ -45,6 +45,9 @@ namespace PIS2.Pages.LeaveType
 
         public async Task<IActionResult> OnPostAsync(int? id)
         {
+
+            var leaves =  _context.Leaves.Any(l => l.leaveTypeID == id);
+            if (leaves) { TempData["ErrorMessage"] = "Can not delete employment type while there are existing employments with this employment type!"; return Page(); }
             if (id == null)
             {
                 return NotFound();

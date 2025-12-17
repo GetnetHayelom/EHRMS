@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace PIS2.Pages.EmploymentMethod
 {
-    [Authorize(Roles = "MIE\\PMS_HRMANAGER")]
+   
     public class CreateModel : PageModel
     {
         private readonly PIS2.Models.PISContext _context;
@@ -31,6 +31,11 @@ namespace PIS2.Pages.EmploymentMethod
         // For more information, see https://aka.ms/RazorPagesCRUD.
         public async Task<IActionResult> OnPostAsync()
         {
+            if (!User.IsInRole("MIE\\PMS_HRADMIN"))
+            {
+                return RedirectToPage("/Shared/AccessDenied");
+            }
+
             ModelState.Clear();
             employmentMethodModel.employmentMethodStatus = mainStatus.Active;
             employmentMethodModel.modifiedBy = User.Identity.Name;

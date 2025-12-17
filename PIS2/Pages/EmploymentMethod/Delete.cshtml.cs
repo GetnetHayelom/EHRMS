@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace PIS2.Pages.EmploymentMethod
 {
-    [Authorize(Roles = "MIE\\PMS_HRMANAGER")]
+    
     public class DeleteModel : PageModel
     {
         private readonly PIS2.Models.PISContext _context;
@@ -45,6 +45,11 @@ namespace PIS2.Pages.EmploymentMethod
 
         public async Task<IActionResult> OnPostAsync(int? id)
         {
+            if (!User.IsInRole("MIE\\PMS_HRADMIN"))
+            {
+                return RedirectToPage("/Shared/AccessDenied");
+            }
+
             if (id == null)
             {
                 return NotFound();

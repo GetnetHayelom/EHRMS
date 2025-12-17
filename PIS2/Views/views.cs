@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.Build.ObjectModelRemoting;
+using Microsoft.EntityFrameworkCore;
 using PIS2.Models;
 using PIS2.Pages.Management;
 using PIS2.Pages.OvertimeHistory;
@@ -52,17 +53,17 @@ namespace PIS2.Views
     {
         public int DepartmentID { get; set; }
         public string DepartmentName { get; set; }
-        public int CompanyID { get; set; }
-        public string CompanyName { get; set; }
-        public string Manager { get; set; }
-        public int Employees { get; set; }
-        public int xEmployees { get; set; }
-        public decimal Salary { get; set; }
-        public leaveDetail Leaves { get; set; }
-        public decimal Overtime { get; set; }
-        public decimal Allowance { get; set; }
-        public decimal Severance { get; set; } = 0;
-        public decimal Total { get; set; }
+        public int? CompanyID { get; set; }
+        public string? CompanyName { get; set; }
+        public string? Manager { get; set; }
+        public int? Employees { get; set; }
+        public int? xEmployees { get; set; }
+        public decimal? Salary { get; set; }
+        public leaveDetail? Leaves { get; set; }
+        public decimal? Overtime { get; set; }
+        public decimal? Allowance { get; set; }
+        public decimal? Severance { get; set; } = 0;
+        public decimal? Total { get; set; }
     }
     public class EmployeeView
     {
@@ -269,4 +270,44 @@ namespace PIS2.Views
 
 
     }
+
+    /// <summary>
+    /// Structure
+    /// </summary>
+    public class StructureView
+    {
+        public int? StructureID { get; set; }
+        public int? CompanyID { get; set; }
+        public string? CompanyName { get; set; }
+        public int? DepartmentID { get; set; }
+        public string? DepartmentName { get; set; }
+        public int? JobID { get; set; }
+        public string? JobTitle { get; set; }
+        public int? StructureStatus { get; set; }
+        public int? ReportsTo { get; set; }
+        public int? RequiredNumber { get; set; }
+        public int? ActivePlacements { get; set; }
+    }
+
+    public class TerminationDetailView
+    {
+        public int terminationID { get; set; }
+        public int employmentID { get; set; }
+        public DateTime terminationDate { get; set; }
+        public string? terminationReason { get; set; }
+        public string? terminationRemark { get; set; }
+        public int terminationStatus { get; set; }
+        public string FullName { get; set; }
+        public int personGender { get; set; }
+        public int departmentID { get; set; }
+        public string departmentName { get; set; }
+        public int companyID { get; set; }
+        public string companyName { get; set; }
+        public int jobClassId { get; set; }
+        public string jobClassName { get; set; }
+        public int jobCategoryID { get; set; }
+        public string jobCategoryName { get; set; }
+
+    }
+
 }

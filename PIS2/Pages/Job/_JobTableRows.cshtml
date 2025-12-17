@@ -1,0 +1,36 @@
+﻿@model IEnumerable<PIS2.Models.jobModel>
+
+@foreach (var item in Model.OrderBy(j => j.jobTitle))
+{
+    <tr>
+        <td>@item.jobTitle</td>
+        <td>@item.jobGradeModel?.jobGradeName</td>
+        <td>@item.jobCategoryModel?.jobCategoryName</td>
+        <td>@item.jobClassModel?.JobClassName</td>
+        <td>@item.jobExperience</td>
+        <td>
+            @if (item.jobStatus.ToString() == "Active")
+            {
+                <span class="badge bg-success">Active</span>
+            }
+            else if (item.jobStatus.ToString() == "Inactive")
+            {
+                <span class="badge bg-secondary">Inactive</span>
+            }
+            else
+            {
+                <span class="badge bg-info">@item.jobStatus</span>
+            }
+        </td>
+        <td class="no-print text-center">
+            <div class="btn-group" role="group">
+                <a asp-page="./Details" asp-route-id="@item.jobID" class="btn btn-sm btn-outline-primary">
+                    <i class="bi bi-eye"></i>
+                </a>
+                <a asp-page="./Edit" asp-route-id="@item.jobID" class="btn btn-sm btn-outline-success">
+                    <i class="bi bi-pencil-square"></i>
+                </a>
+            </div>
+        </td>
+    </tr>
+}
