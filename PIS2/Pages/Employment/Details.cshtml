@@ -54,7 +54,7 @@
                         </li>
                     }
                     <li class="nav-item">
-                        <button class="btn btn-light btn-sm border"><i class="bi bi-star"></i> Evaluation</button>
+                    <button class="btn btn-light btn-sm border" data-bs-toggle="tab" data-bs-target="#evaluationHistoryView" role="tab"><i class="bi bi-star"></i> Evaluation</button>
                     </li>
             </ul>
         </div>
@@ -144,16 +144,17 @@
                                         <div class="row">
                                             <div class="col-md-6">
                                                 <label class="text-danger small fw-bold">Termination Date</label>
-                                                <div class="fw-bold">@Model.employmentModel.TerminationModel.terminationDate.ToString("MMM dd, yyyy")</div>
+                                                <div class="fw-bold">@Model.employmentModel.TerminationModel?.terminationDate.ToString("MM/dd/yyyy")</div>
                                             </div>
                                             <div class="col-md-6">
                                                 <label class="text-danger small fw-bold">Termination Reason</label>
-                                                <div class="fw-bold">@Model.employmentModel.TerminationModel.terminationReason</div>
+                                                <div class="fw-bold">@Model.employmentModel.TerminationModel?.terminationReason</div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             }
+                        
                         </div>
                         <div class="text-end mt-4">
                             <a asp-page="/EmployeeService/Earning" asp-route-id="@Model.employmentModel.employmentID" class="btn btn-outline-primary">
@@ -346,6 +347,27 @@
                     </div>
                 </div>
             </div>
+
+            <!--EVALUATION HISTORY-->
+            <div class="tab-pane fade" id="evaluationHistoryView" role="tabpanel" aria-labelledby="overtime-tab">
+                <div class="card shadow-sm border-0">
+                    <div class="card-body">
+                        <h5 class="fw-bold mb-3">Evaluation Records</h5>
+                        @if (Model.EvalReport != null)
+                        {
+                            @foreach(var eval in Model.EvalReport)
+                            {
+                                @await Html.PartialAsync("_EvaluationPartial", eval)
+                            }
+                            
+                        }
+                        else
+                        {
+                            <p class="text-muted">No evaluation records found.</p>
+                        }
+                    </div>
+                </div>
+            </div>
         </div>
 
 
@@ -362,3 +384,60 @@
         </div>
     </div>
 </div>
+
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+
+        const typeElems = document.querySelectorAll('.overall-score');
+
+        typeElems.forEach((el, index) => {
+            const next = typeElems[index + 1]; // 👈 compare to older row
+            if (!next) return;
+
+            const current = parseFloat(el.dataset.value);
+            const older = parseFloat(next.dataset.value);
+
+            if (current > older) {
+                el.insertAdjacentHTML('afterend',
+                    '<span class="text-success ms-2">▲</span>');
+            }
+            else if (current < older) {
+                el.insertAdjacentHTML('afterend',
+                    '<span class="text-danger ms-2">▼</span>');
+            }
+        });
+
+        });
+    document.addEventListener("DOMContentLoaded", function () {
+
+        const currentTypes = document.querySelectorAll(
+            '.type-contribution'
+        );
+
+        currentTypes.forEach((el, index) => {
+            const typeKey = el.dataset.type;
+            const currentValue = parseFloat(el.dataset.value);
+            const next = currentTypes[index +1];
+            if (!next) return;
+
+            if (next.dataset.type !== typeKey) return;
+
+            const previousValue = parseFloat(next.dataset.value);
+
+            if (currentValue > previousValue) {
+                el.insertAdjacentHTML('afterend',
+                    '<span class="text-success ms-2" title="Improved">▲</span>');
+            }
+            else if (currentValue < previousValue) {
+                el.insertAdjacentHTML('afterend',
+                    '<span class="text-danger ms-2" title="Dropped">▼</span>');
+            }
+            
+            
+        });
+
+    });
+</script>
+
+

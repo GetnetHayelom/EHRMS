@@ -3,14 +3,15 @@ using Microsoft.EntityFrameworkCore;
 using PIS2.Models;
 using PIS2.Pages.Management;
 using PIS2.Pages.OvertimeHistory;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.RegularExpressions;
 using static System.Formats.Asn1.AsnWriter;
 
 namespace PIS2.Views
 {
-    
+
     public class views
-    {}
+    { }
     public class EducationLevelData
     {
         public educationCategory EducationLevelCategory { get; set; }
@@ -29,7 +30,7 @@ namespace PIS2.Views
     }
     public class CompanySummary
     {
-        
+
         public int CompanyID { get; set; }
         public string CompanyName { get; set; }
         public string Manager { get; set; }
@@ -47,7 +48,7 @@ namespace PIS2.Views
             return Salary + Allowance + Overtime;
         }
         public decimal payableLeaves { get; set; }
-        
+
     }
     public class DepartmentSummary
     {
@@ -67,7 +68,7 @@ namespace PIS2.Views
     }
     public class EmployeeView
     {
-        public employmentModel Employment{ get; set; }
+        public employmentModel Employment { get; set; }
         public personModel Person { get; set; }
         public jobPlacementModel Job { get; set; }
         public departmentModel DepartmentModel { get; set; }
@@ -86,7 +87,7 @@ namespace PIS2.Views
         public string departmentName { get; set; }
         public int companyID { get; set; }
         public string companyName { get; set; }
-        public decimal Incremented { get; set;}
+        public decimal Incremented { get; set; }
         public decimal Used { get; set; }
         public decimal leaveBalance { get; set; }
         public decimal adjustedLeaveBalance { get; set; }
@@ -248,7 +249,8 @@ namespace PIS2.Views
     ///Certification Details for Active Employee
     /// </summary>
     /// 
-    public class CertificationDetailsView {
+    public class CertificationDetailsView
+    {
         public int? CompanyID { get; set; }
         public string? CompanyName { get; set; }
         public int? DepartmentID { get; set; }
@@ -308,6 +310,158 @@ namespace PIS2.Views
         public int jobCategoryID { get; set; }
         public string jobCategoryName { get; set; }
 
+
+    }
+    /// <summary>
+    /// Transaction History View
+    /// </summary>
+    public class TransactionVM
+    {
+        public int PayrollPayID { get; set; }
+        public string PayrollName { get; set; }
+        public string PayrollMonth { get; set; }
+        public DateTime PayrollStart { get; set; }
+        public DateTime PayrollEnd { get; set; }
+        public payrollStatus PayrollStatus { get; set; }
+
+        public decimal? Amount { get; set; } = 0;
+        public decimal? GrossPay { get; set; }
+        public decimal? NetPay { get; set; }
+
+        public string ProcessedBy { get; set; }
     }
 
+    /// <summary>
+    /// Evaluation Summary View
+    /// </summary>
+    // Primary Evaluation Data
+    public class EvaluationSummaryView
+    {
+        public int evaluationID { get; set; }
+        public string evaluationName { get; set; }
+        public int evaluationStatus { get; set; } // Matches your WHERE filter
+        public DateTime evaluationStartDate { get; set; }
+        public DateTime evaluationEndDate { get; set; }
+
+        // Employee Data (Using the CONCAT_WS alias)
+        public int employmentID { get; set; }
+        public string personFullName { get; set; }
+        public int? jobPlacementID { get; set; }
+        // Type Data
+        public int evaluationTypeID { get; set; }
+        public string evaluationTypeName { get; set; }
+        public decimal evaluationTypeWeight { get; set; }
+        public bool isFixed { get; set; }
+
+        // Task Data
+        public int evaluationTaskID { get; set; }
+        public string evaluationTaskName { get; set; }
+        public decimal evaluationTaskWeight { get; set; }
+
+        // SubTask Data
+        public int evaluationSubTaskID { get; set; }
+        public string evaluationSubTaskName { get; set; }
+        public decimal evaluationSubTaskWeight { get; set; }
+
+        // Valuation Metrics
+        public decimal timeValuation { get; set; }
+        public decimal resourceValuation { get; set; }
+        public decimal performanceValuation { get; set; }
+
+        // Calculated Columns from SQL View
+        public decimal SubTaskAvgScore { get; set; }
+        public decimal WeightedSubTaskScore { get; set; }
+
+    }
+
+    // The top-level object for the report
+    public class EvalSingleEmployeeReport
+    {
+        public int evaluationID { get; set; }
+        public string evaluationName { get; set; }
+        public string personFullName { get; set; }
+        public DateTime startDate { get; set; }
+        public DateTime endDate { get; set; }
+        public decimal FinalGrandTotal { get; set; }
+        public decimal? PreviousGrandTotal { get; set; }
+
+        // Grouped by Evaluation Type
+        public List<EvalTypeSummary> Types { get; set; } = new();
+    }
+
+    public class EvalTypeSummary
+    {
+        public string typeName { get; set; }
+        public decimal typeWeight { get; set; }
+         // Actual score earned for this type
+
+        // Summarized by Task
+        public List<EvalTaskSummary> Tasks { get; set; } = new();
+        public decimal typeContribution { get{
+                if (Tasks.Sum(t => t.taskWeight) == 0) return 0;
+                return Tasks.Sum(t => t.taskScore) * typeWeight / Tasks.Sum(t => t.taskWeight);
+            } }
+    }
+
+    public class EvalTaskSummary
+    {
+        public string taskName { get; set; }
+        public decimal taskWeight { get; set; }
+        public decimal avgTime { get; set; }
+        public decimal avgResource { get; set; }
+        public decimal avgPerformance { get; set; }
+        public List<EvalSubTaskSummary> SubTasks { get; set; } = new();
+        public decimal taskScore
+        {
+            get
+            {
+                decimal totalWeight = SubTasks.Sum(s => s.subtaskWeight) * 4;
+                if (totalWeight == 0) return 0; // Prevent DivideByZeroException
+
+                decimal scoreSum = SubTasks.Sum(s => s.subtaskScore);
+                return (taskWeight * scoreSum) / totalWeight;
+            }
+        }
+        
+    }
+
+    public class EvalSubTaskSummary
+    {
+        public string subtaskName { get; set; }
+        public decimal subtaskWeight { get; set; }
+        public decimal subTime { get; set; }
+        public decimal subResource { get; set; }
+        public decimal subPerformance { get; set; }
+        public decimal subtaskScore
+        {
+            get
+            {
+                return ((subTime + subResource + subPerformance) / 3) * subtaskWeight;
+            }
+        }
+    }
+
+    public class EvalGrandView
+    {
+        public int employmentID { get; set; }
+        public string givenID { get; set; }
+        public mainStatus employmentStatus { get; set; }
+        public int evaluationID { get; set; }
+        public string evaluationName { get; set; }
+        public string personFullName { get; set; }
+        public DateTime startDate { get; set; }
+        public DateTime endDate { get; set; }
+        public evaluationStatus evaluationStatus { get; set; }
+        public int? jobPlacementID { get; set; }
+        public int? departmentID { get; set; }
+        public string? departmentName { get; set; }
+        public int? companyID { get; set; }
+        public string? companyName { get; set; }
+        public int evaluationTypeID { get; set; }
+        public string evaluationTypeName { get; set; }
+        public decimal TaskScoreSum { get; set; }
+        public decimal TypeScore { get; set; }
+        public decimal FinalScore{ get; set; }
+    }
 }
+

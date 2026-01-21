@@ -1,0 +1,133 @@
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace PIS2.Models
+{
+    public class trainingModel
+    {
+        [Key]
+        public int trainingID { get; set; }
+
+        [Required]
+        public string trainingTitle { get; set; }
+
+        public string? description { get; set; }
+
+        public trainingCategory category { get; set; }   // Technical, HR, Safety…
+
+        public bool isMandatory { get; set; }
+
+        public int? validityMonths { get; set; }  // e.g. Safety training valid for 12 months
+
+        public bool isActive { get; set; } = true;
+
+        public virtual ICollection<trainingSessionModel>? TrainingSessions { get; set; }
+    }
+
+    /// <summary>
+    /// Training Sessions
+    /// </summary>
+    public class trainingSessionModel
+    {
+        [Key]
+        public int trainingSessionID { get; set; }
+
+        public int trainingID { get; set; }
+        public virtual trainingModel? Training { get; set; }
+
+        public DateTime startDate { get; set; }
+        public DateTime endDate { get; set; }
+
+        public string? location { get; set; }
+        public trainingDeliveryMode deliveryMode { get; set; } // Online, Onsite, Hybrid
+
+        public int? personID { get; set; }
+        public virtual personModel? PersonModel { get; set; }
+        public string? provider { get; set; }
+
+        public decimal? cost { get; set; }
+
+        public trainingStatus sessionStatus { get; set; } // Planned, Ongoing, Completed, Cancelled
+
+        public virtual ICollection<trainingAttendanceModel>? Attendances { get; set; }
+    }
+
+    /// <summary>
+    /// Training Session Attendance
+    /// </summary>
+    public class trainingAttendanceModel
+    {
+        [Key]
+        public int trainingAttendanceID { get; set; }
+
+        public int trainingSessionID { get; set; }
+        public virtual trainingSessionModel? TrainingSession { get; set; }
+
+        public int employmentID { get; set; }
+        public virtual employmentModel? EmploymentModel { get; set; }
+
+        public trainingResult result { get; set; } // Passed, Failed, InProgress, Absent
+
+        public DateTime? completionDate { get; set; }
+
+        public decimal? score { get; set; }
+
+        public string? certificateNumber { get; set; }
+        public DateTime? certificateExpiryDate { get; set; }
+
+        public string? remarks { get; set; }
+    }
+
+    /// <summary>
+    /// Training Cost Allocation
+    /// </summary>
+    public class trainingCostAllocationModel
+    {
+        [Key]
+        public int trainingCostAllocationID { get; set; }
+
+        public int trainingAttendanceID { get; set; }
+        public virtual trainingAttendanceModel? Attendance { get; set; }
+        public string? remarks { get; set; }
+        public decimal allocatedCost { get; set; }
+    }
+
+    /// <summary>
+    /// Enums for Options
+    /// </summary>
+
+    public enum trainingCategory
+    {
+        Technical,
+        HR,
+        Safety,
+        Compliance,
+        Management,
+        Quality,
+        Other
+    }
+
+    public enum trainingDeliveryMode
+    {
+        Online,
+        Onsite,
+        Hybrid
+    }
+
+    public enum trainingStatus
+    {
+        Planned,
+        Ongoing,
+        Completed,
+        Cancelled
+    }
+
+    public enum trainingResult
+    {
+        InProgress,
+        Passed,
+        Failed,
+        Absent
+    }
+
+
+}

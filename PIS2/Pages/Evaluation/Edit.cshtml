@@ -1,0 +1,488 @@
+﻿@page "{id:int}"
+@model PIS2.Pages.Evaluation.EditModel
+@{
+    ViewData["Title"] = "Edit Evaluation";
+}
+@await Html.PartialAsync("headersimple", "")
+<h1 class="fw-bold ">Evaluation</h1>
+<h4 class="fw-bold text-muted">Update Evaluation</h4>
+<div class="container-fluid py-4">
+    @Html.AntiForgeryToken()
+    <input type="hidden" id="currentEvalID" value="@Model.Evaluation.evaluationID" />
+
+    @* Header Section *@
+    <div class="header-section p-4 bg-white border rounded shadow-sm mb-4">
+        <div class="row align-items-center">
+            <div class="col-md-3">
+                <label class="form-label fw-bold">Evaluation Name</label>
+                <input type="text" id="evalName" class="form-control" value="@Model.Evaluation.evaluationName" />
+            </div>
+            <div class="col-md-2">
+                <label class="form-label fw-bold">Employee</label>
+                <input type="text" class="form-control bg-light" value="@Model.Evaluation.EmploymentModel?.personModel.personFullName" readonly />
+            </div>
+            <div class="col-md-2">
+                <label class="form-label fw-bold">Start Date</label>
+                <input type="date" id="startDate" class="form-control" value="@Model.Evaluation.evaluationStartDate.ToString("yyyy-MM-dd")" />
+            </div>
+            <div class="col-md-2">
+                <label class="form-label fw-bold">End Date</label>
+                <input type="date" id="endDate" class="form-control" value="@Model.Evaluation.evaluationEndDate.ToString("yyyy-MM-dd")" />
+            </div>
+            <div class="col-md-1">
+                <label class="form-label fw-bold">Status</label>
+                <span class="badge @(Model.Evaluation.evaluationStatus == Models.evaluationStatus.Pending ? "bg-warning" : "bg-success") d-block p-2">
+                    @Model.Evaluation.evaluationStatus
+                </span>
+            </div>
+            <div class="col-md-2 text-end border-start">
+                <div class="text-muted small">Score Progress</div>
+                <h2 class="text-primary mb-0"><span id="grandTotal">0.00</span>%</h2>
+                <div class="text-muted small"><span id="totalTaskScore">0.00</span> / <span id="totalTaskWeight">0.00</span></div>
+            </div>
+        </div>
+        <div class="row mt-3">
+            <div class="col-12 text-end">
+                <a asp-page="/Evaluation/Create" class="btn btn-primary">New Evaluation</a>
+                <a asp-page="/Evaluation/Details" asp-route-id="@Model.Evaluation.evaluationID" class="btn btn-outline-primary">Preview</a>
+                <button class="btn btn-outline-success" onclick="updateHeader()">Update Eval. Info</button>
+            </div>
+        </div>
+    </div>
+
+    @* Tabs Section *@
+    <ul class="nav nav-pills mb-3" id="evalTabs">
+        @foreach (var type in Model.EvaluationTypes)
+        {
+            <li class="nav-item">
+                <button class="nav-link @(Model.EvaluationTypes.First() == type ? "active" : "")"
+                        data-bs-toggle="tab" data-bs-target="#panel-@type.evaluationTypeID">
+                    @type.evaluationTypeName (@type.evaluationTypeWeight%)
+                </button>
+            </li>
+        }
+    </ul>
+
+    <div class="tab-content bg-white border rounded p-4 shadow-sm">
+        @foreach (var type in Model.EvaluationTypes)
+        {
+            <div class="tab-pane fade @(Model.EvaluationTypes.First() == type ? "show active" : "")" id="panel-@type.evaluationTypeID">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h4 class="fw-bold">@type.evaluationTypeName</h4>
+                    @if (!type.isFixed)
+                    {
+                        <button class="btn btn-sm btn-primary" onclick="addTaskRow(@type.evaluationTypeID)">+ Add Custom Task</button>
+                    }
+                </div>
+
+                <div id="container-@type.evaluationTypeID" class="task-list" data-type-weight="@type.evaluationTypeWeight">
+                    @* Load Existing Tasks for this Type *@
+                    @foreach (var task in Model.ExistingTasks.Where(t => t.evaluationTypeID == type.evaluationTypeID))
+                    {
+                        <div class="card mb-4 border-light shadow-xs task-card" data-task-id="@task.evaluationTaskID" data-type-id="@type.evaluationTypeID">
+                            <div class="card-header border border-1 border-secondary d-flex justify-content-between align-items-center">
+                                <div class="d-flex flex-grow-1 gap-2">
+                                    <h4 class="fw-bold task-no"></h4>
+                                    <input type="text" class="task-name form-control form-control-sm w-50 fw-bold" value="@task.evaluationTaskName" @(type.isFixed ? "readonly" : "") onchange="updateTask(@task.evaluationTaskID, this)" />
+                                    <input type="number" class="task-weight form-control form-control-sm w-25 fw-bold" value="@task.evaluationTaskWeight" @(type.isFixed ? "readonly" : "") onchange="updateTask(@task.evaluationTaskID, this)" />
+                                </div>
+                                <div class="d-flex align-items-center gap-3">
+                                    <label>Task Score: </label><span class="fw-bold text-primary task-score">0.00</span>
+                                    @if (!type.isFixed)
+                                    {
+                                        <button class="btn btn-sm btn-outline-danger" onclick="deleteTask(@task.evaluationTaskID, this)"><i class="bi bi-trash"></i></button>
+                            
+                                        <button class="btn btn-sm btn-outline-primary" onclick="addSubTaskRow(this)">+ Subtask</button>
+                                    }
+                                    
+                                </div>
+                            </div>
+                            <div class="table-responsive">
+                                <table class="table align-middle mb-0 print-full-width">
+                                    <thead class="table-light small text-muted">
+                                        <tr>
+                                            <th></th>
+                                            <th style="width:30%">Sub-Task Name</th>
+                                            <th style="width:10%">Weight</th>
+                                            <th>Time Val.</th>
+                                            <th>Res. Val.</th>
+                                            <th>Perf. Val.</th>
+                                            <th class="text-end">Total</th>
+                                            <th></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="subtask-container">
+                                        @if(task.EvaluationSubTasks != null && task.EvaluationSubTasks.Any()){
+                                            @foreach (var sub in task.EvaluationSubTasks)
+                                            {
+                                                var valuation = Model.ExistingValuations.FirstOrDefault(v => v.evaluationSubTaskID == sub.evaluationSubTaskID);
+                                                <tr class="valuation-row" data-subtask-id="@sub.evaluationSubTaskID" data-valuation-id="@(valuation?.evaluationValuationID ?? 0)">
+                                                    <td><h4 class="text-small subtask-no"></h4></td>
+                                                    <td><input type="text" class="v-name form-control form-control-sm" value="@sub.evaluationSubTaskName" @(type.isFixed ? "readonly" : "") onchange="updateSubTask(@sub.evaluationSubTaskID, this)" /></td>
+                                                    <td><input type="number" class="v-weight form-control form-control-sm" value="@sub.evaluationSubTaskWeight" @(type.isFixed ? "readonly" : "") onchange="updateSubTask(@sub.evaluationSubTaskID, this)" /></td>
+                                                    <td>
+                                                        <select class="form-select form-select-sm v-time" onchange="saveValuation(this)">
+                                                            <option value="0">0.0</option>
+                                                            @foreach (var level in Enum.GetValues<Models.ProficiencyLevel>().Cast<Models.ProficiencyLevel>().OrderByDescending(x => x))
+                                                            {
+                                                                <option value="@((int)level)" selected="@((int)level == (int)((valuation?.timeValuation ?? 0) * 10))">@level.ToString()</option>
+                                                            }
+                                                        </select>
+                                                    </td>
+                                                    <td>
+                                                        <select class="form-select form-select-sm v-res" onchange="saveValuation(this)">
+                                                            <option value="0">0.0</option>
+                                                            @foreach (var level in Enum.GetValues<Models.ProficiencyLevel>().Cast<Models.ProficiencyLevel>().OrderByDescending(x => x))
+                                                            {
+                                                                <option value="@((int)level)" selected="@((int)level == (int)((valuation?.resourceValuation ?? 0) * 10))">@level.ToString()</option>
+                                                            }
+                                                        </select>
+                                                    </td>
+                                                    <td>
+                                                        <select class="form-select form-select-sm v-perf" onchange="saveValuation(this)">
+                                                            <option value="0">0.0</option>
+                                                            @foreach (var level in Enum.GetValues<Models.ProficiencyLevel>().Cast<Models.ProficiencyLevel>().OrderByDescending(x => x))
+                                                            {
+                                                                <option value="@((int)level)" selected="@((int)level == (int)((valuation?.performanceValuation ?? 0) * 10))">@level.ToString()</option>
+                                                            }
+                                                        </select>
+                                                    </td>
+                                                    <td class="text-end fw-bold row-sum">0.00</td>
+                                                    <td>
+                                                        @if (!type.isFixed)
+                                                        {
+                                                            <button class="btn btn-sm text-danger" onclick="deleteSubTask(this)"><i class="bi bi-x-circle"></i></button>
+                                                        }
+                                                    </td>
+                                                </tr>
+                                            }
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    }
+                    @* Dynamic area for new tasks *@
+                    <div class="dynamic-tasks-area"></div>
+                </div>
+            </div>
+        }
+    </div>
+
+    <div class="mt-4 p-3 bg-light border rounded d-flex justify-content-between">
+        <button class="btn btn-secondary" onclick="window.history.back()">Back</button>
+        <div>
+            <button class="btn btn-primary px-5" onclick="location.reload()">Refresh & Recalculate</button>
+            <button class="btn btn-success px-5" onclick="submitFinal()">Finalize Evaluation</button>
+        </div>
+    </div>
+</div>
+
+@* TEMPLATES *@
+<template id="taskTemplate">
+    <div class="card mb-4 border-primary task-card" data-task-id="0" data-type-id="{TYPE_ID}">
+        <div class="card-header d-flex justify-content-between align-items-center bg-light">
+            <div class="d-flex flex-grow-1 gap-2">
+                <h4 class="fw-bold task-no"></h4>
+                <input type="text" class="task-name form-control form-control-sm w-50 fw-bold" placeholder="Task Name" />
+                <input type="number" class="task-weight form-control form-control-sm w-25 fw-bold" placeholder="Weight" onblur="createNewTask(this)" />
+                <label>Task Score: </label><label class="text-end fw-bold task-score">0.00</label>
+            </div>
+            <button class="btn btn-sm btn-light" onclick="addSubTaskRow(this)">+ Add Subtask</button>
+            <button class="btn btn-sm btn-link text-danger" onclick="deleteTask(this)">Cancel</button>
+        </div>
+        <div class="table-responsive">
+            <table class="table mb-0">
+                <thead class="table-light">
+                    <tr class="small text-center">
+                        <th></th>
+                        <th class="text-start" style="width: 40%">Sub-Task</th>
+                        <th style="width: 10%">Weight</th>
+                        <th>Time</th>
+                        <th>Resource</th>
+                        <th>Perf.</th>
+                        <th class="bg-light">Average</th>
+                        <th class="bg-light">
+                            Action
+                        </th>
+                    </tr>
+                </thead>
+                <tbody class="subtask-container"></tbody>
+            </table>
+        </div>
+    </div>
+</template>
+
+<template id="subTaskRowTemplate">
+    <tr class="valuation-row" data-subtask-id="{SUB_ID}" data-valuation-id="{VAL_ID}">
+        <td></td>
+        <td style="width: 40%">
+            <input type="text" class=" v-name form-control form-control-sm" />
+        </td>
+        <td style="width: 10%"><input type="number" class="v-weight form-control form-control-sm " placeholder="Subtask weight" onchange="createNewSubTask(this)" /></td>
+        <td>
+            <select class="form-select form-select-sm v-time" onchange="saveValuation(this)"
+                    asp-items="@Html.GetEnumSelectList<Models.ProficiencyLevel>().OrderByDescending(x => x.Value)">
+
+                <option value="" selected disabled>-- Select Score --</option>
+
+            </select>
+        </td>
+
+        <td>
+            <select class="form-select form-select-sm v-res" onchange="saveValuation(this)"
+                    asp-items="@Html.GetEnumSelectList<Models.ProficiencyLevel>().OrderByDescending(x => x.Value)">
+                <option value="" selected disabled>-- Select Score --</option>
+
+            </select>
+        </td>
+
+        <td>
+            <select class="form-select form-select-sm v-perf" onchange="saveValuation(this)"
+                    asp-items="@Html.GetEnumSelectList<Models.ProficiencyLevel>().OrderByDescending(x => x.Value)">
+                <option value="" selected disabled>-- Select Score --</option>
+
+            </select>
+        </td>
+        <td class="text-end fw-bold row-sum">0.00</td>
+        <td>
+            <button class="btn btn-sm text-danger" onclick="deleteSubTask(this)"><i class="bi bi-x-circle"></i></button>
+        </td>
+    </tr>
+</template>
+@section Scripts {
+    <script>
+    const EVAL_ID = document.getElementById('currentEvalID').value;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            recalcAll();
+        });
+
+        async function postData(handler, data) {
+            const response = await fetch(`?handler=${handler}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+                },
+                body: JSON.stringify(data)
+            });
+            return await response.json();
+        }
+
+        // --- Header Updates ---
+        async function updateHeader() {
+            const data = {
+                id: EVAL_ID,
+                evaluationName: document.getElementById('evalName').value,
+                evaluationStartDate: document.getElementById('startDate').value,
+                evaluationEndDate: document.getElementById('endDate').value
+            };
+            const res = await postData('UpdateHeader', data);
+            if(res.success)
+            {
+                showToast('Success', 'evaluationEndDate header updated successfully');
+            }else{
+                showToast('Error', res.message);
+            }
+        }
+
+        // --- Task Operations ---
+        function addTaskRow(typeId) {
+            const container = document.querySelector(`#container-${typeId} .dynamic-tasks-area`);
+            let html = document.getElementById('taskTemplate').innerHTML.replace('{TYPE_ID}', typeId);
+            const div = document.createElement('div');
+            div.innerHTML = html;
+            container.appendChild(div.firstElementChild);
+        }
+
+        async function createNewTask(input) {
+            const card = input.closest('.task-card');
+            const name = card.querySelector('.task-name').value;
+            const weight = parseFloat(input.value) || 0;
+            if (!name || weight <= 0) return;
+
+            const res = await postData('CreateTask', {
+                evaluationTypeID: card.dataset.typeId,
+                evaluationTaskName: name,
+                evaluationTaskWeight: weight
+            });
+
+            if(res.id){
+                card.dataset.taskId = res.id;
+                let subhtml = document.getElementById('subTaskRowTemplate').innerHTML;
+                const subcontainer = card.querySelector('.subtask-container');
+                const tr = document.createElement('tr');
+                tr.className = "valuation-row";
+                tr.innerHTML = subhtml;
+                subcontainer.appendChild(tr);
+            
+            }
+        
+        }
+
+        async function updateTask(id, input) {
+            const card = input.closest('.task-card');
+            await postData('UpdateTask', {
+                id: id,
+                name: card.querySelector('.task-name').value,
+                weight: parseFloat(card.querySelector('.task-weight').value)
+            });
+            recalcAll();
+        }
+
+        async function deleteTask(btn) {
+            const card = btn.closest('.task-card');
+            id = card.dataset.taskId;
+            
+
+            if(!confirm("Delete this task and all subtasks?")) return;
+            if(id ==={TASK_ID} || !id){card.remove(); return;}
+
+            const res = await postData('DeleteTask', { id, EVAL_ID });
+
+            if(res.success)
+            {
+                btn.closest('.task-card').remove();
+                showToast('Success', 'Subtask deleted successfully');
+            }else{
+                showToast('Error', res.message);
+            }
+            recalcAll();
+        }
+
+        // --- Subtask Operations ---
+        function addSubTaskRow(btn) {
+            const container = btn.closest('.task-card').querySelector('.subtask-container');
+            const tr = document.createElement('tr');
+            tr.className = "valuation-row";
+            tr.innerHTML = document.getElementById('subTaskRowTemplate').innerHTML;
+            container.appendChild(tr);
+        }
+
+        async function createNewSubTask(input) {
+            const tr = input.closest('tr');
+            const card = tr.closest('.task-card');
+            const name = tr.querySelector('.v-name').value;
+            const weight = parseFloat(input.value) || 0;
+            if (!name || weight <= 0) return;
+
+            const res = await postData('CreateSubTask', {
+                evaluationTaskID: card.dataset.taskId,
+                evaluationSubTaskName: name,
+                evaluationSubTaskWeight: weight
+            });
+        
+            if(res.id){tr.dataset.subtaskId = res.id;}
+        
+        }
+
+        async function updateSubTask(id, input) {
+            const tr = input.closest('tr');
+            await postData('UpdateSubTask', {
+                id: id,
+                name: tr.querySelector('.v-name').value,
+                weight: parseFloat(tr.querySelector('.v-weight').value)
+            });
+            recalcAll();
+        }
+
+        async function deleteSubTask(btn) {
+            const tr = btn.closest('tr');
+            const id = tr.dataset.valuationId;
+            
+            if(id === "{VAL_ID}" || !id){ tr.remove(); return;}
+
+            if(!confirm("Delete subtask?")) return;
+
+            const res = await postData('DeleteSubTask', { id });
+            if(res.success)
+            { 
+                tr.remove();
+                showToast('Success', 'Subtask deleted successfully');
+            }else{
+                showToast('Error', res.message);
+            }
+            recalcAll();
+        }
+
+        // --- Scoring Logic ---
+        async function saveValuation(el) {
+            const tr = el.closest('tr');
+            const subId = tr.dataset.subtaskId;
+            const vTime = (parseFloat(tr.querySelector('.v-time').value) || 0) / 10;
+            const vRes = (parseFloat(tr.querySelector('.v-res').value) || 0) / 10;
+            const vPerf = (parseFloat(tr.querySelector('.v-perf').value) || 0) / 10;
+
+            const res = await postData('SaveValuation', {
+                evaluationID: EVAL_ID,
+                evaluationSubTaskID: subId,
+                timeValuation: vTime,
+                resourceValuation: vRes,
+                performanceValuation: vPerf
+            });
+            if(res.id){tr.dataset.valuationId = res.id;}
+            recalcAll();
+        }
+
+        function recalcAll() {
+            let grandScore = 0;
+            let grandWeight = 0;
+            let grandPercent = 0;
+
+            document.querySelectorAll('.task-list').forEach(pane =>{
+                let taskTypeWeight = parseFloat(pane.dataset.typeWeight) || 0;
+                let grandSubPercent = 0;
+                let grandSubScore =0;
+                let grandSubWeight = 0;
+
+
+                pane.querySelectorAll('.task-card').forEach(card => {
+                    let tWeight = parseFloat(card.querySelector('.task-weight').value) || 0;
+                    let subTotalWeight = 0;
+                    let subWeightedScore = 0;
+
+                    card.querySelectorAll('.valuation-row').forEach(row => {
+                        const sw = parseFloat(row.querySelector('.v-weight').value) || 0;
+                        const v1 = (parseFloat(row.querySelector('.v-time').value) || 0) / 10;
+                        const v2 = (parseFloat(row.querySelector('.v-res').value) || 0) / 10;
+                        const v3 = (parseFloat(row.querySelector('.v-perf').value) || 0) / 10;
+
+                        const avg = (v1 + v2 + v3) / 3;
+                        row.querySelector('.row-sum').innerText = avg.toFixed(2);
+
+                        subTotalWeight += sw;
+                        subWeightedScore += (avg * sw);
+                    });
+
+                    // Task Score = (Sum of weighted subtask averages / (Max Score 4 * Sum of Weights)) * Task Weight
+                    let taskResult = subTotalWeight > 0 ? (subWeightedScore / (subTotalWeight * 4)) * tWeight : 0;
+                    card.querySelector('.task-score').innerText = taskResult.toFixed(2);
+
+                    grandScore += taskResult;
+                    grandSubScore += taskResult;
+                    grandSubWeight += tWeight;
+                
+                
+                    grandWeight += tWeight;
+                
+                
+                });
+                grandSubPercent += grandSubScore *(taskTypeWeight/grandSubWeight);
+                
+                grandPercent += grandSubPercent;
+            });
+   
+            document.getElementById('totalTaskScore').innerText = grandScore.toFixed(2);
+            document.getElementById('totalTaskWeight').innerText = grandWeight.toFixed(2);
+            document.getElementById('grandTotal').innerText = grandPercent.toFixed(2);
+        }
+
+        async function submitFinal() {
+            if(confirm("Once posted, you cannot edit. Proceed?")) {
+                const res = await postData('PostEvaluation', { id: EVAL_ID });
+                if(res.success) window.location.href = "/Evaluation/Index";
+            }
+        }
+    </script>
+}

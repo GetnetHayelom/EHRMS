@@ -1,0 +1,43 @@
+﻿@page
+@model PIS2.Pages.JobReqCost.EditModel
+
+<h2>Edit Job Request Cost</h2>
+
+<form method="post">
+    <input type="hidden" asp-for="JobReqCost.jobReqCostID" />
+    <div class="mb-3">
+        <label class="form-label">Vacancy</label>
+        <select asp-for="JobReqCost.VacancyID" asp-items="Model.VacancyList" class="form-select"></select>
+    </div>
+
+    <div class="mb-3">
+        <label>Status</label>
+        <select asp-for="JobReqCost.jobReqStatus" class="form-select"
+                asp-items="@Html.GetEnumSelectList<Models.jobReqStatus>()"></select>
+    </div>
+
+    <div class="mb-3">
+        <label>Reason</label>
+        <textarea asp-for="JobReqCost.jobReqCostReason" class="form-control"></textarea>
+    </div>
+
+    <div class="mb-3">
+        <label>Estimated Cost</label>
+        <input asp-for="JobReqCost.jobReqCostEstimate" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label>Actual Cost</label>
+        <input asp-for="JobReqCost.jobReqCostActual" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label>Reference Cost</label>
+        <input asp-for="JobReqCost.jobReqCostReference" class="form-control" />
+    </div>
+
+   
+
+    <button class="btn btn-success">Update</button>
+    <a asp-page="Index" class="btn btn-secondary">Cancel</a>
+</form>

@@ -48,10 +48,14 @@ namespace PIS2.Models
         public virtual ICollection<penaltyModel>? Penalties { get; set; }
         public virtual ICollection<shiftAssignmentModel>? ShiftAssignments { get; set; }
         public virtual ICollection<siteAssignmentModel>? SiteAssignments { get; set; }
+        public virtual ICollection<earningModel>? Earnings { get; set; }
+        public virtual ICollection<deductionModel>? Deductions { get; set; }
+        public virtual ICollection<trainingAttendanceModel>? TrainingAttendaces { get; set; }
         public virtual contractModel? contractModel { get; set; }
         public virtual terminationModel? TerminationModel { get; set; }
-        //public virtual departmentModel? departmentModel { get; set; }
-        //public virtual companyModel? companyModel { get; set; }
+        public virtual ICollection<departmentModel>? departmentModel { get; set; }
+        public virtual ICollection<companyModel>? companyModel { get; set; }
+        public virtual ICollection<evaluationModel>? Evaluations { get; set; }
         public string modifiedBy { get; set; }
         public employmentModel() { }
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
@@ -123,7 +127,7 @@ namespace PIS2.Models
         public virtual ICollection<employmentModel>? Employments { get; set; }
         public virtual ICollection<employmentMethodHistoryModel>? EmploymentMethodHistories { get; set; }
         public DateTime? modifiedDate { get; set; }
-
+        public virtual ICollection<VacancyModel>? Vacancies { get; set; }
         public string modifiedBy { get; set; }
         public employmentMethodModel(){}
     }

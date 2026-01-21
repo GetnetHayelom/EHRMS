@@ -96,7 +96,11 @@
                                         <div class="fw-bold">@Model.personModel2?.personFullName</div>
                                         <div class="small text-muted">@Model.personModel2?.personPhoneNumber</div>
                                     </div>
-                                    <a href="/Person/Details?id=@Model.personModel2?.personID" class="btn btn-sm btn-outline-secondary">View Profile</a>
+                                    @if(Model.personModel2 !=null)
+                                    {
+                                        <a href="/Person/Details?id=@Model.personModel2?.personID" class="btn btn-sm btn-outline-secondary">View Profile</a>
+                                    }
+                                    
                                 </div>
                             </div>
                         </div>

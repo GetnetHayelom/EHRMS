@@ -5,51 +5,70 @@
     ViewData["Title"] = "Index";
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
-
-<h1>Index</h1>
-
-<p>
-    <a asp-page="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
+@await Html.PartialAsync("headerSimple", "")
+<h1 class="fw-bold">Shift Assignments</h1>
+<div class="card p-2 mb-2 shadow-sm">
+    <div class="d-flex justify-content-end d-print-none">
+        <div class="mx-2">@await Html.PartialAsync("filter")</div>
+        <div class="mx-2">@await Html.PartialAsync("print")</div>
+        <div class="mx-2"><excel-export table="dataTable" filename="Department_Annual_Leave_Summary_@(DateTime.UtcNow).xlsx"></excel-export></div>
+    </div>
+</div>
+<table class="table table-hover table-striped" id="dataTable">
+    <thead class="bg-dark text-white">
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.shiftAssignmentModel[0].EmploymentModel)
+                EmploymentID
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.shiftAssignmentModel[0].shiftModel)
+                Full Name
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.shiftAssignmentModel[0].modifiedDate)
+                Date Assigned
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.shiftAssignmentModel[0].modifiedBy)
+                Assigned By
             </th>
-            <th></th>
+            <th class="d-print-none">Actions</th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model.shiftAssignmentModel) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.EmploymentModel.givenID)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.shiftModel.shiftName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.modifiedDate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.modifiedBy)
-            </td>
-            <td>
-                <a asp-page="./Edit" asp-route-id="@item.shiftAssignmentID">Edit</a> |
-                <a asp-page="./Details" asp-route-id="@item.shiftAssignmentID">Details</a> |
-                <a asp-page="./Delete" asp-route-id="@item.shiftAssignmentID">Delete</a>
-            </td>
-        </tr>
-}
+        @foreach (var shift in Model.shiftAssignmentModel.GroupBy(s => s.shiftID)) 
+        {
+            <tr class="table-primary">
+                <th class="fw-bold">@shift.FirstOrDefault()?.shiftModel?.shiftName</th>
+                <th class="fw-bold">@shift.Count()</th>
+                <th colspan="3"></th>
+            </tr>
+            @foreach (var item in shift)
+            {
+                <tr>
+           
+                    <td>
+                        @item.EmploymentModel?.givenID
+                    </td>
+                    <td>
+                        @item.EmploymentModel?.personModel?.personFullName
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.modifiedDate)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.modifiedBy)
+                    </td>
+                    <td>
+                    <div class="btn-group d-print-none" role="group">
+                        <a asp-page="./Details" asp-route-id="@item.shiftAssignmentID" class="btn btn-sm btn-outline-primary" title="View Details">
+                            <i class="bi bi-eye"></i>
+                        </a>
+                        <a asp-page="./Edit" asp-route-id="@item.shiftAssignmentID" class="btn btn-sm btn-outline-success" title="Edit">
+                            <i class="bi bi-pencil-square"></i>
+                        </a>
+                    </div>
+                    </td>
+                </tr>
+            }
+                
+        }
     </tbody>
 </table>

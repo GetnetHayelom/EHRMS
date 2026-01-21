@@ -1,0 +1,114 @@
+﻿@page
+@model PIS2.Pages.Applications.EditModel
+
+@{
+    ViewData["Title"] = "Edit Applicant";
+}
+
+<h1 class="fw-bold">Edit Applicant</h1>
+
+<div class="card shadow-sm p-3">
+    <form method="post" enctype="multipart/form-data">
+        <input type="hidden" asp-for="Applicant.ApplicantID" />
+        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+        <div class="mb-3">
+            <label class="form-label">Vacancy</label>
+            <input class="form-control" value="@Model.Applicant.VacancyModel?.VacancyTitle" readonly/>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Applicant</label>
+            <input value="@Model.Applicant.personModel?.personFullName" readonly />
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Applicant.Status" class="form-label">Status</label>
+            <select asp-for="Applicant.Status" class="form-select" asp-items="@Html.GetEnumSelectList<Models.ApplicantStatus>()"></select>
+        </div>
+
+        <button type="submit" class="btn btn-success">Update Applicant</button>
+        <a asp-page="Index" class="btn btn-secondary ms-2">Cancel</a>
+    </form>
+</div>
+<h5 class="mt-4">Education</h5>
+
+@if (Model.Applicant.personModel?.PersonEducationLevels?.Any() == true)
+{
+    <div class="card mt-4">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-sm table-bordered">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Level</th>
+                            <th>Field</th>
+                            <th>Institution</th>
+                            <th>Mark</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var edu in Model.Applicant.personModel.PersonEducationLevels)
+                        {
+                            <tr>
+                                <td>@edu.educationLevelModel?.educationLevelName</td>
+                                <td>@edu.educationField</td>
+                                <td>@edu.educationLevelInstitutionName</td>
+                                <td>@edu.educationLevelMark</td>
+                                <td>@edu.educationLevelDate.ToString("yyyy")</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <p class="text-muted">No education records found.</p>
+}
+
+<h5 class="mt-4">Work Experience</h5>
+
+@if (Model.Applicant.personModel?.Experiences?.Any() == true)
+{
+    <div class="card mt-4">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-sm table-bordered">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Job Title</th>
+                            <th>Department</th>
+                            <th>Type</th>
+                            <th>Period</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var exp in Model.Applicant.personModel.Experiences)
+                        {
+                            <tr>
+                                <td>@exp.jobTitle</td>
+                                <td>@exp.jobDepartment</td>
+                                <td>@exp.experienceType</td>
+                                <td>
+                                    @exp.experienceStartDate.ToString("MMM yyyy")
+                                    -
+                                    @(exp.experienceEndDate == DateTime.MinValue
+                                                                ? "Present"
+                                                                : exp.experienceEndDate.ToString("MMM yyyy"))
+                        </td>
+                    </tr>
+                                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <p class="text-muted">No experience records found.</p>
+}

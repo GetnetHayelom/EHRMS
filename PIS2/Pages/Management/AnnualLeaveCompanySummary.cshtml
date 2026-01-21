@@ -7,6 +7,61 @@
     <h1 class="fw-bold">Company Annual Leave Report</h1>
     <h4 class="fw-bold">@Model.CompanyName</h4>
     <hr />
+    <!--SUMMARY POINTS-->
+    <div class="card p-2 m-2 shadow-sm">
+        <div class="d-flex gap-3 mb-4 d-print-flex">
+            
+            <div class="flex-fill">
+                <div class="card shadow-sm border-start border-info border-3">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <small class="text-muted">Offered Leave</small>
+                                <h3 class="fw-bold mb-0"><u>@Model.annualLeaveSummaries.Sum(als => als.LeaveBalance).ToString("N2") (Days)</u></h3>
+                            </div>
+                            <div><i class="bi bi-tags fs-2 text-info"></i></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex-fill">
+                <div class="card shadow-sm border-start border-primary border-3">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <small class="text-muted">Allowed Leave (Days)</small>
+                                <h3 class="fw-bold mb-0"><u>@Model.annualLeaveSummaries.Sum(als => als.AllowedLeave).ToString("N2") (Days)</u></h3>
+                            </div>
+                            <div><i class="bi bi-check fs-2 text-primary"></i></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex-fill">
+                <div class="card shadow-sm border-start border-warning border-3">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <small class="text-muted">Allowed Leave Cost</small>
+                                <h3 class="fw-bold mb-0"><u>@Math.Round(Model.annualLeaveSummaries.Sum(als => als.PayableLeave), 2).ToString("N2") Br</u></h3>
+                            </div>
+                            <div><i class="bi bi-cash-stack fs-2 text-warning"></i></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card p-2 mb-2 shadow-sm">
+        <div class="d-flex justify-content-end ">
+            <div class="mx-2">@await Html.PartialAsync("filter")</div>
+            <div class="mx-2">@await Html.PartialAsync("print")</div>
+            <div class="mx-2"><excel-export table="dataTable" filename="Department_Annual_Leave_Summary_@(DateTime.UtcNow).xlsx"></excel-export></div>
+        </div>
+    </div>
+    
     <table class="table table-bordered table-striped table-hover print-full-width">
         <thead class="bg-black text-white">
             <tr>

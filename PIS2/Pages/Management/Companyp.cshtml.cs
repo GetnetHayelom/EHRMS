@@ -65,7 +65,7 @@ namespace PIS2.Pages.Management
             {
                 try {
                     Departments = cmp.Departments.ToList();
-                    //Jobs = _context.Employments.Select(e => e.JobPlacements.OrderByDescending(j => j.jobPlacementDate).FirstOrDefault()).ToList();
+                    
                     Jobs = Departments
                         .SelectMany(d => d.JobPlacements) // Flatten the JobPlacements
                         .GroupBy(jp => jp.employmentID) // Group by Employee ID
@@ -218,7 +218,7 @@ namespace PIS2.Pages.Management
                     var oneLeave = new leaveDetail();
                     foreach (var d in Departments)
                     {
-                        oneLeave = _core.getAllLeaveSummary("Dep", d.departmentID);
+                        oneLeave = await _core.getAllLeaveSummary("Dep", d.departmentID);
                         oneLeave.department = d;
                         leaveDetails.Add(oneLeave);
                     }

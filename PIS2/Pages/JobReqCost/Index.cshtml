@@ -1,0 +1,41 @@
+﻿@page
+@model PIS2.Pages.JobReqCost.IndexModel
+
+<h2 class="fw-bold">Job Request Costs</h2>
+
+<a asp-page="Create" class="btn btn-primary mb-3">Create New</a>
+
+<table class="table table-bordered table-striped">
+    <thead>
+        <tr>
+            <th>Vacancy</th>
+            <th>Status</th>
+            <th>Estimated</th>
+            <th>Actual</th>
+            <th>Modified</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.JobReqCosts)
+        {
+            <tr>
+                <td>@item.VacancyModel?.VacancyTitle</td>
+                <td>@item.jobReqStatus</td>
+                <td>@item.jobReqCostEstimate</td>
+                <td>@item.jobReqCostActual</td>
+                <td>@item.modifiedDate.ToShortDateString()</td>
+                <td>
+                    <div class="btn-group" role="group">
+                        <a asp-page="./Details" asp-route-id="@item.jobReqCostID" class="btn btn-sm btn-outline-primary" title="View Details">
+                            <i class="bi bi-eye"></i>
+                        </a>
+                        <a asp-page="./Edit" asp-route-id="@item.jobReqCostID" class="btn btn-sm btn-outline-success" title="Edit">
+                            <i class="bi bi-pencil-square"></i>
+                        </a>
+                    </div>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

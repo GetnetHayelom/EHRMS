@@ -32,7 +32,7 @@ namespace PIS2.Models
     }
     public enum ServiceRequestTypes
     {
-        Exprience,
+        Experience,
         Guaranty,
         Termination
     }

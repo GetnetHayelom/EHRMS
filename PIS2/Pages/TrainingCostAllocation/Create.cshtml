@@ -1,0 +1,38 @@
+@page
+@model PIS2.Pages.TrainingCostAllocation.CreateModel
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <div class="card shadow border-0">
+                <div class="card-header bg-success text-white py-3">
+                    <h5 class="mb-0"><i class="fas fa-dollar-sign me-2"></i> Allocate Training Cost</h5>
+                </div>
+                <div class="card-body p-4">
+                    <form method="post">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Select Attendance Record</label>
+                            <select asp-for="Allocation.trainingAttendanceID" asp-items="Model.AttendanceList" class="form-select">
+                                <option value="">-- Select Participant --</option>
+                            </select>
+                            <span asp-validation-for="Allocation.trainingAttendanceID" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-4">
+                            <label asp-for="Allocation.allocatedCost" class="form-label fw-bold">Amount to Allocate</label>
+                            <div class="input-group input-group-lg">
+                                <span class="input-group-text">$</span>
+                                <input asp-for="Allocation.allocatedCost" class="form-control" type="number" step="0.01" />
+                            </div>
+                            <span asp-validation-for="Allocation.allocatedCost" class="text-danger"></span>
+                        </div>
+
+                        <div class="border-top pt-3 d-flex justify-content-between">
+                            <a asp-page="Index" class="btn btn-outline-secondary">Cancel</a>
+                            <button type="submit" class="btn btn-success px-4 shadow-sm">Confirm Allocation</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -10,50 +10,89 @@
         <div class="col-md-6">
             <div class="card shadow-sm p-3 mb-4">
                 <h4 class="card-title">Convert Ethiopian → Gregorian</h4>
-                <form method="post" asp-page-handler="ConvertToGregorian">
-                    <div class="mb-3">
-                        <label class="form-label">Ethiopian Date (yyyy-MM-dd)</label>
-                        <input asp-for="EthiopianDate" class="form-control" placeholder="2016-01-01" />
-                    </div>
-                    <button type="submit" class="btn btn-primary">Convert</button>
-                </form>
+                <input id="ethInput" asp-for="EthiopianDate" class="form-control" placeholder="2016-05-21" />
+                <button type="button" onclick="convertEthToGreg()" class="btn btn-primary mt-2">Convert to Gregorian</button>
             </div>
         </div>
 
         <div class="col-md-6">
             <div class="card shadow-sm p-3 mb-4">
                 <h4 class="card-title">Convert Gregorian → Ethiopian</h4>
-                <form method="post" asp-page-handler="ConvertToEthiopian">
-                    <div class="mb-3">
-                        <label class="form-label">Gregorian Date</label>
-                        <input asp-for="GregorianDate" class="form-control" type="date" />
-                    </div>
-                    <button type="submit" class="btn btn-success">Convert</button>
-                </form>
+                <input id="gregInput" asp-for="GregorianDate" class="form-control" type="date" />
+                <button type="button" onclick="convertGregToEth()" class="btn btn-success mt-2">Convert to Ethiopian</button>
             </div>
         </div>
     </div>
 
-    @if (!string.IsNullOrEmpty(Model.Result))
-    {
-        <div class="alert alert-info mt-4">
-            <strong>Result:</strong> @Model.Result
+
+        <div id="jsResult" class="alert alert-info mt-4" style="display:none;">
+            <strong>Result:</strong> <span id="resultText"></span>
         </div>
-    }
+    
 </div>
 
 @section Scripts {
-    <!-- Ethiopian Date Picker JS -->
-    <script src="https://cdn.jsdelivr.net/gh/matthewhallca/js-datepicker-ethiopian/ethiopianDatePicker.min.js"></script>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/matthewhallca/js-datepicker-ethiopian/ethiopianDatePicker.min.css" />
+    <script>
+        // Simple Logic for Ethiopian/Gregorian Conversion
+        // Note: For production, consider: https://cdn.jsdelivr.net/npm/ethiopian-date@1.0.1/dist/ethiopian-date.min.js
+
+        function showResult(text) {
+            const container = document.getElementById('jsResult');
+            const span = document.getElementById('resultText');
+            span.innerText = text;
+            container.style.display = 'block';
+        }
+
+        function convertGregToEth() {
+            const dateVal = document.getElementById('gregInput').value;
+            if (!dateVal) return;
+
+            const date = new Date(dateVal);
+            const day = date.getDate();
+            const month = date.getMonth() + 1;
+            const year = date.getFullYear();
+
+            // Simple approximation (Note: Real conversion involves complex leap year logic)
+            // Using a standard offset calculation:
+            let ethYear = year - 8;
+            if (month < 9 || (month === 9 && day < 11)) {
+                ethYear = year - 8;
+            } else {
+                ethYear = year - 7;
+            }
+
+            // For a perfectly accurate conversion, we'd use the ethiopian-date library:
+            // Example output format:
+            showResult(`Calculated Ethiopian Year: ${ethYear} (Month/Day logic applied)`);
+        }
+
+        function convertEthToGreg() {
+            const val = document.getElementById('ethInput').value; // yyyy-MM-dd
+            if (!val) return;
+
+            const parts = val.split('-');
+            const ethYear = parseInt(parts[0]);
+
+            let gregYear = ethYear + 7;
+            // Rough estimate - actually varies by date
+            showResult(`Approximate Gregorian Year: ${gregYear}`);
+        }
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/ethiopian-calendar-date-converter@latest/dist/ethiopian-calendar-date-converter.min.js"></script>
 
     <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            // Attach Ethiopian Date Picker to the input
-            new EthiopianDatePicker("#ethiopianDate", {
-                format: "yyyy-MM-dd",   // Match your C# binding
-                placeholder: "Select Ethiopian Date"
-            });
-        });
+        // If using the library above, the functions become very accurate:
+        function convertGregToEth() {
+            const date = new Date(document.getElementById('gregInput').value);
+            const ethDate = EthiopianCalendar.toEthiopian(date.getFullYear(), date.getMonth() + 1, date.getDate());
+            showResult(`Ethiopian Date: ${ethDate.day}/${ethDate.month}/${ethDate.year}`);
+        }
+
+        function convertEthToGreg() {
+            const parts = document.getElementById('ethInput').value.split('-');
+            const gregDate = EthiopianCalendar.toGregorian(parseInt(parts[0]), parseInt(parts[1]), parseInt(parts[2]));
+            showResult(`Gregorian Date: ${gregDate.toDateString()}`);
+        }
     </script>
 }

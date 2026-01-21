@@ -22,23 +22,41 @@ namespace PIS2.Pages.Exprience
 
         public IList<experienceModel> experienceModel { get;set; } = default!;
         [BindProperty(SupportsGet = true)]
-        public mainStatus? EmploymentFilter { get; set; }
+        public Ex_In? ExperienceTypeFilter { get; set; }
 
         [BindProperty(SupportsGet = true)]
-        public Gender? GenderFilter { get; set; } 
+        public Gender? GenderFilter { get; set; }
+        public List<string> ActiveEmpIds {get; set;}
 
-        public async Task OnGetAsync()
+        public async Task OnGetAsync(int? id)
         {
-            experienceModel = await _context.Experiences
-     .Include(e => e.personModel)
-         .ThenInclude(p => p.Employments)
-     .ToListAsync();
+            var activeEmps = await _context.Employments.Where(e => e.employmentStatus == mainStatus.Active).Select(e => e.givenID).ToListAsync();
+            ActiveEmpIds = activeEmps;
 
-            // Filter by Employment Status
-            if (EmploymentFilter.HasValue)
+            if(id != null)
+            {
+                experienceModel = await _context.Experiences
+                 .Include(e => e.personModel)
+                     .ThenInclude(p => p.Employments)
+                     .Where(e => e.personID == id)
+                 .ToListAsync();
+
+                if(experienceModel == null) { return; }
+            }
+            else
+            {
+                experienceModel = await _context.Experiences
+                 .Include(e => e.personModel)
+                     .ThenInclude(p => p.Employments)
+                 .ToListAsync();
+            }
+                
+
+            // Filter by Experience Type
+            if (ExperienceTypeFilter.HasValue)
             {
                 experienceModel = experienceModel
-                    .Where(e => e.personModel?.Employments?.Any(emp => emp.employmentStatus == EmploymentFilter) == true)
+                    .Where(e => e.experienceType == ExperienceTypeFilter)
                     .ToList();
             }
 

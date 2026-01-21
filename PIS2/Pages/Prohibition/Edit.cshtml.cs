@@ -31,7 +31,7 @@ namespace PIS2.Pages.Prohibition
             }
 
             var prohibitionmodel =  await _context.Prohibitions
-                .Include(p => p.employmentModel).FirstOrDefaultAsync(m => m.prohibitionID == id);
+                .Include(p => p.employmentModel).ThenInclude(e => e.personModel).FirstOrDefaultAsync(m => m.prohibitionID == id);
             if (prohibitionmodel == null)
             {
                 return NotFound();

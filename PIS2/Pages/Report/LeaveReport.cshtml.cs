@@ -56,6 +56,7 @@ namespace PIS2.Pages.Report
         public int filteredCount { get; set; }
         [BindProperty]
         public decimal totalDays {  get; set; }= default!;
+        public decimal totalCost { get; set; }
         public decimal recordsPerEmployee { get; set; } = default!;
         public decimal daysPerEmployee { get; set; } = default!;
         [BindProperty]
@@ -78,6 +79,7 @@ namespace PIS2.Pages.Report
             totalDays = leaveModel?.Sum(l => l.LeaveDays) ?? 0;
             CountUnposted = leaveModel?.Count(l => l.LeaveStatus == leaveStatus.Hold || l.LeaveStatus == leaveStatus.Approved) ?? 0;
             totalCount = leaveModel?.Count() ?? 0;
+            totalCost = leaveModel?.Sum(l => l.LeaveValue) ?? 0;
             filteredCount = leaveModel?.GroupBy(l => l.EmploymentID).Count() ?? 0;
             recordsPerEmployee = totalCount / filteredCount;
             daysPerEmployee = totalDays / filteredCount;
@@ -144,14 +146,11 @@ namespace PIS2.Pages.Report
         }
 
         // Post handler
-        public IActionResult OnGetFilter(int? department,int? leaveGroup, int? leaveStatus, int? leaveType, int? company, DateTime? dateStart, DateTime? dateEnd, string? empID)
+        public IActionResult OnGetFilter(int? department,int? leaveGroup, int? leaveStatus, int? leaveType, int? company, DateTime? dateStart, DateTime? dateEnd, string? empEp)
         {
-            Console.WriteLine("the Date is " + dateStart);
-            // Start with the full list of employees
-            var leaveModel = _context.LeaveReportView.AsQueryable(); // Using IQueryable to build a dynamic query
+            
+            var leaveModel = _context.LeaveReportView.AsQueryable(); 
 
-
-            // Apply filters based on the provided query parameters
 
             // Filter by company (if provided)
             if (company.HasValue && company != null)
@@ -202,21 +201,63 @@ namespace PIS2.Pages.Report
                 leaveModel = leaveModel
                     .Where(e => e.LeaveEnd <= dateEnd);
             }
-            // Filter by empID (if provided)
-            if (!string.IsNullOrEmpty(empID))
+
+            // Filter by Employee Ep
+            if (!String.IsNullOrEmpty(empEp))
             {
                 leaveModel = leaveModel
-                    .Where(e => e.GivenID == empID);
+                    .Where(e => e.GivenID == empEp);
             }
+
+
             // Execute the query and get the filtered results
             var filteredLeaves= leaveModel.OrderBy(e => e.LeaveRequestDate).ToList();
             filteredCount = filteredLeaves.Count;
-            totalDays = leaveModel?.Sum(l => l.LeaveDays) ?? 0;
-            CountUnposted = leaveModel.Count(l => l.LeaveStatus == Models.leaveStatus.Hold);
-            totalCount = leaveModel?.Count() ?? 0;
-            filteredCount = leaveModel?.GroupBy(l => l.EmploymentID).Count() ?? 0;
+            totalDays = filteredLeaves?.Sum(l => l.LeaveDays) ?? 0;
+            CountUnposted = filteredLeaves.Count(l => l.LeaveStatus == Models.leaveStatus.Hold);
+            totalCount = filteredLeaves?.Count() ?? 0;
+            totalCost = filteredLeaves?.Sum(l => l.LeaveValue) ?? 0;
+            filteredCount = filteredLeaves?.GroupBy(l => l.EmploymentID).Count() ?? 0;
             recordsPerEmployee = filteredCount > 0? totalCount / filteredCount :0;
             daysPerEmployee = filteredCount > 0 ? totalDays / filteredCount : 0;
+
+
+            // DETERMINE THE FLEXIBLE GROUPING
+            double totalDaysDiff = (dateEnd ?? DateTime.Now).Subtract(dateStart ?? DateTime.Now.AddYears(-1)).TotalDays;
+
+            var flexibleSummary = filteredLeaves
+                .GroupBy(l => {
+                    if (totalDaysDiff <= 31) // Less than a month: Group by Day
+                        return new { Sort1 = l.LeaveStart.Year, Sort2 = l.LeaveStart.DayOfYear, Label = l.LeaveStart.ToString("MMM dd") };
+
+                    if (totalDaysDiff <= 365) // Up to a year: Group by Month
+                        return new { Sort1 = l.LeaveStart.Year, Sort2 = l.LeaveStart.Month, Label = l.LeaveStart.ToString("MMM yyyy") };
+
+                    if (totalDaysDiff <= 730) // Up to 2 years: Group by Quarter
+                    {
+                        int quarter = (int)Math.Ceiling(l.LeaveStart.Month / 3.0);
+                        return new { Sort1 = l.LeaveStart.Year, Sort2 = quarter, Label = $"Q{quarter} {l.LeaveStart.Year}" };
+                    }
+
+                    // Over 2 years: Group by Year
+                    return new { Sort1 = l.LeaveStart.Year, Sort2 = 0, Label = l.LeaveStart.Year.ToString() };
+                })
+                .OrderBy(g => g.Key.Sort1)
+                .ThenBy(g => g.Key.Sort2)
+                .Select(g => new {
+                    Period = g.Key.Label,
+                    Count = g.Count(),
+                    Days = g.Sum(x => x.LeaveDays)
+                }).ToList();
+
+            // 2. Group by Leave Type for the Pie Chart
+            var typeSummary = filteredLeaves
+                .GroupBy(l => l.LeaveType)
+                .Select(g => new {
+                    TypeName = g.Key,
+                    Count = g.Count()
+                }).ToList();
+
 
             var grouped= filteredLeaves
                 .GroupBy(e => e.CompanyID)
@@ -274,7 +315,7 @@ namespace PIS2.Pages.Report
                     }
                 }
             }
-            return new JsonResult(new { tableHtml=tableHtml.ToString(), filteredCount, totalDays, CountUnposted, totalCount, recordsPerEmployee, daysPerEmployee});
+            return new JsonResult(new { tableHtml=tableHtml.ToString(), filteredCount, totalDays, CountUnposted, totalCount, recordsPerEmployee, daysPerEmployee, totalCost, flexibleSummary, typeSummary});
 
 
         }
@@ -285,7 +326,8 @@ namespace PIS2.Pages.Report
         public leaveGroup LeaveGroup { get; set; }
         [BindProperty]
         public bool? Legality { get; set; }
-        public IActionResult OnGetAbsentism(int? CompanyID, int? leaveType, DateTime? StartDate, DateTime? EndDate, int? leaveGroup, bool? Legality)
+  
+        public IActionResult OnGetAbsentism(int? CompanyID, int? leaveType, DateTime? StartDate, DateTime? EndDate, int? leaveGroup, bool? Legality, string? EmpEp)
         {
             var leaves = _context.LeaveReportView.Where(l => l.LeaveJob == false).AsQueryable();
 
@@ -319,6 +361,13 @@ namespace PIS2.Pages.Report
             {
                 leaves = leaves.Where(r => r.LeaveLegality == (bool) Legality);
             }
+            
+            // Filter by Employee Ep
+            if (!String.IsNullOrEmpty(EmpEp))
+            {
+                leaves = leaves
+                    .Where(e => e.GivenID == EmpEp);
+            }
 
             var filteredLeave = leaves.ToList();
 
@@ -332,6 +381,7 @@ namespace PIS2.Pages.Report
                 });
             }
 
+            
             var workingDays = _core.GetWorkingDays(filteredLeave.Min(g => g.LeaveStart), filteredLeave.Max(g => g.LeaveEnd));
 
 
@@ -344,6 +394,7 @@ namespace PIS2.Pages.Report
                     WorkingDays = workingDays,
                     CompanyTotal = g.Count(),
                     CompanySum = g.Sum(c => c.LeaveDays),
+                    CompanyCost =g.Sum(c => c.LeaveValue),
                     StartDate = g.Min(l => l.LeaveStart),
                     EndDate = g.Max(l => l.LeaveEnd),
                     Departments = g.GroupBy(r => r.DepartmentID)
@@ -354,17 +405,20 @@ namespace PIS2.Pages.Report
                         EmployeeTotal = dg.GroupBy(e => e.EmploymentID).Count(),
                         DepartmentTotal = dg.Count(),
                         DepartmentSum = dg.Sum(r => r.LeaveDays),
+                        DepartmentCost = dg.Sum(r => r.LeaveValue),
                         LeaveTypes = dg.GroupBy(r => r.LeaveType)
                         .Select(lg => new LeaveReportType
                         {
                             LeaveType = lg.Key,
                             LeaveTypeCount = lg.Count(),
                             LeaveTypeSum = lg.Sum(lg => lg.LeaveDays),
+                            LeaveTypeCost = lg.Sum(lg => lg.LeaveValue),
                         }).OrderByDescending(lg => lg.LeaveTypeCount).Take(3).ToList()
                     }).OrderByDescending(dg => dg.DepartmentSum).ToList()
                 }).OrderByDescending(g => g.CompanySum).ToList();
 
             
+
             var tableHtml = new StringBuilder();
 
             foreach (var comp in Leaves)
@@ -421,10 +475,54 @@ namespace PIS2.Pages.Report
             var employees = filteredLeave.Select(l => l.EmploymentID).Distinct().Count();
             var totalDays = filteredLeave.Sum(l => l.LeaveDays);
             var perEmployee = Math.Round((filteredLeave.Sum(l => l.LeaveDays)/filteredLeave.Select(l => l.EmploymentID).Distinct().Count()) ?? 0 ,2);
-            var countAbsentism = filteredLeave.Count();
-            var absentismRate = Math.Round((filteredLeave.Sum(l => l.LeaveDays)/(workingDays * filteredLeave.Select(l => l.EmploymentID).Distinct().Count())) ?? 0, 2) * 100;
+            var countAbsenteesm = filteredLeave.Count();
+            var absenteesmRate = Math.Round((filteredLeave.Sum(l => l.LeaveDays)/(workingDays * filteredLeave.Select(l => l.EmploymentID).Distinct().Count())) ?? 0, 2) * 100;
+            var absenteesmCost = Math.Round(filteredLeave.Sum(l => l.LeaveValue),2);
 
-            return new JsonResult(new { tableHtml = tableHtml.ToString(), employees, totalDays, perEmployee, countAbsentism, absentismRate});
+            //GRAPH DATA
+            // Calculate the time span in days
+            double totalDaysSpan = (EndDate.Value - StartDate.Value).TotalDays;
+            IEnumerable<object> trendData;
+
+            if (totalDaysSpan <= 90)
+            {
+                // Under 3 months: Group by Month (or you could even do Week)
+                trendData = filteredLeave
+                    .GroupBy(l => new { l.LeaveStart.Year, l.LeaveStart.Month })
+                    .OrderBy(g => g.Key.Year).ThenBy(g => g.Key.Month)
+                    .Select(g => new { label = $"{g.Key.Month}/{g.Key.Year}", value = g.Sum(l => l.LeaveDays) });
+            }
+            else if (totalDaysSpan <= 730)
+            {
+                // Between 3 months and 2 years: Group by Quarter
+                trendData = filteredLeave
+                    .GroupBy(l => new { l.LeaveStart.Year, Quarter = (l.LeaveStart.Month - 1) / 3 + 1 })
+                    .OrderBy(g => g.Key.Year).ThenBy(g => g.Key.Quarter)
+                    .Select(g => new { label = $"Q{g.Key.Quarter} {g.Key.Year}", value = g.Sum(l => l.LeaveDays) });
+            }
+            else
+            {
+                // Over 2 years: Group by Year
+                trendData = filteredLeave
+                    .GroupBy(l => l.LeaveStart.Year)
+                    .OrderBy(g => g.Key)
+                    .Select(g => new { label = g.Key.ToString(), value = g.Sum(l => l.LeaveDays) });
+            }
+
+            // Add this inside public IActionResult OnGetAbsentism before the final return
+            var trendList = trendData.ToList();
+
+            var deptData = Leaves.SelectMany(c => c.Departments)
+                .Select(d => new { label = d.DepartmentName, value = d.DepartmentSum })
+                .OrderByDescending(x => x.value)
+                .ToList();
+
+            var typeData = filteredLeave.GroupBy(l => l.LeaveType)
+                .Select(g => new { label = g.Key, value = g.Sum(l => l.LeaveDays) })
+                .ToList();
+
+
+            return new JsonResult(new { tableHtml = tableHtml.ToString(), employees, totalDays, perEmployee, countAbsenteesm, absenteesmRate, absenteesmCost, trendData = trendList, deptData, typeData});
         }
 
     }
@@ -436,6 +534,7 @@ namespace PIS2.Pages.Report
         public decimal WorkingDays { get; set; }
         public int CompanyTotal { get; set; }
         public decimal? CompanySum { get; set; }
+        public decimal? CompanyCost { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
         public List<LeaveReportDepartment>? Departments { get; set; }
@@ -448,6 +547,7 @@ namespace PIS2.Pages.Report
         public int DepartmentTotal { get; set; }
         public int EmployeeTotal { get; set; }
         public decimal? DepartmentSum { get; set; }
+        public decimal? DepartmentCost { get; set; }
         public List<LeaveReportType>? LeaveTypes { get; set; }
     }
 
@@ -456,6 +556,7 @@ namespace PIS2.Pages.Report
         public string LeaveType { get; set; }
         public int LeaveTypeCount { get; set; }
         public decimal? LeaveTypeSum { get; set; }
+        public decimal? LeaveTypeCost { get; set; }
     }
 
 

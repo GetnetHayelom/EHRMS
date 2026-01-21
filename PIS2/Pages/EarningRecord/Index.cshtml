@@ -43,9 +43,32 @@
                         <td>@item.earningAmount</td>
                         <td>@(item.IsPercentage ? "Yes" : "No")</td>
                         <td>@item.earningBase</td>
-                        <td>@item.earningStatus</td>
                         <td>
-                            <a asp-page="Edit" asp-route-id="@item.earningID" class="btn btn-sm btn-warning">Edit</a>
+                                @if (item.earningStatus == Models.mainStatus.Active)
+                                {
+                                    <span class="badge bg-success">@Html.DisplayFor(modelItem => item.earningStatus)</span>
+
+                                }
+                                else if (item.earningStatus == Models.mainStatus.Suspended)
+                                {
+                                    <span class="badge bg-warning">@Html.DisplayFor(modelItem => item.earningStatus)</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary">@Html.DisplayFor(modelItem => item.earningStatus)</span>
+                                }
+
+                            </td>
+                        <td>
+                            
+                                <div class="btn-group" role="group">
+                                    <a asp-page="./Details" asp-route-id="@item.earningID" class="btn btn-sm btn-outline-primary" title="View Details">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                    <a asp-page="./Edit" asp-route-id="@item.earningID" class="btn btn-sm btn-outline-success" title="Edit">
+                                        <i class="bi bi-pencil-square"></i>
+                                    </a>
+                                </div>
                         </td>
                         </tr>
                         sn++;

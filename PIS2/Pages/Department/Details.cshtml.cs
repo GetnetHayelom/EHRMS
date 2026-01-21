@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace PIS2.Pages.Department
 {
-    //[Authorize(Roles = "MIE\\PMS_HRMANAGER,MIE\\PMS_HRCLERK,MIE\\PMS_MANAGEMENT")]
+    [Authorize(Roles = "MIE\\PMS_HRMANAGER,MIE\\PMS_HRCLERK,MIE\\PMS_MANAGEMENT")]
     public class DetailsModel : PageModel
     {
         private readonly PIS2.Models.PISContext _context;
@@ -76,10 +76,11 @@ namespace PIS2.Pages.Department
             
             var departmentmodel = await _context.Departments.Include(d => d.companyModel)
                 .Include(d => d.employmentModel).ThenInclude(e => e.personModel)
+                .Include(d => d.subAccountModel)
                 .OrderBy(d => d.departmentName).FirstOrDefaultAsync(m => m.departmentID == id);
             
             departmentModel = departmentmodel;
-                isMember = User.IsInRole("PMS_MANAGEMENT") ? true: false;
+                isMember = User.IsInRole("MIE\\PMS_MANAGEMENT") ? true: false;
                 isManager= empID == departmentModel?.employmentID? true: false;
 
             var delegation = _context.Delegations
@@ -90,23 +91,48 @@ namespace PIS2.Pages.Department
             bool isDelegatee = delegation != null && delegation.delegationTo == empID;
 
             if (!(isManager || isMember || isDelegatee)) return RedirectToPage("/Shared/AccessDenied");
-            Jobs = _context.JobPlacements.Where(j => j.departmentID ==departmentModel.departmentID && j.jobPlacementStatus == mainStatus.Active)
+            Jobs =await _context.JobPlacements.Where(j => j.departmentID ==departmentModel.departmentID && j.jobPlacementStatus == mainStatus.Active)
                 .Include(j => j.employmentModel)?.ThenInclude(e => e.personModel)
                 .Include(j => j.employmentModel)?.ThenInclude(e => e.employmentTypeModel)
-                .Include(j=> j.jobModel).ToList() ?? new List<jobPlacementModel>(); 
+                .Include(j=> j.jobModel).ToListAsync() ?? new List<jobPlacementModel>(); 
             Employments =Jobs.Select(j => j.employmentModel).Distinct().ToList();
 
-            RequiredEmployee = _context.StructureView.Where(s => s.DepartmentID == departmentModel.departmentID && s.StructureStatus ==(int) mainStatus.Active).Sum(s => s.RequiredNumber ?? 0);
+            var reqNo = await _context.StructureView.Where(s => s.DepartmentID == departmentModel.departmentID && s.StructureStatus == (int)mainStatus.Active).ToListAsync();
+            RequiredEmployee =reqNo.Sum(s => s.RequiredNumber ?? 0);
 
-                EmploymentView =Employments.Select(ev => new EmployeeView
-                    {
-                        Employment = ev,
-                        Job = ev.JobPlacements.Where(j => j.jobPlacementStatus == mainStatus.Active).First(),
-                        Person = ev.personModel,
-                        WorkSite = _context.SiteAssignments.OrderByDescending(j => j.modifiedDate).First(ws => ws.employmentID == ev.employmentID).workSiteModel ?? new workSiteModel(),
-                        Shift = _context.ShiftAssignments.OrderByDescending(sa => sa.modifiedDate).First(sa => sa.employmentID == ev.employmentID).shiftModel ?? new shiftModel(),
-                        Leave = _core.leaveSummary(ev.employmentID)
-                    }).OrderBy(ev => ev.Person.personFirstName).ThenBy(ev => ev.Person.personFatherName).ThenBy(ev => ev.Person.personLastName).ToList();
+            var EmploymentViewTasks = Employments.Select(async ev =>
+            {
+                var workSite = await _context.SiteAssignments
+                    .Where(ws => ws.employmentID == ev.employmentID)
+                    .OrderByDescending(ws => ws.modifiedDate)
+                    .Select(ws => ws.workSiteModel)
+                    .FirstOrDefaultAsync() ?? new workSiteModel();
+
+                var shift = await _context.ShiftAssignments
+                    .Where(sa => sa.employmentID == ev.employmentID)
+                    .OrderByDescending(sa => sa.modifiedDate)
+                    .Select(sa => sa.shiftModel)
+                    .FirstOrDefaultAsync() ?? new shiftModel();
+
+                var lv = await _core.leaveSummary(ev.employmentID);
+
+                return new EmployeeView
+                {
+                    Employment = ev,
+                    Job = ev.JobPlacements.FirstOrDefault(j => j.jobPlacementStatus == mainStatus.Active),
+                    Person = ev.personModel,
+                    WorkSite = workSite,
+                    Shift = shift,
+                    Leave = lv 
+                };
+            });
+
+            var EmploymentView = (await Task.WhenAll(EmploymentViewTasks))
+                .OrderBy(ev => ev.Person.personFirstName)
+                .ThenBy(ev => ev.Person.personFatherName)
+                .ThenBy(ev => ev.Person.personLastName)
+                .ToList();
+
 
 
                 DepartmentSummary = new DepartmentSummary();
@@ -117,7 +143,7 @@ namespace PIS2.Pages.Department
                         
                 DepartmentSummary.Salary = Jobs.Sum(j => j.jobPlacementSalary);
 
-                DepartmentSummary.Leaves = _core.getAllLeaveSummary("Dep", DepartmentSummary.DepartmentID);
+                DepartmentSummary.Leaves = await _core.getAllLeaveSummary("Dep", DepartmentSummary.DepartmentID);
                 DepartmentSummary.Overtime = (decimal)_core.getAllOvertime("Dep", departmentModel.departmentID).Sum(ot => ot.GetOtCost);
                 DepartmentSummary.xEmployees = Employments
                         .Where(e => e.employmentStatus == mainStatus.Inactive).Count();

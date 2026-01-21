@@ -51,7 +51,7 @@
         <!-- Penalty Form / Employee Status Card -->
         <div class="card shadow-sm mb-3">
             <div class="card-body">
-                @if (Model.Employment.employmentID == 0)
+                @if (Model.Employment == null || Model.Employment.employmentID == 0)
                 {
                     <div class="bg-info text-white p-3 rounded">
                         <h5>Select an Employee to Procceed</h5>
@@ -85,16 +85,16 @@
                         </div>
                         <div class="form-group">
                             <label asp-for="penaltyModel.penaltyTypeID" class="control-label">Penalty Type</label>
-                            <select asp-for="penaltyModel.penaltyTypeID" class="form-control" asp-items="ViewBag.penaltyTypeID" id="penaltyType"></select>
+                            <select asp-for="penaltyModel.penaltyTypeID" class="form-control" asp-items="Model.PenaltyTypes" id="penaltyType"></select>
                         </div>
                         <div class="form-group">
                             <label asp-for="penaltyModel.penaltyStartDate" class="control-label">Start Date</label>
-                            <input asp-for="penaltyModel.penaltyStartDate" class="form-control" type="date" />
+                            <input asp-for="penaltyModel.penaltyStartDate" class="form-control" type="date" placeholder="@DateTime.Now.ToString("yyyy-MM-dd")" />
                             <span asp-validation-for="penaltyModel.penaltyStartDate" class="text-danger"></span>
                         </div>
                         <div class="form-group">
                             <label asp-for="penaltyModel.penaltyEndDate" class="control-label">End Date</label>
-                            <input asp-for="penaltyModel.penaltyEndDate" class="form-control" type="date" />
+                            <input asp-for="penaltyModel.penaltyEndDate" class="form-control" type="date" placeholder="@DateTime.Now.ToString("yyyy-MM-dd")" />
                             <span asp-validation-for="penaltyModel.penaltyEndDate" class="text-danger"></span>
                         </div>
 

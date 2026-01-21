@@ -38,32 +38,52 @@
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model.penaltyModel) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.employmentModel.givenID)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.penaltyIssueDate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.penaltyReason)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.penaltyStatus)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.penaltyTypeModel.penaltyTypeID)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.modifiedBy)
-            </td>
-            <td>
-                <a asp-page="./Edit" asp-route-id="@item.penaltyID">Edit</a> |
-                <a asp-page="./Details" asp-route-id="@item.penaltyID">Details</a>
-            </td>
-        </tr>
-}
+        @foreach (var item in Model.penaltyModel) 
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.employmentModel.givenID)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.penaltyIssueDate)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.penaltyReason)
+                </td>
+                <td>
+                    @{
+                        var badgeClass = item.penaltyStatus switch
+                        {
+                            PIS2.Models.penaltyStatus.Complete => "bg-success",
+                            PIS2.Models.penaltyStatus.Pending => "bg-warning",
+                            PIS2.Models.penaltyStatus.Hold => "bg-secondary",
+                            PIS2.Models.penaltyStatus.Void => "bg-danger",
+                            _ => "bg-primary"
+                        };
+                    }
+                    <span class="badge rounded-pill @badgeClass" style="min-width: 80px;">
+                        @item.penaltyStatus
+                    </span>
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.penaltyTypeModel.penaltyTypeID)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.modifiedBy)
+                </td>
+                <td>
+               
+                        <div class="btn-group" role="group">
+                            <a asp-page="./Details" asp-route-id="@item.penaltyID" class="btn btn-sm btn-outline-primary" title="View Details">
+                                <i class="bi bi-eye"></i>
+                            </a>
+                            <a asp-page="./Edit" asp-route-id="@item.penaltyID" class="btn btn-sm btn-outline-success" title="Edit">
+                                <i class="bi bi-pencil-square"></i>
+                            </a>
+                        </div>
+                </td>
+            </tr>
+        }
     </tbody>
 </table>
 

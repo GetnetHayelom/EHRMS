@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Authentication.Negotiate;
+using Microsoft.AspNetCore.Server.IISIntegration;
 using Microsoft.EntityFrameworkCore;
 using PIS2.Middleware;
 using PIS2.Models;
@@ -10,8 +11,11 @@ var builder = WebApplication.CreateBuilder(args);
 // -------------------------------
 
 // Enable Windows Authentication (Negotiate)
-builder.Services.AddAuthentication(NegotiateDefaults.AuthenticationScheme)
-    .AddNegotiate();
+//builder.Services.AddAuthentication(NegotiateDefaults.AuthenticationScheme)
+//   .AddNegotiate();
+builder.Services.AddAuthentication(IISDefaults.AuthenticationScheme);
+//builder.Services.AddAuthorization();
+
 
 // Global authorization policy — all requests require authorization by default
 builder.Services.AddAuthorization(options =>
@@ -51,7 +55,7 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();

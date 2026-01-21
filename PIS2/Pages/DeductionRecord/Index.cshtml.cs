@@ -16,7 +16,7 @@ namespace PIS2.Pages.DeductionRecord
             _db = db;
         }
         public List<deductionModel> deductions { get; set; }
-        public void OnGet()
+        public void OnGet(int? id)
         {
             deductions = _db.Deductions
             .Include(d => d.DeductionType)

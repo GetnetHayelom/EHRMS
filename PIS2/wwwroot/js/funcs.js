@@ -248,10 +248,182 @@ function selector(input, hiddenId) {
         if (opt.value === value) {
             document.getElementById(hiddenId).value = opt.dataset.id;
             found = true;
+            document.getElementById(hiddenId).dispatchEvent(new Event('change', { bubbles: true }));
         }
     });
     if (!found) {
         document.getElementById(hiddenId).value = '';
     }
 }
+
+/**
+ * Fetches Job Step based on a Job Grade ID and populates a target input.
+ * @param {string} jobStepInput - The jQuery selector for the input to be updated (e.g., '#jobStepID').
+ */
+function getJobSteps(jobGrade, jobStepInput) {
+    var $target = $(jobStepInput);
+
+    $target.empty().append('<option value="">-- Loading --</option>');
+
+    var gradeID = (typeof jobGrade === 'object') ? jobGrade.value : jobGrade;
+
+    if (gradeID) {
+        
+        $.getJSON('/api/core/GetJobSteps/' + gradeID, function (data) {
+            $target.empty().append('<option value="">-- Select Step --</option>');
+
+            // 3. Loop through the returned data and append to the target
+            $.each(data, function (i, item) {
+                $target.append($('<option>', {
+                    value: item.jobStepID, 
+                    text: item.jobStepName  
+                })).trigger('change');
+            });
+        }).fail(function () {
+            $target.empty().append('<option value="">Error loading data</option>');
+        });
+    } else {
+        // 4. Reset if no jobID is provided
+        $target.empty().append('<option value="">-- Select Job Grade First --</option>');
+    }
+}
+
+/**
+ * Fetches Job Salary based on a Job Step ID and populates a target input.
+ * @param {string} jobSalaryInput - The jQuery selector for the input to be updated (e.g., '#jobSalary').
+ */
+function getJobSalary(jobStep, jobSalaryInput) {
+
+    var $target = $(jobSalaryInput);
+
+    var stepID = (typeof jobStep === 'object') ? jobStep.value : jobStep;
+
+    if (stepID) {
+        $.getJSON('/api/core/GetJobSalary/' + stepID, function (data) {
+            $target.val(data);
+        }).fail(function () {
+            console.error("Could not fetch salary for ID: " + stepID);
+        });
+    }
+}
+
+/**
+ * Fetches Job Grades based on a Job ID and selects the returned value in the target dropdown.
+ * @param {string} jobGradeInput - The jQuery selector for the dropdown to be updated (e.g., '#jobGradeID').
+ */
+function getJobGrade(job, jobGradeInput) {
+    var $target = $(jobGradeInput);
+
+    var jobID = (typeof job === 'object') ? job.value : job;
+
+    if (jobID) {
+        $.getJSON('/api/core/GetJobGrade/' + jobID, function (data) {
+            
+            $target.val(String(data)).trigger('change');
+        }).fail(function () {
+            
+            console.error("Could not fetch Job Grade for ID: " + jobID);
+        });
+    }
+}
+
+
+    /**
+     * Reusable function to load departments based on a Company ID.
+     * @param {string} sourceSelector - The ID of the Company dropdown.
+     * @param {string} targetSelector - The ID of the Department dropdown.
+     */
+    function loadDepartments(sourceSelector = '#filter-company', targetSelector = '#filter-department') {
+        const $source = $(sourceSelector);
+        const $target = $(targetSelector);
+        const companyID = $source.val();
+
+        // 1. Visual Feedback: Show loading and disable to prevent race conditions
+        $target.empty()
+            .append('<option value="">-- Loading --</option>')
+            .prop('disabled', true);
+
+        if (companyID) {
+            $.getJSON('/api/core/DepartmentsByCompany/' + companyID)
+                .done(function (data) {
+                    // 2. Clear and populate
+                    $target.empty().append('<option value="" selected>All</option>');
+
+                    $.each(data, function (i, dept) {
+                        $target.append($('<option>', {
+                            value: dept.departmentID,
+                            text: dept.departmentName
+                        }));
+                    });
+                })
+                .fail(function () {
+                    // 3. Error Handling
+                    $target.empty().append('<option value="">Error loading data</option>');
+                })
+                .always(function () {
+                    // 4. Re-enable control
+                    $target.prop('disabled', false);
+                });
+        } else {
+            // 5. Reset state if no company is selected
+            $target.empty()
+                .append('<option value="">All</option>')
+                .val("")
+                .prop('disabled', false)
+                .trigger('change');
+        }
+    }
+
+    // Wiring up the event listener using the defaults
+    $('#filter-company').on('change', function () {
+        loadDepartments();
+    });
+
+    // To call it manually for different IDs elsewhere:
+    // loadDepartments('#manual-company-id', '#manual-dept-id');
+
+
+
+function bindUserOnlyChange(controlId, callback, ...controls) {
+
+    let userAction = false;
+    const selector = `#${controlId}`;
+
+    // Detect real user interaction
+    $(document).on('mousedown keydown touchstart', selector, function () {
+        userAction = true;
+    });
+
+    // Fire change ONLY if caused by user
+    $(document).on('change', selector, function () {
+        if (!userAction) return;
+
+        callback(this, controls);
+
+        // reset after firing
+        userAction = false;
+    });
+}
+
+function showToast(type, message) {
+    const toastEl = document.getElementById('actionToast');
+    const titleEl = document.getElementById('toastTitle');
+    const bodyEl = document.getElementById('toastBody');
+
+    const isSuccess = type === 'Success';
+
+    toastEl.classList.remove('bg-success', 'bg-danger');
+    toastEl.querySelector('.toast-header')
+        .classList.remove('bg-success', 'bg-danger');
+
+    toastEl.classList.add(isSuccess ? 'bg-success' : 'bg-danger');
+    toastEl.querySelector('.toast-header')
+        .classList.add(isSuccess ? 'bg-success' : 'bg-danger');
+
+    titleEl.textContent = `${isSuccess ? '✔' : '⚠'} ${type}`;
+    bodyEl.textContent = message;
+
+    new bootstrap.Toast(toastEl).show();
+}
+
 

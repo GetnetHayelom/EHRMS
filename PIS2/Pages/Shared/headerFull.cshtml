@@ -1,41 +1,148 @@
-﻿<div class="d-none d-print-flex align-items-center justify-content-between mb-2 print-full-width">
-    <!-- Left Logo -->
-    <div style="width: 15%; text-align: left;">
-        <img src="/assets/logo_full.png" alt="Logo" style="width: 100%; max-height: 80px;">
-        <p style="margin: 0;">Form No.</p>
-        <p style="margin: 0;"><span id="formNo">WF/HRM/11</span> </p>
+﻿@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Printable Letter</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link href="~/icons/bootstrap-icons.css" rel="stylesheet" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/PIS2.styles.css" asp-append-version="true" />
+    <style>
+        @@media print {
+
+            body {
+                margin: 0;
+                font-family: Arial, sans-serif;
+                font-size: 13px;
+            }
+
+            ul {
+                display: flex;
+                flex-direction: column;
+                justify-content: space-between;
+                height: 100%;
+            }
+            nav, button {
+                display: none !important;
+            }
+
+            .d-print-flex {
+                display: flex !important;
+            }
+
+            .print-footer {
+                position: fixed;
+                bottom: 15mm; /* align with page margin */
+                left: 0;
+                width: 100%;
+                font-size: 11px;
+                text-align: center;
+            } 
+
+            @@page {
+                size: A4;
+                margin: 15mm 15mm 30mm 15mm;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+
+    <div class="d-print-flex container print-full-width">
+        <main role="main" class="pb-3">
+            <!-- HEADER -->
+            <div>
+                <div class="d-flex d-print-flex align-items-center justify-content-between mb-2">
+
+                    <div style="width:15%;">
+                        <img src="/assets/logo_full.png" style="width:100%; max-height:80px;" />
+                    </div>
+
+                    <div style="width:70%; text-align:center;">
+                        <h3 style="margin:0;" class="fw-bold">
+                            መስፍን ብረታ ብረትና ኢንጂነሪንግ <small>ሓ/የተ/የግ/ኩ</small>
+                        </h3>
+                        <h2 style="margin:0;" class="fw-bold">
+                            Mesfin Metals & Engineering <small>PLC</small>
+                        </h2>
+
+                        <div class="d-print-flex d-flex justify-content-around">
+                            <div style="width:50%;">
+                                <p style="margin:0;">Mekelle Head Office</p>
+                                <p style="margin:0;">Tel: (0)344 40-68-00</p>
+                                <p style="margin:0;">P.O.Box 508 | info@mesfinme.com</p>
+                            </div>
+                            <div style="width:50%;">
+                                <p style="margin:0;">Addis Ababa Office</p>
+                                <p style="margin:0;">Tel: 251-11-6 29-85-62</p>
+                                <p style="margin:0;">P.O.Box 24480</p>
+                            </div>
+                        </div>
+
+                        <p style="margin:0;">Website: www.mesfinme.com</p>
+                    </div>
+
+                    <div style="width:15%; text-align:right;">
+                        <img src="/assets/logo_full.png" style="width:100%; max-height:80px;" />
+                    </div>
+                </div>
+
+                <!-- DATE -->
+                <div class="d-flex d-print-flex justify-content-end">
+                    <p style="margin:0;">
+                        <strong>Date:</strong>
+                        <u>@DateTime.Now.ToString("dd/MM/yyyy")</u>
+                    </p>
+                </div>
+                <div class="d-flex d-print-flex justify-content-end">
+                    <p style="margin:0;"><strong>Ref.No:</strong> <u>___________________</u></p>
+                </div>
+                <hr class="d-block d-print-block border border-dark border-4" />
+            </div>
+            
+        
+            <!-- BODY -->
+           
+            <div class="d-flex d-print-flex container print-full-width" style="padding-bottom:35mm">
+                <!--LEFT SIDE-->
+                <div style="width:20%; border-right:1px solid #000; padding-right:10px;">
+                    <h6 class="fw-bold">Main Products & Services</h6>
+                    <ul class="h-100 d-flex flex-column justify-content-evenly">
+                        <li class="mt-4"><strong>Electromechanical Works</strong></li>
+                        <li class="mt-4"><strong>Industrial Fabrication</strong></li>
+                        <li class="mt-4"><strong>Petroleum Reservoirs</strong></li>
+                        <li class="mt-4"><strong>Trailers & Semi-Trailers</strong></li>
+                        <li class="mt-4"><strong>HVAC Systems</strong></li>
+                    </ul>
+                </div>
+                <!--LETTER BODY-->
+                <div style="width:80%; padding-left:15px; margin-top:20px;">
+                    @RenderSection("LetterBody", required: true)
+                </div>
+
+            </div>
+
+            <div class="d-flex d-print-none justify-content-end">
+                @await Html.PartialAsync("back")
+                @await Html.PartialAsync("print")
+            </div>
+            
+        </main>
     </div>
-
-    <!-- Centered Company Info -->
-    <div style="width: 70%; text-align: center;" class="flex-grow-1">
-        <h3 style="margin: 0;" class="fw-bold">መስፍን ብረታ ብረትና ኢንጂነሪንግ <small>ሓ/የተ/የግ/ኩ</small></h3>
-        <h2 style="margin: 0;" class="fw-bold">Mefin Metals & Engineering <small>PLC</small></h2>
-        <div class="d-flex">
-            <div class="col-6">
-                <p style="margin: 0;">Mekelle Head Office</p>
-                <p style="margin: 0;">Tel: (0)344 40-68-00, Fax:40-62-25</p>
-                <p style="margin: 0;">P.O.box 508  Email: info@mesfinme.com</p>
-                <p style="margin: 0;">Mekelle - Tigray - Ethiopia</p>
-
-            </div>
-            <div class="col-6">
-                <p style="margin: 0;">Addis Ababa Office</p>
-                <p style="margin: 0;">Tel: 251-11-6 29-85-62, Fax:251-011-6029-85-60</p>
-                <p style="margin: 0;">P.O.box 24480  Email: mie@ethionet.et</p>
-            </div>
+    <div style="position:fixed; bottom:0;" class="print-footer print-full-width w-100">
+        <hr class="d-block d-print-block border border-dark border-2 bg-dark" />
+        <div class="d-flex d-print-flex justify-content-center">
+            ISO 9001:2000 QMS Certified By BSI – Certificate No. FM512406
         </div>
-        <p>Website: www.mesfinme.com</p>
     </div>
 
-    <!-- Right Logo -->
-    <div style="width: 15%; text-align: right;">
-        <img src="/assets/logo_full.png" alt="Logo" style="width: 100%; max-height: 80px;">
-       
-    </div>
+</body>
+<!-- FOOTER -->
 
-    
 
-</div>
-<div class="d-none d-print-flex justify-content-end"><p style="margin: 0;"><span class="fw-bold">Date:</span><u>@DateTime.Now.ToString("yyyy-dd-MM")</u></p></div>
-
-<hr class="d-none d-print-block border border-dark border-4 " />
+</html>

@@ -1,0 +1,269 @@
+﻿@page
+@model PIS2.Pages.Department.ShiftSiteModel
+
+@{
+    ViewData["Title"] = "Shift & Site Distribution";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+<form id="tokenForm">
+    @Html.AntiForgeryToken()
+</form>
+@await Html.PartialAsync("headerSimple", "")
+
+<div class="container-fluid pb-5 bg-light min-vh-100">
+    <div class="d-flex justify-content-between align-items-center mb-4 py-3 border-bottom bg-white px-3 rounded-bottom shadow-sm">
+        <div>
+            <h1 class="fw-bold mb-0 text-dark h3">Shift & Site Assignments</h1>
+            <p class="text-muted mb-0 small"><i class="bi bi-building me-1"></i> @Model.Department.departmentName</p>
+        </div>
+        <div class="d-print-none d-flex gap-2">
+            @await Html.PartialAsync("print")
+        </div>
+    </div>
+
+    <div class="row mb-4 g-3">
+        <div class="col-md-6">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="p-2 bg-primary bg-opacity-10 rounded me-2">
+                            <i class="bi bi-clock-history text-primary"></i>
+                        </div>
+                        <h6 class="card-title mb-0 fw-bold text-uppercase small tracking-wider">Shift Distribution</h6>
+                    </div>
+                    <div style="height: 250px;">
+                        <canvas id="shiftChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="p-2 bg-success bg-opacity-10 rounded me-2">
+                            <i class="bi bi-geo-alt text-success"></i>
+                        </div>
+                        <h6 class="card-title mb-0 fw-bold text-uppercase small tracking-wider">Site Distribution</h6>
+                    </div>
+                    <div style="height: 250px;">
+                        <canvas id="siteChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card border-0 shadow-sm overflow-hidden">
+        <div class="card-header bg-white border-bottom-0 pt-3">
+            <ul class="nav nav-pills card-header-pills mb-2" id="myTab" role="tablist">
+                <li class="nav-item">
+                    <button class="nav-link active fw-semibold" id="shift-tab" data-bs-toggle="tab" data-bs-target="#shift-pane" type="button">
+                        Shifts
+                    </button>
+                </li>
+                <li class="nav-item">
+                    <button class="nav-link fw-semibold" id="site-tab" data-bs-toggle="tab" data-bs-target="#site-pane" type="button">
+                        Sites
+                    </button>
+                </li>
+            </ul>
+        </div>
+
+        <div class="card-body p-0">
+            <div class="tab-content" id="myTabContent">
+                <div class="tab-pane fade show active" id="shift-pane" role="tabpanel">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0 print-full-width" id="shiftTable">
+                            <thead class="bg-light border-top">
+                                <tr>
+                                    <th class="ps-4 py-3 text-muted small text-uppercase">Emp ID</th>
+                                    <th class="py-3 text-muted small text-uppercase">Full Name</th>
+                                    <th class="py-3 text-muted small text-uppercase">Date Assigned</th>
+                                    <th class="py-3 text-muted small text-uppercase">Assigned By</th>
+                                    @if (Model.isManager || Model.isDelegatee)
+                                    {<th class="pe-4 py-3 text-end d-print-none text-muted small text-uppercase">Actions</th> }
+                                    
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var group in Model.shiftAssignmentModel.GroupBy(s => s.shiftModel?.shiftName ?? "Unassigned"))
+                                {
+                                    <tr class="bg-primary bg-opacity-10">
+                                        <td colspan="5" class="ps-4 py-2 border-start border-4 border-primary">
+                                            <span class="fw-bold text-primary">@group.Key</span>
+                                            <span class="badge rounded-pill bg-white text-primary border border-primary ms-2">@group.Count() Staff</span>
+                                        </td>
+                                    </tr>
+                                    @foreach (var item in group)
+                                    {
+                                        <tr>
+                                            <td class="ps-4 fw-bold text-dark">@item.EmploymentModel?.givenID</td>
+                                            <td>@item.EmploymentModel?.personModel?.personFullName</td>
+                                            <td><span class="text-muted small">@item.modifiedDate.ToString("MM/dd/yyyy")</span></td>
+                                            <td>@item.modifiedBy</td>
+                                            @if (Model.isManager || Model.isDelegatee)
+                                            {
+                                                <td class="pe-4 text-end d-print-none">
+                                                    <i class="bi bi-pencil small me-1"></i>
+                                                    <div class="position-relative d-inline-block shift-wrapper">
+                                                        <select class="form-select shift-selector" data-focus="1" data-employment="@item.EmploymentModel.employmentID">
+                                                            <option value="">-- Select Shift --</option>
+                                                            @foreach (var shift in Model.Shifts)
+                                                            {
+                                                                <option value="@shift.shiftID">@shift.shiftName</option>
+                                                            }
+                                                        </select> <div class="shift-popup"></div>
+                                                    </div>
+                                                </td>
+                                            }
+                                            
+                                        </tr>
+                                    }
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="p-3 bg-light border-top d-flex justify-content-end d-print-none">
+                        <excel-export class="btn btn-sm btn-dark" table="shiftTable" filename="Shift_Summary.xlsx"></excel-export>
+                    </div>
+                </div>
+
+                <div class="tab-pane fade" id="site-pane" role="tabpanel">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0 print-full-width" id="siteTable">
+                            <thead class="bg-light border-top">
+                                <tr>
+                                    <th class="ps-4 py-3 text-muted small text-uppercase">Emp ID</th>
+                                    <th class="py-3 text-muted small text-uppercase">Full Name</th>
+                                    <th class="py-3 text-muted small text-uppercase">Date Assigned</th>
+                                    <th class="py-3 text-muted small text-uppercase">Assigned By</th>
+                                    
+                                    @if (Model.isManager || Model.isDelegatee)
+                                    {<th class="pe-4 py-3 text-end d-print-none text-muted small text-uppercase">Actions</th> }
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var group in Model.siteAssignmentModel.GroupBy(s => s.workSiteModel?.workSiteName ?? "Unassigned"))
+                                {
+                                    <tr class="bg-success bg-opacity-10">
+                                        <td colspan="5" class="ps-4 py-2 border-start border-4 border-success">
+                                            <span class="fw-bold text-success">@group.Key</span>
+                                            <span class="badge rounded-pill bg-white text-success border border-success ms-2">@group.Count() Staff</span>
+                                        </td>
+                                    </tr>
+                                    @foreach (var item in group)
+                                    {
+                                        <tr>
+                                            <td class="ps-4 fw-bold text-dark">@item.employmentModel?.givenID</td>
+                                            <td>@item.employmentModel?.personModel?.personFullName</td>
+                                            <td><span class="text-muted small">@item.modifiedDate?.ToString("MM/dd/yyyy")</span></td>
+                                            <td>@item.modifiedBy</td>
+                                            @if (Model.isManager || Model.isDelegatee)
+                                            {
+                                                <td class="pe-4 text-end d-print-none">
+                                                    <i class="bi bi-pencil small me-1"></i>
+                                                    <div class="position-relative d-inline-block shift-wrapper">
+                                                    
+                                                        <select class="form-select shift-selector" data-focus="2" data-employment="@item.employmentModel.employmentID" >
+                                                            <option value="">-- Select Site --</option>
+                                                            @foreach (var site in Model.WorkSites)
+                                                            {
+                                                                <option value="@site.workSiteID">@site.workSiteName</option>
+                                                            }
+                                                        </select> <div class="shift-popup"></div>
+                                                    </div>
+                                                </td>
+                                            }
+                                            
+                                        </tr>
+                                    }
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="p-3 bg-light border-top d-flex justify-content-end d-print-none">
+                        <excel-export class="btn btn-sm btn-dark" table="siteTable" filename="Site_Summary.xlsx"></excel-export>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+
+    <script>
+        const shiftData = @Html.Raw(Json.Serialize(Model.shiftAssignmentModel.GroupBy(s => s.shiftModel?.shiftName ?? "Unassigned").Select(g => new { label = g.Key, count = g.Count() })));
+        const siteData = @Html.Raw(Json.Serialize(Model.siteAssignmentModel.GroupBy(s => s.workSiteModel?.workSiteName ?? "Unassigned").Select(g => new { label = g.Key, count = g.Count() })));
+
+        function createChart(ctxId, data, color) {
+            new Chart(document.getElementById(ctxId), {
+                type: 'bar',
+                data: {
+                    labels: data.map(d => d.label),
+                    datasets: [{
+                        data: data.map(d => d.count),
+                        backgroundColor: color + 'CC', // With opacity
+                        borderColor: color,
+                        borderWidth: 1,
+                        borderRadius: 4
+                    }]
+                },
+                options: {
+                    indexAxis: 'y', // Makes it look professional for lists
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        x: { grid: { display: false }, ticks: { stepSize: 1 } },
+                        y: { grid: { display: false } }
+                    }
+                }
+            });
+        }
+
+        createChart('shiftChart', shiftData, '#0d6efd');
+        createChart('siteChart', siteData, '#198754');
+    </script>
+
+    <script>
+        document.addEventListener("change", e => {
+            if (!e.target.classList.contains("shift-selector")) return;
+
+            const wrapper = e.target.closest(".shift-wrapper");
+            const popup = wrapper.querySelector(".shift-popup");
+            const shiftId = e.target.value;
+            const employmentId = e.target.dataset.employment;
+            const target = e.target.dataset.focus;
+            const token = document.querySelector('#tokenForm input[name="__RequestVerificationToken"]').value;
+
+            if (!shiftId) return;
+
+            fetch("/Department/Details?handler=UpdateShift",
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "RequestVerificationToken": token
+                },
+                body: JSON.stringify({ shiftId, employmentId, target })
+            })
+            .then(res => {
+                if (!res.ok) throw new Error("Network response was not ok " + res.statusText);
+                return res.json();
+            })
+            .then(data => {
+                if (data.success){showPopup(popup, "Updated", "success");}
+                else {showPopup(popup, "Update failed ⚠️", "error");}
+            })
+            .catch(err => console.error("Error:", err));
+            });
+
+            function showPopup(popup, message, type) {
+                popup.textContent = message;
+                popup.className = "shift-popup " + type;
+                popup.style.display = "block";
+                setTimeout(() => popup.style.display = "none", 2000);
+            }
+        </script>
+}

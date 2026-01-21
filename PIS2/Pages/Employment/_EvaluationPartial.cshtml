@@ -1,0 +1,53 @@
+﻿@model PIS2.Views.EvalSingleEmployeeReport
+@{
+}
+@if (Model == null)
+{
+    <p>No Evaluation Records Found.</p>
+}else
+{
+
+    <div class="report-header d-flex justify-content-between">
+        <a href="/Evaluation/Details/@Model.evaluationID" class="fw-bold">Evaluation: @Model.evaluationName (@Model.startDate.ToShortDateString() - @Model.endDate.ToShortDateString())</a>
+        <div><h4 class="text-primary">Overall Score:<span class="fw-bold overall-score">@Model.Types.Sum(t => t.typeContribution).ToString("F2")%</span> </h4></div>
+    </div>
+
+    @foreach (var type in Model.Types)
+    {
+        <div class="card mb-4">
+            <div class="card-header bg-dark text-white d-flex justify-content-between">
+                <span>Type: @type.typeName</span>
+                <span>Weight: @type.typeWeight% | Contribution:
+                    <span class="type-contribution" data-type="@type.typeName"
+                          data-eval="@Model.evaluationID" data-value="@type.typeContribution"> @type.typeContribution.ToString("F2")%</span>
+                </span>
+            </div>
+            <table class="table table-hover mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Task Name</th>
+                        <th>Weight</th>
+                        <th class="text-center">Time</th>
+                        <th class="text-center">Res.</th>
+                        <th class="text-center">Perf.</th>
+                        <th class="text-end">Task Score</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var task in type.Tasks)
+                    {
+                        
+                        <tr>
+                            <td>@task.taskName</td>
+                            <td>@task.taskWeight</td>
+                            <td class="text-center">@task.avgTime.ToString("F1")</td>
+                            <td class="text-center">@task.avgResource.ToString("F1")</td>
+                            <td class="text-center">@task.avgPerformance.ToString("F1")</td>
+                            <td class="text-end fw-bold">@task.taskScore.ToString("F2")</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+}

@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 using PIS2.Models;
 using System;
 using System.Collections.Generic;
@@ -20,11 +21,12 @@ namespace PIS2.Pages.JobRequirement
             _context = context;
         }
 
-        public IActionResult OnGet(int? id)
+        public List<jobRequirementModel> JobRequests { get; set; } = new List<jobRequirementModel>();
+        public async Task<IActionResult> OnGet(int? id)
         {
             if (id != null)
             {
-                var selectedDepartment = _context.Departments.FirstOrDefault(d => d.departmentID ==id);
+                var selectedDepartment =await _context.Departments.FirstOrDefaultAsync(d => d.departmentID ==id);
                 
                 if (selectedDepartment != null)
                 {
@@ -32,6 +34,8 @@ namespace PIS2.Pages.JobRequirement
                         .Where(d => d.departmentStatus == mainStatus.Active)
                         .OrderBy(d => d.departmentName), "departmentID", "departmentName", selectedDepartment.departmentID);
                 }
+
+                JobRequests = await _context.JobRequirements.Where(j => j.departmentID == id).ToListAsync();
                
             }
             else

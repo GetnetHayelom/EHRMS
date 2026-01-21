@@ -10,7 +10,7 @@
 
 <h4 class="fw-bold">Update Prohibition</h4>
 <hr />
-<div class="row">
+<div class="row g-3">
     <div class="col-md-4 card shadow-sm p-2">
         <form method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
@@ -22,7 +22,7 @@
                 <span asp-validation-for="prohibitionModel.employmentID" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="prohibitionModel.employmentModel.personModel.personFullName" class="control-label">Employee ID</label>
+                <label asp-for="prohibitionModel.employmentModel.personModel.personFullName" class="control-label">Employee Name</label>
                 <input class="form-control" value="@Model.prohibitionModel.employmentModel?.personModel?.personFullName" readonly />
                 <span asp-validation-for="prohibitionModel.employmentID" class="text-danger"></span>
             </div>
@@ -63,7 +63,7 @@
             </div>
         </form>
     </div>
-    <div class="col-md-8 m-2">
+    <div class="col-md-8 p-2">
         <div class="card shadow-sm p-2">
             <h4 class="fw-bold">Prohibition History</h4>
             <table class="table table-hover table-striped">

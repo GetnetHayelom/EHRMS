@@ -1,0 +1,198 @@
+﻿@page
+@model PIS2.Pages.Report.EvaluationReportModel
+@{
+    ViewData["Title"] = "Executive Evaluation Report";
+}
+
+<div class="container-fluid py-4">
+    <div class="card shadow-sm p-2 mb-2">
+        <div class="d-flex justify-content-between align-items-center">
+            <h2 class="fw-bold"><i class="bi bi-bar-chart-line me-2"></i>Performance Analytics</h2>
+            @await Html.PartialAsync("print")
+        </div>
+    </div>
+    
+
+    @* Global Metric Cards *@
+    <div class="card shadow-sm mb-4 p-2">
+        <div class="row">
+            <div class="col-md-3">
+                <div class="card border-0 shadow-sm text-primary p-2 border-start border-info border-3">
+                    <div class="small opacity-75">Avg Time Efficiency</div>
+                    <h3 class="fw-bold">@((Model.Metrics.AvgTime *25).ToString("F2"))%</h3>
+                    <div class="progress mt-2" style="height: 4px; background: rgba(255,255,255,0.2)">
+                        <div class="progress-bar bg-primary" style="width: @(Model.Metrics.AvgTime * 25)%"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card border-0 shadow-sm text-success p-2 border-start border-info border-3">
+                    <div class="small opacity-75">Avg Resource Mgmt</div>
+                    <h3 class="fw-bold">@((Model.Metrics.AvgResource * 25).ToString("F2"))%</h3>
+                    <div class="progress mt-2" style="height: 4px; background: rgba(255,255,255,0.2)">
+                        <div class="progress-bar bg-success" style="width: @(Model.Metrics.AvgResource * 25)%"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card border-0 shadow-sm text-info p-2 border-start border-info border-3">
+                    <div class="small opacity-75">Avg Quality Score</div>
+                    <h3 class="fw-bold">@((Model.Metrics.AvgPerformance * 25).ToString("F2"))%.</h3>
+                    <div class="progress mt-2" style="height: 4px; background: rgba(255,255,255,0.2)">
+                        <div class="progress-bar bg-info" style="width: @(Model.Metrics.AvgPerformance * 25)%"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card border-0 shadow-sm text-dark p-2 border-start border-info border-3">
+                    <div class="small opacity-75">Overall System Health</div>
+                    <h3 class="fw-bold">@(((Model.Metrics.AvgTime + Model.Metrics.AvgResource + Model.Metrics.AvgPerformance) / 12 * 100).ToString("F1"))%</h3>
+                    <div class="progress mt-2" style="height: 4px; background: rgba(255,255,255,0.2)">
+                        <div class="progress-bar bg-dark" style="width: @(((Model.Metrics.AvgTime + Model.Metrics.AvgResource + Model.Metrics.AvgPerformance) / 12 * 100).ToString("F1"))%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <div class="card shadow-sm border-0 p-4 h-100">
+                <h5 class="fw-bold mb-4">Performance Trends</h5>
+                <canvas id="trendChart" height="250"></canvas>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card shadow-sm border-0 p-4 h-100">
+                <h5 class="fw-bold mb-4">Aggregated Balance</h5>
+                <canvas id="radarChart" height="250"></canvas>
+            </div>
+        </div>
+    </div>
+
+    @* Summary Table of Detailed Results *@
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-white py-3">
+            <h5 class="fw-bold mb-0">Evaluation Detail Breakdown</h5>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Employee</th>
+                        <th>Evaluation Name</th>
+                        <th>End Date</th>
+                        <th class="text-center">Calculated Total Score</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var report in Model.EmployeeReports.OrderByDescending(d => d.FinalGrandTotal))
+                    {
+                        <tr>
+                            <td><strong>@report.personFullName</strong></td>
+                            <td>@report.evaluationName</td>
+                            <td>@report.endDate.ToShortDateString()</td>
+                            <td class="text-center">
+                                <span class="badge bg-primary fs-6">@report.FinalGrandTotal.ToString("F2")</span>
+                            </td>
+                            <td><span class="badge rounded-pill bg-success">Completed</span></td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    
+</div>
+
+@section Scripts {
+    
+    <script>
+        // Trend Chart
+        const trendCtx = document.getElementById('trendChart').getContext('2d');
+        const trendData = @Html.Raw(Json.Serialize(Model.MonthlyTrend));
+
+        new Chart(document.getElementById('trendChart'), {
+            type: 'line',
+            data: {
+                labels: trendData.map(t => t.label),
+                datasets: [
+                    {
+                        label: 'Time Efficiency',
+                        data: trendData.map(t => t.avgTime),
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        yAxisID: 'yScore',
+                        tension: 0.4
+                    },
+                    {
+                        label: 'Resource Mgmt',
+                        data: trendData.map(t => t.avgResource),
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        yAxisID: 'yScore',
+                        tension: 0.4
+                    },
+                    {
+                        label: 'Quality/Perf',
+                        data: trendData.map(t => t.avgPerf),
+                        borderColor: 'rgba(153, 102, 255, 1)',
+                        yAxisID: 'yScore',
+                        tension: 0.4
+                    },
+                    {
+                        label: 'Weighted Grand Total',
+                        data: trendData.map(t => t.avgOverall),
+                        borderColor: 'rgba(255, 159, 64, 1)',
+                        backgroundColor: 'rgba(255, 159, 64, 0.2)',
+                        fill: true,
+                        yAxisID: 'yTotal',
+                        borderWidth: 4,
+                        tension: 0.4
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                interaction: { mode: 'index', intersect: false },
+                plugins: {
+                    legend: { position: 'top' },
+                    tooltip: { mode: 'index' }
+                },
+                scales: {
+                    yScore: {
+                        type: 'linear',
+                        position: 'left',
+                        min: 0,
+                        max: 4,
+                        title: { display: true, text: 'Metric Score (0-4)' }
+                    },
+                    yTotal: {
+                        type: 'linear',
+                        position: 'right',
+                        min: 0,
+                        suggestedMax: 100,
+                        grid: { drawOnChartArea: false },
+                        title: { display: true, text: 'Weighted Grand Total' }
+                    }
+                }
+            }
+        });
+
+        // Radar Chart
+        new Chart(document.getElementById('radarChart'), {
+            type: 'radar',
+            data: {
+                labels: ['Time', 'Resource', 'Performance'],
+                datasets: [{
+                    label: 'System Average',
+                    data: [@Model.Metrics.AvgTime, @Model.Metrics.AvgResource, @Model.Metrics.AvgPerformance],
+                    backgroundColor: 'rgba(25, 135, 84, 0.2)',
+                    borderColor: '#198754'
+                }]
+            },
+            options: { scales: { r: { min: 0, max: 4 } } }
+        });
+    </script>
+}

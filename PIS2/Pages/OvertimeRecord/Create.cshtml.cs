@@ -86,18 +86,27 @@ namespace PIS2.Pages.OvertimeRecord
             
             int empID = Convert.ToInt32(TempData["MyNumber"]);
             TempData.Keep();
+
+            var prohibition = await _context.Prohibitions.Where(p => p.employmentID == empID && p.prohibitionStatus == mainStatus.Active).ToListAsync();
+
+            if (prohibition.Any(p => p.prohibitionType == ProhibitionType.Overtime))
+            {
+                LoadPageData(empID);
+                TempData["message"] = ("Error", $"Employee is prohibited from requesting overtime!");
+                return Page();
+            }
             if (overtimeRecordModel.overtimeRecordReason == "")
             {
-                ModelState.AddModelError("", "Overtime end time must be later than start time!");
+                TempData["message"]=("Error", "Overtime reason can not be empty!");
                 LoadPageData(empID);
                 return Page();
             }
-            var ol = HasOverlappingOvertime(empID, overtimeRecordModel.overtimeRecordDate, overtimeRecordModel.overtimeRecordStartTime, overtimeRecordModel.overtimeRecordEndTime);
+            var ol = await GetOverlappingOvertimeAsync(empID, overtimeRecordModel.overtimeRecordDate, overtimeRecordModel.overtimeRecordStartTime, overtimeRecordModel.overtimeRecordEndTime);
             if(ol != null)
             {
-                TempData["ErrorMessage"] = $"Overlapping overtime record existed: Batch number={ol.overtimeRecordID}" +
+                TempData["message"] =("Error",$"Overlapping overtime record existed: Batch number={ol.overtimeRecordID}" +
                     $" Start={ol.overtimeRecordStartTime}" +
-                    $" End={ol.overtimeRecordEndTime}";
+                    $" End={ol.overtimeRecordEndTime}") ;
                 LoadPageData(empID);
                 return Page();
                 
@@ -400,21 +409,25 @@ namespace PIS2.Pages.OvertimeRecord
             return savedIds;
         }
 
-        public overtimeRecordModel? HasOverlappingOvertime(
+        public async Task<overtimeRecordModel?> GetOverlappingOvertimeAsync(
             int employmentID,
             DateTime date,
             TimeSpan newStart,
             TimeSpan newEnd,
             int? currentRecordID = null)
         {
-            return _context.OvertimeRecords
-                .Where(o => o.employmentID == employmentID &&
-                            o.overtimeRecordDate.Date == date.Date &&
-                            (currentRecordID == null || o.overtimeRecordID != currentRecordID))
-                .FirstOrDefault(o =>
-                    o.overtimeRecordStartTime < newEnd &&
-                    o.overtimeRecordEndTime > newStart
-                );
+            var targetDate = date.Date;
+
+            return await _context.OvertimeRecords
+                .Where(o =>
+                o.employmentID == employmentID &&
+                o.overtimeRecordDate == targetDate &&
+                (!currentRecordID.HasValue || o.overtimeRecordID != currentRecordID.Value)
+            )
+            .FirstOrDefaultAsync(o =>
+                o.overtimeRecordStartTime < newEnd &&
+                o.overtimeRecordEndTime > newStart
+            );
         }
 
 

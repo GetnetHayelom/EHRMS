@@ -1,0 +1,207 @@
+﻿@page "{id:int}"
+@model PIS2.Pages.EvaluationType.EditModel
+@{
+    ViewData["Title"] = "Edit Evaluation Type";
+}
+
+<h1 class="fw-bold">Evaluation Type</h1>
+<h4 class="fw-bold">Update Evaluation Type</h4>
+
+<form method="post" class="card shadow-sm">
+    <input type="hidden" asp-for="EvaluationType.evaluationTypeID" />
+    <div class="d-flex p-2 gap-4">
+        <div class="mb-3 col-md-3">
+            <label asp-for="EvaluationType.evaluationTypeName" class="form-label">Evaluation Type Name</label>
+            <input asp-for="EvaluationType.evaluationTypeName" class="form-control" />
+        </div>
+
+        <div class="mb-3 col-md-3">
+            <label asp-for="EvaluationType.evaluationTypeWeight" class="form-label">Evaluation Share</label>
+            <input asp-for="EvaluationType.evaluationTypeWeight" class="form-control" />
+        </div>
+
+        <div class="form-check mb-3">
+            <input asp-for="EvaluationType.isFixed" class="form-check-input" />
+            <label class="form-check-label">Is Fixed(Standard)</label>
+        </div>
+
+        <div class="mb-3 col-md-3">
+            <label asp-for="EvaluationType.evaluationTypeStatus" class="form-label">Status</label>
+            <select asp-for="EvaluationType.evaluationTypeStatus" class="form-select"
+                    asp-items="Html.GetEnumSelectList<Models.mainStatus>()"></select>
+        </div>
+    </div>
+    <div class="d-flex justify-content-end m-2 gap-2">
+        
+        <button type="submit" class="btn btn-success">Update</button>
+        <a asp-page="Index" class="btn btn-secondary">Cancel</a>
+    </div>
+    
+</form>
+
+<div id="container" class="task-list">
+    <button class="btn btn-sm btn-primary" onclick="addTaskRow(@Model.EvaluationType.evaluationTypeID)">+ Add New Task</button>
+    @* Load Existing Tasks for this Type *@
+    @foreach (var task in Model.EvaluationType.EvaluationTasks)
+    {
+        <div class="card mb-4 border-light shadow-xs task-card" data-task-id="@task.evaluationTaskID" data-type-id="@Model.EvaluationType.evaluationTypeID">
+            <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                <div class="d-flex flex-grow-1 gap-2">
+                    <h4 class="fw-bold task-no"></h4>
+                    <input type="text" class="task-name form-control form-control-sm w-50 fw-bold" value="@task.evaluationTaskName" onchange="updateTask(@task.evaluationTaskID, this)" />
+                    <input type="number" class="task-weight form-control form-control-sm w-25 fw-bold" value="@task.evaluationTaskWeight" onchange="updateTask(@task.evaluationTaskID, this)" />
+                </div>
+                <div class="d-flex align-items-center gap-3">
+                    <button class="btn btn-sm btn-outline-danger" onclick="deleteTask(@task.evaluationTaskID, this)"><i class="bi bi-trash"></i></button>
+                    <button class="btn btn-sm btn-outline-primary" onclick="addSubTaskRow(this)">+ Subtask</button>
+                </div>
+            </div>
+            <div class="table-responsive">
+                <table class="table align-middle mb-0">
+                    <thead class="table-light small">
+                        <tr>
+                            <th></th>
+                            <th style="width:30%">Sub-Task Name</th>
+                            <th style="width:10%">Weight</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody class="subtask-container">
+                        @foreach (var sub in task.EvaluationSubTasks)
+                        {
+                            <tr class="valuation-row" data-subtask-id="@sub.evaluationSubTaskID">
+                                <td><h4 class="text-small subtask-no"></h4></td>
+                                <td><input type="text" class="v-name form-control form-control-sm" value="@sub.evaluationSubTaskName" onchange="updateSubTask(@sub.evaluationSubTaskID, this)" /></td>
+                                <td><input type="number" class="v-weight form-control form-control-sm" value="@sub.evaluationSubTaskWeight" onchange="updateSubTask(@sub.evaluationSubTaskID, this)" /></td>
+                                <td>
+                                    <button class="btn btn-sm text-danger" onclick="deleteSubTask(@sub.evaluationSubTaskID, this)"><i class="bi bi-x-circle"></i></button>   
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+    @* Dynamic area for new tasks *@
+    <div class="dynamic-tasks-area"></div>
+</div>
+@* TEMPLATES *@
+<template id="taskTemplate">
+    <div class="card mb-4 border-primary task-card" data-task-id="0" data-type-id="@Model.EvaluationType.evaluationTypeID">
+        <div class="card-header d-flex justify-content-between align-items-center bg-light">
+            <div class="d-flex flex-grow-1 gap-2">
+                <h4 class="fw-bold task-no"></h4>
+                <input type="text" class="task-name form-control form-control-sm w-50 fw-bold" placeholder="Task Name" />
+                <input type="number" class="task-weight form-control form-control-sm w-25 fw-bold" placeholder="Weight" onblur="createNewTask(this)" />
+            </div>
+            <button class="btn btn-sm btn-link text-danger" onclick="this.closest('.task-card').remove()">Cancel</button>
+            <button class="btn btn-sm btn-outline-primary" onclick="addSubTaskRow(this)">+ Subtask</button>
+        </div>
+    </div>
+</template>
+
+<template id="subTaskRowTemplate">
+    <tr class="valuation-row" data-subtask-id="0">
+        <td><h4 class="text-small subtask-no"></h4></td>
+        <td><input type="text" class="v-name form-control form-control-sm" placeholder="Subtask name" /></td>
+        <td><input type="number" class="v-weight form-control form-control-sm" placeholder="Weight" onblur="createNewSubTask(this)" /></td>
+        <td colspan="5" class="text-muted small italic">Save subtask to enable scoring</td>
+    </tr>
+</template>
+
+<script>
+
+    async function postData(handler, data) {
+        const response = await fetch(`?handler=${handler}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+            },
+            body: JSON.stringify(data)
+        });
+        return await response.json();
+    }
+
+    // --- Task Operations ---
+    function addTaskRow(typeId) {
+        const container = document.querySelector(`#container .dynamic-tasks-area`);
+        let html = document.getElementById('taskTemplate').innerHTML.replace('{TYPE_ID}', typeId);
+        const div = document.createElement('div');
+        div.innerHTML = html;
+        container.appendChild(div.firstElementChild);
+    }
+
+    async function createNewTask(input) {
+        const card = input.closest('.task-card');
+        const name = card.querySelector('.task-name').value;
+        const weight = parseFloat(input.value) || 0;
+        if (!name || weight <= 0) return;
+
+        const res = await postData('CreateTask', {
+            evaluationTypeID: card.dataset.typeId,
+            evaluationTaskName: name,
+            evaluationTaskWeight: weight
+        });
+        if(res.id) location.reload(); // Easier to reload to get the full UI for subtasks
+    }
+
+    async function updateTask(id, input) {
+        const card = input.closest('.task-card');
+        await postData('UpdateTask', {
+            id: id,
+            name: card.querySelector('.task-name').value,
+            weight: parseFloat(card.querySelector('.task-weight').value)
+        });
+        
+    }
+
+    async function deleteTask(id, btn) {
+        if(!confirm("Delete this task and all subtasks?")) return;
+        const res = await postData('DeleteTask', { id });
+        if(res.success) btn.closest('.task-card').remove();
+        
+    }
+
+    // --- Subtask Operations ---
+    function addSubTaskRow(btn) {
+        const container = btn.closest('.task-card').querySelector('.subtask-container');
+        const tr = document.createElement('tr');
+        tr.className = "valuation-row";
+        tr.innerHTML = document.getElementById('subTaskRowTemplate').innerHTML;
+        container.appendChild(tr);
+    }
+
+    async function createNewSubTask(input) {
+        const tr = input.closest('tr');
+        const card = tr.closest('.task-card');
+        const name = tr.querySelector('.v-name').value;
+        const weight = parseFloat(input.value) || 0;
+        if (!name || weight <= 0) return;
+
+        const res = await postData('CreateSubTask', {
+            evaluationTaskID: card.dataset.taskId,
+            evaluationSubTaskName: name,
+            evaluationSubTaskWeight: weight
+        });
+        if(res.id) location.reload();
+    }
+
+    async function updateSubTask(id, input) {
+        const tr = input.closest('tr');
+        await postData('UpdateSubTask', {
+            id: id,
+            name: tr.querySelector('.v-name').value,
+            weight: parseFloat(tr.querySelector('.v-weight').value)
+        });
+       
+    }
+
+    async function deleteSubTask(id, btn) {
+        if(!confirm("Delete subtask?")) return;
+        const res = await postData('DeleteSubTask', { id });
+        if(res.success) btn.closest('tr').remove();
+        
+    }
+</script>

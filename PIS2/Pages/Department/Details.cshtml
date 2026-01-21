@@ -27,10 +27,10 @@
                 Overtime <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
                     @Model.overtimeModel.Count() <span class="visually-hidden">Pending Overtime Records</span>
                 </span>
-            </button> <a asp-page="/ShiftAssignment" class="btn btn-primary flex-fill">Shift & Work Location</a>
+            </button> <a asp-page="ShiftSite" asp-route-id="@Model.departmentModel.departmentID" class="btn btn-primary flex-fill">Shift & Work Location</a>
             <a asp-page="/Penalty/Create" class="btn btn-primary flex-fill">Penalty</a>
-            <button type="button" class="btn btn-primary flex-fill">Evaluation</button>
-            <a asp-page="/Delegation/Create" asp-route-id="@Model.Employments" class="btn btn-primary flex-fill">Delegate</a>
+            <a asp-page="/Evaluation/Index" asp-route-department="@Model.departmentModel.departmentID" class="btn btn-primary flex-fill">Evaluation</a>
+            <a asp-page="/Delegation/Create" asp-route-id="@Model.departmentModel.employmentID" class="btn btn-primary flex-fill">Delegate</a>
             <a asp-page="/JobRequirement/Create" asp-route-id="@Model.departmentModel.departmentID" class="btn btn-warning flex-fill">Employment Request</a>
         </div>
     </div>
@@ -62,6 +62,7 @@
 
                     <dt class="col-6">Manager:</dt>
                     <dd class="col-6">@Model.departmentModel.employmentModel?.personModel?.personFullName</dd>
+                    
                 </dl>
             </div>
         </div>
@@ -167,64 +168,63 @@
 
 @section Scripts {
     <script>
-                           document.addEventListener("change", e => {
-                           if (!e.target.classList.contains("shift-selector")) return;
+        document.addEventListener("change", e => {
+        if (!e.target.classList.contains("shift-selector")) return;
+                                   
+        const wrapper = e.target.closest(".shift-wrapper");
+        const popup = wrapper.querySelector(".shift-popup");
+        const shiftId = e.target.value;
+        const employmentId = e.target.dataset.employment;
+        const target = e.target.dataset.focus;
+        const token = document.querySelector('#tokenForm input[name="__RequestVerificationToken"]').value;
 
-                           
-                                   const wrapper = e.target.closest(".shift-wrapper");
-                                   const popup = wrapper.querySelector(".shift-popup");
-                                   const shiftId = e.target.value;
-                                   const employmentId = e.target.dataset.employment;
-                                   const target = e.target.dataset.focus;
-                                   const token = document.querySelector('#tokenForm input[name="__RequestVerificationToken"]').value;
+        if (!shiftId) return;
 
-                                   if (!shiftId) return;
+        fetch("/Department/Details?handler=UpdateShift", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "RequestVerificationToken": token
+            },
+            body: JSON.stringify({ shiftId, employmentId, target })
+            })
+            .then(res => {
+                if (!res.ok) throw new Error("Network response was not ok " + res.statusText);
+                return res.json();
+            })
+            .then(data => {
+                if (data.success) showPopup(popup, "Updated", "success");
+                else showPopup(popup, "Update failed ⚠️", "error");
+            })
+            .catch(err => console.error("Error:", err));
+        });
 
-                                   fetch("/Department/Details?handler=UpdateShift", {
-                                       method: "POST",
-                                       headers: {
-                                           "Content-Type": "application/json",
-                                           "RequestVerificationToken": token
-                                       },
-                                       body: JSON.stringify({ shiftId, employmentId, target })
-                                   })
-                                   .then(res => {
-                                       if (!res.ok) throw new Error("Network response was not ok " + res.statusText);
-                                       return res.json();
-                                   })
-                                   .then(data => {
-                                       if (data.success) showPopup(popup, "Updated", "success");
-                                       else showPopup(popup, "Update failed ⚠️", "error");
-                                   })
-                                   .catch(err => console.error("Error:", err));
-                               });
+        function showPopup(popup, message, type) {
+            popup.textContent = message;
+            popup.className = "shift-popup " + type;
+            popup.style.display = "block";
+            setTimeout(() => popup.style.display = "none", 2000);
+        }
 
-                               function showPopup(popup, message, type) {
-                                   popup.textContent = message;
-                                   popup.className = "shift-popup " + type;
-                                   popup.style.display = "block";
-                                   setTimeout(() => popup.style.display = "none", 2000);
-                               }
+        $(document).ready(function () {
+            $('.approval-radio').on('change', function () {
+                var leaveId = $(this).data('id');
+                var leaveAction = $(this).data('action');
+                var actionType = $(this).data('type');
+                const token = document.querySelector('#tokenForm input[name="__RequestVerificationToken"]').value;
 
-                               $(document).ready(function () {
-                                   $('.approval-radio').on('change', function () {
-                                       var leaveId = $(this).data('id');
-                                       var leaveAction = $(this).data('action');
-                                       var actionType = $(this).data('type');
-                                       const token = document.querySelector('#tokenForm input[name="__RequestVerificationToken"]').value;
-
-                                       $.ajax({
-                                           url: '@Url.Page("Details", "Approve")',
-                                           type: 'POST',
-                                           data: { leaveID: leaveId, actionID: leaveAction, actionType: actionType, __RequestVerificationToken: token },
-                                           success: function (response) {
-                                               if (response.success) $('input[name="approvalStatus_' + leaveId + '"]').prop('disabled', true);
-                                               else alert("Error: " + response.message);
-                                           },
-                                           error: function (xhr, status, error) { alert('Error: ' + error); }
-                                       });
-                                   });
-                               });
+                $.ajax({
+                    url: '@Url.Page("Details", "Approve")',
+                    type: 'POST',
+                    data: { leaveID: leaveId, actionID: leaveAction, actionType: actionType, __RequestVerificationToken: token },
+                    success: function (response) {
+                        if (response.success) $('input[name="approvalStatus_' + leaveId + '"]').prop('disabled', true);
+                        else alert("Error: " + response.message);
+                    },
+                    error: function (xhr, status, error) { alert('Error: ' + error); }
+                });
+            });
+        });
     </script>
 
 

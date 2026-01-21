@@ -40,7 +40,7 @@ namespace PIS2.Pages.Absentism
             }
             leaveModel = leavemodel;
            ViewData["employmentID"] = new SelectList(_context.Employments, "employmentID", "givenID");
-           ViewData["leaveTypeID"] = new SelectList(_context.LeaveTypes, "leaveTypeID", "leaveTypeID");
+           ViewData["leaveTypeID"] = new SelectList(_context.LeaveTypes, "leaveTypeID", "leaveTypeName");
             return Page();
         }
 

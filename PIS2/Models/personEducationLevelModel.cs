@@ -22,6 +22,7 @@ namespace PIS2.Models
         public string? educationDiscipline { get; set; }
         public string modifiedBy { get; set; }
         public DateTime modifiedDate { get; set; } = DateTime.Now;
+        public List<int>? AttachementIDs { get; set; } =new List<int>();
         public personEducationLevelModel()
         {
 

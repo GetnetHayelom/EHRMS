@@ -25,7 +25,7 @@ namespace PIS2.Pages.JobRequirement
         public async Task OnGetAsync()
         {
             jobRequirementModel = await _context.JobRequirements
-                .Include(j => j.DepartmentModel)
+                .Include(j => j.DepartmentModel).ThenInclude(d => d.companyModel)
                 .Include(j => j.JobModel).ToListAsync();
         }
     }

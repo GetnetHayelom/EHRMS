@@ -22,6 +22,9 @@ namespace PIS2.Models
         public int leaveTypeID { get; set; }
         public int? oldBatchNbr { get; set; }
         public decimal ratePerHour { get; set; }
+        public decimal leaveCost { get; set; } = 0;
+        public int? departmentID { get; set; }
+        public virtual departmentModel? DepartmentModel { get; set; }
         public virtual leaveTypeModel? leaveTypeModel { get; set; }
         public leaveStatus leaveStatus { get; set; } = leaveStatus.Hold;
         
@@ -61,7 +64,7 @@ namespace PIS2.Models
     {
         [Key] public int leaveHistoryID { get; set; }
         public int leaveID { get; set; }
-        public virtual leaveModel leaveModel { get; set; }
+        public virtual leaveModel? leaveModel { get; set; }
         public leaveStatus leaveHistoryAction { get; set; }
         public DateTime modifiedDate { get; set; }
         public string modifiedBy {get; set;}

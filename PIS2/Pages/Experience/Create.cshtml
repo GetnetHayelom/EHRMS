@@ -64,6 +64,17 @@
                 <input asp-for="experienceModel.jobDepartment" class="form-control" />
                 <span asp-validation-for="experienceModel.jobDepartment" class="text-danger"></span>
             </div>
+            <div class="form-group mb-3">
+                <label class="control-label">Attachments</label>
+                <div class="input-group">
+                    <input type="file" class="form-control" multiple asp-for="UploadedFiles" />
+                    <button type="button" class="btn btn-outline-secondary" onclick="document.querySelector('[asp-for=UploadedFiles]').click()">
+                        Add Attachments
+                    </button>
+                </div>
+                <small class="text-muted">You can select multiple files. PDF, JPG, PNG allowed.</small>
+            </div>
+
             <div class="form-group m-2 justify-content-end m-2">
                 <input type="submit" value="Save" class="btn btn-success" />
             </div>
@@ -87,7 +98,7 @@
                 @foreach (var item in Model.Experiences)
                 {
                     <tr onclick="location.href='@Url.Page("/Experience/Edit", new {id = item.experienceID})'" style="cursor:pointer">
-                        <td>@item.experienceStartDate.ToString("dd/MM/yyyy") - @item.experienceEndDate.ToString("dd/MM/yyyy")</td>
+                        <td>@item.experienceStartDate.ToString("MM/dd/yyyy") - @item.experienceEndDate.ToString("MM/dd/yyyy")</td>
                         <td>@item.jobTitle</td>
                         <td>@item.jobSalary</td>
 
@@ -102,7 +113,25 @@
     </div>
 </div>
 
+<ul id="fileList" class="list-group mb-3"></ul>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        const fileInput = document.querySelector('[asp-for=UploadedFiles]');
+        const fileList = document.getElementById('fileList');
+
+        fileInput.addEventListener('change', () => {
+            fileList.innerHTML = '';
+            for (let i = 0; i < fileInput.files.length; i++) {
+                const li = document.createElement('li');
+                li.textContent = fileInput.files[i].name;
+                li.className = 'list-group-item';
+                fileList.appendChild(li);
+            }
+        });
+    </script>
 }
+

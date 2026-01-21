@@ -77,13 +77,14 @@ namespace PIS2.Pages
             {
                 var PersonID = int.Parse(TempData["PersonID"].ToString());
                
-                Person = _context.Persons.Find(PersonID);
+                Person =await _context.Persons.FirstOrDefaultAsync(p => p.personID == PersonID);
                 if (Person != null)
                 {
-                    
+
 
                     //TempData["SuccessMessage"] = $"No person found with Name {searchName}";
-                    isSelf = _context.Users.FirstOrDefault(u => u.userName == User.Identity.Name)?.personID == Person.personID ? true : false;
+                    var theSelf = await _context.Users.FirstOrDefaultAsync(u => u.userName == User.Identity.Name);
+                    isSelf =theSelf.personID == Person.personID ? true : false;
                     searchName = Person.personFullName;
                     PersonEmployments = await _context.Employments
                         .Include(e => e.Leaves)
@@ -92,37 +93,32 @@ namespace PIS2.Pages
                         .Include(e => e.JobPlacements).ThenInclude(j => j.departmentModel).ThenInclude(d => d.companyModel)
                         .Include(e => e.EmploymentHistories)
                         .Include(e => e.OvertimeRecords).Where(e => e.personID == Person.personID).ToListAsync();
+
                     if (PersonEmployments != null && PersonEmployments.Any())
                     {
                         Employment = PersonEmployments.First(pe => pe.employmentStatus == mainStatus.Active)?? PersonEmployments.OrderBy(e => e.employmentDate).LastOrDefault(); 
-                        //Employment = PersonEmployments.OrderBy(e => e.employmentDate).LastOrDefault();
+                       
                         if (Employment != null)
                         {
                             Leaves = Employment.Leaves.OrderByDescending(l => l.leaveRequestDate).ToList();
                             JobPlacements = await _context.JobPlacements.OrderBy(j => j.jobPlacementDate).Where(l => l.employmentID == Employment.employmentID).ToListAsync();
-                            LeaveDetail = _core.GetLeaveSummary(Employment.employmentID);
+                            LeaveDetail =await _core.GetLeaveSummary(Employment.employmentID);
                             Overtimes =await _context.OvertimeRecords.Include(ot=> ot.overtimeModel)
                                 .Include(ot=>ot.OvertimeHistories).Where(l => l.employmentID == Employment.employmentID).ToListAsync();
-                            JobPlacement = _context.JobPlacements
+                            JobPlacement =await _context.JobPlacements
                                 .Include(jp => jp.departmentModel)
                                 .Include(jp => jp.jobModel)
                                 .Include(j => j.jobStepModel).ThenInclude(js => js.jobGradeModel)
-                                .OrderBy(jp => jp.jobPlacementDate).LastOrDefault(jp => jp.employmentID == Employment.employmentID) ?? new jobPlacementModel();
+                                .OrderBy(jp => jp.jobPlacementDate).LastOrDefaultAsync(jp => jp.employmentID == Employment.employmentID) ?? new jobPlacementModel();
 
                             if (Employment.employmentStatus == mainStatus.Active)
                             {
-                                if(_context.Prohibitions.Where(p => p.prohibitionType == ProhibitionType.Leave && p.prohibitionStatus== mainStatus.Active).Any(p => p.employmentID == Employment.employmentID))
-                                {
-                                    IsLeaveAllow = false;
-                                }
-                                if (_context.Prohibitions.Where(p => p.prohibitionType == ProhibitionType.Overtime && p.prohibitionStatus == mainStatus.Active).Any(p => p.employmentID == Employment.employmentID))
-                                {
-                                    IsOvertimeAllow = false;
-                                }
-                                if (_context.Prohibitions.Where(p => p.prohibitionType == ProhibitionType.Guaranty && p.prohibitionStatus == mainStatus.Active).Any(p => p.employmentID == Employment.employmentID))
-                                {
-                                    IsGuarantyAllow = false;
-                                }
+                                IsLeaveAllow = await _core.CheckProhibition(Employment.employmentID, ProhibitionType.Leave) ? false : true;
+
+                                IsOvertimeAllow = await _core.CheckProhibition(Employment.employmentID, ProhibitionType.Overtime) ? false : true;
+
+                                IsGuarantyAllow = await _core.CheckProhibition(Employment.employmentID, ProhibitionType.Guaranty) ? false : true;
+                                
                             }
                         }
 
@@ -139,16 +135,17 @@ namespace PIS2.Pages
             }
             else
             {
-                var user = _context.Users.FirstOrDefault(u => u.userName.ToLower() == User.Identity.Name!.ToLower());
+                var user =await _context.Users.FirstOrDefaultAsync(u => u.userName.ToLower() == User.Identity.Name!.ToLower());
                 if(user != null)
-                {
-                    Person = _context.Users.Where(u => u.userName.ToLower() == User.Identity.Name!.ToLower()).Select(u => u.personModel)?.First()?? new personModel();
-                    isSelf = _context.Users.FirstOrDefault(u => u.userName.ToLower() == User.Identity.Name!.ToLower())?.personID == Person.personID ? true : false;
-                    PersonEmployments = _context.Employments.OrderBy(e => e.employmentDate).Include(e => e.Leaves)
+                {   
+                    Person = await _context.Users.Where(u => u.userName.ToLower() == User.Identity.Name!.ToLower()).Select(u => u.personModel)?.FirstOrDefaultAsync()?? new personModel();
+                    var theSelf = await _context.Users.FirstOrDefaultAsync(u => u.userName.ToLower() == User.Identity.Name!.ToLower());
+                    isSelf =theSelf.personID == Person.personID ? true : false;
+                    PersonEmployments =await _context.Employments.OrderBy(e => e.employmentDate).Include(e => e.Leaves)
                             .Include(e => e.JobPlacements).ThenInclude(j => j.jobModel)
                             .Include(e => e.JobPlacements).ThenInclude(j => j.departmentModel)
                             .Include(e => e.JobPlacements).ThenInclude(j => j.jobStepModel).ThenInclude(js => js.jobGradeModel)
-                            .Include(e => e.EmploymentHistories).Where(e => e.personID == Person.personID).ToList();
+                            .Include(e => e.EmploymentHistories).Where(e => e.personID == Person.personID).ToListAsync();
                     if (PersonEmployments != null && PersonEmployments.Any())
                     {
                         Employment = PersonEmployments.OrderBy(e => e.employmentDate).LastOrDefault();
@@ -157,14 +154,14 @@ namespace PIS2.Pages
                         {
                             Leaves = Employment.Leaves.ToList();
 
-                            LeaveDetail = _core.GetLeaveSummary(Employment.employmentID);
+                            LeaveDetail =await _core.GetLeaveSummary(Employment.employmentID);
                             Overtimes = await _context.OvertimeRecords.Include(ot => ot.overtimeModel)
                                 .Include(ot => ot.OvertimeHistories).Where(l => l.employmentID == Employment.employmentID).ToListAsync();
-                            JobPlacement = _context.JobPlacements
+                            JobPlacement =await _context.JobPlacements
                                 .Include(jp => jp.departmentModel)
                                 .Include(jp => jp.jobModel)
                                 .Include(j => j.jobStepModel).ThenInclude(js => js.jobGradeModel)
-                                .OrderBy(jp => jp.jobPlacementDate).LastOrDefault(jp => jp.employmentID == Employment.employmentID) ?? new jobPlacementModel();
+                                .OrderBy(jp => jp.jobPlacementDate).LastOrDefaultAsync(jp => jp.employmentID == Employment.employmentID) ?? new jobPlacementModel();
 
                         }
 
@@ -182,64 +179,22 @@ namespace PIS2.Pages
         public string Department { get; set; } = default!;
         public async Task<IActionResult> OnPostSearchID()
         {
-            ActiveNoticesForCarousel = await _context.Notices
-                .Where(n => n.IsActive &&
-                            (!n.ExpiryDate.HasValue || n.ExpiryDate.Value.Date >= DateTime.Now.Date))
-                .OrderByDescending(n => n.noticePriority)
-                .ThenByDescending(n => n.DatePosted)
-                .ToListAsync();
-            Console.WriteLine($"Search ID: {searchID}");
+            await getNotices();
             
-
             if (!string.IsNullOrEmpty(searchID))
             {
-
-                
                 Person = await _context.Persons.Where(p => p.Employments.Any(e => e.givenID == searchID))
                     .FirstOrDefaultAsync();
                
                 if (Person == null)
                 {
-                    TempData["SuccessMessage"] = $"No employment found with employment ID {searchID}";
+                    TempData["message"] = ("Error",$"No employment found with employment ID {searchID}");
                 }
                 else
                 {
-                    //Check if photo is available
-                    var imagesFolder = Path.Combine(_environment.WebRootPath, "images");
-                    var fileName = $"{Person.personID}.jpg";
-                    var filePath = Path.Combine(imagesFolder, fileName);
-
-                    PhotoExists = System.IO.File.Exists(filePath);
-                    TempData["PersonID"] = Person.personID;
-                    isSelf = _context.Users.FirstOrDefault(u => u.userName == User.Identity.Name)?.personID == Person.personID ? true : false;
-                    PersonEmployments = await _context.Employments
-                        .Include(e => e.Leaves)
-                        .Include(e => e.JobPlacements).ThenInclude(j => j.jobModel)
-                        .Include(e => e.JobPlacements).ThenInclude(j => j.departmentModel)
-                        .Include(e => e.JobPlacements).ThenInclude(j => j.jobStepModel).ThenInclude(js => js.jobGradeModel)
-                        .Include(e => e.EmploymentHistories).Where(e => e.personID == Person.personID).ToListAsync(); 
-                    if (PersonEmployments != null && PersonEmployments.Any())
-                    {
-                        Employment = PersonEmployments.OrderBy(e => e.employmentDate).LastOrDefault();
-                        if (Employment != null)
-                        {                                        
-                            Leaves = Employment.Leaves.OrderByDescending(l=> l.leaveRequestDate).ToList();
-                           
-                            LeaveDetail = _core.GetLeaveSummary(Employment.employmentID);
-                            Overtimes = await _context.OvertimeRecords.Include(ot => ot.overtimeModel)
-                                .Include(ot => ot.OvertimeHistories).Where(l => l.employmentID == Employment.employmentID).ToListAsync();
-                            JobPlacement = _context.JobPlacements
-                                .Include(jp => jp.departmentModel)
-                                .Include(jp => jp.jobModel)
-                                .Include(j => j.jobStepModel).ThenInclude(js => js.jobGradeModel)
-                                .OrderBy(jp => jp.jobPlacementDate).LastOrDefault(jp => jp.employmentID == Employment.employmentID) ?? new jobPlacementModel();
-                        }
-                        
-
-                    }
-
+                    await getPerson();
                 }
-                
+                await SetOptionsAsync();
             }
             People = await _context.Persons.ToListAsync();
             Employments = await _context.Employments.ToListAsync();
@@ -250,12 +205,7 @@ namespace PIS2.Pages
         public string searchName { get; set; } = default!;
         public async Task<IActionResult> OnPostSearchName()
         {
-            ActiveNoticesForCarousel = await _context.Notices
-                .Where(n => n.IsActive &&
-                            (!n.ExpiryDate.HasValue || n.ExpiryDate.Value.Date >= DateTime.Now.Date))
-                .OrderByDescending(n => n.noticePriority)
-                .ThenByDescending(n => n.DatePosted)
-                .ToListAsync();
+            await getNotices();
 
             if (!searchName.IsNullOrEmpty())
             {
@@ -265,47 +215,13 @@ namespace PIS2.Pages
                 
                 if (Person == null)
                 {
-                    TempData["SuccessMessage"] = $"No person found with Name {searchName}";
+                    TempData["message"] = ("Error", $"No person found with Name {searchName}");
                 }
                 else
                 {
-                    //Check if photo is available
-                    var imagesFolder = Path.Combine(_environment.WebRootPath, "images");
-                    var fileName = $"{Person.personID}.jpg";
-                    var filePath = Path.Combine(imagesFolder, fileName);
-
-                    PhotoExists = System.IO.File.Exists(filePath);
-                    TempData["PersonID"] = Person.personID;
-                    isSelf = _context.Users.FirstOrDefault(u => u.userName == User.Identity.Name)?.personID == Person.personID? true :false;
-                    PersonEmployments = await _context.Employments
-                        .Include(e => e.Leaves)
-                        .Include(e => e.JobPlacements).ThenInclude(j => j.jobModel)
-                        .Include(e => e.JobPlacements).ThenInclude(j => j.departmentModel)
-                        .Include(e => e.JobPlacements).ThenInclude(j => j.jobStepModel).ThenInclude(js => js.jobGradeModel)
-                        .Include(e => e.EmploymentHistories).Where(e => e.personID == Person.personID).ToListAsync();
-                    if (PersonEmployments != null && PersonEmployments.Any())
-                    {
-                        Employment = PersonEmployments.OrderBy(e => e.employmentDate).LastOrDefault();
-                        if (Employment != null)
-                        {
-                            JobPlacements = await _context.JobPlacements.Where(l => l.employmentID == Employment.employmentID).ToListAsync();
-                            Leaves = await _context.Leaves.Where(l => l.employmentID == Employment.employmentID).OrderByDescending(l => l.leaveRequestDate).ToListAsync(); //Employment.Leaves.ToList();
-                            LeaveDetail = _core.GetLeaveSummary(Employment.employmentID);
-                            Overtimes = await _context.OvertimeRecords.Include(ot => ot.overtimeModel)
-                                .Include(ot => ot.OvertimeHistories).Where(l => l.employmentID == Employment.employmentID).ToListAsync();
-
-                            JobPlacement = _context.JobPlacements
-                                .Include(jp => jp.departmentModel)
-                                .Include(jp => jp.jobModel)
-                                .Include(j => j.jobStepModel).ThenInclude(js => js.jobGradeModel)
-                                .OrderBy(jp => jp.jobPlacementDate).LastOrDefault(jp => jp.employmentID == Employment.employmentID) ?? new jobPlacementModel();
-                        }
-                        
-
-                    }
-
+                   await getPerson();
                 }
-                SetOptions();
+               await SetOptionsAsync();
             }
             People = await _context.Persons.ToListAsync();
             Employments = await _context.Employments.ToListAsync();
@@ -327,26 +243,29 @@ namespace PIS2.Pages
 
         // For more information, see https://aka.ms/RazorPagesCRUD.
     
-        public void SetOptions()
+        public async Task SetOptionsAsync()
         {
             var leaveTypes = new List<leaveTypeModel>();
             if (User.IsInRole("MIE\\PMS_CLINIC"))
             {
-                leaveTypes = _context.LeaveTypes.Where(lt => lt.leaveAvailability == "Clinic" || lt.leaveAvailability == "Everyone").ToList();
+                leaveTypes =await _context.LeaveTypes.Where(lt => lt.leaveAvailability == "Clinic" || lt.leaveAvailability == "Everyone").ToListAsync();
             }
             else if (User.IsInRole("MIE\\PMS_HRCLERK"))
             {
-                leaveTypes = _context.LeaveTypes.Where(lt => lt.leaveAvailability == "HR" || lt.leaveAvailability == "Everyone").ToList();
+                leaveTypes =await _context.LeaveTypes.Where(lt => lt.leaveAvailability == "HR" || lt.leaveAvailability == "Everyone").ToListAsync();
             }
             else
             {
-                leaveTypes = _context.LeaveTypes.Where(lt => lt.leaveAvailability == "Everyone").ToList();
+                leaveTypes =await _context.LeaveTypes.Where(lt => lt.leaveAvailability == "Everyone").ToListAsync();
             }
             leaveTypes = leaveTypes.Where(lt => lt.leaveTypeStatus == mainStatus.Active).ToList();
             AllowedLeaveTypes = leaveTypes;
-            ViewData["employmentID"] = new SelectList(_context.Employments, "employmentID", "givenID");
+            var empsList = await _context.Employments.ToListAsync();
+            var ots = await _context.Overtimes.ToListAsync();
+
+            ViewData["employmentID"] = new SelectList(empsList, "employmentID", "givenID");
             ViewData["leaveTypeID"] = new SelectList(AllowedLeaveTypes, "leaveTypeID", "leaveTypeName");
-            ViewData["overtimeID"] = new SelectList(_context.Overtimes, "overtimeID", "overtimeName");
+            ViewData["overtimeID"] = new SelectList(ots, "overtimeID", "overtimeName");
         }
         public async Task<IActionResult> GetEmploymentHistory(int personID)
                 {
@@ -367,24 +286,27 @@ namespace PIS2.Pages
         {
             public string requestType { get; set; }
         }
+
+        /// <summary>
+        /// Handles Employment Service Requests
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
         public async Task<IActionResult> OnPostHandleRequestAsync([FromBody] RequestDto request)
         {
             if (request == null || string.IsNullOrWhiteSpace(request.requestType))
             {
-                return new JsonResult(new { success = false, message = "Invalid request payload." });
+                return new JsonResult(new { success = false, message = "Invalid request type." });
             }
 
             var currentUserName = User.Identity?.Name;
+            var usr = await _context.Users.FirstOrDefaultAsync(u => u.userName == currentUserName);   
             var requestType = request.requestType;
-            var employmentID = _context.Employments
-                .Where(e => e.personID == _context.Users
-                    .Where(u => u.userName == currentUserName)
-                    .Select(u => u.personID)
-                    .FirstOrDefault())
-                .Select(e => e.employmentID)
-                .FirstOrDefault();
 
-            if (employmentID == 0)
+            var emp =await _context.Employments.FirstOrDefaultAsync(e => e.personID == usr.personID);
+            var employmentID = emp.employmentID;
+
+            if (emp == null || employmentID == 0)
             {
                 return new JsonResult(new { success = false, message = "Employment ID not found." });
             }
@@ -397,9 +319,9 @@ namespace PIS2.Pages
                 modifiedBy = currentUserName
             };
 
-            if (requestType == "Exprience")
+            if (requestType == "Experience")
             {
-                requestModel.requestedService = ServiceRequestTypes.Exprience;
+                requestModel.requestedService = ServiceRequestTypes.Experience;
             }
             else if (requestType == "Termination")
             {
@@ -407,15 +329,17 @@ namespace PIS2.Pages
             }
             else
             {
+                TempData["message"] = ("Error", "Invalide Request");
                 return new JsonResult(new { success = false, message = "Invalid request type." });
             }
             bool exists = _context.ServiceRequests.Any(r =>
                 r.employmentID == employmentID &&
-                r.requestedService == ServiceRequestTypes.Exprience &&
+                r.requestedService == ServiceRequestTypes.Experience &&
                 r.serviceRequestStatus == ServiceRequestStatus.Hold);
 
             if (exists)
             {
+                TempData["messsage"] = ("Error", "Pending request exists!");
                 return new JsonResult(new { success = false, message = "You already have a pending request." });
             }
 
@@ -424,8 +348,6 @@ namespace PIS2.Pages
 
             return new JsonResult(new { success = true });
         }
-
-
 
         public bool checkPic(int personID)
         {
@@ -437,5 +359,61 @@ namespace PIS2.Pages
             return System.IO.File.Exists(filePath);
         }
 
+        public async Task getPerson()
+        {
+            PhotoExists = checkPic(Person.personID);
+
+            TempData["PersonID"] = Person.personID;
+
+            var theSelf = await _context.Users.FirstOrDefaultAsync(u => u.userName == User.Identity.Name);
+            isSelf = theSelf.personID == Person.personID ? true : false;
+            PersonEmployments = await _context.Employments
+                .Include(e => e.Leaves)
+                .Include(e => e.JobPlacements).ThenInclude(j => j.jobModel)
+                .Include(e => e.JobPlacements).ThenInclude(j => j.departmentModel)
+                .Include(e => e.JobPlacements).ThenInclude(j => j.jobStepModel).ThenInclude(js => js.jobGradeModel)
+                .Include(e => e.EmploymentHistories).Where(e => e.personID == Person.personID).ToListAsync();
+
+            if (PersonEmployments != null && PersonEmployments.Any())
+            {
+                Employment = PersonEmployments.OrderBy(e => e.employmentDate).LastOrDefault();
+                if (Employment != null)
+                {
+                    Leaves = Employment.Leaves.OrderByDescending(l => l.leaveRequestDate).ToList();
+
+                    LeaveDetail =await _core.GetLeaveSummary(Employment.employmentID);
+                    Overtimes = await _context.OvertimeRecords.Include(ot => ot.overtimeModel)
+                        .Include(ot => ot.OvertimeHistories).Where(l => l.employmentID == Employment.employmentID).ToListAsync();
+                    JobPlacement = _context.JobPlacements
+                        .Include(jp => jp.departmentModel)
+                        .Include(jp => jp.jobModel)
+                        .Include(j => j.jobStepModel).ThenInclude(js => js.jobGradeModel)
+                        .OrderBy(jp => jp.jobPlacementDate).LastOrDefault(jp => jp.employmentID == Employment.employmentID) ?? new jobPlacementModel();
+                   
+                    if (Employment.employmentStatus == mainStatus.Active)
+                    {
+                        IsLeaveAllow = await _core.CheckProhibition(Employment.employmentID, ProhibitionType.Leave) ? false : true;
+
+                        IsOvertimeAllow = await _core.CheckProhibition(Employment.employmentID, ProhibitionType.Overtime) ? false : true;
+
+                        IsGuarantyAllow = await _core.CheckProhibition(Employment.employmentID, ProhibitionType.Guaranty) ? false : true;
+
+                    }
+                   
+                }
+
+            }
+
+        }
+
+        public async Task getNotices()
+        {
+            ActiveNoticesForCarousel = await _context.Notices
+                .Where(n => n.IsActive &&
+                            (!n.ExpiryDate.HasValue || n.ExpiryDate.Value.Date >= DateTime.Now.Date))
+                .OrderByDescending(n => n.noticePriority)
+                .ThenByDescending(n => n.DatePosted)
+                .ToListAsync();
+        }
     }
 }

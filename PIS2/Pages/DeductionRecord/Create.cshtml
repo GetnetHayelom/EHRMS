@@ -15,9 +15,9 @@
         <div class="card-body">
 
             <!-- EMPLOYEE SEARCH -->
-            <div class="mb-4">
+            <div class="mb-4 col-md-4">
                 <label class="form-label">Enter Employee ID</label>
-                <div class="input-group">
+                <div class="input-group col-md-4">
                     <input id="employeeInput" type="text" class="form-control" placeholder="Enter employee givenID">
                     <button id="searchEmployeeBtn" type="button" class="btn btn-primary">Search</button>
                 </div>
@@ -113,7 +113,7 @@
         document.getElementById("empJob").innerText = data.jobTitle;
         document.getElementById("empDept").innerText = data.department;
         document.getElementById("empCompany").innerText = data.company;
-        document.getElementById("employeeInput").textContent = data.employmentID;
+        document.getElementById("employeeInput").innerText = empId;
 
         infoDiv.classList.remove("d-none");
 

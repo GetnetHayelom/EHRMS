@@ -13,34 +13,38 @@
     <a asp-page="Create" class="btn btn-primary">New Experience</a>
 </p>
 <div class="card m-2 p-2 d-flex justify-content-around d-print-none">
-    <form method="get" class="mb-3 d-flex gap-4 p-2">
-        <!-- Employment Status Filter -->
-        <div>
-            <label class="me-2 fw-bold">Employment Status:</label>
-            <input type="radio" name="EmploymentFilter" value="" @(Model.EmploymentFilter == null ? "checked" : "") onchange="this.form.submit()" /> All
-            @foreach (var status in Enum.GetValues<Models.mainStatus>())
-            {
-                <input type="radio" name="EmploymentFilter" value="@status" @(Model.EmploymentFilter == status ? "checked" : "") onchange="this.form.submit()" /> 
-                @status
-            }
-        </div>
+    <div class="d-flex justify-content-between mb-3">
+        <form method="get" class="d-flex gap-4 p-2">
+            <!-- Employment Status Filter -->
+            <div>
+                <label class="me-2 fw-bold">Experience Type:</label>
+                <input type="radio" name="EmploymentFilter" value="" @(Model.ExperienceTypeFilter == null ? "checked" : "") onchange="this.form.submit()" /> All
+                @foreach (var type in Enum.GetValues<Models.Ex_In>())
+                {
+                    <input type="radio" name="EmploymentFilter" value="@type" @(Model.ExperienceTypeFilter == type ? "checked" : "") onchange="this.form.submit()" />
+                    @type
+                }
+            </div>
 
-        <!-- Gender Filter -->
-        <div>
-            <label class="me-2 fw-bold">Gender:</label>
-            <input type="radio" name="GenderFilter" value="" @(Model.GenderFilter == null ? "checked" : "") onchange="this.form.submit()" /> All
-            @foreach (var g in Enum.GetValues<Models.Gender>())
-            {
-                <input type="radio" name="GenderFilter" value="@g" @(Model.GenderFilter == g ? "checked" : "") onchange="this.form.submit()" /> 
-                @g
-            }
+            <!-- Gender Filter -->
+            <div>
+                <label class="me-2 fw-bold">Gender:</label>
+                <input type="radio" name="GenderFilter" value="" @(Model.GenderFilter == null ? "checked" : "") onchange="this.form.submit()" /> All
+                @foreach (var g in Enum.GetValues<Models.Gender>())
+                {
+                    <input type="radio" name="GenderFilter" value="@g" @(Model.GenderFilter == g ? "checked" : "") onchange="this.form.submit()" />
+                    @g
+                }
+            </div>
+
+        </form>
+        <div class="d-flex justify-content-end d-print-none">
+            <div class="me-2">@await Html.PartialAsync("filter")</div>
+            @await Html.PartialAsync("print")
+            <excel-export table="dataTable" filename="Companies_@(DateTime.UtcNow).xlsx"></excel-export>
         </div>
-    </form>
-    <div class ="d-flex justify-content-end d-print-none">
-        <div class="me-2">@await Html.PartialAsync("filter")</div>
-        @await Html.PartialAsync("print")
-        <excel-export table="dataTable" filename="Companies_@(DateTime.UtcNow).xlsx"></excel-export>
     </div>
+    
     
 
 </div>
@@ -54,7 +58,7 @@
                 Employment ID
             </th>
             <th>
-                Employment Status
+                Experience Type
             </th>
             <th>
                 From
@@ -72,7 +76,14 @@
         @foreach (var persons in Model.experienceModel.OrderBy(e => e.personModel?.personFullName).GroupBy(e => e.personID)) 
         {
             <tr class="table-primary">
-                <th colspan="7">@persons?.FirstOrDefault()?.personModel?.personFullName</th>
+                <th colspan="6">@persons?.FirstOrDefault()?.personModel?.personFullName</th>
+                <th>
+                    @if(persons.Any(p => p.experienceType == Models.Ex_In.Internal))
+                    {
+                        <a class="btn btn-outline-primary" role="button" href="/Experience/_OfficialPrint?id=@persons.FirstOrDefault().personID">Preview</a>
+                    }
+                    
+                </th>
             </tr>
             @foreach (var item in persons)
             {
@@ -95,13 +106,13 @@
 
                 </td>
                 <td>
-                    @if (item.personModel?.Employments?.Any(e => e.employmentStatus == Models.mainStatus.Active) == true)
+                    @if (item.experienceType == Models.Ex_In.Internal)
                     {
-                        <span class="badge bg-success">Active</span>
+                        <span class="badge bg-success">Internal</span>
                     }
                     else
                     {
-                        <span class="badge bg-secondary">Inactive/Suspended</span>
+                        <span class="badge bg-secondary">External</span>
                         
                     }
                 </td>
@@ -126,6 +137,7 @@
                     </div>
                 </td>
             </tr>
+               
             }
         }
     </tbody>

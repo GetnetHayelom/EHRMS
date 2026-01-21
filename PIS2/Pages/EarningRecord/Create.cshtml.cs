@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using PIS2.Models;
+using System.ComponentModel;
 
 
 namespace PIS2.Pages.EarningRecord
@@ -22,18 +23,21 @@ namespace PIS2.Pages.EarningRecord
         public earningModel Earning { get; set; }
 
         public SelectList EarningTypes { get; set; }
-        public SelectList Employees { get; set; }
+
+    
 
         public async Task OnGet(int? id)
         {
-            EarningTypes = new SelectList(await _db.EarningTypes.ToListAsync(), "earningTypeID", "earningTypeName");
-            Employees = new SelectList(await _db.Employments.ToListAsync(), "employmentID", "givenID");
+            Earning = new earningModel();
+
+            EarningTypes = new SelectList(await _db.EarningTypes.Where(e => !new[] { "salary", "allowance","overtime" }.Contains(e.earningTypeName.ToLower()) ).ToListAsync(), "earningTypeID", "earningTypeName");
+
             // If id is passed, auto-load employee
             if (id.HasValue)
             {
                 // Fetch employee details
                 var emp = await _db.Employments
-                    .FirstOrDefaultAsync(e => e.employmentID == id);
+                    .FirstOrDefaultAsync(e => e.employmentID == id && e.employmentStatus == mainStatus.Active);
 
                 if (emp != null)
                 {
@@ -48,6 +52,7 @@ namespace PIS2.Pages.EarningRecord
         {
             if (!(User.IsInRole("MIE\\PMS_HRCLERCK") || User.IsInRole("MIE\\PMS_HRMANAGER"))) { return RedirectToPage("/Shared/AccessDenied"); }
             ModelState.Clear();
+
             Earning.modifiedBy = User.Identity.Name;
             Earning.remainingIteration = Earning.earningIteration;
 

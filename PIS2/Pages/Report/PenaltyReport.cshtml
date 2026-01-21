@@ -1,0 +1,438 @@
+﻿@page
+@model PIS2.Pages.Report.PenaltyReport
+@{
+    ViewData["Title"] = "Penalty Report";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+@await Html.PartialAsync("headerSimple", "")
+<div class="container-fluid mt-4">
+    <!--TOP HEADER-->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold text-dark mb-0">Penalty Report</h2>
+            <nav aria-label="breadcrumb" class="d-print-none">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="/">Home</a></li>
+                    <li class="breadcrumb-item active">Penalties</li>
+                </ol>
+            </nav>
+        </div>
+        @if (User.IsInRole("MIE\\PMS_HRCLERK"))
+        {
+             <div class="btn-group d-print-none">
+                <a asp-page="/Penalty/Create" class="btn btn-primary shadow-sm">
+                    <i class="bi bi-plus-lg"></i> New Penalty Record
+                </a>
+            
+            </div>
+        }
+       
+    </div>
+    <!--SUMMARY CARDS-->
+    <div class="d-flex d-print-flex mb-4">
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-primary shadow h-100 py-2 border-0 border-start border-primary border-4">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1 small">Total Records</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.TotalPenalties</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="bi bi-file-earmark-text fa-2x text-gray-300 h2"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-warning shadow h-100 py-2 border-0 border-start border-warning border-4">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1 small">Pending/Hold</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.PendingActions</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="bi bi-clock-history fa-2x text-gray-300 h2"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-success shadow h-100 py-2 border-0 border-start border-success border-4">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1 small">Total Value</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.TotalPenaltyValue.ToString("N2")</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="bi bi-currency-dollar fa-2x text-gray-300 h2"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-info shadow h-100 py-2 border-0 border-start border-info border-4">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1 small">Top Reason</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800 text-truncate" style="max-width: 150px;">
+                                @Model.TopReason
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="bi bi-exclamation-triangle fa-2x text-gray-300 h2"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--FILTER CONTROLS-->
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-header bg-white py-3">
+            <h6 class="m-0 font-weight-bold text-primary"><i class="bi bi-filter"></i> Data Filters</h6>
+        </div>
+        <div class="card-body">
+            <form method="get" class="d-flex d-print-fl gap-3">
+                <div class="flex-fill">
+                    <label class="form-label small fw-bold">Status</label>
+                    <select asp-for="TypeFilter" class="form-select" asp-items="Model.PenaltyTypes">
+                        <option value="">All Types</option>
+                    </select>
+                </div>
+                <div class="flex-fill">
+                    <label class="form-label small fw-bold">Status</label>
+                    <select asp-for="StatusFilter" asp-items="Html.GetEnumSelectList<PIS2.Models.penaltyStatus>()" class="form-select">
+                        <option value="">All Statuses</option>
+                    </select>
+                </div>
+                <div class="flex-fill">
+                    <label class="form-label small fw-bold">Category</label>
+                    <select asp-for="CategoryFilter" asp-items="Html.GetEnumSelectList<PIS2.Models.penaltyCategory>()" class="form-select">
+                        <option value="">All Categories</option>
+                    </select>
+                </div>
+                <div class="flex-fill">
+                    <label class="form-label small fw-bold">From</label>
+                    <input type="date" asp-for="StartDate" class="form-control" />
+                </div>
+                <div class="flex-fill">
+                    <label class="form-label small fw-bold">To</label>
+                    <input type="date" asp-for="EndDate" class="form-control" />
+                </div>
+                <div class="flex-fill d-flex align-items-end d-print-none">
+                    <button type="submit" class="btn btn-dark w-100">Apply Filters</button>
+                    <a asp-page="./Index" class="btn btn-link text-decoration-none">Reset</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!--TAB-->
+    <div class="container-fluid mt-4">
+        <!--TAB TITLE-->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="fw-bold text-dark mb-0">Penalty Analytics</h2>
+            <button onclick="window.print()" class="btn btn-outline-secondary d-print-none">
+                <i class="bi bi-printer"></i> Print Report
+            </button>
+        </div>
+
+        <!--TAB CONTROLLS-->
+        <ul class="nav nav-pills nav-tabs mb-4 d-print-none" id="reportTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="summary-tab" data-bs-toggle="pill" data-bs-target="#summary-view" type="button">
+                    <i class="bi bi-graph-up"></i> Analytics Summary
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="table-tab" data-bs-toggle="pill" data-bs-target="#table-view" type="button">
+                    <i class="bi bi-table"></i> Detailed Records
+                </button>
+            </li>
+        </ul>
+
+        <!--TAB BODY-->
+        <div class="tab-content" id="reportTabsContent">
+            <!--ANALYTIC SUMMARY-->
+            <div class="tab-pane fade show active" id="summary-view" role="tabpanel">
+                <div class="row mb-4">
+                </div>
+
+                <div class="row">
+                    <!--BY TYPE-->
+                    <div class="col-lg-7 mb-4">
+                        <div class="card shadow-sm border-0 h-100">
+                            <div class="card-header bg-white fw-bold">Penalty Volume by Type</div>
+                            <div class="card-body">
+                                <canvas id="typeChart" height="300"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    <!--BY STATUS-->
+                    <div class="col-lg-5 mb-4">
+                        <div class="card shadow-sm border-0 h-100">
+                            <div class="card-header bg-white fw-bold">Current Status Distribution</div>
+                            <div class="card-body d-flex justify-content-center">
+                                <div style="width: 80%;">
+                                    <canvas id="statusChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <!--TRENDING-->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <div class="card shadow-sm border-0">
+                            <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                                <span class="fw-bold"><i class="bi bi-graph-up-arrow"></i> Penalty Trend Analysis</span>
+                                <span class="badge bg-light text-dark border">
+                                    @(
+                                        Model.StartDate.HasValue
+                                        && Model.EndDate.HasValue
+                                        && (Model.EndDate.Value - Model.StartDate.Value).TotalDays > 365
+                                        ? "Quarterly View"
+                                        : "Monthly View"
+                                        )
+                                </span>
+
+                            </div>
+                            <div class="card-body">
+                                <div style="height: 300px;">
+                                    <canvas id="trendChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--DETAIL VIEW-->
+            <div class="tab-pane fade" id="table-view" role="tabpanel">
+                <div class="card border-0 shadow-sm">
+       
+                    <div class="table-responsive">
+                        <div class="d-flex d-print-non justify-content-end">
+                            @await Html.PartialAsync("filter")
+                            @await Html.PartialAsync("print")
+                        </div>
+                        <table class="table table-hover align-middle mb-0 print-full-width" id="dataTable">
+                            <thead class="bg-light">
+                                <tr>
+                                    <th class="border-0 ps-4">Employee</th>
+                                    <th class="border-0">Issue Date</th>
+                                    <th class="border-0">Reason</th>
+                                    <th class="border-0">Type</th>
+                                    <th class="border-0 text-center">Status</th>
+                                    <th class="border-0 text-end pe-4 d-print-none">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach(var comp in Model.PenaltyRecords.OrderBy(c => c.departmentModel.companyModel.companyName).GroupBy(p => p.departmentModel.companyModel))
+                                {
+                                    <tr class="table-primary">
+                                        <th class="fw-bol table-primary" colspan="6">@comp.FirstOrDefault().departmentModel?.companyModel?.companyName - <strong>@comp.Count()</strong></th>
+                                    </tr>
+                                    @foreach(var dep in comp.OrderBy(c => c.departmentModel.departmentName).GroupBy(c => c.departmentID))
+                                    {
+                                        <tr>
+                                            <th class="table-secondary" colspan="6">@dep.FirstOrDefault().departmentModel.departmentName - <strong>@dep.Count()</strong></th>
+                                
+                                        </tr>
+
+                                        @foreach (var emp in dep.OrderBy(d => d.employmentModel?.givenID).GroupBy(d => d.employmentID))
+                                        { <tr>
+                                                    <td class="ps-4" rowspan="@(emp.Count() +1)">
+                                                        <div class="d-flex align-items-center">
+                                                            <div class="avatar-sm-text me-2">ID</div>
+                                                            <span class="fw-bold">@emp.FirstOrDefault().employmentModel?.givenID</span>
+                                                        </div>
+                                                    </td>
+                                                    </tr>
+                                            @foreach (var item in emp)
+                                            {
+                                               <tr>
+                                      
+                                                    <td>@item.penaltyIssueDate.ToString("MM/dd/yyyy")</td>
+                                                    <td>
+                                                        <span class="text-truncate d-inline-block" style="max-width: 200px;" title="@item.penaltyReason">
+                                                            @item.penaltyReason
+                                                        </span>
+                                                    </td>
+                                                    <td>
+                                                        <span class="badge bg-info text-dark fw-normal">@item.penaltyTypeModel?.penaltyName</span>
+                                                    </td>
+                                                    <td class="text-center">
+                                                        @{
+                                                            var badgeClass = item.penaltyStatus switch
+                                                            {
+                                                                PIS2.Models.penaltyStatus.Complete => "bg-success",
+                                                                PIS2.Models.penaltyStatus.Pending => "bg-warning",
+                                                                PIS2.Models.penaltyStatus.Hold => "bg-secondary",
+                                                                PIS2.Models.penaltyStatus.Void => "bg-danger",
+                                                                _ => "bg-primary"
+                                                            };
+                                                        }
+                                                        <span class="badge rounded-pill @badgeClass" style="min-width: 80px;">
+                                                            @item.penaltyStatus
+                                                        </span>
+                                                    </td>
+                                                    <td class="text-end pe-4 d-print-none">
+                                                        <div class="btn-group">
+                                                            @if (User.IsInRole("MIE\\PMS_HRCLERK"))
+                                                            {
+                                                                <a asp-page="/Penalty/Edit" asp-route-id="@item.penaltyID" class="btn btn-sm btn-outline-primary" title="Edit">
+                                                                    <i class="bi bi-pencil"></i>
+                                                                </a> 
+                                                            }
+                                                
+                                                            <a asp-page="/Penalty/Details" asp-route-id="@item.penaltyID" class="btn btn-sm btn-outline-info" title="View Details">
+                                                                <i class="bi bi-eye"></i>
+                                                            </a>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            }
+
+                                        }
+                            
+                                    }
+                                }
+                                   
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="card-footer bg-white py-3 border-0">
+                        <p class="text-muted small mb-0">Showing @Model.PenaltyRecords.Count records</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+    
+    <script>
+        // Data passed from backend via JSON (ensure these exist in your PageModel)
+        const typeLabels = @Json.Serialize(Model.PenaltyRecords.GroupBy(p => p.penaltyTypeModel.penaltyName).Select(g => g.Key));
+        const typeData = @Json.Serialize(Model.PenaltyRecords.GroupBy(p => p.penaltyTypeModel.penaltyName).Select(g => g.Count()));
+
+        const statusLabels = @Json.Serialize(Model.PenaltyRecords.GroupBy(p => p.penaltyStatus.ToString()).Select(g => g.Key));
+        const statusData = @Json.Serialize(Model.PenaltyRecords.GroupBy(p => p.penaltyStatus.ToString()).Select(g => g.Count()));
+
+        // 1. Bar Chart - Volume by Type
+        new Chart(document.getElementById('typeChart'), {
+            type: 'bar',
+            data: {
+                labels: typeLabels,
+                datasets: [{
+                    label: 'Number of Penalties',
+                    data: typeData,
+                    backgroundColor: 'rgba(13, 110, 253, 0.7)',
+                    borderColor: '#0d6efd',
+                    borderWidth: 1,
+                    borderRadius: 5
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: { y: { beginAtZero: true, grid: { display: false } } }
+            }
+        });
+
+        // 2. Doughnut Chart - Status Breakdown
+        new Chart(document.getElementById('statusChart'), {
+            type: 'doughnut',
+            data: {
+                labels: statusLabels,
+                datasets: [{
+                    data: statusData,
+                    backgroundColor: ['#198754', '#ffc107', '#6c757d', '#dc3545', '#0dcaf0'],
+                    hoverOffset: 4
+                }]
+            },
+            options: {
+                plugins: {
+                    legend: { position: 'bottom' }
+                }
+            }
+        });
+
+                // Add this to your existing <script> block
+        const trendLabels = @Json.Serialize(Model.TrendLabels);
+        const trendData = @Json.Serialize(Model.TrendData);
+
+        new Chart(document.getElementById('trendChart'), {
+            type: 'line',
+            data: {
+                labels: trendLabels,
+                datasets: [{
+                    label: 'Total Penalties',
+                    data: trendData,
+                    borderColor: '#0d6efd',
+                    backgroundColor: 'rgba(13, 110, 253, 0.1)',
+                    fill: true,
+                    tension: 0.4, // Creates a smooth curve
+                    pointRadius: 5,
+                    pointBackgroundColor: '#0d6efd'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: { stepSize: 1 },
+                        grid: { borderDash: [5, 5] }
+                    },
+                    x: {
+                        grid: { display: false }
+                    }
+                }
+            }
+        });
+    </script>
+}
+
+<style>
+    .avatar-sm-text {
+        width: 32px;
+        height: 32px;
+        background: #e9ecef;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.7rem;
+        font-weight: bold;
+        color: #6c757d;
+    }
+    .table thead th {
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        font-weight: 700;
+        color: #495057;
+    }
+    .card { border-radius: 12px; }
+    .btn { border-radius: 8px; }
+</style>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">

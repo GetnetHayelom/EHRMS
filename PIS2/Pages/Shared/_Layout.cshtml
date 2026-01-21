@@ -70,7 +70,7 @@
                                     <a class="dropdown-item" asp-page="/Structure/Index">Structure</a>
                                     <a class="dropdown-item" asp-page="/Earning/Index">Earning</a>
                                     <a class="dropdown-item" asp-page="/Deduction/Index">Deduction</a>
-
+                                    <a class="dropdown-item" asp-page="/EvaluationType/Index">Evaluation</a>
                                 </div>
                             </li>
                             <li class="nav-item dropdown">
@@ -95,14 +95,14 @@
                         @if (User.IsInRole("mie\\PMS_HRCLERK"))
                         {
                             <li class="nav-item dropdown">
-                            <a class="nav-link text-white dropdown-toggle" asp-area="" role="button" data-bs-toggle="dropdown">HR Personel</a>
+                            <a class="nav-link text-white dropdown-toggle" asp-area="" role="button" data-bs-toggle="dropdown">HR Personnel</a>
                             <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
                                 <a class="dropdown-item" asp-page="/Person/Index">Person</a>
                                 <a class="dropdown-item" asp-page="/Employment/Index">Employments</a>
-                                <a class="dropdown-item" asp-page="/JobPlacement/Create">Job Placements</a>
+                                <a class="dropdown-item" asp-page="/JobPlacement/Index">Job Placements</a>
                                 <a class="dropdown-item" asp-page="/AllowanceAssignment/Create">Allowance Assignment</a>
                                 <a class="dropdown-item" asp-page="/Leave/Index">Leave Requests</a>
-                                    <a class="dropdown-item" asp-page="/Absentism/Create">Absentism</a>
+                                    <a class="dropdown-item" asp-page="/Absentism/Create">Absenteeism</a>
                                 <a class="dropdown-item" asp-page="/OvertimeRecord/Index">Overtime Records</a>
                                     <a class="dropdown-item" asp-page="/EmployeeService/Index">Earnings</a>
                                     <a class="dropdown-item" asp-page="/Penalty/Create">Penalties</a>
@@ -113,6 +113,37 @@
                                     <a class="dropdown-item" asp-page="/ServiceRequest/Index">Employee Requests</a>
                             </div>
                         </li>
+                        }
+                        @if (User.IsInRole("mie\\PMS_HRMANAGER") || User.IsInRole("mie\\PMS_HRCLERK"))
+                        {
+                            <li class="nav-item dropdown">
+                                <a class="nav-link text-white dropdown-toggle" asp-area="" role="button" data-bs-toggle="dropdown">Talent Aquisition</a>
+                                <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                                    
+                                    <a class="dropdown-item" asp-page="/Employment/Create">New Employment</a>
+                                    
+                                    <a class="dropdown-item" asp-page="/JobRequirement/Index">Employment Requests</a>
+                                    <a class="dropdown-item" asp-page="/Vacancy/Index">Vacancy</a>
+                                    <a class="dropdown-item" asp-page="/Applications/Index">Applicants</a>
+                                    <a class="dropdown-item" asp-page="/JobReqCost/Index">Aquisition Cost</a>
+                                    
+                                </div>
+                            </li>
+                        }
+                        @if (User.IsInRole("mie\\PMS_HRMANAGER") || User.IsInRole("mie\\PMS_HRCLERK"))
+                        {
+                            <li class="nav-item dropdown">
+                                <a class="nav-link text-white dropdown-toggle" asp-area="" role="button" data-bs-toggle="dropdown">Training</a>
+                                <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+
+                                    <a class="dropdown-item" asp-page="/Training/Create">Add Training</a>
+
+                                    <a class="dropdown-item" asp-page="/Training/Index">View Training</a>
+                                    <a class="dropdown-item" asp-page="/TrainingSession/Index">Sessions</a>
+                                    
+
+                                </div>
+                            </li>
                         }
                         @if (User.IsInRole("mie\\PMS_ADMIN"))
                         {
@@ -132,6 +163,7 @@
                                 <a class="nav-link text-white" asp-area="" asp-page="/HRClerk/Index">HR Dashboard</a>
                             </li>
                         }
+                        
                         @if (User.IsInRole("mie\\PMS_HRCLERK") || User.IsInRole("MIE\\PMS_HRMANAGER") || User.IsInRole("MIE\\PMS_MANAGEMENT"))
                         {
                             <li class="nav-item dropdown">
@@ -146,6 +178,9 @@
                                     <a class="dropdown-item" asp-page="/Report/JobPlacementReport">Job Placements</a>
                                     <a class="dropdown-item" asp-page="/PersonEducationLevel/Index">Training & Certification</a>
                                     <a class="dropdown-item" asp-page="/Structure/Index">Structure and Job Maping</a>
+                                    <a class="dropdown-item" asp-page="/Report/PenaltyReport">Penalties</a>
+                                    <a class="dropdown-item" asp-page="/Report/CostReport">Cost Analysis</a>
+                                    <a class="dropdown-item" asp-page="/Report/EvaluationReport">Performance Analysis</a>
                                 </div>
                             </li>
                         }
@@ -189,6 +224,60 @@
             </div>
             @RenderBody()
         </main>
+    </div>
+
+    <!--MESSAGE ALERT-->
+    @if (TempData["message"] is ValueTuple<string, string> message)
+    {
+        var type = message.Item1;
+        var text = message.Item2;
+
+        var bgClass = type == "Success" ? "bg-success" : "bg-danger";
+        var icon = type == "Success" ? "✔" : "⚠";
+
+        <div class="toast-container position-fixed top-50 start-50 translate-middle" style="z-index: 1100;">
+            <div id="actionToast"
+                 class="toast text-white @bgClass border-0 shadow"
+                 role="alert"
+                 aria-live="assertive"
+                 aria-atomic="true"
+                 data-bs-delay="4000">
+
+                <div class="toast-header text-white @bgClass border-0">
+                    <strong class="me-auto">@icon @type</strong>
+                    <small>System</small>
+                    <button type="button"
+                            class="btn-close btn-close-white"
+                            data-bs-dismiss="toast"></button>
+                </div>
+
+                <div class="toast-body fw-semibold">
+                    @text
+                </div>
+            </div>
+        </div>
+
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                var toastEl = document.getElementById('actionToast');
+                if (toastEl) {
+                    new bootstrap.Toast(toastEl).show();
+                }
+            });
+        </script>
+    }
+
+
+    <!--AJAX MESSAGE ALERT-->
+    <div class="toast-container position-fixed top-50 start-50 translate-middle" style="z-index:1100;">
+        <div id="actionToast" class="toast text-white border-0 shadow" data-bs-delay="4000">
+            <div class="toast-header text-white border-0">
+                <strong class="me-auto" id="toastTitle"></strong>
+                <small>System</small>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast"></button>
+            </div>
+            <div class="toast-body fw-semibold" id="toastBody"></div>
+        </div>
     </div>
 
     <footer class="border-top footer text-muted d-print-none">

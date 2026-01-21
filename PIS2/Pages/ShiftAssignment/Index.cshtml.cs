@@ -20,11 +20,31 @@ namespace PIS2.Pages.ShiftAssignment
 
         public IList<shiftAssignmentModel> shiftAssignmentModel { get;set; } = default!;
 
-        public async Task OnGetAsync()
+        public async Task OnGetAsync(int? id)
         {
-            shiftAssignmentModel = await _context.ShiftAssignments
-                .Include(s => s.EmploymentModel)
-                .Include(s => s.shiftModel).ToListAsync();
+            var activeEmps = await _context.Employments.Where(e => e.employmentStatus == mainStatus.Active).Select(j => j.employmentID).ToListAsync();
+            if(id != null)
+            {
+                activeEmps = await _context.JobPlacements.Where(j => j.departmentID == id && j.jobPlacementStatus == mainStatus.Active).Select(j => j.employmentID).ToListAsync();
+                shiftAssignmentModel = await _context.ShiftAssignments
+                .Include(s => s.EmploymentModel).ThenInclude(e => e.personModel)
+                .Include(s => s.shiftModel)
+                .Where(s => activeEmps.Contains(s.employmentID))
+                .GroupBy(s=> s.employmentID)
+                .Select(s => s.OrderByDescending(s =>s.modifiedDate).FirstOrDefault()).ToListAsync();
+            }
+            else
+            {
+                shiftAssignmentModel = await _context.ShiftAssignments
+                    .Include(s => s.EmploymentModel).ThenInclude(e => e.personModel)
+                    .Include(s => s.shiftModel)
+                    .Where(e => activeEmps.Contains(e.employmentID))
+                    .GroupBy(s => s.employmentID)
+                    .Select(s => s.OrderByDescending(s => s.modifiedDate).FirstOrDefault())
+                    .ToListAsync();
+
+            }
+                
         }
     }
 }

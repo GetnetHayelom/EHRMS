@@ -52,7 +52,7 @@
                     <!-- Status -->
                     <div class="mb-3">
                         <label asp-for="jobRequirementModel.jobRequirementStatus" class="form-label fw-semibold">Status</label>
-                        <select asp-for="jobRequirementModel.jobRequirementStatus" class="form-select"></select>
+                        <select asp-for="jobRequirementModel.jobRequirementStatus" class="form-select" asp-items="@Html.GetEnumSelectList<Models.jobReqStatus>()"></select>
                         <span asp-validation-for="jobRequirementModel.jobRequirementStatus" class="text-danger"></span>
                     </div>
 

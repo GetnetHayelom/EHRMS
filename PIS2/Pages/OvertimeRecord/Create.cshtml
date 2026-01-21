@@ -32,7 +32,7 @@
 
                 <div class="form-group mb-2">
                     <label asp-for="overtimeRecordModel.overtimeRecordDate" class="control-label">Overtime Date</label>
-                    <input asp-for="overtimeRecordModel.overtimeRecordDate" class="form-control" type="date" value="@DateTime.Today.ToString("yyyy-MM-dd")" />
+                    <input asp-for="overtimeRecordModel.overtimeRecordDate" class="form-control" type="date" value="@DateTime.Today.ToString("yyyy-MM-dd")" max="@DateTime.Now"/>
                     <span asp-validation-for="overtimeRecordModel.overtimeRecordDate" class="text-danger"></span>
                 </div>
                 <p>Note: A day starts at 12:00 AM(00:00) after midnight and ends at 11:59 PM(23:59) before midnight.</p>

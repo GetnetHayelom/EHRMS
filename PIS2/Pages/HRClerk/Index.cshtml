@@ -23,26 +23,62 @@
             <div class="card-header bg-primary text-white fw-semibold rounded-top-4">
                 <i class="bi bi-grid"></i> Manager Actions
             </div>
-            <div class="card-body d-flex flex-wrap justify-content-around">
-                <button class="btn btn-outline-primary m-2 flex-grow-1 shadow-sm" onclick="getList('Allowance')">
+            <div class="card-body d-flex flex-wrap justify-content-around position-relative">
+                <button class="btn btn-outline-primary m-2 flex-grow-1 shadow-sm position-relative" onclick="getList('Allowance')">
                     <i class="bi bi-wallet2"></i> Allowance
+                    @if(Model.allowances >0){<span class="badge rounded-pill bg-danger position-absolute top-0 start-100 translate-middle">
+                        @Model.allowances
+                        <span class="visually-hidden">Pending Allowances</span>
+                    </span>}
+                    
                 </button>
-                <button class="btn btn-outline-warning m-2 flex-grow-1 shadow-sm" onclick="getList('Prohibition')">
+
+                <button class="btn btn-outline-warning m-2 flex-grow-1 shadow-sm position-relative" onclick="getList('Prohibition')">
                     <i class="bi bi-ban"></i> Prohibition
+                    @if (Model.prohibitions > 0){<span class="badge rounded-pill bg-danger position-absolute top-0 start-100 translate-middle">
+                        @Model.prohibitions
+                        <span class="visually-hidden">Pending Prohibitions</span>
+                    </span>}
+                
                 </button>
-                <button class="btn btn-outline-primary m-2 flex-grow-1 shadow-sm" onclick="getList('Employment')">
+
+                <button class="btn btn-outline-primary m-2 flex-grow-1 shadow-sm position-relative" onclick="getList('Employment')">
                     <i class="bi bi-person-badge"></i> Employment
+                    @if (Model.employments > 0){ <span class="badge rounded-pill bg-danger position-absolute top-0 start-100 translate-middle">
+                        @Model.employments
+                        <span class="visually-hidden">Pending Employments</span>
+                    </span>}
+                   
                 </button>
-                <button class="btn btn-outline-primary m-2 flex-grow-1 shadow-sm" onclick="getList('JobPlacement')">
+
+                <button class="btn btn-outline-primary m-2 flex-grow-1 shadow-sm position-relative" onclick="getList('JobPlacement')">
                     <i class="bi bi-diagram-3"></i> Job Placements
+                    @if(Model.jobPlacements >0){<span class="badge rounded-pill bg-danger position-absolute top-0 start-100 translate-middle">
+                        @Model.jobPlacements
+                        <span class="visually-hidden">Pending Job Placements</span>
+                    </span>}
+                    
                 </button>
-                <button class="btn btn-outline-warning m-2 flex-grow-1 shadow-sm" onclick="getList('Termination')">
+
+                <button class="btn btn-outline-warning m-2 flex-grow-1 shadow-sm position-relative" onclick="getList('Termination')">
                     <i class="bi bi-person-x"></i> Termination
+                    @if(Model.terminations >0){} <span class="badge rounded-pill bg-danger position-absolute top-0 start-100 translate-middle">
+                        @Model.terminations
+                        <span class="visually-hidden">Pending Terminations</span>
+                    </span>
+                   
                 </button>
-                <a role="button" class="btn btn-outline-warning m-2 flex-grow-1 shadow-sm" href="/JobRequirement/Index">
+
+                <a role="button" class="btn btn-outline-warning m-2 flex-grow-1 shadow-sm position-relative" href="/JobRequirement/Index">
                     <i class="bi bi-person-x"></i> Employment Requests
+                    @if(Model.employmentRequests >0){<span class="badge rounded-pill bg-danger position-absolute top-0 start-100 translate-middle">
+                        @Model.employmentRequests
+                        <span class="visually-hidden">Pending Employment Requests</span>
+                    </span>}
+                    
                 </a>
             </div>
+
         </div>
     }
 

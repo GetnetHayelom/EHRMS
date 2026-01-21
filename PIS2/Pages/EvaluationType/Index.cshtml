@@ -1,0 +1,64 @@
+﻿@page
+@model PIS2.Pages.EvaluationType.IndexModel
+@{
+    ViewData["Title"] = "Evaluation Types";
+}
+
+<h1 class="fw-bold">Evaluation Management</h1>
+
+<a asp-page="Create" class="btn btn-primary mb-3">
+    Add Evaluation Type
+</a>
+
+<table class="table table-bordered table-hover">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Weight (%)</th>
+            <th>Fixed</th>
+            <th>Status</th>
+            <th>Modified</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model.EvaluationTypes)
+{
+        <tr>
+            <td>@item.evaluationTypeName</td>
+            <td>@item.evaluationTypeWeight</td>
+            <td>
+                @if (item.isFixed)
+                {
+                    <span class="badge bg-info">Yes</span>
+                }
+                else
+                {
+                    <span class="badge bg-secondary">No</span>
+                }
+            </td>
+            <td>
+                    @if (item.evaluationTypeStatus == Models.mainStatus.Active)
+                    {
+                        <span class="badge bg-success">@Html.DisplayFor(modelItem => item.evaluationTypeStatus)</span>
+
+                    }
+                    else if (item.evaluationTypeStatus == Models.mainStatus.Suspended)
+                    {
+                        <span class="badge bg-warning">@Html.DisplayFor(modelItem => item.evaluationTypeStatus)</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-secondary">@Html.DisplayFor(modelItem => item.evaluationTypeStatus)</span>
+                    }
+                </td>
+            <td>@item.modifiedDate.ToShortDateString()</td>
+            <td>
+                <a asp-page="Edit" asp-route-id="@item.evaluationTypeID"
+                   class="btn btn-sm btn-warning">Edit</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
+

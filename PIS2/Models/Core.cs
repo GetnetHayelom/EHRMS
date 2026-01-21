@@ -8,6 +8,7 @@ using static System.Runtime.InteropServices.JavaScript.JSType;
 using PIS2.Models;
 using System;
 using PIS2.Views;
+using System.Threading.Tasks;
 
 namespace PIS2.Models
 {
@@ -37,10 +38,10 @@ namespace PIS2.Models
             return emp;
         }
         //calculate leave balance in a given time interval
-        public leaveDetail leaveSummary(int empID)
+        public async Task<leaveDetail> leaveSummary(int empID)
         {
-            DateTime startDate = GetLeaveStart(empID);
-            DateTime endDate = GetLeaveEnd(empID);
+            DateTime startDate =await GetLeaveStart(empID);
+            DateTime endDate =await GetLeaveEndAsync(empID);
             List<leaveModel> leaves = new List<leaveModel>();
             leaves = _context.Leaves.Where(l => l.employmentID == empID).Include(l => l.leaveTypeModel).ToList();
             decimal usedLeave = leaves.Where(l => l.leaveTypeModel.leaveTypeImpact == leaveTypeImpact.Negative).Sum(l => l.leaveDays);
@@ -75,7 +76,7 @@ namespace PIS2.Models
             leaveDetail leaveSummary = new leaveDetail(totalLeave, allowedLeave, lastAnnualLeaveIncrement, startDate, endDate,leaveCost, dep);
             return leaveSummary;
         }
-        public leaveDetail getAllLeaveSummary(string selectBy, int ID)
+        public async Task<leaveDetail> getAllLeaveSummary(string selectBy, int ID)
         {
             List<leaveDetail> leaveDetails = new List<leaveDetail>();
             var leaveDetail= new leaveDetail();
@@ -91,7 +92,7 @@ namespace PIS2.Models
                           && e.JobPlacements.First().departmentModel?.companyModel?.companyID == ID).Select(e => e.employmentID).ToList();
                     foreach (var e in comEmp)
                     {
-                        leaveDetail = leaveSummary(e);
+                        leaveDetail = await leaveSummary(e);
                         leaveDetails.Add(leaveDetail);
                     }
                     break;
@@ -101,14 +102,14 @@ namespace PIS2.Models
                         && e.JobPlacements.First().departmentModel?.departmentID == ID).Select(e => e.employmentID).ToList();
                     foreach (var e in depEmp)
                     {
-                        leaveDetail = leaveSummary(e);
+                        leaveDetail =await leaveSummary(e);
                         leaveDetails.Add(leaveDetail);
                     }
                     break;
                     default:
                     foreach (var e in emp)
                     {
-                        leaveDetail = leaveSummary(e.employmentID);
+                        leaveDetail =await leaveSummary(e.employmentID);
                         leaveDetails.Add(leaveDetail);
                     }
                     break;
@@ -150,7 +151,7 @@ namespace PIS2.Models
 
             return overtimes;
         }
-        public leaveDetail GetLeaveSummary(int empID)
+        public async Task<leaveDetail> GetLeaveSummary(int empID)
         {
             mainStatus empStatus = _context.Employments.Where(e => e.employmentID == empID).FirstOrDefault().employmentStatus;
             decimal hRate = 0;
@@ -158,8 +159,8 @@ namespace PIS2.Models
             {
                 hRate = (decimal)_context.JobPlacements.OrderByDescending(js => js.jobPlacementDate).First(js => js.employmentID == empID).jobPlacementSalary / 26;
             }
-            DateTime startDate = GetLeaveStart(empID);
-            DateTime endDate = GetLeaveEnd(empID);
+            DateTime startDate =await GetLeaveStart(empID);
+            DateTime endDate =await GetLeaveEndAsync(empID);
             List<leaveModel> leaves = new List<leaveModel>();
             leaves = _context.Leaves.Where(l=>l.employmentID == empID).Include(l => l.leaveTypeModel).ToList();
             decimal usedLeave = leaves.Where(l => l.leaveTypeModel.leaveTypeImpact == leaveTypeImpact.Negative).Sum(l => l.leaveDays);
@@ -200,27 +201,34 @@ namespace PIS2.Models
             }
             allowedLeave = totalLeave - (lastAnnualLeaveIncrement - (spareDays * dailyAccrualRate));
             allowedLeave = allowedLeave < 0 ? 0 : allowedLeave;
-
-            
-            leaveDetail leaveSummary = new leaveDetail(Math.Round(totalLeave,2), allowedLeave, lastAnnualLeaveIncrement, startDate, endDate, LeavesPerYear(empID));
+            var lpy = await LeavesPerYear(empID);
+            leaveDetail leaveSummary = new leaveDetail(Math.Round(totalLeave,2), allowedLeave, lastAnnualLeaveIncrement, startDate, endDate, lpy);
             leaveSummary.leaveCost = allowedLeave * hRate;
             return leaveSummary;
         }
       
-        public List<leavePerYear> LeavesPerYear(int empID)
+        public async Task<List<leavePerYear>> LeavesPerYear(int empID)
         {
             //get employee hourly rate
             decimal hRate = 0;
-            if (_context.JobPlacements.Any(jp => jp.employmentID == empID))
+
+            var hasJob = await _context.JobPlacements.AnyAsync(jp => jp.employmentID == empID);
+            if (hasJob)
             {
-                hRate = _context.JobPlacements.OrderByDescending(js => js.jobPlacementDate).First(js => js.employmentID == empID).jobPlacementSalary / 26;
+                var latestJob = await _context.JobPlacements
+                    .Where(js => js.employmentID == empID)
+                    .OrderByDescending(js => js.jobPlacementDate)
+                    .FirstOrDefaultAsync();
+
+                hRate = latestJob?.jobPlacementSalary / 26 ?? 0;
             }
+
             //Returns all leaves of the employee
-            List<leaveModel> Leaves = GetLeaves(empID) ?? new List<leaveModel>();
-            List<leaveModel> accrued = GetAccruedLeaves(empID)?? new List<leaveModel>();
-            List<leaveModel> used = GetUsedLeaves(empID) ?? new List<leaveModel>();
-            DateTime startDate = GetLeaveStart(empID);
-            DateTime endDate = GetLeaveEnd(empID);
+            List<leaveModel> Leaves =await GetLeaves(empID) ?? new List<leaveModel>();
+            List<leaveModel> accrued = await GetAccruedLeaves(empID)?? new List<leaveModel>();
+            List<leaveModel> used = await GetUsedLeaves(empID) ?? new List<leaveModel>();
+            DateTime startDate = await GetLeaveStart(empID);
+            DateTime endDate =await GetLeaveEndAsync(empID);
             int years = endDate.Year - startDate.Year;
             
             if (startDate.AddYears(years) < endDate)
@@ -263,7 +271,8 @@ namespace PIS2.Models
 
                 dateCounter = dateCounter.AddYears(1);
                 startingLeavePerYear += (accruedLeaves - usedLeaves);
-                lastIncrement = accrued.OrderByDescending(l => l.leaveRequestDate).FirstOrDefault()?.leaveDays ?? 0;
+                var accruedSorted = accrued.OrderBy(l => l.leaveRequestDate).ToList();
+                lastIncrement = accruedSorted.LastOrDefault()?.leaveDays ?? 0;
                 balance = totalAccruedLeaves - totalUsedLeaves;
             }
             var carryOverTotal = balance;
@@ -286,10 +295,10 @@ namespace PIS2.Models
             
             return leavesPerYear;
         }
-          public leaveDetail GetLeaveSummary2(int empID)
+        public async Task<leaveDetail> GetLeaveSummary2(int empID)
         {
             List<leaveModel> leaves = new List<leaveModel>();
-            leaves = _context.Leaves.Where(l=>l.employmentID == empID).ToList();
+            leaves =await _context.Leaves.Where(l=>l.employmentID == empID).ToListAsync();
             DateTime startDate = leaves.Min(l => l.leaveRequestDate);
             DateTime endDate = DateTime.Now;
             //total number of days between given date
@@ -362,46 +371,66 @@ namespace PIS2.Models
             histories = _context.EmploymentHistories.Include(e=> e.employmentTypeModel).Where(e => e.employmentID == empID).ToList();
             return histories;
         }
-        private DateTime GetLeaveStart(int empID)
+        private async Task<DateTime> GetLeaveStart(int empID)
         {
             employmentModel employment = new employmentModel();
-            employment = _context.Employments.Where(e => e.employmentID == empID).First();
+            employment =await _context.Employments.Where(e => e.employmentID == empID).FirstOrDefaultAsync();
             DateTime leaveCountStartDate= employment.employmentDate;
             
             return leaveCountStartDate;
         }
-        private DateTime GetLeaveEnd(int empID)
+        private async Task<DateTime> GetLeaveEndAsync(int empID)
         {
-            employmentModel employment = new employmentModel();
-            employment = _context.Employments.Where(e => e.employmentID == empID).First();
-            DateTime leaveCountEndDate;// = DateTime.Now;
-            if(employment.employmentStatus == mainStatus.Inactive)
+            // Fetch employment asynchronously
+            var employment = await _context.Employments
+                .FirstOrDefaultAsync(e => e.employmentID == empID);
+
+            if (employment == null)
+                return DateTime.Now; // fallback if employment not found
+
+            DateTime leaveCountEndDate;
+
+            if (employment.employmentStatus == mainStatus.Inactive)
             {
-                leaveCountEndDate = _context.Terminations.First(t => t.employmentID == empID)?.terminationDate ?? DateTime.Now;
-                //leaveCountEndDate = GetEmpHist(empID).OrderByDescending(eh=> eh.modifiedDate).First().modifiedDate;
+                // Fetch termination asynchronously
+                var termination = await _context.Terminations
+                    .FirstOrDefaultAsync(t => t.employmentID == empID);
+
+                leaveCountEndDate = termination?.terminationDate ?? DateTime.Now;
             }
             else
             {
-                leaveCountEndDate=DateTime.Now;
+                leaveCountEndDate = DateTime.Now;
             }
-            if (leaveCountEndDate == GetLeaveStart(empID))
+
+            // Assuming GetLeaveStart is now async
+            var leaveStart =await GetLeaveStart(empID);
+
+            if (leaveCountEndDate == leaveStart)
             {
                 leaveCountEndDate = DateTime.Now;
             }
+
             return leaveCountEndDate;
         }
-        private List<leaveModel> GetLeaves(int empID)
+
+        private async Task<List<leaveModel>> GetLeaves(int empID)
         {
-            List<leaveModel> leaves = _context.Leaves.Include(l=>l.leaveTypeModel).Where(l=> l.employmentID == empID).ToList();
+            List<leaveModel> leaves =await _context.Leaves.Include(l=>l.leaveTypeModel).Where(l=> l.employmentID == empID).ToListAsync();
             return leaves;
         }
-        private List<leaveModel> GetUsedLeaves(int empID) {
-            List<leaveModel> usedLeaves = GetLeaves(empID).Where(l => l.leaveTypeModel.leaveTypeImpact == leaveTypeImpact.Negative && (l.leaveStatus == leaveStatus.Posted || l.leaveStatus == leaveStatus.Completed)).ToList();
-            return usedLeaves;
+        private async Task<List<leaveModel>> GetUsedLeaves(int empID) {
+            return await _context.Leaves
+            .Include(l => l.leaveTypeModel)
+            .Where(l => l.employmentID == empID
+                     && l.leaveTypeModel.leaveTypeImpact == leaveTypeImpact.Negative
+                     && (l.leaveStatus == leaveStatus.Posted || l.leaveStatus == leaveStatus.Completed))
+            .ToListAsync();
         }
-        private List<leaveModel> GetAccruedLeaves(int empID)
+        private async Task<List<leaveModel>> GetAccruedLeaves(int empID)
         {
-            List<leaveModel> accruedLeaves = GetLeaves(empID).Where(l => l.leaveTypeModel.leaveTypeImpact == leaveTypeImpact.Positive).ToList(); ;
+            var accrLeaves =await GetLeaves(empID);
+            List<leaveModel> accruedLeaves = accrLeaves.Where(l => l.leaveTypeModel.leaveTypeImpact == leaveTypeImpact.Positive).ToList(); ;
             return accruedLeaves;
         }
         public Tuple<int, int> GetYearsAndMonths(DateTime startDate, DateTime endDate)
@@ -551,16 +580,16 @@ namespace PIS2.Models
         /// <param name="empID"></param>
         /// <returns>decimal</returns>
    
-        public decimal GetSeverance(int empID)
+        public async Task<decimal> GetSeverance(int empID)
         {
-            var employment = _context.Employments.FirstOrDefault(e => e.employmentID == empID);
+            var employment =await _context.Employments.FirstOrDefaultAsync(e => e.employmentID == empID);
             if (employment == null) return 0;
 
-            var termination = _context.Terminations.FirstOrDefault(e => e.employmentID == empID);
-            var jobPlacement = _context.JobPlacements
+            var termination = await _context.Terminations.FirstOrDefaultAsync(e => e.employmentID == empID);
+            var jobPlacement = await _context.JobPlacements
                 .Where(j => j.employmentID == empID)
                 .OrderByDescending(j => j.jobPlacementDate)
-                .FirstOrDefault();
+                .FirstOrDefaultAsync();
 
             if (jobPlacement == null || jobPlacement.jobPlacementSalary <= 0)
                 return 0;
@@ -596,9 +625,9 @@ namespace PIS2.Models
         /// CHECK PROHIBITIONS
         /// </summary>
         /// 
-        public bool CheckProhibition(int empID, ProhibitionType type)
+        public async Task<bool> CheckProhibition(int empID, ProhibitionType type)
         {
-            return _context.Prohibitions.Any(p =>
+            return await _context.Prohibitions.AnyAsync(p =>
                 p.employmentID == empID &&
                 p.prohibitionType == type &&
                 p.prohibitionStatus == mainStatus.Active);

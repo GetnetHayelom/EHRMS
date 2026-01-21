@@ -1,0 +1,60 @@
+@page
+@model PIS2.Pages.Training.CreateModel
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow border-0">
+                <div class="card-header bg-dark text-white py-3">
+                    <h5 class="mb-0">Configure New Training</h5>
+                </div>
+                <div class="card-body p-4">
+                    <form method="post">
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                        <div class="mb-3">
+                            <label asp-for="Training.trainingTitle" class="form-label fw-bold">Training Title</label>
+                            <input asp-for="Training.trainingTitle" class="form-control" placeholder="e.g., Annual Fire Safety" />
+                            <span asp-validation-for="Training.trainingTitle" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Training.description" class="form-label fw-bold">Description</label>
+                            <textarea asp-for="Training.description" class="form-control" rows="3"></textarea>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Training.category" class="form-label fw-bold">Category</label>
+                                <select asp-for="Training.category" asp-items="Html.GetEnumSelectList<Models.trainingCategory>()" class="form-select"></select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Training.validityMonths" class="form-label fw-bold">Validity (Months)</label>
+                                <input asp-for="Training.validityMonths" class="form-control" type="number" />
+                            </div>
+                        </div>
+
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <div class="form-check form-switch mt-2">
+                                    <input class="form-check-input" type="checkbox" asp-for="Training.isMandatory">
+                                    <label class="form-check-label fw-bold" asp-for="Training.isMandatory">Mandatory Training</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-check form-switch mt-2">
+                                    <input class="form-check-input" type="checkbox" asp-for="Training.isActive" checked>
+                                    <label class="form-check-label fw-bold" asp-for="Training.isActive">Active Enrollment</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="border-top pt-3 d-flex justify-content-between">
+                            <a asp-page="Index" class="btn btn-light">Back to List</a>
+                            <button type="submit" class="btn btn-primary px-4">Create Training</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

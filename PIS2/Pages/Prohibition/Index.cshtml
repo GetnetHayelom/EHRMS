@@ -49,13 +49,26 @@
                 @Html.DisplayFor(modelItem => item.employmentModel.givenID)
             </td>
             <td>
-                @item.prohibitionStart.ToString("MMM dd, yyyy")
+                @item.prohibitionStart.ToString("MM/dd/yyyy")
             </td>
             <td>
-                @item.prohibitionEnd.ToString("MMM dd, yyyy")
+                @item.prohibitionEnd.ToString("MM/dd/yyyy")
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.prohibitionStatus)
+                @if (item.prohibitionStatus == Models.mainStatus.Active)
+                {
+                    <span class="badge bg-success">@Html.DisplayFor(modelItem => item.prohibitionStatus)</span>
+
+                }
+                else if (item.prohibitionStatus == Models.mainStatus.Suspended)
+                {
+                    <span class="badge bg-warning">@Html.DisplayFor(modelItem => item.prohibitionStatus)</span>
+                }
+                else
+                {
+                    <span class="badge bg-secondary">@Html.DisplayFor(modelItem => item.prohibitionStatus)</span>
+                }
+
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.prohibitionReason)

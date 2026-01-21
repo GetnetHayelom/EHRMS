@@ -22,7 +22,7 @@ namespace PIS2.Pages.DeductionRecord
 
         public async Task OnGet(int? id)
         {
-            DeductionTypes = new SelectList(await _db.DeductionTypes.ToListAsync(), "deductionTypeID", "deductionName");
+            DeductionTypes = new SelectList(await _db.DeductionTypes.Where(d => !new[] {"income tax", "pension"}.Contains(d.deductionName.ToLower())).ToListAsync(), "deductionTypeID", "deductionName");
             Employees = new SelectList(await _db.Employments.ToListAsync(), "employmentID", "givenID");
 
             // If id is passed, auto-load employee
@@ -30,7 +30,7 @@ namespace PIS2.Pages.DeductionRecord
             {
                 // Fetch employee details
                 var emp = await _db.Employments
-                    .FirstOrDefaultAsync(e => e.employmentID == id);
+                    .FirstOrDefaultAsync(e => e.employmentID == id && e.employmentStatus == mainStatus.Active);
 
                 if (emp != null)
                 {

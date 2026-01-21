@@ -5,7 +5,7 @@
     var successMessage = TempData["SuccessMessage"] as string;
   
 }
-@Html.AntiForgeryToken();
+@Html.AntiForgeryToken()
 
 <!--PAGE TITLE-->
 <div class="bg-light border rounded p-4 mb-4 d-print-none">
@@ -30,13 +30,7 @@
     </div>
 </div>
 
-<!--MESSAGE FROM HANDLER-->
-@if (!string.IsNullOrEmpty(successMessage))
-{
-    <div class="alert alert-success d-print-none" role="alert">
-        @successMessage
-    </div>
-}
+
 <!--MAIN BODY-->
 <div class="row mt-1 d-flex justify-content-center">
     <!--PERSON DETAILS SECTION-->
@@ -228,21 +222,20 @@
                 <!--EMPLOYMENT HISTORY -->
                 <div class="col-md-12 collapse border-primary rounded @(TempData["KeepCollapseOpen"] != null ? "show" : "")" id="employmentHistoryView">
                     <div class="card shadow-sm border-0 mb-4">
-                        <div class="card-header d-flex justify-content-around bg-white border-bottom">
+                        <div class="card-header bg-white border-bottom">
                             <h3 class="fw-bold col-md-6">Employment History</h3>
                             @if (Model.isSelf && Model.PersonEmployments.FirstOrDefault(pe => pe.employmentStatus == Models.mainStatus.Active) != null)
                             {
-                                <div class="d-flex p-2">
-                                    <button type="button" class="form-control btn btn-primary m-2 d-print-none" id="btnExperience" data-request-type="Exprience" onclick="requestService(this)">
+                                <div class="d-flex p-2 m-2">
+                                    <button type="button" class="form-control btn btn-primary m-2 d-print-none" id="btnExperience" data-request-type="Experience" onclick="requestService(this)">
                                         Request Official Experience
                                     </button>
 
-                                   
-                                    <a class="form-control btn btn-primary m-2 d-print-none" id="btnTermination" asp-page="/Termination/Create"
+                                    <a class="form-control btn btn-primary m-2 d-print-none" id="btnTermination" asp-page="/Termination/Create" data-request-type="Termination" onclick="requestService(this)"
                                        asp-route-id="@Model.PersonEmployments.FirstOrDefault(pe => pe.employmentStatus == Models.mainStatus.Active).employmentID">Request Termination</a>
                                     @if (Model.IsGuarantyAllow)
                                     {
-                                        <a href="/Guaranty/Create" class="form-control btn btn-primary m-2 d-print-none" id="btnGuarantee">Request Guaranty</a>
+                                        <a href="/Guaranty/Create?id=@Model.Person.personID" class="form-control btn btn-primary m-2 d-print-none" id="btnGuarantee" data-request-type="Guaranty" onclick="requestService(this)">Request Guaranty</a>
                                     }
                                 </div>
                             }

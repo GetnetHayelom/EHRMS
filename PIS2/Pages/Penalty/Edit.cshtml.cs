@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using NuGet.ProjectModel;
 using PIS2.Models;
 using System;
 using System.Collections.Generic;
@@ -34,6 +35,7 @@ namespace PIS2.Pages.Penalty
 
             var penaltymodel =  await _context.Penalties
                 .Include(p => p.employmentModel).ThenInclude(e => e.personModel)
+                .Include(e => e.penaltyTypeModel)
                 .FirstOrDefaultAsync(m => m.penaltyID == id);
 
             if (penaltymodel == null)
@@ -43,7 +45,7 @@ namespace PIS2.Pages.Penalty
             penaltyHistory = _context.PenaltyHistories.Where(p => p.penaltyID == penaltymodel.penaltyID).OrderBy(p => p.modifiedDate).ToList();
             penaltyModel = penaltymodel;
            ViewData["employmentID"] = new SelectList(_context.Employments, "employmentID", "givenID");
-           ViewData["penaltyTypeID"] = new SelectList(_context.PenaltyTypes, "penaltyTypeID", "penaltyTypeID");
+           ViewData["penaltyTypeID"] = new SelectList(_context.PenaltyTypes, "penaltyTypeID", "penaltyName");
             return Page();
         }
 
@@ -55,13 +57,13 @@ namespace PIS2.Pages.Penalty
 
             var penal = _context.Penalties.FirstOrDefault(p => p.penaltyID == penaltyModel.penaltyID) ?? new penaltyModel();
 
+            penal.penaltyIssueDate = penaltyModel.penaltyIssueDate;
             penal.penaltyReason = penaltyModel.penaltyReason;
             penal.penaltyReference = penaltyModel.penaltyReference;
             penal.penaltyStartDate = penaltyModel.penaltyStartDate;
             penal.penaltyEndDate = penaltyModel.penaltyEndDate;
             penal.penaltyStatus = penaltyModel.penaltyStatus;
             penal.modifiedBy = User.Identity.Name;
-
 
             try
             {

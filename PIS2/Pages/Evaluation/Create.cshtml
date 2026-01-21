@@ -1,0 +1,499 @@
+﻿@page
+@model Pages.Evaluation.CreateModel
+
+@{
+    ViewData["Title"] = "Dynamic Evaluation";
+}
+<h1 class="fw-bold ">Evaluation</h1>
+<h4 class="fw-bold text-muted">New Evaluation</h4>
+<div class="container-fluid py-4">
+    @Html.AntiForgeryToken()
+
+    <div class="header-section p-4 bg-white border rounded shadow-sm mb-4">
+        <div class="row align-items-center">
+            <div class="col-md-3">
+                <label class="form-label fw-bold">Evaluation Name</label>
+                <input type="text" id="evalName" class="form-control" placeholder="e.g. Q1 Performance" />
+            </div>
+            <div class="col-md-2">
+                <label class="form-label fw-bold"><span class="text-danger">*</span>Employee ID</label>
+                <input id="empID" class="form-control" type="hidden" />
+                <input type="text" class="form-control" list="employmentList" placeholder="Type to search..." oninput="selector(this, 'empID')" />
+
+                <datalist id="employmentList">
+                    @foreach (var emp in Model.Employee)
+                    {
+                        <option data-id="@emp.Value" value="@emp.Text"></option>
+                    }
+                </datalist>
+
+            </div>
+            <div class="col-md-2">
+                <label class="form-label fw-bold">Start Date</label>
+                <input type="date" id="startDate" class="form-control" />
+            </div>
+            <div class="col-md-2">
+                <label class="form-label fw-bold">End Date</label>
+                <input type="date" id="endDate" class="form-control" />
+            </div>
+            <div class="col-md-1 text-end">
+                <button class="btn btn-success" onclick="initializeEvaluation()">Save</button>
+            </div>
+            <div class="col-md-2 text-end border-start">
+                <h6 id="evalIdDisplay" class="badge bg-secondary mb-1">Drafting...</h6>
+                <div class="text-muted small">Current Total Score</div>
+                <h2 class="text-primary mb-0"><span id="grandTotal">0.00</span>%</h2>
+                <div class="text-muted small">score Against Weight</div>
+                <h4 class="text-primary mb-0"><span id="totalTaskScore">0.00</span>/<span id="totalTaskWeight">0.00</span></h4>
+                
+            </div>
+
+        </div>
+    </div>
+
+    <div id="detailPanel" class="d-none">
+        <ul class="nav nav-pills mb-3" id="evalTabs" role="tablist">
+            @foreach (var type in Model.EvaluationTypes)
+            {
+                <li class="nav-item">
+                    <button class="nav-link @(Model.EvaluationTypes.First() == type ? "active" : "")"
+                            data-bs-toggle="tab"
+                            data-bs-target="#panel-@type.evaluationTypeID"
+                            type="button">
+                        @type.evaluationTypeName
+                    </button>
+                </li>
+            }
+
+        </ul>
+
+        <div class="tab-content bg-white border rounded p-4 shadow-sm">
+            @foreach (var type in Model.EvaluationTypes)
+            {
+                <div class="tab-pane fade @(Model.EvaluationTypes.First() == type ? "show active" : "")" id="panel-@type.evaluationTypeID">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h4>@type.evaluationTypeName <small class="text-muted">(@type.evaluationTypeWeight%)</small></h4>
+                        @if (!type.isFixed)
+                        {
+                            <button type="button" class="btn btn-sm btn-outline-primary action-btn" onclick="addTaskRow(@type.evaluationTypeID)" disabled>
+                                <i class="bi bi-plus-lg"></i> Add New Task
+                            </button>
+                        }
+                    </div>
+
+                    <div id="container-@type.evaluationTypeID" class="task-list" data-type-weight="@type.evaluationTypeWeight">
+                        @if (type.isFixed)
+                        {
+                            @foreach (var task in type.EvaluationTasks)
+                            {
+                                @* Render existing tasks/subtasks as ready-to-fill rows *@
+                                <div class="card mb-4 border-light shadow-xs task-card" data-task-id="@task.evaluationTaskID" data-type-id="@type.evaluationTypeID">
+                                    <div class="card-header bg-light fw-bold text-uppercase small">
+                                        <span>@task.evaluationTaskName</span>
+                                        <input class="task-weight ms-5" value="@task.evaluationTaskWeight"/>
+                                        <label class="text-end fw-bold task-score me-0">0.00</label>
+                                    </div>
+                                    <div class="table-responsive">
+                                        <table class="table align-middle mb-0">
+                                            <thead class="table-light">
+                                                <tr>
+                                                    <th></th>
+                                                    <th style="width: 40%">Sub-Task</th>
+                                                    <th style="width:10%">Weight</th>
+                                                    <th>Time Val.</th>
+                                                    <th>Resource Val.</th>
+                                                    <th>Perf. Val.</th>
+                                                    <th class="text-end">Total</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach (var sub in task.EvaluationSubTasks)
+                                                {
+                                                    <tr class="valuation-row" data-subtask-id="@sub.evaluationSubTaskID">
+                                                        <td><h6 class="fw-bold text-muted"></h6></td>
+                                                        <td class="fw-medium" readonly><h6>@sub.evaluationSubTaskName</h6></td>
+                                                        <td class="fw-medium" readonly><input value="@sub.evaluationSubTaskWeight" class="v-weight"/></td>
+                                                        <td>
+                                                            <select class="form-select form-select-sm v-time" onchange="saveValuation(this)"
+                                                                    asp-items="@Html.GetEnumSelectList<Models.ProficiencyLevel>().OrderByDescending(x => x.Value)">
+
+                                                                <option value="" selected disabled>-- Select Score --</option>
+
+                                                            </select>
+                                                        </td>
+
+                                                        <td>
+                                                            <select class="form-select form-select-sm v-res" onchange="saveValuation(this)"
+                                                                    asp-items="@Html.GetEnumSelectList<Models.ProficiencyLevel>().OrderByDescending(x => x.Value)">
+                                                                <option value="" selected disabled>-- Select Score --</option>
+
+                                                            </select>
+                                                        </td>
+
+                                                        <td>
+                                                            <select class="form-select form-select-sm v-perf" onchange="saveValuation(this)"
+                                                                    asp-items="@Html.GetEnumSelectList<Models.ProficiencyLevel>().OrderByDescending(x => x.Value)">
+                                                                <option value="" selected disabled>-- Select Score --</option>
+
+                                                            </select>
+                                                        </td>
+                                                        <td class="text-end fw-bold row-sum">0.00</td>
+                                                    </tr>
+                                                }
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            }
+                        }
+                        else
+                        {
+                            @* Container for dynamically added tasks *@
+                            <div class="dynamic-tasks-area" data-type-id="@type.evaluationTypeID"></div>
+                            <button type="button" class="btn btn-outline-primary mt-2" onclick="addTaskRow(@type.evaluationTypeID)">+ Add New Task</button>
+                        }
+                    </div>
+                </div>
+            }
+        
+
+            <div class="col-12 text-end">
+                <a asp-page="/Evaluation/Create" class="btn btn-primary">New Evaluation</a>
+                <a id="previewLink" data-base-url="@Url.Page("/Evaluations/Edit")" class="btn btn-outline-primary">Preview</a>
+                <button class="btn btn-outline-success" onclick="updateHeader()">Update Eval. Info</button>
+                <button class="btn btn-success" onclick="submitFinal()">Submit</button>
+            </div>
+           
+        </div>
+    </div>
+    
+</div>
+
+<template id="taskTemplate">
+    <div class="card mb-4 border-primary task-card" data-task-id="{TASK_ID}" data-type-id="{TYPE_ID}">
+        <div class="card-header d-flex justify-content-between p-0">
+            <input type="text" class="task-name form-control form-control-sm bg-transparent border-white w-50"
+                   placeholder="Type task title" />
+            <input type="number" class="task-weight form-control form-control-sm bg-transparent border-white w-50"
+                   placeholder="Type task weight" onblur="addTask(this)" />
+            <label>Task Score: </label><label class="text-end fw-bold task-score">0.00</label>
+            <button class="btn btn-sm btn-light" onclick="addSubTaskRow(this)">+ Add Subtask</button>
+            <button class="btn btn-sm btn-link text-danger" onclick="taskDelete(this)">Cancel</button>
+        </div>
+        <div class="table-responsive">
+            <table class="table mb-0">
+                <thead class="table-light">
+                    <tr class="small text-center">
+                        <th class="text-start" style="width: 40%">Sub-Task</th>
+                        <th style="width: 10%">Weight</th>
+                        <th>Time</th>
+                        <th>Resource</th>
+                        <th>Perf.</th>
+                        <th class="bg-light">Average</th>
+                        <th class="bg-light">
+                            Action
+                        </th>
+                    </tr>
+                </thead>
+                <tbody class="subtask-container"></tbody>
+            </table>
+        </div>
+    </div>
+</template>
+
+<template id="subTaskRowTemplate">
+    <tr class="valuation-row" data-subtask-id="{SUB_ID}" data-valuation-id="{VAL_ID}">
+        <td style="width: 40%">
+            <input type="text" class=" v-name form-control form-control-sm" />
+        </td>
+        <td><input type="number" class="v-weight form-control form-control-sm " placeholder="Subtask weight" onchange="addSubTask(this)" /></td>
+        <td>
+            <select class="form-select form-select-sm v-time" onchange="saveValuation(this)"
+                    asp-items="@Html.GetEnumSelectList<Models.ProficiencyLevel>().OrderByDescending(x => x.Value)">
+                
+                <option value="" selected disabled>-- Select Score --</option>
+                
+            </select>
+        </td>
+
+        <td>
+            <select class="form-select form-select-sm v-res" onchange="saveValuation(this)"
+            asp-items="@Html.GetEnumSelectList<Models.ProficiencyLevel>().OrderByDescending(x => x.Value)">
+                <option value="" selected disabled>-- Select Score --</option>
+                
+            </select>
+        </td>
+
+        <td>
+            <select class="form-select form-select-sm v-perf" onchange="saveValuation(this)"
+                    asp-items="@Html.GetEnumSelectList<Models.ProficiencyLevel>().OrderByDescending(x => x.Value)">
+                <option value="" selected disabled>-- Select Score --</option>
+                
+            </select>
+        </td>
+        <td class="text-end fw-bold row-sum">0.00</td>
+        <td>
+            <button type="button" class="btn btn-sm btn-outline-danger" onclick="deleteSubTask(this)" title="Void">
+                <i class="bi bi-trash"></i>
+            </button>
+        </td>
+        
+    </tr>
+</template>
+
+ <script>
+        let currentEvalID = null;
+
+
+        async function postData(handler, data) {
+            const response = await fetch(`?handler=${handler}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+                },
+                body: JSON.stringify(data)
+            });
+            return await response.json();
+        }
+
+        // 1. Initialize Evaluation Record
+        async function initializeEvaluation() {
+            if (currentEvalID) return;
+
+            const data = {
+                evaluationName: document.getElementById('evalName').value,
+                employmentID: parseInt(document.getElementById('empID').value),
+                evaluationStartDate: document.getElementById('startDate').value,
+                evaluationEndDate: document.getElementById('endDate').value
+            };
+
+            if (!data.evaluationName || !data.employmentID) return;
+
+            const result = await postData('CreateEval', data);
+
+            if (result.id) {
+                currentEvalID = result.id;
+                document.getElementById('evalIdDisplay').innerText = `ID: ${currentEvalID}`;
+                document.getElementById('evalIdDisplay').className = "badge bg-success mb-1";
+
+                    const link = document.getElementById('editLink');
+                    link.href = `${link.dataset.baseUrl}?id=${result.id}`;
+                // Unlock UI
+                document.getElementById('detailPanel').className = "d-block";
+                document.querySelectorAll('.action-input, .action-btn').forEach(el => el.disabled = false);
+            }
+        }
+
+        // 2. Add Task (Flexible)
+        async function addTask(input) {
+            const card =input.closest('.task-card');
+
+            if (card.dataset.taskId !== "0") return;
+
+            const typeId = parseInt(card.dataset.typeId);
+            const taskName = card.querySelector('.task-name').value;
+            const taskWeight = parseFloat(card.querySelector('.task-weight').value) || 0;
+
+            if (!taskName || !taskWeight || !typeId) return;
+
+            const data = {
+                evaluationTypeID: typeId,
+                evaluationTaskName: taskName,
+                evaluationTaskWeight: taskWeight
+
+            };
+            const result = await postData('CreateTask', data);
+
+            card.dataset.taskId = result.id;
+
+            let subhtml = document.getElementById('subTaskRowTemplate').innerHTML;
+            const subcontainer = card.querySelector('.subtask-container');
+            const tr = document.createElement('tr');
+            tr.className = "valuation-row";
+            tr.innerHTML = subhtml;
+            subcontainer.appendChild(tr);
+            recalcAll();
+        }
+
+                        // 2.1. Delete Task
+        async function deleteTask(btn) {
+            const card = btn.closest('.task-card');
+            id = card.dataset.taskId;
+
+
+            if(!confirm("Delete this task and all subtasks?")) return;
+            if(id ==={TASK_ID} || !id){card.remove(); return;}
+
+            const res = await postData('DeleteTask', { id, EVAL_ID });
+
+            if(res.success)
+            {
+                btn.closest('.task-card').remove();
+                showToast('Success', 'Subtask deleted successfully');
+            }else{
+                showToast('Error', res.message);
+            }
+            recalcAll();
+        }
+
+
+        // 3. Add Subtask (Flexible)
+        async function addSubTask(input) {
+            const tr = input.closest('tr');
+            const taskId = parseInt(tr.closest('.task-card').dataset.taskId);
+            const subTaskName = tr.querySelector('.v-name').value;
+            const subTaskWeight = parseFloat(tr.querySelector('.v-weight').value);
+
+            if(!subTaskName || !subTaskWeight || !taskId) return;
+
+            const data ={
+                evaluationTaskID: taskId,
+                evaluationSubTaskName: subTaskName,
+                evaluationSubTaskWeight: subTaskWeight
+            };
+            const result = await postData('CreateSubTask', data);
+
+            tr.dataset.subtaskId = result.id;
+
+            recalcAll();
+        }
+
+        // 3.1. Delete Sub Task
+        async function deleteSubTask(btn) {
+            const tr = btn.closest('tr');
+            const id = tr.dataset.valuationId;
+
+            if(id === "{VAL_ID}" || !id){ tr.remove(); return;}
+
+            if(!confirm("Delete subtask?")) return;
+
+            const res = await postData('DeleteSubTask', { id });
+            if(res.success)
+            {
+                tr.remove();
+                showToast('Success', 'Subtask deleted successfully');
+            }else{
+                showToast('Error', res.message);
+            }
+            recalcAll();
+        }
+
+        // 4. Save Valuation
+        async function saveValuation(tableCell) {
+            const row = tableCell.closest('tr');
+            if (!currentEvalID) return;
+            if (!row.dataset.subtaskId) return;
+
+
+            const subId = parseInt(row.dataset.subtaskId) || 0;
+
+            const vTime = (parseFloat(row.querySelector('.v-time').value) || 0)/10;
+            const vRes = (parseFloat(row.querySelector('.v-res').value) || 0)/10;
+            const vPerf = (parseFloat(row.querySelector('.v-perf').value) || 0)/10;
+
+            const total = (vTime + vRes + vPerf)/3;
+            row.querySelector('.row-sum').innerText = total.toFixed(2);
+
+                const result= await postData('SaveValuation', {
+                evaluationID: currentEvalID,
+                evaluationSubTaskID: subId,
+                timeValuation: vTime,
+                resourceValuation: vRes,
+                performanceValuation: vPerf
+            });
+            const card=row.closest('.task-card');
+            row.dataset.valuationId = result.id;
+            recalcAll();
+        }
+        function recalcAll() {
+            let grandScore = 0;
+            let grandWeight = 0;
+            let grandPercent = 0;
+
+            document.querySelectorAll('.task-list').forEach(pane =>{
+                let taskTypeWeight = parseFloat(pane.dataset.typeWeight) || 0;
+                let grandSubPercent = 0;
+                let grandSubScore =0;
+                let grandSubWeight = 0;
+
+
+                pane.querySelectorAll('.task-card').forEach(card => {
+                    let tWeight = parseFloat(card.querySelector('.task-weight').value) || 0;
+                    let subTotalWeight = 0;
+                    let subWeightedScore = 0;
+
+                    card.querySelectorAll('.valuation-row').forEach(row => {
+                        const sw = parseFloat(row.querySelector('.v-weight').value) || 0;
+                        const v1 = (parseFloat(row.querySelector('.v-time').value) || 0) / 10;
+                        const v2 = (parseFloat(row.querySelector('.v-res').value) || 0) / 10;
+                        const v3 = (parseFloat(row.querySelector('.v-perf').value) || 0) / 10;
+
+                        const avg = (v1 + v2 + v3) / 3;
+                        row.querySelector('.row-sum').innerText = avg.toFixed(2);
+
+                        subTotalWeight += sw;
+                        subWeightedScore += (avg * sw);
+                    });
+
+                    // Task Score = (Sum of weighted subtask averages / (Max Score 4 * Sum of Weights)) * Task Weight
+                    let taskResult = subTotalWeight > 0 ? (subWeightedScore / (subTotalWeight * 4)) * tWeight : 0;
+                    card.querySelector('.task-score').innerText = taskResult.toFixed(2);
+
+                    grandScore += taskResult;
+                    grandSubScore += taskResult;
+                    grandSubWeight += tWeight;
+
+
+                    grandWeight += tWeight;
+
+
+                });grandSubPercent += grandSubScore *(taskTypeWeight/grandSubWeight);
+                    console.log(grandSubScore);
+                    console.log(grandSubWeight);
+                    console.log(grandSubPercent);
+                grandPercent += grandSubPercent;
+            });
+
+            document.getElementById('totalTaskScore').innerText = grandScore.toFixed(2);
+            document.getElementById('totalTaskWeight').innerText = grandWeight.toFixed(2);
+            document.getElementById('grandTotal').innerText = grandPercent.toFixed(2);
+        }
+
+    </script>
+    <script>
+        let taskCounter = 0;
+
+        function addTaskRow(typeId) {
+            const container = document.querySelector(`#container-${typeId} .dynamic-tasks-area`);
+            let html = document.getElementById('taskTemplate').innerHTML;
+            html = html.replaceAll('{TYPE_ID}', typeId).replaceAll('{TASK_ID}', '0');
+
+            const div = document.createElement('div');
+            div.innerHTML = html;
+            container.appendChild(div);
+
+            taskCounter++;
+
+        }
+
+        function addSubTaskRow(btn) {
+            const card = btn.closest('.task-card');
+            const taskIdx = card.dataset.taskId;
+            const container = card.querySelector('.subtask-container');
+            const subIdx = container.children.length;
+            let html = document.getElementById('subTaskRowTemplate').innerHTML;
+            //html = html.replaceAll('{T_IDX}', taskIdx).replaceAll('{S_IDX}', subIdx);
+
+            const tr = document.createElement('tr');
+            tr.className = "valuation-row";
+            tr.innerHTML = html;
+            container.appendChild(tr);
+        }
+    async function submitFinal() {
+        if(confirm("Once posted, you cannot edit. Proceed?")) {
+            const res = await postData('PostEvaluation', { id: currentEvalID });
+            if(res.success) window.location.href = "/Evaluation/Index";
+        }
+    }
+    </script>

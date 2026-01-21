@@ -1,0 +1,104 @@
+﻿@page
+@model PIS2.Pages.Vacancy.PublishModel
+
+@{
+    ViewData["Title"] = Model.Vacancy.VacancyTitle;
+    Layout = "headerFull";
+}
+@section LetterBody
+{
+    <div class="container mt-4 job-publish">
+
+    <!-- HEADER -->
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2>@Model.Vacancy.VacancyTitle</h2>
+
+        <span class="badge fs-6 d-print-none
+            @(Model.Vacancy.Status == Models.VacancyStatus.Open ? "bg-success" :
+                            Model.Vacancy.Status == Models.VacancyStatus.Closed ? "bg-danger" : "bg-warning")">
+            @Model.Vacancy.Status
+        </span>
+    </div>
+
+    <!-- JOB SUMMARY -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <div class="row mb-2">
+                <div class="col-md-4"><strong>Position:</strong> @Model.Vacancy.jobModel?.jobTitle</div>
+                <div class="col-md-4"><strong>Department:</strong> @Model.Vacancy.departmentModel?.departmentName</div>
+                <div class="col-md-4"><strong>Employment Type:</strong> @Model.Vacancy.employmentTypeModel?.employmentTypeName</div>
+            </div>
+
+            <div class="row mb-2">
+                <div class="col-md-4"><strong>Location:</strong> @Model.Vacancy.Location</div>
+                <div class="col-md-4"><strong>Posted:</strong> @Model.Vacancy.DatePosted.ToShortDateString()</div>
+                <div class="col-md-4"><strong>Closing:</strong> @Model.Vacancy.ClosingDate?.ToShortDateString()</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JOB DESCRIPTION -->
+    <div class="card mb-4">
+        <div class="card-header bg-light">
+            <h5>Description</h5>
+        </div>
+        <div class="card-body">
+            <p>@Model.Vacancy.jobModel.jobDescription</p>
+        </div>
+    </div>
+
+    <!-- QUALIFICATIONS -->
+    <div class="card mb-4">
+        <div class="card-header bg-light">
+            <h5>Qualifications</h5>
+        </div>
+        <div class="card-body">
+            <p>@Model.Vacancy.jobModel?.jobQualifications</p>
+            <p><strong>Experience:</strong> @Model.Vacancy.jobModel?.jobExperience years</p>
+        </div>
+    </div>
+    <!-- Remark -->
+    <div class="card mb-4">
+        <div class="card-header bg-light">
+            <h5>Remark</h5>
+        </div>
+        <div class="card-body">
+            <p>@Model.Vacancy.Remark</p>
+        </div>
+    </div>
+    <!-- ACTIONS -->
+    <div class="d-flex gap-2 no-print">
+        @if (Model.Vacancy.Status == Models.VacancyStatus.Open)
+        {
+            <a asp-page="/Applications/Create"
+               asp-route-vacancyId="@Model.Vacancy.VacancyID"
+               asp-route-personId="@Model.personId"
+               class="btn btn-primary btn-lg">
+                Apply Now
+            </a>
+        }
+        <button onclick="window.print()" class="btn btn-outline-secondary">
+            Print
+        </button>
+    </div>
+
+</div>
+
+<!-- PRINT STYLES -->
+<style>
+    @@media print {
+        .no-print {
+            display: none !important;
+        }
+
+        body {
+            font-size: 12pt;
+        }
+
+        .card {
+            border: none;
+            box-shadow: none;
+        }
+    }
+</style>
+}

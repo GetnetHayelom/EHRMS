@@ -171,7 +171,7 @@ namespace PIS2.Models {
             {
                 earningType = new earningType();
                 earningType = await _db.EarningTypes.FirstOrDefaultAsync(d => d.earningTypeName.ToLower().Contains("overtime"));
-                earnings.Add(new earningRecordModel { earningAmount = overtimeAmount, earningTypeId = earningType.earningTypeID, earningReference = 0, modifiedBy = "system" });
+                earnings.Add(new earningRecordModel { earningAmount = overtimeAmount, earningTypeId = earningType.earningTypeID, earningReference = "overtime", modifiedBy = "system" });
             }
             //-----------------------------------------------------------
             // ALLOWANCES (earnings)
@@ -187,7 +187,7 @@ namespace PIS2.Models {
             {
                 earningType = new earningType();
                 earningType = await _db.EarningTypes.FirstOrDefaultAsync(d => d.earningTypeName.ToLower().Contains("allowance"));
-                earnings.Add(new earningRecordModel { earningAmount = allowancesSum, earningTypeId = earningType.earningTypeID, earningReference = 0, modifiedBy = "system" });
+                earnings.Add(new earningRecordModel { earningAmount = allowancesSum, earningTypeId = earningType.earningTypeID, earningReference = "allowance", modifiedBy = "system" });
             }
             
             // BASE SALARY: if salaried, pro-rate monthly salary by workedHours/totalPossibleHours
@@ -200,12 +200,12 @@ namespace PIS2.Models {
             {
                 earningType = new earningType();
                 earningType = await _db.EarningTypes.FirstOrDefaultAsync(d => d.earningTypeName.ToLower().Contains("salary"));
-                earnings.Add(new earningRecordModel { earningAmount = basePay, earningTypeId = earningType.earningTypeID, earningReference = 0, modifiedBy = "system" });
+                earnings.Add(new earningRecordModel { earningAmount = basePay, earningTypeId = earningType.earningTypeID, earningReference = "salary", modifiedBy = "system" });
             }
 
             // GET OTHER EARNINGS (Bonus)
 
-            var empEarnings = await _db.Earnings.Where(e => e.employmentID == emp.employmentID && e.earningStatus == mainStatus.Active).ToListAsync();
+            var empEarnings = await _db.Earnings.Include(e => e.earningType).Where(e => e.employmentID == emp.employmentID && e.earningStatus == mainStatus.Active && e.earningType.isPayroll ==true).ToListAsync();
 
             // ADD OTHER EARNINGS
             foreach (var od in empEarnings)
@@ -215,6 +215,7 @@ namespace PIS2.Models {
                 {
                     earningTypeId = od.earningTypeId,
                     earningAmount = CalculateEarningValue(od, baseSalary, allowancesSum),
+                    earningReference = od.earningID.ToString(),
                     modifiedBy = "system"
                 });
             }
@@ -246,6 +247,7 @@ namespace PIS2.Models {
             {
                 deductionTypeID = pensionDedType?.deductionTypeID ?? 0,
                 deductionAmount = pensionEmployee,
+                deductionReference = "pension",
                 modifiedBy = "system"
             });
             //

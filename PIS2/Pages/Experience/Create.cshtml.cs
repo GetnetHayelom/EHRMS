@@ -25,6 +25,10 @@ namespace PIS2.Pages.Exprience
         }
         [BindProperty]
         public List<experienceModel> Experiences { get; set; } = default!;
+        [BindProperty]
+        public List<IFormFile>? UploadedFiles { get; set; } = new List<IFormFile>();
+
+
         public IActionResult OnGet(int? id)
         {
             Experiences = new List<experienceModel>();
@@ -50,22 +54,45 @@ namespace PIS2.Pages.Exprience
         public async Task<IActionResult> OnPostAsync()
         {
             if (!User.IsInRole("MIE\\PMS_HRCLERK"))
-            {
                 return RedirectToPage("/Shared/AccessDenied");
-            }
 
             if (!ModelState.IsValid)
-            {
                 return Page();
-            }
 
-            int empID = 0;
-            var emp = await _context.Employments.FirstOrDefaultAsync(e => e.personID == experienceModel.personID);
-            empID = emp.employmentID;
+            // Save Experience
             _context.Experiences.Add(experienceModel);
             await _context.SaveChangesAsync();
 
-            return RedirectToPage("/Employment/Edit", new { id = empID });
+            // Save uploaded files
+            if (UploadedFiles != null && UploadedFiles.Any())
+            {
+                var uploadsFolder = Path.Combine("wwwroot", "uploads", "experience", experienceModel.experienceID.ToString());
+                Directory.CreateDirectory(uploadsFolder);
+
+                foreach (var file in UploadedFiles)
+                {
+                    var fileName = Guid.NewGuid() + Path.GetExtension(file.FileName);
+                    var filePath = Path.Combine(uploadsFolder, fileName);
+
+                    using var stream = new FileStream(filePath, FileMode.Create);
+                    await file.CopyToAsync(stream);
+
+                    // Optional: store attachment record in DB
+                    _context.Attachements.Add(new Attachements
+                    {
+                        fileName = file.FileName,
+                        filePath = $"/uploads/experience/{experienceModel.experienceID}/{fileName}",
+                        fileType = file.ContentType,
+                        fileSize = file.Length,
+                        uploadedBy = User.Identity.Name,
+                        uploadedDate = DateTime.Now
+                    });
+                }
+                await _context.SaveChangesAsync();
+            }
+
+            return RedirectToPage("/Experience/Index", new { id = experienceModel.personID });
         }
+
     }
 }

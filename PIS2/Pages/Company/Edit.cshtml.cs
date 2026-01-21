@@ -60,6 +60,21 @@ namespace PIS2.Pages.Company
                 return RedirectToPage("/Shared/AccessDenied");
             }
 
+            var existingComp = await _context.Companies.Include(c=> c.Departments).FirstOrDefaultAsync();
+
+            if(existingComp == null)
+            {
+                TempData["message"] = ("Error", "Company not found");
+                return Page();
+            }
+
+            if(existingComp.companyStatus == mainStatus.Active && companyModel.companyStatus != mainStatus.Active 
+                && existingComp.Departments != null && existingComp.Departments.Any(c => c.departmentStatus == mainStatus.Active))
+            {
+                TempData["message"] = ("Error", "Active departments exist!");
+                return Page();
+            }
+
             ModelState.Remove("companyModel.modifiedBy");
             companyModel.modifiedBy = User.Identity.Name;
 

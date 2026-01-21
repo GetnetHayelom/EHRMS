@@ -1,0 +1,39 @@
+﻿@page
+@model PIS2.Pages.EvaluationType.CreateModel
+@{
+    ViewData["Title"] = "Create Evaluation Type";
+}
+
+<h3>Create Evaluation Type</h3>
+
+<form method="post">
+    <div class="mb-3">
+        <label asp-for="EvaluationType.evaluationTypeName" class="form-label"></label>
+        <input asp-for="EvaluationType.evaluationTypeName" class="form-control" />
+        <span asp-validation-for="EvaluationType.evaluationTypeName" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="EvaluationType.evaluationTypeWeight" class="form-label"></label>
+        <input asp-for="EvaluationType.evaluationTypeWeight" class="form-control" />
+        <span asp-validation-for="EvaluationType.evaluationTypeWeight" class="text-danger"></span>
+    </div>
+
+    <div class="form-check mb-3">
+        <input asp-for="EvaluationType.isFixed" class="form-check-input" />
+        <label asp-for="EvaluationType.isFixed" class="form-check-label">Is Fixed (HR)</label>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="EvaluationType.evaluationTypeStatus" class="form-label"></label>
+        <select asp-for="EvaluationType.evaluationTypeStatus" class="form-select"
+                asp-items="Html.GetEnumSelectList<Models.mainStatus>()"></select>
+    </div>
+
+    <button type="submit" class="btn btn-success">Save</button>
+    <a asp-page="Index" class="btn btn-secondary">Cancel</a>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

@@ -6,189 +6,204 @@
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
 
-<h1 class="fw-bold">Job Placements</h1>
+<div class="container-fluid">
 
-<h4 class="fw-bold">Assign New Job Placement</h4>
-<hr />
-<div class="">
-    <form method="get" class="d-print-none">
-        <div class="d-flex justify-content-between">
+    <!-- Page Header -->
+    <div class="mb-4">
+        <h1 class="fw-bold text-dark">Job Placements</h1>
+        <p class="text-muted mb-0">Assign and manage employee job placements</p>
+    </div>
 
-            <div class="d-flex">
-                <input asp-for="employmentModel.givenID" id="givenID" class="form-control me-2" placeholder="Enter Given ID" name="givenID" />
-                <button type="submit" class="btn btn-primary" id="goButton">Go</button>
-            </div>
+    <!-- Search Card -->
+    <div class="card shadow-sm mb-4 d-print-none">
+        <div class="card-body">
+            <h5 class="fw-semibold mb-3">Find Employee</h5>
 
-        </div>
-    </form>
-</div>
-@if(Model.employmentModel != null && Model.employmentModel.employmentStatus == Models.mainStatus.Active)
-{
-    <div class="row">
-        <h4 class="fw-bold"><u>@Model.employmentModel.personModel?.personFullName</u></h4>
-        <div class="">
-            <form method="post">
-                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                
-                <input asp-for="jobPlacementModel.employmentID" value="@Model.employmentModel.employmentID" type="hidden"/>
-                <input asp-for="jobPlacementModel.jobPlacementStatus" value="@Models.mainStatus.Suspended" type="hidden"/>
-      
-                <div class="d-flex">
-                    <div class="col-md-6 p-2">
-                        <div class="form-group">
-                            <label asp-for="company" class="control-label">Company</label>
-                            <select asp-for="company" class ="form-control" asp-items="ViewBag.companyID" id="companyID">
-                                <option value="">--Select Company--</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label asp-for="jobPlacementModel.departmentID" class="control-label">Department</label>
-                            <select asp-for="jobPlacementModel.departmentID" class ="form-control" id="departmentID">
-                                <option value="">--Select Department--</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label asp-for="jobPlacementModel.jobID" class="control-label">Job Title</label>
-                            <select asp-for="jobPlacementModel.jobID" class ="form-control" asp-items="ViewBag.jobID" id="jobID"></select>
-                        </div>
-                        <div class="d-flex justify-content-between">
-                            <div class="form-group">
-                                <label class="control-label">Job Grade</label>
-                                <select class="form-control" asp-items="ViewBag.jobGradeID" id="jobGradeID"></select>
-                            </div>
-                            <div class="form-group">
-                                <label asp-for="jobPlacementModel.jobStepID" class="control-label">Job Step</label>
-                                <select asp-for="jobPlacementModel.jobStepID" class="form-control" id="jobStepID"></select>
-                            </div>
-                            <div class="form-group">
-                                <span class="text-danger">*</span>
-                                <label asp-for="jobPlacementModel.jobPlacementSalary" class="control-label">Salary</label>
-                                <input asp-for="jobPlacementModel.jobPlacementSalary" class="form-control" id="salary" />
-                                <span asp-validation-for="jobPlacementModel.jobPlacementSalary" class="text-danger"></span>
-                            </div>
-                        </div>
-   
-                        
-                    </div>
-                    <div class="col-md-6 p-2">
-                        <div class="form-group">
-                            <label asp-for="jobPlacementModel.jobPlacementDate" class="control-label">Date</label>
-                            <input asp-for="jobPlacementModel.jobPlacementDate" class="form-control" type="date" value="@DateTime.Now.ToString("yyyy-MM-dd")" />
-                            <span asp-validation-for="jobPlacementModel.jobPlacementDate" class="text-danger"></span>
-                        </div>
-                        
-                        <div class="form-group">
-                            <span class="text-danger">*</span>
-                            <label asp-for="jobPlacementModel.jobPlacementReason" class="control-label">Reason</label>
-                            <select asp-for="jobPlacementModel.jobPlacementReason" class="form-control">
-                                <option value=""> -- Select Reason--</option>
-                                <option value="New Hire"> New Hire</option>
-                                <option value="Promotion"> Promotion</option>
-                                <option value="Transfer"> Transfer</option>
-                                <option value="Demotion"> Demotion</option>
-                                <option value="Temporary Assignment"> Temporary Assignment</option>
-                                <option value="Other"> Other</option>
-                            </select>
-                            <span asp-validation-for="jobPlacementModel.jobPlacementReason" class="text-danger"></span>
-                        </div>
-                        <div class="form-group">
-                            <span class="text-danger">*</span>
-                            <label asp-for="jobPlacementModel.jobPlacementReference" class="control-label">Reference</label>
-                            <input asp-for="jobPlacementModel.jobPlacementReference" class="form-control" />
-                            <span asp-validation-for="jobPlacementModel.jobPlacementReference" class="text-danger"></span>
-                        </div>
-                    </div>
-                </div>
-                <div class="form-group d-flex justify-content-end">
-                    <input type="submit" value="Save" class="btn btn-success m-2" />
+            <form method="get">
+                <div class="d-flex gap-2 align-items-center">
+                    <input asp-for="employmentModel.givenID" id="givenID" class="form-control w-25" placeholder="Enter Given ID" name="givenID" />
+
+                    <button type="submit" class="btn btn-primary px-4">
+                        Go
+                    </button>
                 </div>
             </form>
         </div>
     </div>
-}
-else if (Model.employmentModel != null && Model.employmentModel.employmentStatus != Models.mainStatus.Active)
-{
-    <h5 class="fw-bold text-danger">Employee not active!</h5>
-}
-else if (Model.employmentModel == null || Model.employmentModel.employmentID == 0)
-{
-    <h5 class="fw-bold text-info">Enter Employee ID To Proceed!</h5>
-}
-<div>
-    <a asp-page="/Employment/Edit" asp-route-id="@Model.employmentModel.employmentID">Back to Employee Page</a>
+
+    @if (Model.employmentModel != null && Model.employmentModel.employmentStatus == Models.mainStatus.Active)
+    {
+        <!-- Employee Info -->
+        <div class="mb-3">
+            <h4 class="fw-bold text-success">
+                @Model.employmentModel.personModel?.personFullName
+            </h4>
+            <hr />
+        </div>
+
+        <!-- Main Form Card -->
+        <div class="card shadow-sm">
+            <div class="card-body">
+
+                <h5 class="fw-semibold mb-4">Assign New Job Placement</h5>
+
+                <form method="post">
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                    <input asp-for="jobPlacementModel.employmentID"
+                           value="@Model.employmentModel.employmentID"
+                           type="hidden" />
+
+                    <input asp-for="jobPlacementModel.jobPlacementStatus"
+                           value="@Models.mainStatus.Suspended"
+                           type="hidden" />
+
+                    <div class="row g-4">
+
+                        <!-- LEFT COLUMN -->
+                        <div class="col-md-6">
+
+                            <div class="mb-3">
+                                <label asp-for="company" class="form-label fw-semibold">Company</label>
+                                <select asp-for="company" class="form-control" asp-items="ViewBag.companyID" id="filter-company">
+                                    <option value="">-- Select Company --</option>
+                                </select>
+                            </div>
+
+                            <div class="mb-3">
+                                <label asp-for="jobPlacementModel.departmentID" class="form-label fw-semibold">Department</label>
+                                <select asp-for="jobPlacementModel.departmentID" class="form-control" id="filter-department">
+                                    <option value="">-- Select Department --</option>
+                                </select>
+                            </div>
+
+                            <div class="mb-3">
+                                <label asp-for="jobPlacementModel.jobID" class="form-label fw-semibold">
+                                    <span class="text-danger">*</span> Job
+                                </label>
+
+                                <input type="text" class="form-control" list="jobList" placeholder="Type to search..." oninput="selector(this, 'jobIDHidden')" />
+
+                                <input type="hidden" asp-for="jobPlacementModel.jobID" id="jobIDHidden" onchange="getJobGrade(this, '#jobGradeID');" />
+
+                                <datalist id="jobList">
+                                    @foreach (var job in (SelectList)ViewData["jobID"])
+                                    {
+                                        <option data-id="@job.Value" value="@job.Text"></option>
+                                    }
+                                </datalist>
+
+                                <span asp-validation-for="jobPlacementModel.jobID" class="text-danger"></span>
+                            </div>
+
+                            <div class="row g-3">
+                                <div class="col-md-4">
+                                    <label class="form-label fw-semibold">Job Grade</label>
+                                    <select class="form-control"
+                                            asp-items="ViewBag.jobGradeID"
+                                            id="jobGradeID"
+                                            onchange="getJobSteps(this, '#jobStepID');">
+                                    </select>
+                                </div>
+
+                                <div class="col-md-4">
+                                    <label asp-for="jobPlacementModel.jobStepID" class="form-label fw-semibold">Job Step</label>
+                                    <select asp-for="jobPlacementModel.jobStepID"
+                                            class="form-control"
+                                            id="jobStepID"
+                                            onchange="getJobSalary(this, '#salary');">
+                                    </select>
+                                </div>
+
+                                <div class="col-md-4">
+                                    <label asp-for="jobPlacementModel.jobPlacementSalary" class="form-label fw-semibold">
+                                        <span class="text-danger">*</span> Salary
+                                    </label>
+                                    <input asp-for="jobPlacementModel.jobPlacementSalary"
+                                           class="form-control fw-bold"
+                                           id="salary" />
+                                    <span asp-validation-for="jobPlacementModel.jobPlacementSalary" class="text-danger"></span>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <!-- RIGHT COLUMN -->
+                        <div class="col-md-6">
+
+                            <div class="mb-3">
+                                <label asp-for="jobPlacementModel.jobPlacementDate" class="form-label fw-semibold">Placement Date</label>
+                                <input asp-for="jobPlacementModel.jobPlacementDate"
+                                       class="form-control"
+                                       type="date"
+                                       value="@DateTime.Now.ToString("yyyy-MM-dd")" />
+                                <span asp-validation-for="jobPlacementModel.jobPlacementDate" class="text-danger"></span>
+                            </div>
+
+                            <div class="mb-3">
+                                <label asp-for="jobPlacementModel.jobPlacementReason" class="form-label fw-semibold">
+                                    <span class="text-danger">*</span> Reason
+                                </label>
+                                <select asp-for="jobPlacementModel.jobPlacementReason" class="form-control">
+                                    <option value="">-- Select Reason --</option>
+                                    <option value="New Hire">New Hire</option>
+                                    <option value="Promotion">Promotion</option>
+                                    <option value="Transfer">Transfer</option>
+                                    <option value="Demotion">Demotion</option>
+                                    <option value="Temporary Assignment">Temporary Assignment</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                                <span asp-validation-for="jobPlacementModel.jobPlacementReason" class="text-danger"></span>
+                            </div>
+
+                            <div class="mb-3">
+                                <label asp-for="jobPlacementModel.jobPlacementReference" class="form-label fw-semibold">
+                                    <span class="text-danger">*</span> Reference
+                                </label>
+                                <input asp-for="jobPlacementModel.jobPlacementReference" class="form-control" />
+                                <span asp-validation-for="jobPlacementModel.jobPlacementReference" class="text-danger"></span>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="d-flex justify-content-end border-top pt-3 mt-4">
+                        <button type="submit" class="btn btn-success px-4">
+                            Save Job Placement
+                        </button>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    }
+    else if (Model.employmentModel != null && Model.employmentModel.employmentStatus != Models.mainStatus.Active)
+    {
+        <div class="alert alert-danger fw-semibold">
+            Employee is not active.
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-info fw-semibold">
+            Enter Employee ID to proceed.
+        </div>
+    }
+
+    <div class="mt-4">
+        <a asp-page="/JobPlacement/Index" class="link-primary fw-semibold">
+            ← View Job Placements
+        </a>
+    </div>
+
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script>
-        $(document).ready(function () {
-            $('#companyID').change(function () {
-                var companyID = $(this).val();
-                $('#departmentID').empty().append('<option value="">-- Loading --</option>');
-
-                if (companyID) {
-                    $.getJSON('?handler=DepartmentsByCompany&companyID=' + companyID, function (data) {
-                        $('#departmentID').empty().append('<option value="">-- Select Department --</option>');
-                        $.each(data, function (i, dept) {
-                            $('#departmentID').append($('<option>', {
-                                value: dept.departmentID,
-                                text: dept.departmentName
-                            }));
-                        });
-                    });
-                } else {
-                    $('#departmentID').empty().append('<option value="">-- Select Department --</option>');
-                }
-            });
-            $('#jobID').change(function () {
-                var jobID = $(this).val();
-                if (jobID) {
-                    $.getJSON('?handler=JobGrade&jobID=' + jobID, function (data) {
-                        $('#jobGradeID').val(data).trigger('change');
-
-                    })
-                }
-            })
-            
-            function getJobSteps() {
-                var jobGradeID = $('#jobGradeID').val();
-                if (jobGradeID) {
-                    $.getJSON('?handler=JobStep&jobGradeID=' + jobGradeID, function (data) {
-                        var $jobStep = $('#jobStepID');
-                        $jobStep.empty().append('');
-                        $.each(data, function (i, js) {
-                            $jobStep.append($('<option>', {
-                                value: js.jobStepID,
-                                text: js.jobStepNumber
-                            }));
-                        });
-                        // Auto-select first option if available
-                        if (data.length > 0) {
-                            $jobStep.val(data[0].jobStepID).trigger('change'); // triggers getSalary
-                        }
-                    });
-
-                    
-                }
-            }
-            $('#jobGradeID').change(getJobSteps);
-            if ($('#jobGradeID').val()) getJobSteps();
-
-            function getSalary () {
-                var jobStepID = $('#jobStepID').val();
-                $('#salary').empty().append('0.00');
-                
-                if (jobStepID) {
-                    $.getJSON('?handler=Salary&jobStepID=' + jobStepID, function (data) {
-                        $('#salary').val(data)
-                    })
-                }
-            }
-            $('#jobStepID').change(getSalary);
-            if ($('#jobStepID').val()) getSalary();
-        });
-       
-    </script>
+    <script src="~/js/filter-department.js"></script>
 }

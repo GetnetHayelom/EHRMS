@@ -29,7 +29,7 @@ namespace PIS2.Pages.Termination
         public employmentModel Employment { get; set; }
         int? EmpID { get; set; }
         public decimal SeverancePay { get; set; }
-        public IActionResult OnGet(int? id)
+        public async Task<IActionResult> OnGet(int? id)
         {
             Employment = new employmentModel();
             if (!string.IsNullOrEmpty(givenID))
@@ -44,7 +44,8 @@ namespace PIS2.Pages.Termination
                     id = emp.employmentID;
                     Console.WriteLine("############## The ID is == " + id);
                     employmentModel = _context.Employments.Include(e => e.personModel).FirstOrDefault(e => e.employmentID == id);
-                    SeverancePay = _core.GetSeverance(employmentModel.employmentID);
+                    var sp =await _core.GetSeverance(employmentModel.employmentID);
+                    SeverancePay = sp; 
                     return Page();
                     //return RedirectToPage("Create", new { id = emp.employmentID });
                 }
@@ -56,7 +57,7 @@ namespace PIS2.Pages.Termination
                 employmentModel = _context.Employments.Include(e => e.personModel)
                     .Where(e => e.employmentStatus == mainStatus.Active && e.TerminationModel == null)
                     .FirstOrDefault(e => e.employmentID == id);
-                SeverancePay = _core.GetSeverance(employmentModel.employmentID);
+                SeverancePay =await _core.GetSeverance(employmentModel.employmentID);
                 givenID = employmentModel.givenID;
             }
             

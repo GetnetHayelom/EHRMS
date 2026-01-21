@@ -71,6 +71,51 @@ namespace PIS2.Pages.JobPlacement
         // For more information, see https://aka.ms/RazorPagesCRUD.
         public async Task<IActionResult> OnPostAsync()
         {
+            var empStat = _context.Employments.FirstOrDefault(e => e.employmentID == jobPlacementModel.employmentID);
+            var depStat = await _context.Departments.FirstOrDefaultAsync(d => d.departmentID == jobPlacementModel.departmentID);
+            if(empStat == null)
+            {
+                TempData["message"] = ("Error", "Employment not found!");
+                populateSelect();
+                return Page();
+            }
+
+            if(empStat.employmentStatus != mainStatus.Active)
+            {
+                TempData["message"] =("Error","Employee is not active!") ;
+                populateSelect();
+                return Page();
+            }
+            if (depStat== null)
+            {
+                TempData["message"] = ("Error", "Department not found!");
+                populateSelect();
+                return Page();
+            }
+            if (depStat?.departmentStatus != mainStatus.Active)
+            {
+                TempData["message"] = ("Error", "Department is not active!");
+                populateSelect();
+                return Page();
+            }
+
+            var exisingPlacement = _context.JobPlacements.FirstOrDefault(j => j.jobPlacementStatus == mainStatus.Active && j.employmentID == jobPlacementModel.employmentID);
+            
+            if (exisingPlacement == null)
+            {
+                exisingPlacement = _context.JobPlacements.OrderByDescending(j => j.jobPlacementDate).FirstOrDefault(j => j.employmentID == jobPlacementModel.employmentID);
+            }
+
+            var prohibitions = _context.Prohibitions.Where(p => p.employmentID == jobPlacementModel.employmentID && p.prohibitionStatus == mainStatus.Active).ToList();
+
+            if (prohibitions.Any(p => 
+            new[] { ProhibitionType.Scale, ProhibitionType.Step, ProhibitionType.Promotion, ProhibitionType.Transfer }.Contains(p.prohibitionType) ))
+            {
+                TempData["message"] = ("Error", "Can not assign job to prohibited employment!");
+                populateSelect();
+                return Page();
+            }
+
             ModelState.Remove("modifiedBy");
             
             ModelState.Remove("jobPlacementModel.modifiedBy");
@@ -92,8 +137,10 @@ namespace PIS2.Pages.JobPlacement
                 populateSelect();
                 return Page();
             }
-            //populateSelect();
+            
+
             var job = _context.JobPlacements.FirstOrDefault(j => j.jobPlacementStatus == mainStatus.Active && j.employmentID == jobPlacementModel.employmentID);
+            
             if(job !=null && job.jobID == jobPlacementModel.jobID)
             {
                 job.jobStepID = jobPlacementModel.jobStepID;
@@ -127,34 +174,7 @@ namespace PIS2.Pages.JobPlacement
             
             return RedirectToPage("./Details", new {id = jobPlacementModel.jobPlacementID});
         }
-        public JsonResult OnGetDepartmentsByCompany(int companyID)
-        {
-            var departments = _context.Departments
-                .Where(d => d.companyID == companyID && d.departmentStatus == mainStatus.Active)
-                .OrderBy(d => d.departmentName)
-                .Select(d => new { d.departmentID, d.departmentName })
-                .ToList();
-
-            return new JsonResult(departments);
-        }
-        public JsonResult OnGetSalary(int jobStepID)
-        {
-            var Salary = _context.JobSteps.FirstOrDefault(js => js.jobStepID == jobStepID).jobStepSalary;
-            return new JsonResult(Salary);
-        }
-        public JsonResult OnGetJobGrade(int jobID)
-        {
-            var jobGradeID = _context.Jobs.FirstOrDefault(j => j.jobID == jobID).jobGradeID;
-            return new JsonResult(jobGradeID);
-        }
-        public JsonResult OnGetJobStep(int jobGradeID)
-        {
-            var jobSteps = _context.JobSteps
-                .Where(js => js.jobGradeID == jobGradeID)
-                .Select(js => new {js.jobStepID, js.jobStepNumber})
-                .ToList();
-            return new JsonResult(jobSteps);
-        }
+       
         public void populateSelect()
         {
             ViewData["companyID"] = new SelectList(_context.Companies.Where(c => c.companyStatus == mainStatus.Active).OrderBy(c => c.companyName), "companyID", "companyName");

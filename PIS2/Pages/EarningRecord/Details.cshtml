@@ -1,0 +1,149 @@
+﻿@page
+@model PIS2.Pages.EarningRecord.DetailsModel
+@{
+    ViewData["Title"] = "Deduction Details";
+}
+
+<h2 class="mb-3">Deduction Details</h2>
+
+<!-- Deduction Card -->
+<div class="card mb-4 shadow-sm">
+    <div class="card-body">
+        <dl class="row mb-0">
+            <dt class="col-sm-3">Employee</dt>
+            <dd class="col-sm-9">
+                @Model.Earning.EmploymentModel?.personModel?.personFullName
+            </dd>
+
+            <dt class="col-sm-3">Earning Type</dt>
+            <dd class="col-sm-9">
+                @Model.Earning.earningType?.earningTypeName
+            </dd>
+
+            <dt class="col-sm-3">Reference</dt>
+            <dd class="col-sm-9">@Model.Earning.earningReference</dd>
+
+            <dt class="col-sm-3">Amount</dt>
+            <dd class="col-sm-9">
+                @if (Model.Earning.IsPercentage)
+                {
+                    <span>@Model.Earning.earningAmount %</span>
+                }
+                else
+                {
+                    <span>@Model.Earning.earningAmount.ToString("N2")</span>
+                }
+            </dd>
+
+            <dt class="col-sm-3">Base</dt>
+            <dd class="col-sm-9">@Model.Earning.earningBase</dd>
+
+            <dt class="col-sm-3">Iteration</dt>
+            <dd class="col-sm-9">
+                @Model.Earning.remainingIteration /
+                @Model.Earning.earningIteration
+            </dd>
+
+            <dt class="col-sm-3">Status</dt>
+            <dd class="col-sm-9">
+                <span class="badge bg-info">
+                    @Model.Earning.earningStatus
+                </span>
+            </dd>
+
+            <dt class="col-sm-3">Last Modified By</dt>
+            <dd class="col-sm-9">@Model.Earning.modifiedBy</dd>
+        </dl>
+    </div>
+</div>
+
+<!-- Change Log -->
+<h4 class="mb-3">Change Log</h4>
+
+@if (Model.Earning.EarningHistories == null || !Model.Earning.EarningHistories.Any())
+{
+    <div class="alert alert-secondary">
+        No changes recorded.
+    </div>
+}
+else
+{
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped">
+            <thead class="table-light">
+                <tr>
+                    <th>Date</th>
+                    <th>Status</th>
+                    <th>Amount</th>
+                    <th>Modified By</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var h in Model.Earning.EarningHistories)
+                {
+                    <tr>
+                        <td>@h.modifiedDate.ToString("yyyy-MM-dd HH:mm")</td>
+                        <td>@h.earningStatus</td>
+                        <td>@h.earningAmount.ToString("N2")</td>
+                        <td>@h.modifiedBy</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+
+
+<h4 class="mt-5 mb-3">Transaction History</h4>
+
+@if (!Model.EarningTransactions.Any())
+{
+    <div class="alert alert-secondary">
+        No payroll transactions found for this deduction.
+    </div>
+}
+else
+{
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover">
+            <thead class="table-light">
+                <tr>
+                    <th>Payroll</th>
+                    <th>Period</th>
+                    <th>Status</th>
+                    <th>Earning</th>
+                    <th>Gross</th>
+                    <th>Net</th>
+                    <th>Processed By</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var t in Model.EarningTransactions)
+                {
+                    <tr>
+                        <td>
+                            @t.PayrollName
+                            <div class="text-muted small">@t.PayrollMonth</div>
+                        </td>
+                        <td>
+                            @t.PayrollStart.ToString("MM/dd/yyyy")
+                            -
+                            @t.PayrollEnd.ToString("MM/dd/yyyy")
+                        </td>
+                        <td>
+                            <span class="badge @(t.PayrollStatus == Models.payrollStatus.COMPLETED ? "bg-success" : "bg-warning")"> 
+                                @t.PayrollStatus
+                            </span>
+                        </td>
+                        <td class="text-danger fw-bold">
+                            @t.Amount?.ToString("N2")
+                        </td>
+                        <td>@t.GrossPay?.ToString("N2")</td>
+                        <td>@t.NetPay?.ToString("N2")</td>
+                        <td>@t.ProcessedBy</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}

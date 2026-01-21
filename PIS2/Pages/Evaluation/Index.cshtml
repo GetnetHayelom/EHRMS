@@ -1,0 +1,172 @@
+﻿@page
+@model Pages.Evaluation.IndexModel
+@{
+    ViewData["Title"] = "Evaluation List";
+}
+
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold text-dark">Employee Evaluations</h2>
+        <a asp-page="./Create" class="btn btn-primary shadow-sm">
+            <i class="bi bi-plus-lg"></i> Create New Evaluation
+        </a>
+    </div>
+    <div class="row g-3 mb-4">
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm bg-primary text-white">
+                <div class="card-body">
+                    <h6 class="text-white-50 small fw-bold">TOTAL EVALUATIONS</h6>
+                    <h3 class="fw-bold mb-0">@Model.Metrics.TotalCount</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm bg-white">
+                <div class="card-body">
+                    <h6 class="text-muted small fw-bold">AVG PERFORMANCE</h6>
+                    <h3 class="fw-bold mb-0 text-primary">@Model.Metrics.AverageScore.ToString("N1")%</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm bg-white border-start border-warning border-4">
+                <div class="card-body">
+                    <h6 class="text-muted small fw-bold">PENDING REVIEW</h6>
+                    <h3 class="fw-bold mb-0 text-warning">@Model.Metrics.PendingCount</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm bg-white border-start border-success border-4">
+                <div class="card-body">
+                    <h6 class="text-muted small fw-bold">HIGH PERFORMERS (>85%)</h6>
+                    <h3 class="fw-bold mb-0 text-success">@Model.Metrics.HighPerformers</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-body bg-light rounded">
+            <form method="get" class="row g-3 align-items-end">
+                <div class="col-md-2">
+                    <label class="form-label small fw-bold">Company</label>
+                    <select asp-for="company" asp-items="Model.CompanyList" class="form-select form-select-sm" onchange="this.form.submit()">
+                        <option value="">All Companies</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label small fw-bold">Department</label>
+                    <select asp-for="department" asp-items="Model.DepartmentList" class="form-select form-select-sm">
+                        <option value="">All Departments</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label small fw-bold">Status</label>
+                    <select asp-for="Status" asp-items="Html.GetEnumSelectList<PIS2.Models.evaluationStatus>()" class="form-select form-select-sm">
+                        <option value="">All Statuses</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label small fw-bold">From</label>
+                    <input type="date" asp-for="StartDate" class="form-control form-control-sm" />
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label small fw-bold">To</label>
+                    <input type="date" asp-for="EndDate" class="form-control form-control-sm" />
+                </div>
+                <div class="col-md-2">
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-dark btn-sm w-100">Filter</button>
+                        <a asp-page="./Index" class="btn btn-outline-secondary btn-sm w-100">Reset</a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="card border-0 shadow-sm">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="bg-light">
+                        <tr>
+                            <th class="ps-4">Evaluation Name</th>
+                            <th>Employee</th>
+                            <th>Period</th>
+                            <th>Status</th>
+                            <th>Total Score</th>
+                            <th class="text-end pe-4">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        
+                        @foreach (var item in Model.Evaluations)
+                        {
+                            <tr>
+                                <td class="ps-4">
+                                    <div class="fw-bold">@item.evaluationName</div>
+                                    <small class="text-muted">ID: #@item.evaluationID</small>
+                                </td>
+                                <td>
+                                    @item.personFullName
+                                    <div class="small text-muted">ID: @item.givenID</div>
+                                </td>
+                                <td>
+                                    
+                                    <span class="small">
+                                        @item.startDate.ToShortDateString() - @item.endDate.ToShortDateString()
+                                    </span>
+                                </td>
+                                <td>
+                                    @{
+                                        var badgeClass = item.evaluationStatus switch
+                                        {
+                                            PIS2.Models.evaluationStatus.Submitted => "bg-success",
+                                            PIS2.Models.evaluationStatus.Pending => "bg-warning text-dark",
+                                            PIS2.Models.evaluationStatus.Void => "bg-danger",
+                                            _ => "bg-secondary"
+                                        };
+                                    }
+                                    <span class="badge @badgeClass">@item.evaluationStatus</span>
+                                </td>
+                                <td>
+                                    <span class="fw-bold text-primary">
+                                        @item.FinalScore.ToString("N2")
+                                    </span>
+                                </td>
+                                <td class="text-end pe-4">
+                                    <div class="btn-group shadow-sm">
+                                        <a asp-page="./Details" asp-route-id="@item.evaluationID" class="btn btn-sm btn-outline-secondary" title="View">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                        @if(item.evaluationStatus == Models.evaluationStatus.Pending)
+                                        {
+                                            <a asp-page="./Edit" asp-route-id="@item.evaluationID" class="btn btn-sm btn-outline-primary" title="Edit">
+                                                <i class="bi bi-pencil"></i>
+                                            </a>
+                                            <button type="button" class="btn btn-sm btn-outline-danger" onclick="confirmDelete(@item.evaluationID)" title="Void">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        }
+                                        
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function confirmDelete(id) {
+            if (confirm("Are you sure you want to void this evaluation?")) {
+                // You can add an AJAX call to a 'Void' handler here
+                console.log("Voiding ID: " + id);
+            }
+        }
+    </script>
+}

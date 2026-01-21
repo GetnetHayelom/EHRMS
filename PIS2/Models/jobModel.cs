@@ -25,6 +25,7 @@ namespace PIS2.Models
         public virtual ICollection<jobPlacementModel>? JobPlacements { get; set; }
         public virtual ICollection<jobRequirementModel>? JobRequirements { get; set; }
         public virtual ICollection<employmentRequestModel>? EmploymentRequests { get; set; }
+        public virtual ICollection<VacancyModel>? Vacancies { get; set; }
         public virtual List<structureModel>? Structures { get; set; }
         public string modifiedBy { get; set; }
         public DateTime modifiedDate { get; set; } = DateTime.Now;

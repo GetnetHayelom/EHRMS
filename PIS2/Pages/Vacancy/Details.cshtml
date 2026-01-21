@@ -1,0 +1,112 @@
+﻿@page
+@model PIS2.Pages.Vacancy.DetailsModel
+
+@{
+    ViewData["Title"] = "Vacancy Details";
+}
+
+<div class="container mt-4">
+
+    <!-- HEADER -->
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2>@Model.Vacancy.VacancyTitle</h2>
+
+        <span class="badge fs-6
+            @(Model.Vacancy.Status == Models.VacancyStatus.Open ? "bg-success" :
+              Model.Vacancy.Status == Models.VacancyStatus.Closed ? "bg-danger" : "bg-warning")">
+            @Model.Vacancy.Status
+        </span>
+    </div>
+
+    <!-- VACANCY INFO -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <div class="row mb-2">
+                <div class="col-md-4"><strong>Department:</strong> @Model.Vacancy.departmentModel?.departmentName</div>
+                <div class="col-md-4"><strong>Position:</strong> @Model.Vacancy.jobModel?.jobTitle</div>
+                <div class="col-md-4"><strong>Location:</strong> @Model.Vacancy.Location</div>
+            </div>
+
+            <div class="row mb-2">
+                <div class="col-md-4"><strong>Employment Type:</strong> @Model.Vacancy.employmentTypeModel?.employmentTypeName</div>
+                <div class="col-md-4"><strong>Method:</strong> @Model.Vacancy.employmentMethodModel?.employmentMethodName</div>
+                <div class="col-md-4"><strong>Required:</strong> @Model.Vacancy.VacancyRequiredNumber</div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <strong>Description:</strong>
+                    <p class="text-muted">@Model.Vacancy.Remark</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ACTIONS -->
+    @if (Model.Vacancy.Status ==Models.VacancyStatus.Open)
+    {
+        <div class="mb-3 d-flex gap-3">
+            <a asp-page="/Applications/Create"
+               asp-route-vacancyId="@Model.Vacancy.VacancyID"
+               class="btn btn-primary">
+                <i class="bi bi-person-plus"></i> Add Applicant
+            </a>
+            <a asp-page="/Vacancy/Publish"
+                   asp-route-Id="@Model.Vacancy.VacancyID"
+                   class="btn btn-outline-info">
+                <i class="bi bi-person-plus"></i> Published View
+            </a>
+        </div>
+       
+    }
+
+    <!-- APPLICANTS LIST -->
+    <div class="card shadow-sm">
+        <div class="card-header bg-light">
+            <h5 class="mb-0">Applicants</h5>
+        </div>
+
+        <div class="card-body p-0">
+            @if (!Model.Vacancy.Applicants.Any())
+            {
+                <div class="p-3 text-muted text-center">
+                    No applicants yet.
+                </div>
+            }
+            else
+            {
+                <table class="table table-striped mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Applicant</th>
+                            <th>Applied Date</th>
+                            <th>Status</th>
+                            <th class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var applicant in Model.Vacancy.Applicants)
+                        {
+                            <tr>
+                                <td>@applicant.personModel?.personFullName</td>
+                                <td>@applicant.AppliedDate.ToShortDateString()</td>
+                                <td>
+                                    <span class="badge bg-secondary">
+                                        @applicant.Status
+                                    </span>
+                                </td>
+                                <td class="text-end">
+                                    <a asp-page="/Applications/Details"
+                                       asp-route-id="@applicant.ApplicantID"
+                                       class="btn btn-sm btn-outline-info">
+                                        View
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+        </div>
+    </div>
+</div>

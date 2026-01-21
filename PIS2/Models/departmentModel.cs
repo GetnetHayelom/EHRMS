@@ -26,6 +26,9 @@ namespace PIS2.Models
         public virtual ICollection<overtimeRecordModel>? OvertimeRecords { get; set; } = null!;
         public virtual ICollection<departmentHistoryModel>? DepartmentHistories { get; set; } = null!;
         public virtual ICollection<structureModel>? Structures { get; set; } = null!;
+        public virtual ICollection<VacancyModel>? Vacancies { get; set; }
+        public virtual ICollection<leaveModel>? Leaves { get; set; }
+        public virtual ICollection<penaltyModel>? Penalties { get; set; }
         public string modifiedBy { get; set; }
         public departmentModel() { }
     }

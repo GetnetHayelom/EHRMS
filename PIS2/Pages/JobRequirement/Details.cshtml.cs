@@ -28,7 +28,7 @@ namespace PIS2.Pages.JobRequirement
                 return NotFound();
             }
 
-            var jobrequirementmodel = await _context.JobRequirements.FirstOrDefaultAsync(m => m.jobRequirementID == id);
+            var jobrequirementmodel = await _context.JobRequirements.Include(j => j.JobModel).Include(j => j.DepartmentModel).ThenInclude(d => d.companyModel).FirstOrDefaultAsync(m => m.jobRequirementID == id);
             if (jobrequirementmodel == null)
             {
                 return NotFound();
@@ -42,7 +42,7 @@ namespace PIS2.Pages.JobRequirement
             var jrHistory = _context.JobRequirementHistories.Where(m => m.jobRequirementID == id).ToList();
             if (jrHistory.Any()) RequestHistory = jrHistory;
             
-            var jrCost = _context.JobReqCosts.Where(m => m.jobRequirementID == id).ToList();
+            var jrCost = _context.JobReqCosts.Include(jr => jr.VacancyModel).Where(m => m.VacancyModel.jobRequirementID == id).ToList();
             if (jrCost.Any()) JobReqCosts = jrCost;
             return Page();
         }

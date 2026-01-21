@@ -1,0 +1,56 @@
+﻿@page
+@model PIS2.Pages.Applications.CreateModel
+@{
+    ViewData["Title"] = "Add Applicant";
+}
+
+<h1 class="fw-bold">Add Applicant</h1>
+
+<div class="card shadow-sm p-3">
+    <form method="post" enctype="multipart/form-data">
+        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+        <!-- Selector -->
+        <div class="mb-3">
+            <label asp-for="Applicant.VacancyID" class="form-label fw-semibold">
+                <span class="text-danger">*</span> Vacancy
+            </label>
+            <input type="text" class="form-control" list="vacancyList" placeholder="Type to search..."
+            value="@Model.SelectedVacancyTitle" oninput="selector(this, 'vacancyIDHidden')" />
+            <input type="hidden" asp-for="Applicant.VacancyID" id="vacancyIDHidden" required value="@Model.SelectedVacancyId"/>
+            <datalist id="vacancyList">
+                @foreach (var vacancy in Model.VacancyList)
+                {
+                    <option data-id="@vacancy.Value" value="@vacancy.Text"></option>
+                }
+            </datalist>
+            <span asp-validation-for="Applicant.VacancyID" class="text-danger"></span>
+        </div>
+
+
+        <!-- Selector -->
+        <div class="mb-3">
+            <label asp-for="Applicant.personID" class="form-label fw-semibold">
+                <span class="text-danger">*</span> Person
+            </label>
+            <input type="text" class="form-control" list="personList" placeholder="Type to search..." oninput="selector(this, 'personIDHidden')" value="@Model.SelectedPersonName"/>
+            <input type="hidden" asp-for="Applicant.personID" id="personIDHidden" required value="@Model.SelectedPersonID"/>
+            <datalist id="personList">
+                @foreach (var person in Model.PersonList)
+                {
+                    <option data-id="@person.Value" value="@person.Text"></option>
+                }
+            </datalist>
+            <span asp-validation-for="Applicant.personID" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Applicant.ResumeFilePath" class="form-label">Upload Resume</label>
+            <input asp-for="Applicant.ResumeFilePath" class="form-control" type="file"/>
+        </div>
+
+   
+        <button type="submit" class="btn btn-success">Save Applicant</button>
+        <a asp-page="Index" class="btn btn-secondary ms-2">Cancel</a>
+    </form>
+</div>

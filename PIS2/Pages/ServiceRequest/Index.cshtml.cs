@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using PIS2.Models;
 
 namespace PIS2.Pages.ServiceRequest
@@ -18,10 +19,10 @@ namespace PIS2.Pages.ServiceRequest
             _context = context;
         }
 
-        public IList<serviceRequestModel> serviceRequestModel { get; set; } = default!;
-        public IList<departmentModel> Departments { get; set; } = default!;
-        public IList<companyModel> Companies { get; set; }
-        public IList<workSiteModel> WorkLocations { get; set; } = default!;
+        public List<serviceRequestModel> serviceRequestModel { get; set; } = default!;
+        public SelectList Departments { get; set; } = default!;
+        public SelectList Companies { get; set; }
+        public SelectList RequestType { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
         public int TotalRequest { get; set; }
@@ -32,19 +33,16 @@ namespace PIS2.Pages.ServiceRequest
         public int Completed { get; set; }
        
 
-        public async Task OnGetAsync(string status, string department, string company, string workLoc, string startDate, string endDate)
+        public async Task OnGetAsync(int? reqStatus, int? department, int? company, int? reqType, DateTime? startDate, DateTime? endDate)
         {
-            Departments = await _context.Departments
+            Departments = new SelectList(await _context.Departments
                 .Where(d => d.departmentStatus == mainStatus.Active)
-                .OrderBy(d => d.departmentName).ToListAsync();
+                .OrderBy(d => d.departmentName).ToListAsync(), "departmentID", "departmentName");
 
-            WorkLocations = await _context.WorkSites
-                .Where(d => d.workSiteStatus == mainStatus.Active)
-                .OrderBy(w => w.workSiteName).ToListAsync();
-
-            Companies = await _context.Companies
+           
+            Companies = new SelectList(await _context.Companies
                 .Where(d => d.companyStatus == mainStatus.Active)
-                .OrderBy(c => c.companyName).ToListAsync();
+                .OrderBy(c => c.companyName).ToListAsync(), "companyID", "companyName");
 
 
             StartDate = _context.ServiceRequests.OrderByDescending(s => s.serviceRequestDate).First().serviceRequestDate;
@@ -57,32 +55,35 @@ namespace PIS2.Pages.ServiceRequest
                 .Include(s => s.Employment).ThenInclude(e => e.JobPlacements)
                 .AsQueryable();
 
-            if (!string.IsNullOrEmpty(status))
+            if (reqStatus.HasValue)
             {
-                qry = qry.Where(s => s.serviceRequestStatus.ToString() == status);
+                qry = qry.Where(s => s.serviceRequestStatus ==(ServiceRequestStatus)reqStatus);
             }
-            else
+
+            if (reqType.HasValue)
             {
+                qry = qry.Where(s => s.requestedService == (ServiceRequestTypes) reqType);
+            }
+
+            if (company.HasValue)
+            {
+                qry = qry.Where(s => s.Employment.JobPlacements.FirstOrDefault(j => j.jobPlacementStatus == mainStatus.Active).departmentModel.companyID == company);
+            }
                 
+
+
+            if (department.HasValue) 
+            {
+                qry = qry.Where(s => s.Employment.JobPlacements.FirstOrDefault(j => j.jobPlacementStatus == mainStatus.Active).departmentModel.departmentID == department);
             }
+                
 
-            if (!string.IsNullOrEmpty(department))
-                qry = qry.Where(s => s.Employment.JobPlacements
-                                      .Any(j => j.departmentModel.departmentID == int.Parse(department)));
+           
 
-            if (!string.IsNullOrEmpty(company))
-                qry = qry.Where(s => s.Employment.JobPlacements
-                                      .Any(j => j.departmentModel.companyModel.companyID == int.Parse(company)));
+            if (startDate.HasValue) { qry = qry.Where(s => s.serviceRequestDate >= startDate);}
 
-            if (!string.IsNullOrEmpty(workLoc))
-                qry = qry.Where(s => s.Employment.SiteAssignments
-                                      .Any(j => j.workSiteModel.workSiteID == int.Parse(workLoc)));
 
-            if (DateTime.TryParse(startDate, out var start))
-                qry = qry.Where(s => s.serviceRequestDate >= start);
-
-            if (DateTime.TryParse(endDate, out var end))
-                qry = qry.Where(s => s.serviceRequestDate <= end);
+            if (endDate.HasValue) { qry = qry.Where(s => s.serviceRequestDate <= endDate); }
 
 
             serviceRequestModel = await qry.ToListAsync();

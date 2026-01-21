@@ -37,9 +37,31 @@
                             <td>@item.deductionIteration</td>
                             <td>@item.deductionAmount</td>
                             <td>@(item.IsPercentage ? "Yes" : "No")</td>
-                            <td>@item.deductionStatus</td>
                             <td>
-                                <a asp-page="Edit" asp-route-id="@item.deductionID" class="btn btn-sm btn-warning">Edit</a>
+                                @if (item.deductionStatus == Models.mainStatus.Active)
+                                {
+                                    <span class="badge bg-success">@Html.DisplayFor(modelItem => item.deductionStatus)</span>
+
+                                }
+                                else if (item.deductionStatus == Models.mainStatus.Suspended)
+                                {
+                                    <span class="badge bg-warning">@Html.DisplayFor(modelItem => item.deductionStatus)</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary">@Html.DisplayFor(modelItem => item.deductionStatus)</span>
+                                }
+                            </td>
+                            <td>
+                                
+                                <div class="btn-group" role="group">
+                                    <a asp-page="./Details" asp-route-id="@item.deductionID" class="btn btn-sm btn-outline-primary" title="View Details">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                    <a asp-page="./Edit" asp-route-id="@item.deductionID" class="btn btn-sm btn-outline-success" title="Edit">
+                                        <i class="bi bi-pencil-square"></i>
+                                    </a>
+                                </div>
                             </td>
                         </tr>
                     }
@@ -47,4 +69,7 @@
             </table>
         </div>
     </div>
+</div>
+<div>
+    <a asp-page="Index">View All Deductions</a>
 </div>

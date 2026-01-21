@@ -30,13 +30,16 @@ namespace PIS2.Pages.Penalty
         public string searchID { get; set; }
         public string message { get; set; }
         public List<penaltyModel>? Penalties { get; set; }
-        public IActionResult OnGet(int? id)
+        public SelectList PenaltyTypes { get; set; }
+
+        public async Task<IActionResult> OnGetAsync(int? id)
+
         {
-            
+            Employment = new employmentModel();
+
             Employment = new employmentModel();
             if (!string.IsNullOrEmpty(searchID))
             {
-
                 Employment = _context.Employments?
                     .Include(e => e.personModel)?.FirstOrDefault(e => e.givenID == searchID) ?? new employmentModel();
 
@@ -45,25 +48,27 @@ namespace PIS2.Pages.Penalty
 
                 if (Employment == null)
                 {
-                    TempData["SuccessMessage"] = $"No employment found with employment ID {searchID}";
+                    TempData["message"] = ("Error",$"No employment found with employment ID {searchID}");
                     return Page();
                 }
-                
-                
-
             }
-            else
+
+            if (id != null)
             {
-                
-                
-                Employment = new employmentModel();
-                
-                var leaveTypes = _context.LeaveTypes.Where(lt => lt.leaveGroup == leaveGroup.Absentism && lt.leaveTypeStatus == mainStatus.Active).ToList();
-    
+                Employment = _context.Employments?
+                    .Include(e => e.personModel)?.FirstOrDefault(e => e.employmentID == id) ?? new employmentModel();
+
+                Penalties = _context.Penalties
+                    .Include(p => p.penaltyTypeModel).Where(p => p.employmentID == Employment.employmentID).ToList();
+
+                if (Employment == null)
+                {
+                    TempData["message"] = ("Error", $"No employment found!");
+                    return Page();
+                }
             }
 
-            ViewData["employmentID"] = new SelectList(_context.Employments, "employmentID", "givenID");
-            ViewData["penaltyTypeID"] = new SelectList(_context.PenaltyTypes.Where(p => p.penaltyTypeStatus == mainStatus.Active), "penaltyTypeID", "penaltyName");
+            PenaltyTypes = new SelectList(_context.PenaltyTypes.Where(p => p.penaltyTypeStatus == mainStatus.Active), "penaltyTypeID", "penaltyName");
             return Page();
         }
 
@@ -89,6 +94,8 @@ namespace PIS2.Pages.Penalty
                     }
                     Console.WriteLine(kv.ToString());
                 }
+                OnGetAsync(penaltyModel.employmentID);
+                TempData["message"] = ("Error", "Missing property! Make sure all fields are filled!");
                 return Page();
             }
             

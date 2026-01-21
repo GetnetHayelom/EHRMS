@@ -16,6 +16,8 @@ namespace PIS2.Models
         public int penaltyTypeID { get; set; }
         public penaltyStatus penaltyStatus { get; set; }
         public virtual penaltyTypeModel? penaltyTypeModel { get; set; }
+        public int? departmentID { get; set; }
+        public virtual departmentModel? departmentModel { get; set; }
         public string modifiedBy { get; set; }
         public DateTime modifiedDate { get; set; } = DateTime.Now;
         public virtual ICollection<penaltyHistoryModel>? PenaltyHistories { get; set; } 

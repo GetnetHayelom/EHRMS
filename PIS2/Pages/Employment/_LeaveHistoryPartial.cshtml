@@ -45,7 +45,7 @@ else
                     </thead>
                     <tbody>
 
-                        @foreach (var item in Model)
+                        @foreach (var item in Model.OrderByDescending(l => l.leaveRequestDate))
                         {
                             <tr onclick="location.href='@Url.Page("/Leave/Details", new { id = item.leaveID })'" style="cursor:pointer;">
                                 <td>

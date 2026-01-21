@@ -22,48 +22,29 @@
 <div class="card shadow-sm border-0 mb-4 d-print-none">
     <div class="card-body">
         <form class="row g-3">
-
             <div class="col-md-2">
-                <label class="form-label fw-semibold">Status</label>
-                <select class="form-select" id="filter-status" onchange="filter()"
-                        asp-items="Html.GetEnumSelectList<Models.leaveStatus>()">
+                <label class="form-label fw-semibold">Company</label>
+                <select class="form-select" id="filter-company" onchange="filter()" asp-items="Model.Companies">
                     <option value="">All</option>
                 </select>
             </div>
-
             <div class="col-md-2">
                 <label class="form-label fw-semibold">Department</label>
                 <select class="form-select" id="filter-department" onchange="filter()">
                     <option value="">All</option>
-                    @foreach (var department in Model.Departments)
-                    {
-                        <option value="@department.departmentID">@department.departmentName</option>
-                    }
+
                 </select>
             </div>
 
             <div class="col-md-2">
-                <label class="form-label fw-semibold">Company</label>
-                <select class="form-select" id="filter-company" onchange="filter()">
+                <label class="form-label fw-semibold">Status</label>
+                <select class="form-select" id="filter-status" onchange="filter()"
+                        asp-items="Html.GetEnumSelectList<Models.ServiceRequestStatus>()">
                     <option value="">All</option>
-                    @foreach (var company in Model.Companies)
-                    {
-                        <option value="@company.companyID">@company.companyName</option>
-                    }
                 </select>
             </div>
-
-            <div class="col-md-2">
-                <label class="form-label fw-semibold">Work Location</label>
-                <select class="form-select" id="filter-workLoc" onchange="filter()">
-                    <option value="">All</option>
-                    @foreach (var workLocation in Model.WorkLocations)
-                    {
-                        <option value="@workLocation.workSiteID">@workLocation.workSiteName</option>
-                    }
-                </select>
-            </div>
-
+            
+           
             <div class="col-md-2">
                 <label class="form-label fw-semibold">Date From</label>
                 <input class="form-control" type="date" id="dateStart"
@@ -95,7 +76,7 @@
             </thead>
             <tbody>
                 @foreach (var item in Model.serviceRequestModel)
-                {
+                { 
                     string badgeClass = item.serviceRequestStatus switch
                     {
                         Models.ServiceRequestStatus.Hold => "bg-warning text-dark",
@@ -104,12 +85,22 @@
                         _ => "bg-secondary"
                     };
 
-                    <tr onclick="location.href='@Url.Page("Detail", new { id = item.serviceRequestID })'"
+                    string UrlTo = item.requestedService switch
+                    {
+
+                        Models.ServiceRequestTypes.Experience => "/Experience/Index?id=" + item.Employment?.personID,
+                        Models.ServiceRequestTypes.Guaranty => "/Guaranty/Create?id=" + item.Employment?.personID,
+                        Models.ServiceRequestTypes.Termination => "/Termination/Details?id=" + item.employmentID,
+                        _ => "Details/id="+ item.serviceRequestID
+
+                    };
+
+                    <tr onclick="location.href='@UrlTo'"
                         style="cursor:pointer">
-                        <td>@item.Employment.givenID</td>
+                        <td>@item.Employment?.givenID</td>
                         <td>@item.requestedService</td>
                         <td>@item.modifiedBy</td>
-                        <td>@item.serviceRequestDate.ToString("yyyy-MM-dd")</td>
+                        <td>@item.serviceRequestDate</td>
                         <td>
                             <span class="badge @badgeClass">
                                 @item.serviceRequestStatus

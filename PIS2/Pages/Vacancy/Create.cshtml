@@ -1,0 +1,143 @@
+﻿@page
+@model PIS2.Pages.Vacancy.CreateModel
+@{
+    ViewData["Title"] = "Create Vacancy";
+}
+
+<div class="container-fluid py-4">
+    <div class="d-flex align-items-center justify-content-between mb-4">
+        <div>
+            <h1 class="h3 mb-1 fw-bold text-dark">Create New Vacancy</h1>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-0 small">
+                    <li class="breadcrumb-item"><a asp-page="Index" class="text-decoration-none">Vacancy List</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">New Entry</li>
+                </ol>
+            </nav>
+        </div>
+        <a asp-page="Index" class="btn btn-outline-secondary btn-sm shadow-sm">
+            Cancel & Return
+        </a>
+    </div>
+
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-white py-3 border-bottom">
+            <h6 class="m-0 font-weight-bold text-primary"><i class="bi bi-plus-circle me-2"></i>Vacancy Information</h6>
+        </div>
+        <div class="card-body p-4">
+            <form method="post">
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger mb-4 py-2 small" role="alert"></div>
+                <input type="hidden" asp-for="VacancyModel.modifiedBy" value=" " />
+
+                <div class="row g-3 mb-4">
+                    <div class="col-12">
+                        <div class="p-2 bg-light rounded-2 mb-3">
+                            <span class="fw-bold small text-uppercase text-secondary px-2">1. Request Association</span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="VacancyModel.jobRequirementID" class="form-label fw-semibold small">Job Request Reference</label>
+                        <select asp-for="VacancyModel.jobRequirementID" class="form-select border-info" asp-items="Model.JobRequests">
+                            <option value="">-- Select Job Request If Any --</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="VacancyModel.VacancyTitle" class="form-label fw-semibold small"><span class="text-danger">*</span> Vacancy Display Title</label>
+                        <input asp-for="VacancyModel.VacancyTitle" class="form-control" placeholder="e.g. Marketing Lead - Q3 Expansion" />
+                    </div>
+                </div>
+
+                <div class="row g-3 mb-4">
+                    <div class="col-12">
+                        <div class="p-2 bg-light rounded-2 mb-3">
+                            <span class="fw-bold small text-uppercase text-secondary px-2">2. Position & Placement</span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="VacancyModel.jobID" class="form-label fw-semibold small"><span class="text-danger">*</span> Job Title/Position</label>
+                        <input type="text" class="form-control" list="jobList" placeholder="Search and select position..." oninput="selector(this, 'jobIDHidden')" />
+                        <input type="hidden" asp-for="VacancyModel.jobID" id="jobIDHidden" />
+                        <datalist id="jobList">
+                            @foreach (var job in Model.JobList)
+                            {
+                                <option data-id="@job.jobID" value="@job.jobTitle">@job.jobTitle</option>
+                            }
+                        </datalist>
+                        <span asp-validation-for="VacancyModel.jobID" class="text-danger small"></span>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label fw-semibold small">Company</label>
+                        <select class="form-select" id="filter-company" asp-items="Model.CompanyList">
+                            <option value="">-- Select Company --</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label asp-for="VacancyModel.departmentID" class="form-label fw-semibold small"><span class="text-danger">*</span> Department</label>
+                        <select asp-for="VacancyModel.departmentID" class="form-select" id="filter-department">
+                            <option value="">-- Select Department --</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="row g-3 mb-4">
+                    <div class="col-12">
+                        <div class="p-2 bg-light rounded-2 mb-3">
+                            <span class="fw-bold small text-uppercase text-secondary px-2">3. Contract Details & Timeline</span>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <label asp-for="VacancyModel.VacancyType" class="form-label fw-semibold small"><span class="text-danger">*</span> Vacancy Type</label>
+                        <select asp-for="VacancyModel.VacancyType" class="form-select" asp-items="@Html.GetEnumSelectList<Models.Ex_In>()">
+                            <option value="">-- Select Type --</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label asp-for="VacancyModel.employmentTypeID" class="form-label fw-semibold small"><span class="text-danger">*</span> Employment Type</label>
+                        <select asp-for="VacancyModel.employmentTypeID" class="form-select" asp-items="Model.EmploymentType">
+                            <option value="">-- Select --</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label asp-for="VacancyModel.employmentMethodID" class="form-label fw-semibold small"><span class="text-danger">*</span> Method</label>
+                        <select asp-for="VacancyModel.employmentMethodID" class="form-select" asp-items="Model.EmploymentMethods">
+                            <option value="">-- Select --</option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-8">
+                        <label asp-for="VacancyModel.Location" class="form-label fw-semibold small"><span class="text-danger">*</span> Location</label>
+                        <input asp-for="VacancyModel.Location" class="form-control" placeholder="HQ, Remote, or Specific Branch" />
+                    </div>
+                    <div class="col-md-4">
+                        <label asp-for="VacancyModel.VacancyRequiredNumber" class="form-label fw-semibold small"><span class="text-danger">*</span> Openings</label>
+                        <input asp-for="VacancyModel.VacancyRequiredNumber" class="form-control" type="number" value="1" />
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="VacancyModel.DatePosted" class="form-label fw-semibold small"><span class="text-danger">*</span> Posting Date</label>
+                        <input asp-for="VacancyModel.DatePosted" type="date" class="form-control" value="@DateTime.Now.ToString("yyyy-MM-dd")" />
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="VacancyModel.ClosingDate" class="form-label fw-semibold small"><span class="text-danger">*</span> Closing Date</label>
+                        <input asp-for="VacancyModel.ClosingDate" type="date" class="form-control border-warning" />
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <label asp-for="VacancyModel.Remark" class="form-label fw-semibold small">Additional Remarks</label>
+                    <textarea asp-for="VacancyModel.Remark" class="form-control" rows="3" placeholder="Enter any specific requirements or internal notes..."></textarea>
+                </div>
+
+                <div class="border-top pt-4 d-flex justify-content-end gap-2">
+                    <a asp-page="Index" class="btn btn-light border px-4">Discard</a>
+                    <button type="submit" class="btn btn-success px-5 shadow-sm">
+                        Publish Vacancy
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="~/js/filter-department.js"></script>

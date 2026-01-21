@@ -32,7 +32,8 @@ namespace PIS2.Pages.JobPlacement
         public string? jobGradeModel { get; set; }
         [BindProperty]
         public jobStepModel jobStepModel { get; set; }
-        public string ErrorMessage { get; set; }
+        public List<jobPlacementHistoryModel> JobPlacementHistory { get; set; }
+
         public IActionResult OnGet(int id)
         {
             if (id == null && id == 0)
@@ -50,13 +51,14 @@ namespace PIS2.Pages.JobPlacement
             company = jobPlacementModel.departmentModel.companyModel.companyName;
 
             jobGradeModel = jobPlacementModel.jobStepModel?.jobGradeModel?.jobGradeName;
+
             if(jobPlacementModel == null)
             {
-                ErrorMessage = "Job Placement Not Found.";
+                TempData["message"] = ("Error","Job Placement Not Found.");
                 return Page();
             }
-            
-           
+
+            JobPlacementHistory = _context.JobPlacementHistories.Where(j => j.jobPlacementID == id).ToList();
             populateSelect();
             return Page();
         }
@@ -66,11 +68,69 @@ namespace PIS2.Pages.JobPlacement
         // For more information, see https://aka.ms/RazorPagesCRUD.
         public async Task<IActionResult> OnPostAsync()
         {
-            ModelState.Remove("modifiedBy");
-            ModelState.Remove("jobStepName");
-            ModelState.Remove("departmentName");
-            ModelState.Remove("jobPlacementModel.modifiedBy");
-            jobPlacementModel.modifiedBy = User.Identity.Name;
+            var exisingPlacement =await _context.JobPlacements.FirstOrDefaultAsync(j => j.jobPlacementID == jobPlacementModel.jobPlacementID); 
+            
+            var empStat =await _context.Employments.FirstOrDefaultAsync(e => e.employmentID == exisingPlacement.employmentID);
+            var depStat = await _context.Departments.FirstOrDefaultAsync(d => d.departmentID == jobPlacementModel.departmentID);
+            if (empStat == null)
+            {
+                TempData["message"] = ("Error", "Employment not found!");
+                populateSelect();
+                return Page();
+            }
+
+            if (empStat.employmentStatus != mainStatus.Active)
+            {
+                TempData["message"] = ("Error", "Employment is not active!");
+                populateSelect();
+                return Page();
+            }
+            if (depStat == null)
+            {
+                TempData["message"] = ("Error", "Department not found!");
+                populateSelect();
+                return Page();
+            }
+            if (depStat?.departmentStatus != mainStatus.Active)
+            {
+                TempData["message"] = ("Error", "Department is not active!");
+                populateSelect();
+                return Page();
+            }
+            if (exisingPlacement == null)
+            {
+                TempData["message"] = ("Error", "Job Placement Not Found!");
+                populateSelect();
+                return Page();
+            }
+
+            var prohibitions = _context.Prohibitions.Where(p => p.employmentID == jobPlacementModel.employmentID && p.prohibitionStatus== mainStatus.Active).ToList();
+
+            if (prohibitions.Any(p => p.prohibitionType == ProhibitionType.Scale || p.prohibitionType == ProhibitionType.Step)
+                && (exisingPlacement?.jobStepID != jobPlacementModel.jobStepID))
+            {
+                TempData["message"] = ("Error", "Employee is Under Step or Scale Prohibition!");
+                populateSelect();
+                return Page();
+            }
+
+            if (prohibitions.Any(p => p.prohibitionType == ProhibitionType.Promotion)
+                && (jobPlacementModel?.jobPlacementReason != "Promotion"))
+            {
+                TempData["message"] = ("Error", "Employee is Under Promotion Prohibition!");
+                populateSelect();
+                return Page();
+            }
+
+            if (prohibitions.Any(p => p.prohibitionType == ProhibitionType.Transfer)
+                && ((jobPlacementModel?.jobPlacementReason != "Transfer") || (exisingPlacement.departmentID != jobPlacementModel.departmentID)))
+            {
+                TempData["message"] = ("Error", "Employee is Under Transfer Prohibition!");
+                populateSelect();
+                return Page();
+            }
+
+            ModelState.Clear();
             
 
             if (!ModelState.IsValid)
@@ -84,7 +144,8 @@ namespace PIS2.Pages.JobPlacement
                     }
                     
                 }
-
+                TempData["message"] = ("Error", "Check All Fileds Have Values!");
+                populateSelect();
                 return Page();
             }
 
@@ -97,6 +158,8 @@ namespace PIS2.Pages.JobPlacement
                 jp.jobPlacementReference = jobPlacementModel.jobPlacementReference;
                 jp.jobPlacementReason = jobPlacementModel.jobPlacementReason;
                 jp.jobPlacementStatus = jobPlacementModel.jobPlacementStatus;
+                jp.jobPlacementSalary = jobPlacementModel.jobPlacementSalary;
+                jp.jobStepID = jobPlacementModel.jobStepID;
                 jp.modifiedBy = User.Identity.Name;
             }
 
@@ -105,6 +168,7 @@ namespace PIS2.Pages.JobPlacement
             {
                    
                 await _context.SaveChangesAsync();
+                TempData["message"] = ("Success", "Job Placement Updated Successfully!");
                 return RedirectToPage("./Details", new { id = jobPlacementModel.jobPlacementID });
             }
             catch (DbUpdateException ex)

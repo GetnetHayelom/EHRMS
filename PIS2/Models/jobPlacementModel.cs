@@ -22,6 +22,7 @@ namespace PIS2.Models
         public string jobPlacementReference { get; set; }
         public string jobPlacementReason { get; set; }
         public virtual ICollection<jobPlacementHistoryModel>? JobPlacementHistories { get; set; }
+        public virtual ICollection<evaluationModel>? Evaluations { get; set; }
 
         public string modifiedBy { get; set; }
         public jobPlacementModel() { }

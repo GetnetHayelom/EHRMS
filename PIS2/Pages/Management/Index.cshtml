@@ -237,12 +237,12 @@
             </h4>
 
             <div class="row g-4">
-                @foreach (var item in Model.CompanySummaries)
+                @foreach (var item in Model.CompanySummaries.OrderByDescending(c => c.Employees))
                 {
                     <div class="col-md-4 col-lg-3">
                         <div class="card shadow-sm h-100 border-0 hover-shadow">
                             <div class="card-body">
-                                <h5 class="fw-bold text-primary">@item.CompanyName</h5>
+                                <h5 class="fw-bold text-primary"><a href="/Management/CompanyP?id=@item.CompanyID">@item.CompanyName</a></h5>
                                 <h6 class="text-muted mb-3">Manager: @(item.Manager ?? "N\\A")</h6>
                                 <div class="d-flex justify-content-between text-secondary border-top pt-2">
                                     <span>Employees:</span>
@@ -337,78 +337,86 @@
 
     <!--EMPLOYMENT STATS TABLE-->
     <div class="tab-pane fade" id="employmentStats">
-        <h4 class="fw-bold">Employment Stats</h4>
-        <!--ENPLOYMENT STATS-->
-        <!-- Employment Trends -->
-        <div class="col-md-12">
-            <div class="card shadow-sm p-3">
-                <canvas id="employmentHireChart" height="300" class="w-100">
-                </canvas>
+        
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h4 class="fw-bold m-0">Employment Statistics & Trends</h4>
+            <span class="badge bg-primary">Yearly Overview</span>
+        </div>
+
+        <div class="row mb-4">
+            <div class="col-md-12">
+                <div class="card shadow-sm border-0 p-3" style="height:400px">
+                    <canvas id="employmentHireChart" class="w-100"></canvas>
+                </div>
             </div>
         </div>
-      
-        <div class="d-flex  justify-content-center">
-            
-           
-        </div>
-        <table class="table table-bordered table-striped table-hover">
-            <thead class="bg-dark text-white">
-                <tr>
-                    <th>S/No</th>
-                    <th>Year</th>
-                    <th>New Employee</th>
-                    <th>Terminated Employee</th>
-                    <th>Active Employee</th>
-                    <th>Hire Rate</th>
-                    <th>Turn Over Rate</th>
-                    <th>Employee Retention Rate</th>
-                </tr>
-            </thead>
-            <tbody>
-                @{
-                    int indexStats = 1;
-                }
-                @foreach (var item in Model.EmploymentYearlyStats)
-                {
+
+
+        <div class="table-responsive">
+            <table class="table table-hover align-middle border">
+                <thead class="table-dark">
                     <tr>
-                        <td>@indexStats</td>
-                        <td>@item.Year</td>
-                        <td>@((item.NewEmployees ??0).ToString("N2"))</td>
-                        <td>@((item.TerminatedEmployees ??0).ToString("N2"))</td>
-                        <td>@((item.ActiveEmployees ?? 0).ToString("N2"))</td>
-                        <td>@((item.HireRatePercent ?? 0).ToString("N2"))%</td>
-                        <td>@((item.TerminationRatePercent ?? 0).ToString("N2"))%</td>
-                        <td>@((100-item.TerminationRatePercent ?? 0).ToString("N2"))%</td>
+                        <th class="text-center">#</th>
+                        <th>Year</th>
+                        <th class="text-end">New Hires</th>
+                        <th class="text-end">Terminations</th>
+                        <th class="text-end">Active Staff</th>
+                        <th class="text-center">Hire Rate</th>
+                        <th class="text-center">Turnover</th>
+                        <th class="text-center">Retention</th>
                     </tr>
-                    indexStats++;
-                }
-                
-            </tbody>
-            <tfoot class="fw-bold bg-secondary">
-                <tr>               
-                    <td colspan="2">Summary</td>
-                    <td>@Model.EmploymentYearlyStats.Sum(eys => eys.NewEmployees ?? 0).ToString("N2") (Total)
-                        @((Model.EmploymentYearlyStats?.Sum(eys => eys.NewEmployees) / Model.EmploymentYearlyStats.Count())) (Avg)
-                    </td>
-                    <td>
-                        @Model.EmploymentYearlyStats.Sum(eys => eys.TerminatedEmployees ?? 0).ToString("N2") (Total)
-                        @((Model.EmploymentYearlyStats.Sum(eys => eys.TerminatedEmployees)/ Model.EmploymentYearlyStats.Count())) (Avg)
-                    </td>
-                    <td>
-                        @Model.EmploymentYearlyStats.Sum(eys => eys.TerminatedEmployees ?? 0).ToString("N2") (Total)
-                        @((Model.EmploymentYearlyStats.Sum(eys => eys.TerminatedEmployees) / Model.EmploymentYearlyStats.Count())) (Avg)
-                    </td>
-                    <td>@((Model.EmploymentYearlyStats.Sum(eys => eys.HireRatePercent ?? 0) / Model.EmploymentYearlyStats.Count()).ToString("N2"))% (Avg)</td>
-                    <td>@((Model.EmploymentYearlyStats.Sum(eys => eys.TerminationRatePercent ?? 0) / Model.EmploymentYearlyStats.Count()).ToString("N2"))% (Avg)</td>
-                    <td>@((100-Model.EmploymentYearlyStats.Sum(eys => eys.TerminationRatePercent ?? 0) / Model.EmploymentYearlyStats.Count()).ToString("N2"))% (Avg)</td>
-                </tr>
-            </tfoot>
-        </table>
+                </thead>
+                <tbody>
+                    @{
+                        int indexStats = 1;
+                    }
+                    @foreach (var item in Model.EmploymentYearlyStats)
+                    {
+                        <tr>
+                            <td class="text-center text-muted">@indexStats</td>
+                            <td class="fw-bold">@item.Year</td>
+                            <td class="text-end">@((item.NewEmployees ?? 0).ToString("N0"))</td>
+                            <td class="text-end text-danger">@((item.TerminatedEmployees ?? 0).ToString("N0"))</td>
+                            <td class="text-end fw-semibold">@((item.ActiveEmployees ?? 0).ToString("N0"))</td>
+                            <td class="text-center">@((item.HireRatePercent ?? 0).ToString("N1"))%</td>
+                            <td class="text-center">@((item.TerminationRatePercent ?? 0).ToString("N1"))%</td>
+                            <td class="text-center">
+                                <span class="badge @(100 - item.TerminationRatePercent > 90 ? "bg-success" : "bg-info")">
+                                    @((100 - (item.TerminationRatePercent ?? 0)).ToString("N1"))%
+                                </span>
+                            </td>
+                        </tr>
+                        indexStats++;
+                    }
+                </tbody>
+                <tfoot class="table-light fw-bold border-top-2">
+                    <tr>
+                        <td colspan="2" class="text-center">AVERAGES / TOTALS</td>
+                        <td class="text-end">@Model.EmploymentYearlyStats.Sum(e => e.NewEmployees ?? 0).ToString("N0")</td>
+                        <td class="text-end">@Model.EmploymentYearlyStats.Sum(e => e.TerminatedEmployees ?? 0).ToString("N0")</td>
+                        <td class="text-end">---</td>
+                        <td class="text-center">@((Model.EmploymentYearlyStats.Average(e => e.HireRatePercent ?? 0)).ToString("N1"))%</td>
+                        <td class="text-center">@((Model.EmploymentYearlyStats.Average(e => e.TerminationRatePercent ?? 0)).ToString("N1"))%</td>
+                        <td class="text-center">@((100 - Model.EmploymentYearlyStats.Average(e => e.TerminationRatePercent ?? 0)).ToString("N1"))%</td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
     </div>
 
     <!--TERMINATION STATS-->
     <div class="tab-pane fade" id="terminationStats">
         <h4 class="fw-bold">Termination Stats (Active Companies)</h4>
+        <!--TERMINATION GRAPH-->
+        <div class="card shadow-sm border-0 mb-4">
+            <div class="card-body">
+                <h5 class="fw-bold mb-3">Termination Analysis by Company</h5>
+                <div style="height: 350px;">
+                    <canvas id="companyTerminationChart"></canvas>
+                </div>
+            </div>
+        </div>
+        <!--DETAIL TABLE-->
         <table class="table table-bordered table-striped table-hover">
             <thead class="bg-dark text-white">
                 <tr>
@@ -424,16 +432,24 @@
                 @{
                     int indexDepStats = 1;
                 }
-                @foreach (var item in Model.DepartmentEmploymentStats)
+                @foreach (var item in Model.DepartmentEmploymentStats.Where(d => d.TotalEmployees >0))
                 {
-                    <tr>
+                    <tr class="align-middle">
                         <td>@indexDepStats</td>
-                        <td>@item.companyName</td>
-                        <td>@((item.TotalEmployees ??0).ToString("N2"))</td>
-                        <td>@((item.TerminatedEmployees ??0).ToString("N2"))</td>
-                        <td>@((item.ActiveEmployees ??0).ToString("N2"))</td>
-                        <td>@((item.TerminationRatePercent ??0).ToString("N2"))%</td>
+                        <td>
+                            <span class="fw-bold text-dark">@item.companyName</span><br />
+                        </td>
+                        <td class="text-end">@item.TotalEmployees?.ToString("N0")</td>
+                        <td class="text-end text-danger">@item.TerminatedEmployees?.ToString("N0")</td>
+                        <td class="text-end fw-bold">@item.ActiveEmployees?.ToString("N0")</td>
+                        <td class="text-center">
+                            <div class="progress" style="height: 8px;">
+                                <div class="progress-bar bg-danger" style="width: @item.TerminationRatePercent%"></div>
+                            </div>
+                            <small>@item.TerminationRatePercent?.ToString("F1")%</small>
+                        </td>
                     </tr>
+                    
                     indexDepStats++;
                 }
 
@@ -468,26 +484,26 @@
 
 @section Scripts {
     <style>
-                          .clickable:hover {
-                              transform: scale(1.03);
-                              transition: all 0.2s ease-in-out;
-                              box-shadow: 0 0 10px rgba(0,0,0,0.15);
-                          }
+        .clickable:hover {
+            transform: scale(1.03);
+            transition: all 0.2s ease-in-out;
+            box-shadow: 0 0 10px rgba(0,0,0,0.15);
+        }
 
-                          .hover-shadow:hover {
-                              transform: translateY(-3px);
-                              transition: all 0.25s ease-in-out;
-                              box-shadow: 0 0 15px rgba(0,0,0,0.2);
-                          }
+        .hover-shadow:hover {
+            transform: translateY(-3px);
+            transition: all 0.25s ease-in-out;
+            box-shadow: 0 0 15px rgba(0,0,0,0.2);
+        }
 
-                          table thead {
-                              background: linear-gradient(90deg, #0d6efd, #6610f2);
-                          }
+        table thead {
+            background: linear-gradient(90deg, #0d6efd, #6610f2);
+        }
 
-                          .nav-pills .nav-link.active {
-                              background: linear-gradient(90deg, #0d6efd, #20c997);
-                              color: white !important;
-                          }
+        .nav-pills .nav-link.active {
+            background: linear-gradient(90deg, #0d6efd, #20c997);
+            color: white !important;
+        }
     </style>
     <style>
         /* --- General Aesthetic Upgrades --- */
@@ -650,140 +666,99 @@
     <script>
         document.addEventListener("DOMContentLoaded", function () {
             var ctx = document.getElementById("employmentHireChart").getContext("2d");
-            // Get the serialized data from the server
+
             var hireData = @Html.Raw(Json.Serialize(Model.EmploymentHireRate));
             var terminationData = @Html.Raw(Json.Serialize(Model.TerminationRate));
             var manPowerRate = @Html.Raw(Json.Serialize(Model.ActiveEmployeeRate));
 
             const allYears = [...new Set([...hireData.map(item => item.zYear), ...terminationData.map(item => item.zYear)])].sort();
 
-            // Map hire counts to years, filling missing values with 0
             const counts = allYears.map(year => {
                 const found = hireData.find(item => item.zYear === year);
                 return found ? found.zCount : 0;
             });
 
-            // Map termination counts to years, filling missing values with 0
             const tcounts = allYears.map(year => {
                 const found = terminationData.find(item => item.zYear === year);
                 return found ? found.zCount : 0;
             });
-            //Man Power Map
-            const manPower = manPowerRate.map(item => item.zCount);
 
+            const manPower = allYears.map(year => {
+                const found = manPowerRate.find(item => item.zYear === year);
+                return found ? found.zCount : 0;
+            });
 
             new Chart(ctx, {
-                    type: 'line',
-                    data: {
-                        labels: allYears,
-                        datasets: [{
+                type: 'bar', // Base type is bar
+                data: {
+                    labels: allYears,
+                    datasets: [
+                        {
+                            label: 'Active Man-power',
+                            data: manPower,
+                            type: 'line', // Override to line
+                            borderColor: '#10B981',
+                            backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                            borderWidth: 4,
+                            pointRadius: 5,
+                            pointBackgroundColor: '#fff',
+                            fill: true,
+                            tension: 0.4,
+                            order: 1 // Layer it on top
+                        },
+                        {
                             label: 'Hires',
                             data: counts,
-                            backgroundColor: 'rgba(63, 81, 181, 0.2)',
-                            borderColor: 'rgba(63, 81, 181, 1)',
-                            borderWidth: 3,
-                            tension: 0.2,
-                            pointBackgroundColor: 'rgba(63, 81, 181, 1)',
-                            pointRadius: 4,
-                            pointHoverRadius: 6,
-                            fill: true,
-                            yAxisID: 'y'
+                            backgroundColor: '#3B82F6',
+                            borderRadius: 4,
+                            order: 2
                         },
                         {
                             label: 'Terminations',
                             data: tcounts,
-                            backgroundColor: 'rgba(229, 57, 53, 0.2)',
-                            borderColor: 'rgba(229, 57, 53, 1)',
-                            borderWidth: 3,
-                            tension: 0.2,
-                            pointBackgroundColor: 'rgba(63, 81, 181, 1)',
-                            pointRadius: 4,
-                            pointHoverRadius: 6,
-                            fill: true,
-                            yAxisID: 'y'
-                        },
-                        {
-                            label: 'Active Man-power',
-                            data: manPower,
-                            backgroundColor: 'rgba(10, 250, 53, 0.2)',
-                            borderColor: 'rgba(10, 250, 53, 1)',
-                            borderWidth: 3,
-                            tension: 0.2,
-                            pointBackgroundColor: 'rgba(63, 81, 181, 1)',
-                            pointRadius: 4,
-                            pointHoverRadius: 6,
-                            fill: true,
-                            yAxisID: 'y'
+                            backgroundColor: '#EF4444',
+                            borderRadius: 4,
+                            order: 2
                         }
-                        ]
-                    },
-
-                        options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    title: {
-                        display: true,
-                        text: 'Employment Trends',
-                        color: '#111827'
-                    },
-                    legend: {
-                        position: 'top',
-                        labels: {
-                            color: '#374151',
-                            padding: 20,
-                            font: { size: 13, weight: '500' }
-                        }
-                    },
-                    tooltip: {
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: {
                         mode: 'index',
-                        intersect: false,
-                        callbacks: {
-                            title: (context) => `Year: ${context[0].label}`,
-                            label: (context) => `${context.dataset.label}: ${context.parsed.y.toLocaleString()}`
-                        }
-                    }
-                },
-                scales: {
-                    x: {
+                        intersect: false
+                    },
+                    plugins: {
                         title: {
                             display: true,
-                            text: 'Year',
-                            color: '#111827',
-                            font: { weight: 'bold' }
+                            text: 'Yearly Workforce Dynamics',
+                            font: { size: 16, weight: 'bold' }
                         },
-                        grid: {
-                            display: false
+                        legend: {
+                            position: 'top',
+                            labels: { usePointStyle: true, padding: 20 }
+                        },
+                        tooltip: {
+                            padding: 12,
+                            callbacks: {
+                                label: (context) => ` ${context.dataset.label}: ${context.parsed.y.toLocaleString()}`
+                            }
                         }
                     },
-                    y: {
-                        title: {
-                            display: true,
-                            text: 'Number of Employees',
-                            color: '#111827',
-                            font: { weight: 'bold' }
+                    scales: {
+                        x: {
+                            grid: { display: false }
                         },
-                        ticks: {
-                            callback: (value) => value.toLocaleString(),
-                            color: '#6B7280'
-                        },
-                        grid: {
-                            color: 'rgba(209, 213, 219, 0.3)'
+                        y: {
+                            beginAtZero: true,
+                            title: { display: true, text: 'Total Employees' },
+                            ticks: { callback: (val) => val.toLocaleString() }
                         }
                     }
-                },
-                interaction: {
-                    intersect: false,
-                    mode: 'nearest'
-                },
-                animation: {
-                    duration: 1500,
-                    easing: 'easeOutQuart'
                 }
-            }
-
-                });
             });
+        });
     </script>
 
     <!--JOB CATEGORY CHART SCRIPT-->
@@ -881,91 +856,64 @@
     <!--WORKLOC CHART -->
     <script>
         var jobCategoryData = @Html.Raw(Json.Serialize(Model.WorkSiteEmployees));
-        var Total = @Model.WorkSiteEmployees.Select(el => el.zCount).Sum();
-        var jobCategoryLabels = jobCategoryData.map(function (item) {
-            return Math.round(((item.zCount / Total) * 100)*100)/100 + '% ' + item.zName;
-        });
+        var totalEmployees = @Model.WorkSiteEmployees.Select(el => el.zCount).Sum();
 
-        var jobCategoryCounts = jobCategoryData.map(function (item) {
-            return item.zCount;
-        });
+        // Sort data so the 75% location is at the top for better visual flow
+        jobCategoryData.sort((a, b) => b.zCount - a.zCount);
+
+        var jobCategoryLabels = jobCategoryData.map(item => item.zName);
+        var jobCategoryCounts = jobCategoryData.map(item => item.zCount);
 
         var ctx = document.getElementById('workLocChart').getContext('2d');
         var jobCategoryChart = new Chart(ctx, {
-            type: 'doughnut',
+            type: 'bar',
             data: {
                 labels: jobCategoryLabels,
                 datasets: [{
+                    label: 'Employees',
                     data: jobCategoryCounts,
-                    backgroundColor: [
-                        '#3B82F6', '#60A5FA', '#34D399', '#10B981', '#FBBF24',
-                        '#F59E0B', '#EF4444', '#EC4899', '#8B5CF6', '#6366F1',
-                        '#14B8A6', '#0EA5E9', '#F472B6', '#84CC16', '#EAB308'
-                    ],
-                    borderColor: '#fff',
-                    borderWidth: 2,
-                    hoverOffset: 15,
-                    hoverBorderColor: '#333'
+                    backgroundColor: jobCategoryCounts.map((val, i) =>
+                        i === 0 ? '#3B82F6' : '#94A3B8' // Highlight the giant location, mute the others
+                    ),
+                    borderRadius: 6,
+                    borderSkipped: false,
+                    barThickness: 25
                 }]
             },
-                options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            cutout: '60%', // more modern thin-ring look
-            plugins: {
-                title: {
-                    display: true,
-                    text: "Worksite Employee Distribution",
-                    color: "#111827",
-                    padding: { top: 10, bottom: 25 }
-                },
-                legend: {
-                    position: 'bottom',
-                    labels: {
-                        color: "#374151",
-                        padding: 15,
-                        font: { size: 13, weight: '500' },
-                        generateLabels: function (chart) {
-                            const data = chart.data;
-                            return data.labels.map(function (label, i) {
-                                const meta = chart.getDatasetMeta(0);
-                                const style = meta.controller.getStyle(i);
-                                return {
-                                    text: label,
-                                    fillStyle: style.backgroundColor,
-                                    strokeStyle: style.borderColor,
-                                    lineWidth: 2,
-                                    index: i
-                                };
-                            });
+            options: {
+                indexAxis: 'y', // Makes it horizontal
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: {
+                        beginAtZero: true,
+                        grid: { display: false },
+                        ticks: {
+                            callback: function(value) {
+                                return value + " emps";
+                            }
                         }
                     },
-                    onClick: (e, legendItem, legend) => {
-                        const index = legendItem.index;
-                        const chart = legend.chart;
-                        chart.toggleDataVisibility(index);
-                        chart.update();
+                    y: {
+                        grid: { display: false },
+                        ticks: {
+                            font: { weight: '600' }
+                        }
                     }
                 },
-                tooltip: {
-                    usePointStyle: true,
-                    callbacks: {
-                        label: (context) => {
-                            const label = context.label || '';
-                            const value = context.raw || 0;
-                            const total = context.dataset.data.reduce((a, b) => a + b, 0);
-                            const percentage = Math.round((value / total) * 100);
-                            return `${label}: ${value} (${percentage}%)`;
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const val = context.raw;
+                                const pct = ((val / totalEmployees) * 100).toFixed(1);
+                                return ` ${val} Employees (${pct}%)`;
+                            }
                         }
                     }
                 }
-            },
-            animation: {
-                duration: 1200,
-                easing: 'easeOutQuart'
             }
-        }
-
         });
     </script>
     <!--JOB CLASS CHART -->
@@ -1073,4 +1021,107 @@
             }
         });
     </script>
+
+    <!--TERMINATION-->
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var ctx = document.getElementById('companyTerminationChart').getContext('2d');
+
+            // 1. Prepare data from the model (filtering as you did in the table)
+            var rawData = @Html.Raw(Json.Serialize(Model.DepartmentEmploymentStats.Where(d => d.TotalEmployees > 0)));
+            console.log("Deserialized Data:", rawData);
+            var labels = rawData.map(item => item.companyName);
+            var terminatedCounts = rawData.map(item => item.terminatedEmployees || 0);
+            var terminationRates = rawData.map(item => item.terminationRatePercent || 0);
+
+            var companyTerminationChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Terminated Employees',
+                            data: terminatedCounts,
+                            backgroundColor: 'rgba(239, 68, 68, 0.7)', // Soft Red
+                            borderColor: '#EF4444',
+                            borderWidth: 1,
+                            borderRadius: 5,
+                            yAxisID: 'yCount', // Left Axis
+                            order: 2
+                        },
+                        {
+                            label: 'Termination Rate (%)',
+                            data: terminationRates,
+                            type: 'line', // Combo part
+                            borderColor: '#F59E0B', // Amber/Gold
+                            backgroundColor: '#F59E0B',
+                            borderWidth: 3,
+                            pointRadius: 4,
+                            pointHoverRadius: 6,
+                            fill: false,
+                            tension: 0.3,
+                            yAxisID: 'yRate', // Right Axis
+                            order: 1
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'top' },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false,
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label.includes('Rate')) {
+                                        return label + ': ' + context.parsed.y.toFixed(1) + '%';
+                                    }
+                                    return label + ': ' + context.parsed.y.toLocaleString();
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: { display: false }
+                        },
+                        yCount: {
+                            type: 'linear',
+                            position: 'left',
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Number of Terminations',
+                                color: '#EF4444',
+                                font: { weight: 'bold' }
+                            },
+                            ticks: { color: '#EF4444' }
+                        },
+                        yRate: {
+                            type: 'linear',
+                            position: 'right',
+                            beginAtZero: true,
+                            max: 100, // Percentage cap
+                            title: {
+                                display: true,
+                                text: 'Termination Rate (%)',
+                                color: '#F59E0B',
+                                font: { weight: 'bold' }
+                            },
+                            ticks: {
+                                color: '#F59E0B',
+                                callback: value => value + '%'
+                            },
+                            grid: { display: false } // Only show grid for left axis
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+
+  
 }

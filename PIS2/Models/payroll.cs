@@ -66,6 +66,7 @@ namespace PIS2.Models
         public int employmentID { get; set; }
         public virtual employmentModel? EmploymentModel { get; set; }
         public earningType? earningType { get; set; }
+        public string? earningReference { get; set; }
         public mainStatus earningStatus { get; set; }
         public int earningIteration { get; set; } = 1; //no of months the earning will recure
         public int remainingIteration { get; set; } = 1;
@@ -97,7 +98,7 @@ namespace PIS2.Models
         public int earningRecordID { get; set; }
         public int earningTypeId { get; set; }
         public earningType? earningType { get; set; }
-        public int earningReference { get; set; }
+        public string earningReference { get; set; }
         public decimal earningAmount { get; set; }
         public int payrollPayID { get; set; }
         public virtual payrollPay? PayrollPay { get; set; }       
@@ -111,6 +112,7 @@ namespace PIS2.Models
         public string earningTypeName { get; set; } // e.g. "Basic Salary", "Overtime", "Transport Allowance"
         public bool isRecurring { get; set; } // true = applies every payroll (e.g. Salary), false = ad-hoc (e.g. Bonus)       
         public bool isTaxable { get; set; } // salary yes, per diem maybe no
+        public bool isPayroll { get; set; } = true; //true if it is to be proccessed on payroll(i.e OT), false for(i.e medication benefit)
         public mainStatus earningTypeStatus { get; set; }
         public string? earningTypeDescription { get; set; }
         public string modifiedBy { get; set; }

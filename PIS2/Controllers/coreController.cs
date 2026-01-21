@@ -29,6 +29,11 @@ namespace PIS2.Controllers
             return Ok(departments);
         }
 
+        /// <summary>
+        /// Get Employee Info by given ID
+        /// </summary>
+        /// <param name="employeeId"></param>
+        /// <returns></returns>
         // ✅ Employee Lookup API
         [HttpGet("EmployeeLookup/{employeeId}")]
         public IActionResult GetEmployeeLookup(string employeeId)
@@ -104,7 +109,7 @@ namespace PIS2.Controllers
         }
 
         [HttpGet("JobsByJobTitle/{jobTitle}")]
-        public IActionResult GetJobsByJobClass(string jobTitle)
+        public IActionResult GetJobsByJobTitle(string jobTitle)
         {
             var jobs = _context.Jobs
                 .Where(d => d.jobTitle.Contains(jobTitle))
@@ -113,6 +118,53 @@ namespace PIS2.Controllers
                 .ToList();
 
             return Ok(jobs);
+        }
+
+        /// <summary>
+        /// Returns job grade id of the given job
+        /// </summary>
+        /// <param name="jobID"></param>
+        /// <returns></returns>
+        [HttpGet("GetJobGrade/{jobID}")]
+        public IActionResult GetJobGradeByJobID(int jobID)
+        {
+            var jobGradeID = _context.Jobs
+                .FirstOrDefault(d => d.jobID == jobID)?.jobGradeID ?? 0;
+
+            return Ok(jobGradeID);
+        }
+
+        /// <summary>
+        /// Returns job stepID and jobStep Name for the given job grade
+        /// </summary>
+        /// <param name="jobGradeID"></param>
+        /// <returns></returns>
+        [HttpGet("GetJobSteps/{jobGradeID}")]
+        public IActionResult GetJobStepsByJobGrade(int jobGradeID)
+        {
+            var jobSteps = _context.JobSteps
+                .Where(d => d.jobGradeID == jobGradeID && d.jobStepStatus == mainStatus.Active)
+                .OrderBy(d => d.jobStepName)
+                .Select(d => new { d.jobStepID, d.jobStepName })
+                .ToList();
+
+            return Ok(jobSteps);
+        }
+
+        /// <summary>
+        /// Returns the salary of a given job step
+        /// </summary>
+        /// <param name="jobStepID"></param>
+        /// <returns></returns>
+        [HttpGet("GetJobSalary/{jobStepID}")]
+        public IActionResult GetSalaryByJobStep(int jobStepID)
+        {
+
+            var salary = _context.JobSteps
+                .FirstOrDefault(d => d.jobStepID == jobStepID && d.jobStepStatus == mainStatus.Active)?
+                .jobStepSalary ?? 0;
+
+            return Ok(salary);
         }
     }
 }

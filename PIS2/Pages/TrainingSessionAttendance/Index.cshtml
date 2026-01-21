@@ -1,0 +1,64 @@
+@page
+@model PIS2.Pages.TrainingSessionAttendance.IndexModel
+@{
+    ViewData["Title"] = "Session Attendance";
+}
+
+<div class="container-fluid px-4">
+    <div class="card shadow border-0 mt-4">
+        <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+            <div>
+                <h5 class="mb-0 text-primary">Attendance Roster</h5>
+                <small class="text-muted">Session: @Model.SessionInfo</small>
+            </div>
+            <a asp-page="Create" asp-route-sessionId="@Model.CurrentSessionId" class="btn btn-primary btn-sm">
+                <i class="fas fa-user-plus me-1"></i> Add Participant
+            </a>
+        </div>
+        <div class="card-body p-0">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Employee</th>
+                        <th>Status / Result</th>
+                        <th>Score</th>
+                        <th>Certificate</th>
+                        <th>Expiry</th>
+                        <th class="text-end px-4">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.Attendances)
+                    {
+                        <tr>
+                            <td>
+                                <div class="fw-bold">@item.EmploymentModel?.personModel?.personFullName</div>
+                                <small class="text-muted">ID: @item.employmentID</small>
+                            </td>
+                            <td>
+                                @{
+                                    var badgeClass = item.result switch
+                                    {
+                                        Models.trainingResult.Passed => "bg-success",
+                                        Models.trainingResult.Failed => "bg-danger",
+                                        Models.trainingResult.InProgress => "bg-warning text-dark",
+                                        _ => "bg-secondary"
+                                    };
+                                }
+                                <span class="badge @badgeClass">@item.result</span>
+                            </td>
+                            <td>@(item.score?.ToString("N2") ?? "—")</td>
+                            <td><code class="text-dark">@item.certificateNumber</code></td>
+                            <td>@item.certificateExpiryDate?.ToShortDateString()</td>
+                            <td class="text-end px-4">
+                                <a asp-page="./Edit" asp-route-id="@item.trainingAttendanceID" class="btn btn-sm btn-outline-primary border-0">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

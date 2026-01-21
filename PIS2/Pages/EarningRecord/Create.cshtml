@@ -16,15 +16,26 @@
         <div class="card-body">
 
             <!-- 🔍 SEARCH EMPLOYEE FIRST -->
-            <div class="mb-4">
-                <label class="form-label"><b>Search Employee by GivenID</b></label>
-                <div class="input-group">
-                    <input id="employeeLookupInput" type="text" class="form-control" placeholder="Enter Given ID..." />
-                    <button type="button" id="employeeLookupBtn" class="btn btn-primary">Search</button>
+            <div class="mb-4 col-md-4">
+                <label class="form-label">Enter Employee ID</label>
+                <div class="input-group col-md-4">
+                    <input id="employeeInput" type="text" class="form-control" placeholder="Enter employee givenID">
+                    <button id="searchEmployeeBtn" type="button" class="btn btn-primary">Search</button>
                 </div>
-                <small class="text-muted">Employee selection is required before creating an earning.</small>
-            </div>
 
+                <div id="employeeNotFound" class="alert alert-danger mt-3 d-none">
+                    Employee not found.
+                </div>
+
+                <div id="employeeInfo" class="alert alert-info mt-3 d-none">
+                    <strong>Name:</strong> <span id="empName"></span><br />
+                    <strong>Job Title:</strong> <span id="empJob"></span><br />
+                    <strong>Department:</strong> <span id="empDept"></span><br />
+                    <strong>Company:</strong> <span id="empCompany"></span>
+                </div>
+            </div>
+           
+           
             <!-- ❌ NOT FOUND -->
             <div id="notFoundMessage" class="alert alert-danger d-none">
                 No employee found with the provided ID.
@@ -44,7 +55,7 @@
             <form id="earningForm" method="post" class="d-none">
                 @Html.AntiForgeryToken()
 
-                <input type="hidden" asp-for="Earning.employmentID" id="employmentID" />
+                <input type="hidden" asp-for="Earning.employmentID" id="hiddenEmploymentID"/>
 
                 <div class="row g-3">
 
@@ -104,55 +115,55 @@
 </div>
 
 
-@section Scripts {
-    <script>
-        async function loadForm(empID){
-            const res = await fetch(`/api/core/EmployeeLookup/${empId}`);
-            const data = await res.json();
+<script>
+    async function loadForm(empId){
+        const response = await fetch(`/api/core/EmployeeLookup/${empId}`);
+        const data = await response.json();
 
-            const notFound = document.getElementById("notFoundMessage");
-            const card = document.getElementById("employeeCard");
-            const form = document.getElementById("earningForm");
+        const notFoundDiv = document.getElementById("employeeNotFound");
+        const infoDiv = document.getElementById("employeeInfo");
+        const form = document.getElementById("earningForm");
 
-            if (!data || !data.isFound) {
-                notFound.classList.remove("d-none");
-                card.classList.add("d-none");
-                form.classList.add("d-none");
-                return;
-            }
-
-            // Hide error
-            notFound.classList.add("d-none");
-
-            // Fill Card
-            document.getElementById("empName").textContent = data.employeeName;
-            document.getElementById("empJob").textContent = data.jobTitle;
-            document.getElementById("empDept").textContent = data.department;
-            document.getElementById("empCompany").textContent = data.company;
-            document.getElementById("employeeInput").textContent = data.employmentID;
-            // Set employment id for form
-            document.getElementById("employmentID").value = data.employmentID;
-
-            // Reveal card + form
-            card.classList.remove("d-none");
-            form.classList.remove("d-none");
+        if (!data.isFound) {
+            notFoundDiv.classList.remove("d-none");
+            infoDiv.classList.add("d-none");
+            form.classList.add("d-none");
+            return;
         }
-        document.getElementById("employeeLookupBtn").addEventListener("click", async () => {
 
-            const empId = document.getElementById("employeeLookupInput").value.trim();
-            if (!empId) return;
+        // Hide Not Found
+        notFoundDiv.classList.add("d-none");
 
-            loadForm(empID);
-            
-        });
-    </script>
-    <script>
-        window.addEventListener("DOMContentLoaded", function () {
-            const autoID = "@ViewData["GivenID"]";
+        // Fill Employee Info
+        document.getElementById("empName").innerText = data.employeeName;
+        document.getElementById("empJob").innerText = data.jobTitle;
+        document.getElementById("empDept").innerText = data.department;
+        document.getElementById("empCompany").innerText = data.company;
+        document.getElementById("employeeInput").innerText = empId;
 
-            if (autoID && autoID !== "") {
-                loadForm(autoID);
-            }
-        });
-    </script>
-}
+        infoDiv.classList.remove("d-none");
+
+        // Assign employmentID to hidden field
+        document.getElementById("hiddenEmploymentID").value = data.employmentID;
+
+        // Show main form
+        form.classList.remove("d-none");
+       
+    }
+
+    document.getElementById("searchEmployeeBtn").addEventListener("click", async function () {
+        const empId = document.getElementById("employeeInput").value.trim();
+        if (!empId) return;
+
+        loadForm(empId);
+    });
+</script>
+<script>
+    window.addEventListener("DOMContentLoaded", function () {
+        const autoID = "@ViewData["GivenID"]";
+
+        if (autoID && autoID !== "") {
+            loadForm(autoID);
+        }
+    });
+</script>

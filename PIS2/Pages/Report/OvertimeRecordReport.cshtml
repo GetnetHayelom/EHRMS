@@ -7,10 +7,12 @@
 }
 
 @await Html.PartialAsync("headerSimple", "")
+<!--PAGE HEADER-->
 <div class="d-flex justify-content-between">
     <h2 class="fw-bold">Overtime Report</h2>
+    <!--TABS CONTROL-->
     <div class="d-flex d-print-none">
-        <ul class="nav nav-tabs">
+        <ul class="nav nav-tabs nav-pills">
 
             <li class="nav-item">
                 <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#summaryView">Overtime Summary</button>
@@ -29,6 +31,201 @@
 <hr />
 
 <div class="tab-content">
+    <!--ALL OVERTIME SUMMARY REPORT VIEW DEFAULT ON GET HANDLER-->
+    <div class="tab-pane fade show active" id="summaryView">
+        <h4 class="fw-bold">Summary Report</h4>
+
+        <!--SUMMARY POINTS-->
+        <div class="card shadow-sm p-2">
+            <div class="d-flex gap-3 mb-4 d-print-flex flex-wrap">
+
+                <div class="flex-fill">
+                    <div class="card shadow-sm border-start border-info border-3">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <small class="text-muted">Total Overtime (Records)</small>
+                                    <h4 class="fw-bold mb-0"><u>@Model.TotalRecords1.ToString("N0")</u></h4>
+                                </div>
+                                <div><i class="bi bi-journal-check fs-2 text-info"></i></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex-fill">
+                    <div class="card shadow-sm border-start border-primary border-3">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <small class="text-muted">Total Overtime (Days)</small>
+                                    <h4 class="fw-bold mb-0"><u>@Model.TotalDays1.ToString("N0")</u></h4>
+                                </div>
+                                <div><i class="bi bi-calendar fs-2 text-primary"></i></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex-fill">
+                    <div class="card shadow-sm border-start border-warning border-3">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <small class="text-muted">Involved Employees</small>
+                                    <h4 class="fw-bold mb-0"><u>@Model.InvolvedEmployees1.ToString("N0")</u></h4>
+                                </div>
+                                <div><i class="bi bi-cash fs-2 text-warning"></i></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex-fill">
+                    <div class="card shadow-sm border-start border-warning border-3">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <small class="text-muted">Total Overtime Cost</small>
+                                    <h4 class="fw-bold mb-0"><u>@Model.TotalCost1.ToString("N0")</u></h4>
+                                </div>
+                                <div><i class="bi bi-cash fs-2 text-warning"></i></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex-fill">
+                    <div class="card shadow-sm border-start border-success border-3">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <small class="text-muted">Days Per Employee</small>
+                                    <h4 class="fw-bold mb-0"><u>@Model.DaysPerEmployees1.ToString("N0")</u></h4>
+                                </div>
+                                <div><i class="bi bi-calendar-day fs-2 text-success"></i></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex-fill">
+                    <div class="card shadow-sm border-start border-danger border-3">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <small class="text-muted">Cost Per Employee</small>
+                                    <h4 class="fw-bold mb-0"><u>@Model.CostPerEmployees1.ToString("N2")</u></h4>
+                                </div>
+                                <div><i class="bi bi-currency-dollar fs-2 text-danger"></i></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        
+
+        <!--FILTER CONTROLS-->
+        <div class="card shadow-sm p-2 m-2">
+            <form method="get">
+                <div class="d-flex m-2 justify-content-between flex-wrap">
+                    <div class="flex-fill m-2 d-print-flex">
+                        <label for="filter-company">Company:</label>
+                        <select class="form-select" aria-label="Default select example" asp-for="Company" name="Company">
+                            <option value="">All</option>
+                            @foreach (var company in Model.Companies)
+                            {
+                                <option value="@company.companyID">@company.companyName</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="flex-fill m-2 d-print-flex">
+                        <label for="filter-department">Overtime Type:</label>
+                        <select class="form-select" aria-label="Default select example" asp-for="OtType" name="OtType">
+                            <option value="">All</option>
+                            @foreach (var overtime in Model.OvertimeTypes)
+                            {
+                                <option value="@overtime.overtimeID">@overtime.overtimeName</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="flex-fill m-2 d-print-flex">
+                        <label for="filter-status">Status:</label>
+                        <select class="form-select" aria-label="Default select example" asp-for="OtStatus" name="OtStatus" asp-items="Html.GetEnumSelectList<Models.overtimeStatus>()">
+                            <option value="" selected>All</option>
+                        </select>
+                    </div>
+                    <div class="flex-fill m-2 d-print-flex">
+                        <label for="dateStart">Date From:</label>
+                        <input class="form-control" type="date" asp-for="SDate" />
+                    </div>
+                    <div class="flex-fill m-2 d-print-flex">
+                        <label for="dateEnd">Date of End Upto:</label>
+                        <input class="form-control" type="date" asp-for="EDate" />
+                    </div>
+                    <div class="flex-fill align-items-end justify-content-end">
+                        <button type="submit" class="btn btn-primary d-print-none m-2">Load</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <!--SUMMARY TABLE-->
+        <table class="table table-bordered table-striped table-hover print-full-width">
+            <thead class="bg-dark text-white">
+                <tr>
+                    <th>S/No</th>
+                    <th>CompanyName</th>
+                    <th>Employees</th>
+                    <th>Total Hours</th>
+                    <th>Total Cost</th>
+
+                </tr>
+            </thead>
+            <tbody>
+                @{
+                    int index = 1;
+                    foreach (var item in Model.OvertimeSummary.GroupBy(o => o.CompanyID))
+                    {
+                        <tr class="table-primary fw-bold">
+                            <td>@index</td>
+                            <td>@item.FirstOrDefault()?.CompanyName</td>
+                            <td>@item.Sum(e => e.EmployeesInvolved)?.ToString("N2")</td>
+                            <td>@item.Sum(e => e.TotalHours)?.ToString("N2")</td>
+                            <td>@item.Sum(e => e.TotalCost)?.ToString("N2")</td>
+                        </tr>
+
+
+                        int index2 = 1;
+                        foreach (var item2 in item.GroupBy(o => o.DepartmentID))
+                        {
+                            <tr class="table-secondary fw-bold">
+                                <td>@index.@index2</td>
+                                <td>@item2.FirstOrDefault()?.DepartmentName</td>
+                                <td>@item2.Sum(e => e.EmployeesInvolved)?.ToString("N2")</td>
+                                <td>@item2.Sum(e => e.TotalHours)?.ToString("N2")</td>
+                                <td>@item2.Sum(e => e.TotalCost)?.ToString("N2")</td>
+                            </tr>
+                            index2++;
+                            foreach (var item3 in item2.GroupBy(o => o.OvertimeID))
+                            {
+                                <tr>
+                                    <td></td>
+                                    <td>@item3.FirstOrDefault().OvertimeName</td>
+                                    <td>@item3.Sum(e => e.EmployeesInvolved)?.ToString("N2")</td>
+                                    <td>@item3.Sum(e => e.TotalHours)?.ToString("N2")</td>
+                                    <td>@item3.Sum(e => e.TotalCost)?.ToString("N2")</td>
+                                </tr>
+
+                            }
+                        }
+                        index++;
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+
     <!--CUSTOM OVERTIME REPORT-->
     <div class="tab-pane fade" id="customOvertimeReport">
         <h4 class="fw-bold">Custom Report</h4>
@@ -165,11 +362,11 @@
                 </div>
                 <div class="flex-fill d-print-flex p-3">
                     <label for="dateStart">Date From:</label>
-                    <input class="form-control" type="date" id="dateStart" id="dateEnd" asp-for="SDate" />
+                    <input class="form-control" type="date" id="dateStart"/>
                 </div>
                 <div class="flex-fill d-print-flex p-3">
                     <label for="dateEnd">Date Upto:</label>
-                    <input class="form-control" type="date" id="dateEnd" asp-for="EDate" />
+                    <input class="form-control" type="date" id="dateEnd"/>
                 </div>
                 
                 <div class="flex-fill d-flex align-items-end justify-content-end">
@@ -177,29 +374,35 @@
                 </div>
             </div>
         </div>
-    
-        
+ 
         <!-- NAV TABS -->
         <ul class="nav nav-tabs mt-4 d-print-none" id="overtimeTabs" role="tablist" >
             <li class="nav-item">
-                <a class="nav-link active" id="table-tab" data-bs-toggle="tab" href="#table" role="tab">
-                    Table Summary
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" id="monthly-tab" data-bs-toggle="tab" href="#monthly" role="tab">
+                <a class="nav-link active" id="monthly-tab" data-bs-toggle="tab" href="#monthly" role="tab">
                     Monthly Summary
                 </a>
             </li>
+            <li class="nav-item">
+                <a class="nav-link" id="table-tab" data-bs-toggle="tab" href="#table" role="tab">
+                    Table Summary
+                </a>
+            </li>
+            
             
         </ul>
 
         <!-- TAB CONTENT -->
         <div class="tab-content mt-3">
-                      
+            <!-- MONTHLY TAB -->
+            <div class="tab-pane fade show active" id="monthly" role="tabpanel">
+
+                <h4 class="fw-bold">Monthly Overtime Summary</h4>
+                <canvas id="monthlyChart" style="height: 150px;"></canvas>
+
+            </div>
 
             <!-- TABLE TAB -->
-            <div class="tab-pane fade show active" id="table" role="tabpanel">
+            <div class="tab-pane fade" id="table" role="tabpanel">
                 <!--CUSTOM REPORT TABLE-->
                 <div class="d-flex justify-content-end">
                     <div class="">@await Html.PartialAsync("filter")</div>
@@ -236,208 +439,11 @@
             </div>
 
 
-            <!-- MONTHLY TAB -->
-            <div class="tab-pane fade" id="monthly" role="tabpanel">
-                
-                <h4 class="fw-bold">Monthly Overtime Summary</h4>
-                <canvas id="monthlyChart" style="height: 150px;"></canvas>
-                
-            </div>
+            
         </div>
 
     </div>
 
-    <!--ALL OVERTIME SUMMARY REPORT VIEW DEFAULT ON GET HANDLER-->
-    <div class="tab-pane fade show active" id="summaryView">
-        <h4 class="fw-bold">Summary Report</h4>
-
-        <!--SUMMARY POINTS-->
-        <div class="d-flex gap-3 mb-4 d-print-flex flex-wrap">
-
-            <div class="flex-fill">
-                <div class="card shadow-sm border-start border-info border-3">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div>
-                                <small class="text-muted">Total Overtime (Records)</small>
-                                <h4 class="fw-bold mb-0"><u>@Model.TotalRecords1.ToString("N0")</u></h4>
-                            </div>
-                            <div><i class="bi bi-journal-check fs-2 text-info"></i></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="flex-fill">
-                <div class="card shadow-sm border-start border-primary border-3">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div>
-                                <small class="text-muted">Total Overtime (Days)</small>
-                                <h4 class="fw-bold mb-0"><u>@Model.TotalDays1.ToString("N0")</u></h4>
-                            </div>
-                            <div><i class="bi bi-calendar fs-2 text-primary"></i></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="flex-fill">
-                <div class="card shadow-sm border-start border-warning border-3">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div>
-                                <small class="text-muted">Involved Employees</small>
-                                <h4 class="fw-bold mb-0"><u>@Model.InvolvedEmployees1.ToString("N0")</u></h4>
-                            </div>
-                            <div><i class="bi bi-cash fs-2 text-warning"></i></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="flex-fill">
-                <div class="card shadow-sm border-start border-warning border-3">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div>
-                                <small class="text-muted">Total Overtime Cost</small>
-                                <h4 class="fw-bold mb-0"><u>@Model.TotalCost1.ToString("N0")</u></h4>
-                            </div>
-                            <div><i class="bi bi-cash fs-2 text-warning"></i></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="flex-fill">
-                <div class="card shadow-sm border-start border-success border-3">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div>
-                                <small class="text-muted">Days Per Employee</small>
-                                <h4 class="fw-bold mb-0"><u>@Model.DaysPerEmployees1.ToString("N0")</u></h4>
-                            </div>
-                            <div><i class="bi bi-calendar-day fs-2 text-success"></i></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="flex-fill">
-                <div class="card shadow-sm border-start border-danger border-3">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div>
-                                <small class="text-muted">Cost Per Employee</small>
-                                <h4 class="fw-bold mb-0"><u>@Model.CostPerEmployees1.ToString("N2")</u></h4>
-                            </div>
-                            <div><i class="bi bi-currency-dollar fs-2 text-danger"></i></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-        </div>
-
-        <!--FILTER CONTROLS-->
-        <div class="card shadow-sm p-2 m-2">
-            <form method="get" onsubmit="showLoader()">
-                <div class="d-flex m-2 justify-content-between flex-wrap">
-                    <div class="flex-fill m-2 d-print-flex">
-                        <label for="filter-company">Company:</label>
-                        <select class="form-select" aria-label="Default select example" asp-for="Company" name="Company">
-                            <option value="">All</option>
-                            @foreach (var company in Model.Companies)
-                            {
-                                <option value="@company.companyID">@company.companyName</option>
-                            }
-                        </select>
-                    </div>
-                    <div class="flex-fill m-2 d-print-flex">
-                        <label for="filter-department">Overtime Type:</label>
-                        <select class="form-select" aria-label="Default select example" asp-for="OtType" name="OtType">
-                            <option value="">All</option>
-                            @foreach (var overtime in Model.OvertimeTypes)
-                            {
-                                <option value="@overtime.overtimeID">@overtime.overtimeName</option>
-                            }
-                        </select>
-                    </div>
-                    <div class="flex-fill m-2 d-print-flex">
-                        <label for="filter-status">Status:</label>
-                        <select class="form-select" aria-label="Default select example" asp-for="OtStatus" name="OtStatus" asp-items="Html.GetEnumSelectList<Models.overtimeStatus>()">
-                            <option value="" selected>All</option>
-                        </select>
-                    </div>
-                    <div class="flex-fill m-2 d-print-flex">
-                        <label for="dateStart">Date From:</label>
-                        <input class="form-control" type="date" id="dateStart" asp-for="SDate" />
-                    </div>
-                    <div class="flex-fill m-2 d-print-flex">
-                        <label for="dateEnd">Date of End Upto:</label>
-                        <input class="form-control" type="date" asp-for="EDate" />
-                    </div>
-                    <div class="flex-fill align-items-end justify-content-end">
-                        <button type="submit" class="btn btn-primary d-print-none m-2">Load</button>
-                    </div>
-                </div>
-            </form>
-        </div>    
-
-        <!--SUMMARY TABLE-->
-        <table class="table table-bordered table-striped table-hover print-full-width">
-            <thead class="bg-dark text-white">
-                <tr>
-                    <th>S/No</th>
-                    <th>CompanyName</th>
-                    <th>Employees</th>
-                    <th>Total Hours</th>
-                    <th>Total Cost</th>
-                    
-                </tr>
-            </thead>
-            <tbody>
-                @{
-                    int index = 1;
-                    foreach(var item in Model.OvertimeSummary.GroupBy(o => o.CompanyID))
-                    {
-                        <tr class="table-primary fw-bold">
-                            <td>@index</td>
-                            <td>@item.FirstOrDefault()?.CompanyName</td>
-                            <td>@item.Sum(e => e.EmployeesInvolved)?.ToString("N2")</td>
-                            <td>@item.Sum(e => e.TotalHours)?.ToString("N2")</td>
-                            <td>@item.Sum(e => e.TotalCost)?.ToString("N2")</td>
-                        </tr>
-
-                       
-                        int index2 = 1;
-                        foreach(var item2 in item.GroupBy(o => o.DepartmentID))
-                        {
-                            <tr class="table-secondary fw-bold">
-                                <td>@index.@index2</td>
-                                <td>@item2.FirstOrDefault()?.DepartmentName</td>
-                                <td>@item2.Sum(e => e.EmployeesInvolved)?.ToString("N2")</td>
-                                <td>@item2.Sum(e => e.TotalHours)?.ToString("N2")</td>
-                                <td>@item2.Sum(e => e.TotalCost)?.ToString("N2")</td>
-                            </tr>
-                            index2++;
-                            foreach(var item3 in item2.GroupBy(o => o.OvertimeID))
-                            {
-                                <tr>
-                                    <td></td>
-                                    <td>@item3.FirstOrDefault().OvertimeName</td>
-                                    <td>@item3.Sum(e => e.EmployeesInvolved)?.ToString("N2")</td>
-                                    <td>@item3.Sum(e => e.TotalHours)?.ToString("N2")</td>
-                                    <td>@item3.Sum(e => e.TotalCost)?.ToString("N2")</td>
-                                </tr>
-                           
-                            }
-                         } index++;
-                    }
-                }
-            </tbody>
-        </table>
-    </div>
-    
     <!--DASHBOARD OVERTIME VIEW-->
     <div class="tab-pane fade" id="dashboardView" role="tabpanel">
         <div class="d-flex gap-3 flex-column">
@@ -466,6 +472,43 @@
 
 <script>
 
+
+    $(document).ready(function () {
+
+
+        $('button[data-bs-target="#customOvertimeReport"]')
+        .on('shown.bs.tab', function () {
+            const today = new Date();
+            const oneYearAgo = new Date();
+            oneYearAgo.setFullYear(today.getFullYear() - 1);
+
+            $("#dateStart").val(formatDate(oneYearAgo));
+            $("#dateEnd").val(formatDate(today));
+
+            filterOvertime();
+
+        });
+    });
+
+    function setDefaultAbsentismDates() {
+        const today = new Date();
+        const oneYearAgo = new Date();
+        oneYearAgo.setFullYear(today.getFullYear() - 1);
+
+        $("#dateStart-absentism").val(formatDate(oneYearAgo));
+        $("#dateEnd-absentism").val(formatDate(today));
+    }
+
+    function formatDate(date) {
+        return date.toISOString().split("T")[0]; // yyyy-MM-dd
+    }
+
+    function qp(v) {
+        return v == null ? '' : encodeURIComponent(v);
+    }
+
+
+    let monthlyChartInstance =null;
     function filterOvertime() {
         var department = $("#filter-department").val();
         var overtimeStatus = $("#filter-status").val();
@@ -475,15 +518,16 @@
         var dateEnd = $("#dateEnd").val();
         var empID = $("#empID").val();
 
-        let monthlyChartInstance;
+        
         // Normalize empty values to null
         department = (!department || department === "") ? null : department;
         overtimeStatus = (!overtimeStatus || overtimeStatus === "") ? null : overtimeStatus;
         overtimeType = (!overtimeType || overtimeType === "") ? null : overtimeType;
-        company = (!company || company === "") ? null : company;
-        dateStart = (!dateStart || dateStart === "") ? null : new Date(dateStart).toISOString();
-        dateEnd = (!dateEnd || dateEnd === "") ? null : dateEnd;
-        empID = (!empID || empID === "") ? null : empID;
+            company = (!company || company === "") ? null : company;
+            dateStart = dateStart ? new Date(dateStart).toISOString() : null;
+            dateEnd = dateEnd ? new Date(dateEnd).toISOString() : null;
+
+        
 
         // Build the URL with filters
         var url = `/Report/OvertimeRecordReport?handler=Filter` +
@@ -492,13 +536,12 @@
             `&overtimeType=${encodeURIComponent(overtimeType)}` +
             `&company=${encodeURIComponent(company)}` +
             `&dateStart=${encodeURIComponent(dateStart)}` +
-            `&dateEnd=${encodeURIComponent(dateEnd)}` +
-            `&empID=${encodeURIComponent(empID)}`;
+            `&dateEnd=${encodeURIComponent(dateEnd)}`;
 
+        
         // jQuery AJAX
         $.getJSON(url, function (data) {
-            //console.log("Received Data:", data);
-
+            
             $("#table-body").html(data.tableHtml);
             $("#TotalRecords").text(parseFloat(data.totalRecords).toFixed(2));
             $("#TotalHours").text(parseFloat(data.totalHours).toFixed(2) + " Hrs");
@@ -508,80 +551,85 @@
             $("#DaysPerEmployees").text(parseFloat(data.daysPerEmployees).toFixed(2) + " Days");
             $("#CostPerEmployees").text(parseFloat(data.costPerEmployees).toFixed(2));
 
-        // MONTHLY CHART
-        const monthlyCtx = document.getElementById('monthlyChart').getContext('2d');
+            
+            // MONTHLY CHART
+            const monthlyCtx = document.getElementById('monthlyChart').getContext('2d');
 
-        // Map the data
-        const labels = data.monthlySummary.map(m => m.period);
-        const overtimeCounts = data.monthlySummary.map(m => m.overtimeCount);
-        const totalCosts = data.monthlySummary.map(m => m.totalCost);
+            // Map the data
+            const labels = data.monthlySummary.map(m => m.period);
+            const overtimeCounts = data.monthlySummary.map(m => m.overtimeCount);
+            const totalCosts = data.monthlySummary.map(m => m.totalCost);
 
-        // Destroy previous chart instance if exists
-        if (monthlyChartInstance) {
-            monthlyChartInstance.destroy();
-        }
-
-        monthlyChartInstance = new Chart(monthlyCtx, {
-            type: 'bar',
-            data: {
-                labels: labels,
-                datasets: [
-                    {
-                        label: 'Overtime Count',
-                        data: overtimeCounts,
-                        borderColor: 'rgba(54, 162, 235, 1)',
-                        backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                        yAxisID: 'yCount'
-                    },
-                    {
-                        label: 'Total Cost',
-                        data: totalCosts,
-                        borderColor: 'rgba(255, 206, 86, 1)',
-                        backgroundColor: 'rgba(255, 206, 86, 0.2)',
-                        yAxisID: 'yCost'
-                    }
-                ]
-            },
-            options: {
-                responsive: true,
-                interaction: { mode: 'index', intersect: false },
-                stacked: false,
-                plugins: {
-                    tooltip: { mode: 'index', intersect: false },
-                    legend: { position: 'top' }
-                },
-                scales: {
-                    yCount: {
-                        type: 'linear',
-                        position: 'left',
-                        ticks: {
-                            stepSize: Math.ceil(Math.max(...overtimeCounts) / 10)
-                        },
-                        title: { display: true, text: 'Overtime Count' }
-                    },
-                    yCost: {
-                        type: 'linear',
-                        position: 'right',
-                        ticks: {
-                            stepSize: Math.ceil(Math.max(...totalCosts) / 10),
-                            callback: function(value) {
-                                if (value >= 1000) return (value / 1000) + 'k';
-                                return value;
-                            }
-                        },
-                        grid: { drawOnChartArea: false },
-                        title: { display: true, text: 'Total Cost' }
-                    },
-                    x: { title: { display: true, text: 'Period' } }
-                }
+            // Destroy previous chart instance if exists
+            if (monthlyChartInstance) {
+                monthlyChartInstance.destroy();
             }
-        });
-        //MONTHLY CHART END
+
+            monthlyChartInstance = new Chart(monthlyCtx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Overtime Count',
+                            data: overtimeCounts,
+                            borderColor: 'rgba(54, 162, 235, 1)',
+                            backgroundColor: 'rgba(54, 162, 235, 0.8)',
+                            yAxisID: 'yCount',
+                            tension: 0.4
+
+                        },
+                        {
+                            label: 'Total Cost',
+                            data: totalCosts,
+                            borderColor: 'rgba(255, 206, 86, 1)',
+                            backgroundColor: 'rgba(255, 206, 86, 0.8)',
+                            yAxisID: 'yCost',
+                            tension: 0.4
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    interaction: { mode: 'index', intersect: false },
+                    stacked: false,
+                    plugins: {
+                        tooltip: { mode: 'index', intersect: false },
+                        legend: { position: 'top' }
+                    },
+                    scales: {
+                        yCount: {
+                            type: 'linear',
+                            position: 'left',
+                            ticks: {
+                                stepSize: Math.max(1, Math.ceil(Math.max(...overtimeCounts, 1) / 10))
+                            },
+                            title: { display: true, text: 'Overtime Count' }
+                        },
+                        yCost: {
+                            type: 'linear',
+                            position: 'right',
+                            ticks: {
+                                stepSize: Math.ceil(Math.max(...totalCosts) / 10),
+                                callback: function(value) {
+                                    if (value >= 1000) return (value / 1000) + 'k';
+                                    return value;
+                                }
+                            },
+                            grid: { drawOnChartArea: false },
+                            title: { display: true, text: 'Total Cost' }
+                        },
+                        x: { title: { display: true, text: 'Period' } }
+                    }
+                }
+            });
+            //MONTHLY CHART END
             updateRowCount("countID");
         }).fail(function (jqXHR, textStatus, errorThrown) {
             console.error("Error:", textStatus, errorThrown);
         });
     }
+    
 
  
 </script>
@@ -648,7 +696,7 @@
             });
         }
 
-        // Example: you should replace Model.DashboardX with your real model arrays
+        // 
         createBarChart(
             'chartOvertimeCount',
             @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.MonthlySummary?.Select(m => m.Period))),

@@ -4,43 +4,45 @@
     ViewData["Title"] = "Create Payroll";
 }
 <h1 class="fw-bold">Payroll</h1>
-<h2>Create New Payroll</h2>
+<h4 class="fw-bold">Prepare a Payroll</h4>
+<div class="card p-2 shadow-sm col-md-6">
+    <form method="post">
+        <div class="form-group">
+            <label asp-for="Payroll.payrollName" class="form-label">Payroll Name</label>
+            <input asp-for="Payroll.payrollName" class="form-control" />
+            <span asp-validation-for="Payroll.payrollName" class="text-danger"></span>
+        </div>
 
-<form method="post">
-    <div class="form-group">
-        <label asp-for="Payroll.payrollName" class="form-label"></label>
-        <input asp-for="Payroll.payrollName" class="form-control" />
-        <span asp-validation-for="Payroll.payrollName" class="text-danger"></span>
-    </div>
+        <div class="form-group">
+            <label asp-for="Payroll.companyID" class="form-label">Company</label>
+            <select asp-for="Payroll.companyID" class="form-control" asp-items="@(new SelectList(Model.Companies, "companyID", "companyName"))">
+                <option value="">-- Select Company (optional) --</option>
+            </select>
+            <span asp-validation-for="Payroll.companyID" class="text-danger"></span>
+        </div>
 
-    <div class="form-group">
-        <label asp-for="Payroll.companyID" class="form-label"></label>
-        <select asp-for="Payroll.companyID" class="form-control" asp-items="@(new SelectList(Model.Companies, "companyID", "companyName"))">
-            <option value="">-- Select Company (optional) --</option>
-        </select>
-        <span asp-validation-for="Payroll.companyID" class="text-danger"></span>
-    </div>
+        <div class="form-group">
+            <label asp-for="Payroll.StartDate" class="form-label">Start</label>
+            <input asp-for="Payroll.StartDate" type="date" class="form-control" />
+            <span asp-validation-for="Payroll.StartDate" class="text-danger"></span>
+        </div>
 
-    <div class="form-group">
-        <label asp-for="Payroll.StartDate" class="form-label"></label>
-        <input asp-for="Payroll.StartDate" type="date" class="form-control" />
-        <span asp-validation-for="Payroll.StartDate" class="text-danger"></span>
-    </div>
+        <div class="form-group">
+            <label asp-for="Payroll.EndDate" class="form-label">End</label>
+            <input asp-for="Payroll.EndDate" type="date" class="form-control" />
+            <span asp-validation-for="Payroll.EndDate" class="text-danger"></span>
+        </div>
 
-    <div class="form-group">
-        <label asp-for="Payroll.EndDate" class="form-label"></label>
-        <input asp-for="Payroll.EndDate" type="date" class="form-control" />
-        <span asp-validation-for="Payroll.EndDate" class="text-danger"></span>
-    </div>
+        <div class="form-group">
+            <label>Status</label>
+            <input class="form-control" value="@Model.Payroll.payrollStatus" readonly />
+        </div>
+        <div class="d-flex justify-content-end m-2"><button type="submit" class="btn btn-success mt-3">Save</button></div>
 
-    <div class="form-group">
-        <label>Status</label>
-        <input class="form-control" value="@Model.Payroll.payrollStatus" readonly />
-    </div>
+    </form>
+</div>
 
-    <button type="submit" class="btn btn-primary mt-3">Create Payroll</button>
-</form>
-
+<a asp-page="Index"> View All Payrolls</a>
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
 }

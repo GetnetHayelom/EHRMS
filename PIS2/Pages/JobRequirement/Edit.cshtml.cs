@@ -31,14 +31,14 @@ namespace PIS2.Pages.JobRequirement
                 return NotFound();
             }
 
-            var jobrequirementmodel =  await _context.JobRequirements.FirstOrDefaultAsync(m => m.jobRequirementID == id);
+            var jobrequirementmodel =  await _context.JobRequirements.Include(j => j.JobModel).Include(j => j.DepartmentModel).ThenInclude(d => d.companyModel).FirstOrDefaultAsync(m => m.jobRequirementID == id);
             if (jobrequirementmodel == null)
             {
                 return NotFound();
             }
             jobRequirementModel = jobrequirementmodel;
            ViewData["departmentID"] = new SelectList(_context.Departments, "departmentID", "departmentName");
-           ViewData["jobID"] = new SelectList(_context.Jobs, "jobID", "jobID");
+           ViewData["jobID"] = new SelectList(_context.Jobs, "jobID", "jobTitle");
             return Page();
         }
 

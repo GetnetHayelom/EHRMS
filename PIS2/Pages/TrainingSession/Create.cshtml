@@ -1,0 +1,75 @@
+@page
+@model PIS2.Pages.TrainingSession.CreateModel
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-9">
+            <div class="card shadow border-0">
+                <div class="card-header bg-dark text-white py-3">
+                    <h5 class="mb-0">Schedule Training Session</h5>
+                </div>
+                <div class="card-body p-4">
+                    <form method="post">
+                        <div class="row g-3">
+                            <div class="col-md-12">
+                                <label class="form-label fw-bold">Select Training Program</label>
+                                <select asp-for="Session.trainingID" asp-items="Model.TrainingList" class="form-select select2">
+                                    <option value="">-- Select Training --</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label asp-for="Session.startDate" class="form-label fw-bold">Start Date & Time</label>
+                                <input asp-for="Session.startDate" class="form-control" type="datetime-local" />
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="Session.endDate" class="form-label fw-bold">End Date & Time</label>
+                                <input asp-for="Session.endDate" class="form-control" type="datetime-local" />
+                            </div>
+
+                            <!-- Selector -->
+                            <div class="col-md-6">
+                                <label asp-for="Session.personID" class="form-label fw-semibold">
+                                    <span class="text-danger">*</span> Person
+                                </label>
+                                <input type="text" class="form-control" list="personList" placeholder="Type to select..." oninput="selector(this, 'personIDHidden')" />
+                                <input type="hidden" asp-for="Session.personID" id="personIDHidden" />
+                                <datalist id="personList">
+                                    @foreach (var person in Model.TrainerList)
+                                    {
+                                        <option data-id="@person.Value" value="@person.Text"></option>
+                                    }
+                                </datalist>
+                                <span asp-validation-for="Session.personID" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="Session.deliveryMode" class="form-label fw-bold">Delivery Mode</label>
+                                <select asp-for="Session.deliveryMode" asp-items="Html.GetEnumSelectList<Models.trainingDeliveryMode>()" class="form-select"></select>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label asp-for="Session.location" class="form-label fw-bold">Location</label>
+                                <input asp-for="Session.location" class="form-control" placeholder="Room 101 or URL" />
+                            </div>
+                            <div class="col-md-4">
+                                <label asp-for="Session.cost" class="form-label fw-bold">Cost</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">$</span>
+                                    <input asp-for="Session.cost" class="form-control" />
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <label asp-for="Session.sessionStatus" class="form-label fw-bold">Initial Status</label>
+                                <select asp-for="Session.sessionStatus" asp-items="Html.GetEnumSelectList<Models.trainingStatus>()" class="form-select"></select>
+                            </div>
+                        </div>
+
+                        <div class="mt-4 pt-3 border-top d-flex justify-content-end gap-2">
+                            <a asp-page="Index" class="btn btn-light">Cancel</a>
+                            <button type="submit" class="btn btn-success px-4">Save Session</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

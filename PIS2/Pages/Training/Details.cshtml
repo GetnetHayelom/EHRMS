@@ -1,0 +1,89 @@
+﻿@page
+@model PIS2.Pages.Training.DetailsModel
+<div class="container mt-4">
+    <div class="card shadow overflow-hidden">
+        <div class="row g-0">
+            <div class="col-md-4 bg-light border-end p-4 text-center">
+                <div class="display-1 text-primary mb-3">
+                    <i class="fas fa-graduation-cap"></i>
+                </div>
+                <h3 class="mb-1 fw-bold">@Model.Training.trainingTitle</h3>
+                <span class="badge bg-primary px-3 py-2">@Model.Training.category</span>
+            </div>
+            <div class="col-md-8 p-4">
+                <h5 class="text-uppercase text-muted mb-4">Training Information</h5>
+                <dl class="row">
+                    <dt class="col-sm-4 text-muted">Mandatory Status</dt>
+                    <dd class="col-sm-8 text-dark">@(Model.Training.isMandatory ? "Required for all staff" : "Optional / Self-driven")</dd>
+
+                    <dt class="col-sm-4 text-muted">Recertification</dt>
+                    <dd class="col-sm-8 text-dark">Every @Model.Training.validityMonths Months</dd>
+
+                    <dt class="col-sm-4 text-muted">Current Status</dt>
+                    <dd class="col-sm-8">
+                        @if (Model.Training.isActive)
+                        {
+                            <span class="text-success fw-bold">Active</span>
+                        }
+                        else
+                        {
+
+                            <span class="text-danger fw-bold">Disabled</span>
+                        }
+                    </dd>
+
+                    <dt class="col-sm-4 text-muted">Description</dt>
+                    <dd class="col-sm-8 mt-2 border p-3 rounded bg-light">@Model.Training.description</dd>
+                </dl>
+
+                <div class="mt-4 pt-3 border-top">
+                    <a asp-page="./Edit" asp-route-id="@Model.Training.trainingID" class="btn btn-warning shadow-sm me-2 text-white">Edit Training Info</a>
+                    <a asp-page="/TrainingSession/Create" asp-route-id="@Model.Training.trainingID" class="btn btn-primary shadow-sm me-2 text-white">Add Session</a>
+                    <a asp-page="./Index" class="btn btn-outline-secondary">Back to Trainings</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow-sm p-2">
+        <div class="card-header">
+            <h4 class="fw-bold">Training Sessions</h4>
+        </div>
+        <div class="card-body">
+            @{
+                int index = 0;
+            }
+            <table class="table table-hover table-striped table-bordered print-full-width">
+                <thead class="bg-dark text-white">
+                    <tr>
+                        <th>S/N</th>
+                        <th>Location</th>
+                        <th>Start Time</th>
+                        <th>End Time</th>
+                        <th>Trainer</th>
+                        <th>Delivery Model</th>
+                        <th>Cost</th>
+                        <th>Status</th>
+                    </tr>
+                    
+                </thead>
+                <tbody>
+                    @foreach(var session in Model.Sessions)
+                    {
+                        index++;
+                        <tr onclick="location.href='@Url.Page("/TrainingSession/Details", new { id = session.trainingSessionID })'" style="cursor:pointer">
+                            <td>@index</td>
+                            <td>@session.location</td>
+                            <td>@session.startDate</td>
+                            <td>@session.endDate</td>
+                            <td>@session.PersonModel?.personFullName</td>
+                            <td>@session.deliveryMode</td>
+                            <td>@session.cost</td>
+                            <td>@session.sessionStatus</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

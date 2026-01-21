@@ -148,7 +148,9 @@ namespace PIS2.Pages.Management
             EmploymentYearlyStats = _context.EmploymentYearlyStats.OrderBy(eys => eys.Year).ToList();
 
             //Department Employee Stats
-            DepartmentEmploymentStats = _context.DepartmentEmploymentStats
+            var activeComps = await _context.Companies.Where(c => c.companyStatus == mainStatus.Active).Select(c => c.companyID).ToListAsync();
+
+            DepartmentEmploymentStats = _context.DepartmentEmploymentStats.Where(c => c.companyID.HasValue && activeComps.Contains(c.companyID.Value))
                 .GroupBy(des => des.companyID)
                 .Select(d => new DepartmentEmploymentStats
                 {
@@ -203,8 +205,10 @@ namespace PIS2.Pages.Management
                     zCount = g.Count()
                 }).ToList();
 
+
+            var activeComp = await _context.Companies.Where(c => c.companyStatus == mainStatus.Active).Select(c => c.companyID).ToListAsync();
             var companies = _context.CompanySummaryView.ToList();
-            CompanySummaries = _context.CompanySummaryView.ToList();
+            CompanySummaries = _context.CompanySummaryView.Where(c => activeComp.Contains(c.CompanyID) && c.Employees >0).ToList();
 
             var annualLeaveSummary = _context.AnnualLeaveSummary.ToList();
             AnnualLeaveSummaries = new List<AnnuallLeaveSummaryCompanyView>();
@@ -226,6 +230,7 @@ namespace PIS2.Pages.Management
                         PayableLeave = dv.Sum(lb => lb.adjustedLeaveBalanceCost) 
                     }).OrderByDescending(d => d.PayableLeave).ToList() ?? new List<AnnuallLeaveSummaryDepartmentView>()
                 }).OrderByDescending(d => d.PayableLeave).ToList();
+
             foreach (var c in companies)
             {
                 c.payableLeaves = annualLeaveSummary.Where(als => als.companyID == c.CompanyID).Sum(als => als.adjustedLeaveBalanceCost);
@@ -235,8 +240,9 @@ namespace PIS2.Pages.Management
 
         }
 
+        
     }
-
+    
     public class AnnuallLeaveSummaryDepartmentView
     {
         public int DepartmentID { get; set; } = 0;
