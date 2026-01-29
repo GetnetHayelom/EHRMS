@@ -308,7 +308,7 @@ namespace PIS2.Models
                 entity.HasMany(d => d.WorkSites).WithOne(e => e.employmentModel).HasForeignKey(d => d.employmentID).OnDelete(DeleteBehavior.NoAction);
                 entity.HasOne(e => e.employmentMethodModel).WithMany(em => em.Employments).HasForeignKey(d => d.employmentID).OnDelete(DeleteBehavior.NoAction);
                 entity.HasOne(e => e.employmentRequestModel).WithMany(er => er.Employments).HasForeignKey(d => d.employmentRequestID).OnDelete(DeleteBehavior.NoAction);
-                
+                entity.HasMany(e => e.WorkSiteHistories).WithOne(wh => wh.employmentModel).HasForeignKey(d => d.employmentID).OnDelete(DeleteBehavior.NoAction);
 
                 entity.HasOne(d => d.employmentTypeModel).WithMany(e => e.Employments).HasForeignKey(d => d.employmentTypeID).OnDelete(DeleteBehavior.NoAction);
                 entity.HasIndex(d => d.personID).HasFilter("[employmentStatus] = 1").IsUnique();
@@ -1158,7 +1158,7 @@ namespace PIS2.Models
             // earningRecordModel
             modelBuilder.Entity<earningRecordModel>(entity =>
             {
-                entity.HasOne(e => e.earningType).WithMany(p => p.Earnings).HasForeignKey(e => e.earningTypeId).OnDelete(DeleteBehavior.NoAction);
+                entity.HasOne(e => e.earningType).WithMany(p => p.Earnings).HasForeignKey(e => e.earningTypeID).OnDelete(DeleteBehavior.NoAction);
                 // PAYROLL PAY -> DEDUCTIONS
                 entity.HasOne(d => d.PayrollPay).WithMany(p => p.EarningRecords).HasForeignKey(d => d.payrollPayID).OnDelete(DeleteBehavior.NoAction);
             });
@@ -1167,6 +1167,7 @@ namespace PIS2.Models
             modelBuilder.Entity<earningType>(entity =>
             {
                 entity.ToTable(tb => tb.UseSqlOutputClause(false));
+                
             });
             //deductionModel
             modelBuilder.Entity<deductionModel>(e =>
@@ -1193,6 +1194,15 @@ namespace PIS2.Models
             modelBuilder.Entity<taxRateModel>(entity =>
             {
                 entity.ToTable("TaxRates");
+                entity.ToTable(tb => tb.UseSqlOutputClause(false));
+            });
+
+            //OtherPayments
+            //tax rates
+            modelBuilder.Entity<otherPay>(entity =>
+            {
+                entity.ToTable("OtherPayments");
+                entity.HasOne(p => p.earningModel).WithMany(e => e.OtherPayments).HasForeignKey(e => e.earningID).OnDelete(DeleteBehavior.NoAction);
                 entity.ToTable(tb => tb.UseSqlOutputClause(false));
             });
 
@@ -1434,6 +1444,7 @@ namespace PIS2.Models
         public DbSet<deductionRecordModel> DeductionRecords { get; set; }
         public DbSet<deductionType> DeductionTypes { get; set; }
         public DbSet<taxRateModel> TaxRates { get; set; }
+        public DbSet<otherPay> OtherPayments { get; set; }
 
 
 

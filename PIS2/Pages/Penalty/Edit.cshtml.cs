@@ -57,29 +57,39 @@ namespace PIS2.Pages.Penalty
 
             var penal = _context.Penalties.FirstOrDefault(p => p.penaltyID == penaltyModel.penaltyID) ?? new penaltyModel();
 
-            penal.penaltyIssueDate = penaltyModel.penaltyIssueDate;
-            penal.penaltyReason = penaltyModel.penaltyReason;
-            penal.penaltyReference = penaltyModel.penaltyReference;
-            penal.penaltyStartDate = penaltyModel.penaltyStartDate;
-            penal.penaltyEndDate = penaltyModel.penaltyEndDate;
-            penal.penaltyStatus = penaltyModel.penaltyStatus;
-            penal.modifiedBy = User.Identity.Name;
+            if (penal.penaltyStatus == penaltyStatus.Hold)
+            {
+                penal.penaltyIssueDate = penaltyModel.penaltyIssueDate;
+                penal.penaltyReason = penaltyModel.penaltyReason;
+                penal.penaltyReference = penaltyModel.penaltyReference;
+                penal.penaltyStartDate = penaltyModel.penaltyStartDate;
+                penal.penaltyEndDate = penaltyModel.penaltyEndDate;
+                penal.penaltyStatus = penaltyModel.penaltyStatus;
+                penal.modifiedBy = User.Identity.Name;
+            }
+            else
+            {
+                penal.penaltyStatus = penaltyModel.penaltyStatus;
+                penal.modifiedBy = User.Identity.Name;
+            }
 
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!penaltyModelExists(penaltyModel.penaltyID))
+
+
+                try
                 {
-                    return NotFound();
+                    await _context.SaveChangesAsync();
                 }
-                else
+                catch (DbUpdateConcurrencyException)
                 {
-                    throw;
+                    if (!penaltyModelExists(penaltyModel.penaltyID))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
                 }
-            }
 
             return RedirectToPage("./Index");
         }

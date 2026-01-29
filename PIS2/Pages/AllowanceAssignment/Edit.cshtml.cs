@@ -55,12 +55,19 @@ namespace PIS2.Pages.AllowanceAssignment
             {
                 return RedirectToPage("/Shared/AccessDenied");
             }
+            var existing = await _context.AllowanceAssignments.FirstOrDefaultAsync(aa => aa.allowanceAssignmentID == allowanceAssignmentModel.allowanceAssignmentID);
+
+            if(existing == null) { TempData["message"] = ("Error", "Not Found!"); return Page(); }
+
+            if((existing.allowanceStatus == mainStatus.Active || existing.allowanceStatus == mainStatus.Inactive) && !User.IsInRole("MIE\\PMS_HRMANAGER"))
+            {
+                return RedirectToPage("/Shared/AccessDenied");
+            }
             ModelState.Remove("allowanceAssignmentModel.modifiedBy");
             allowanceAssignmentModel.modifiedBy = User.Identity.Name;
 
             if (!ModelState.IsValid)
             {
-              
                 Console.WriteLine("Invalid model:");
                 
                 foreach (var kv in ModelState)

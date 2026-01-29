@@ -70,7 +70,7 @@ namespace PIS2.Models
 
             totalLeave = accruedLeave - usedLeave;
             allowedLeave = totalLeave - (lastAnnualLeaveIncrement - (spareDays * dailyAccrualRate));
-            var job = _context.JobPlacements?.Include(j => j.departmentModel).SingleOrDefault(j => j.employmentID == empID && j.jobPlacementStatus == mainStatus.Active)?? new jobPlacementModel();
+            var job =await _context.JobPlacements?.Include(j => j.departmentModel).ThenInclude(d => d.companyModel).SingleOrDefaultAsync(j => j.employmentID == empID && j.jobPlacementStatus == mainStatus.Active)?? new jobPlacementModel();
             var dep = job.departmentModel;
             decimal leaveCost = (job.jobPlacementSalary / 26)*(allowedLeave);
             leaveDetail leaveSummary = new leaveDetail(totalLeave, allowedLeave, lastAnnualLeaveIncrement, startDate, endDate,leaveCost, dep);
@@ -81,8 +81,8 @@ namespace PIS2.Models
             List<leaveDetail> leaveDetails = new List<leaveDetail>();
             var leaveDetail= new leaveDetail();
             var leaveSum = new leaveDetail();
-            var emp = _context.Employments.Include(e => e.JobPlacements.Where(j => j.jobPlacementStatus == mainStatus.Active)).ThenInclude(j => j.departmentModel).ThenInclude(d => d.companyModel)
-                .Where(e =>e.employmentStatus == mainStatus.Active).ToList();
+            var emp =await _context.Employments.Include(e => e.JobPlacements.Where(j => j.jobPlacementStatus == mainStatus.Active)).ThenInclude(j => j.departmentModel).ThenInclude(d => d.companyModel)
+                .Where(e =>e.employmentStatus == mainStatus.Active).ToListAsync();
 
             switch (selectBy) {
 
@@ -596,29 +596,22 @@ namespace PIS2.Models
 
             DateTime startDate = employment.employmentDate;
             DateTime endDate = termination?.terminationDate ?? DateTime.Now;
+
             if (startDate >= endDate) return 0;
 
             decimal salary = jobPlacement.jobPlacementSalary;
-            double totalDays = (endDate - startDate).TotalDays;
-            double yearsOfService = totalDays / 365.25;
-            decimal dailySalary = salary / 26;
+            decimal yearsOfService = (decimal) ((endDate - startDate).TotalDays)/365.25m;
 
-            // Calculate severance days
-            decimal severanceDays;
-            if (yearsOfService >= 1)
+            var severance = 0.0m;
+
+            if(yearsOfService >= 1)
             {
-                severanceDays = 30 + (decimal)((yearsOfService - 1) * 10);
-            }
-            else
-            {
-                severanceDays = (decimal)(yearsOfService * 30);
+                var additionalYears = Math.Max(0, yearsOfService - 1);
+                severance = salary + (additionalYears * (salary / 3));
             }
 
-            // Cap to 12 months (360 days)
-            if (severanceDays > 312)
-                severanceDays = 312;
-
-            return dailySalary * severanceDays;
+            severance = Math.Min(severance, salary * 12);
+            return severance;
         }
 
         /// <summary>
@@ -632,10 +625,65 @@ namespace PIS2.Models
                 p.prohibitionType == type &&
                 p.prohibitionStatus == mainStatus.Active);
         }
+        public List<EvalSingleEmployeeReport> GetSingleEvaluationReport(int empId)
+        {
+            // 1. Fetch data from the view for the specific evaluation
+            var viewData = _context.EvaluationSummaryView
+                .Where(v => v.employmentID == empId)
+                .ToList();
 
+            if (!viewData.Any()) return null;
+
+            // 2. Build the structured report using LINQ GroupBy
+            var report = viewData
+                .GroupBy(v => new { v.evaluationID })
+                .Select(eGroup => new EvalSingleEmployeeReport
+                {
+                    evaluationID = eGroup.Key.evaluationID,
+                    evaluationName = eGroup.FirstOrDefault().evaluationName,
+                    startDate = eGroup.FirstOrDefault().evaluationStartDate,
+                    endDate = eGroup.FirstOrDefault().evaluationEndDate,
+
+                    // Total of all weighted subtask scores
+                    FinalGrandTotal = eGroup.Sum(x => x.WeightedSubTaskScore),
+
+                    Types = eGroup.GroupBy(t => new { t.evaluationTypeName, t.evaluationTypeWeight })
+                        .Select(tGroup => new EvalTypeSummary
+                        {
+                            typeName = tGroup.Key.evaluationTypeName,
+                            typeWeight = tGroup.Key.evaluationTypeWeight,
+
+                            Tasks = tGroup.GroupBy(tk => new { tk.evaluationTaskName, tk.evaluationTaskWeight })
+                                .Select(tkGroup => new EvalTaskSummary
+                                {
+                                    taskName = tkGroup.Key.evaluationTaskName,
+                                    taskWeight = tkGroup.Key.evaluationTaskWeight,
+                                    avgTime = tkGroup.Average(x => x.timeValuation),
+                                    avgResource = tkGroup.Average(x => x.resourceValuation),
+                                    avgPerformance = tkGroup.Average(x => x.performanceValuation),
+
+                                    // Group by SubTaskID to get unique subtasks
+                                    SubTasks = tkGroup.GroupBy(st => st.evaluationSubTaskID)
+                                        .Select(stGroup => new EvalSubTaskSummary
+                                        {
+                                            subtaskName = stGroup.First().evaluationSubTaskName,
+                                            subtaskWeight = stGroup.First().evaluationSubTaskWeight,
+                                            subTime = stGroup.First().timeValuation,
+                                            subResource = stGroup.First().resourceValuation,
+                                            subPerformance = stGroup.First().performanceValuation
+                                        }).ToList()
+
+                                }).ToList()
+
+
+                        }).ToList()
+                }).ToList();
+
+            return report;
+        }
         public Core() { }
 
     }
-    // Helper class for the data returned by the AJAX handler
-   
-}
+    
+
+    }

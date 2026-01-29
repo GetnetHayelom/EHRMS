@@ -171,7 +171,7 @@ namespace PIS2.Models {
             {
                 earningType = new earningType();
                 earningType = await _db.EarningTypes.FirstOrDefaultAsync(d => d.earningTypeName.ToLower().Contains("overtime"));
-                earnings.Add(new earningRecordModel { earningAmount = overtimeAmount, earningTypeId = earningType.earningTypeID, earningReference = "overtime", modifiedBy = "system" });
+                earnings.Add(new earningRecordModel { earningAmount = overtimeAmount, earningTypeID = earningType.earningTypeID, earningReference = "overtime", modifiedBy = "system" });
             }
             //-----------------------------------------------------------
             // ALLOWANCES (earnings)
@@ -187,7 +187,7 @@ namespace PIS2.Models {
             {
                 earningType = new earningType();
                 earningType = await _db.EarningTypes.FirstOrDefaultAsync(d => d.earningTypeName.ToLower().Contains("allowance"));
-                earnings.Add(new earningRecordModel { earningAmount = allowancesSum, earningTypeId = earningType.earningTypeID, earningReference = "allowance", modifiedBy = "system" });
+                earnings.Add(new earningRecordModel { earningAmount = allowancesSum, earningTypeID = earningType.earningTypeID, earningReference = "allowance", modifiedBy = "system" });
             }
             
             // BASE SALARY: if salaried, pro-rate monthly salary by workedHours/totalPossibleHours
@@ -200,7 +200,7 @@ namespace PIS2.Models {
             {
                 earningType = new earningType();
                 earningType = await _db.EarningTypes.FirstOrDefaultAsync(d => d.earningTypeName.ToLower().Contains("salary"));
-                earnings.Add(new earningRecordModel { earningAmount = basePay, earningTypeId = earningType.earningTypeID, earningReference = "salary", modifiedBy = "system" });
+                earnings.Add(new earningRecordModel { earningAmount = basePay, earningTypeID = earningType.earningTypeID, earningReference = "salary", modifiedBy = "system" });
             }
 
             // GET OTHER EARNINGS (Bonus)
@@ -213,7 +213,7 @@ namespace PIS2.Models {
                 // copy to new earning record attached to payroll computation
                 earnings.Add(new earningRecordModel
                 {
-                    earningTypeId = od.earningTypeId,
+                    earningTypeID = od.earningTypeID,
                     earningAmount = CalculateEarningValue(od, baseSalary, allowancesSum),
                     earningReference = od.earningID.ToString(),
                     modifiedBy = "system"

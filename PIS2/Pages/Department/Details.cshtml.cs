@@ -57,19 +57,20 @@ namespace PIS2.Pages.Department
             Shifts =await _context.Shifts.Where(s => s.shiftStatus == mainStatus.Active).ToListAsync();
             WorkSites = await _context.WorkSites.Where(s => s.workSiteStatus == mainStatus.Active).ToListAsync();
 
-            int personID = _context.Users.FirstOrDefault(u => u.userName == User.Identity.Name).personID;
-            
-            int empID = _context.Employments.FirstOrDefault(e => e.personID == personID && e.employmentStatus == mainStatus.Active).employmentID;
-            
-            int depID = _context.JobPlacements.FirstOrDefault(jp => jp.employmentID == empID && jp.jobPlacementStatus == mainStatus.Active).departmentID;
+            var prsn = await _context.Users.FirstOrDefaultAsync(u => u.userName == User.Identity.Name);
+            int personID = prsn.personID;
+
+            var emp = await _context.Employments.FirstOrDefaultAsync(e => e.personID == personID && e.employmentStatus == mainStatus.Active);
+            int empID = emp.employmentID;
+
+            var dep = await _context.JobPlacements.FirstOrDefaultAsync(jp => jp.employmentID == empID && jp.jobPlacementStatus == mainStatus.Active);
+            int depID = dep.departmentID;
             
             if (id == null || id==0)
             {
-
                 if (depID != 0)
                 {
                     id = depID;
-                    
                 }
                 else {return NotFound(); }
             }
@@ -83,24 +84,27 @@ namespace PIS2.Pages.Department
                 isMember = User.IsInRole("MIE\\PMS_MANAGEMENT") ? true: false;
                 isManager= empID == departmentModel?.employmentID? true: false;
 
-            var delegation = _context.Delegations
-                .FirstOrDefault(d =>
+            var delegation =await _context.Delegations
+                .FirstOrDefaultAsync(d =>
                     d.delegationFrom == departmentModel.employmentID &&
                     d.delegationStatus == mainStatus.Active);
 
             bool isDelegatee = delegation != null && delegation.delegationTo == empID;
 
             if (!(isManager || isMember || isDelegatee)) return RedirectToPage("/Shared/AccessDenied");
-            Jobs =await _context.JobPlacements.Where(j => j.departmentID ==departmentModel.departmentID && j.jobPlacementStatus == mainStatus.Active)
+            Jobs = await _context.JobPlacements.Where(j => j.departmentID ==departmentModel.departmentID && j.jobPlacementStatus == mainStatus.Active)
                 .Include(j => j.employmentModel)?.ThenInclude(e => e.personModel)
                 .Include(j => j.employmentModel)?.ThenInclude(e => e.employmentTypeModel)
-                .Include(j=> j.jobModel).ToListAsync() ?? new List<jobPlacementModel>(); 
+                .Include(j=> j.jobModel).ToListAsync() ?? new List<jobPlacementModel>();
+
             Employments =Jobs.Select(j => j.employmentModel).Distinct().ToList();
 
             var reqNo = await _context.StructureView.Where(s => s.DepartmentID == departmentModel.departmentID && s.StructureStatus == (int)mainStatus.Active).ToListAsync();
             RequiredEmployee =reqNo.Sum(s => s.RequiredNumber ?? 0);
 
-            var EmploymentViewTasks = Employments.Select(async ev =>
+            EmploymentView = new List<EmployeeView>();
+
+            foreach (var ev in Employments)
             {
                 var workSite = await _context.SiteAssignments
                     .Where(ws => ws.employmentID == ev.employmentID)
@@ -116,26 +120,19 @@ namespace PIS2.Pages.Department
 
                 var lv = await _core.leaveSummary(ev.employmentID);
 
-                return new EmployeeView
+                EmploymentView.Add(new EmployeeView
                 {
                     Employment = ev,
                     Job = ev.JobPlacements.FirstOrDefault(j => j.jobPlacementStatus == mainStatus.Active),
                     Person = ev.personModel,
                     WorkSite = workSite,
                     Shift = shift,
-                    Leave = lv 
-                };
-            });
-
-            var EmploymentView = (await Task.WhenAll(EmploymentViewTasks))
-                .OrderBy(ev => ev.Person.personFirstName)
-                .ThenBy(ev => ev.Person.personFatherName)
-                .ThenBy(ev => ev.Person.personLastName)
-                .ToList();
+                    Leave = lv
+                });
+            }
 
 
-
-                DepartmentSummary = new DepartmentSummary();
+            DepartmentSummary = new DepartmentSummary();
                 DepartmentSummary.DepartmentID = departmentmodel.departmentID;
                 DepartmentSummary.DepartmentName = departmentmodel.departmentName;
 
@@ -155,7 +152,7 @@ namespace PIS2.Pages.Department
                 
                 // Education Level Data
                 
-                EducationLevels = _context.PersonEducationLevels
+                EducationLevels =await _context.PersonEducationLevels
                     .Join(_context.EducationLevels, pel => pel.educationLevelID, el => el.educationLevelID, (pel, el) => new { pel, el })
                     .Where(x => _context.Employments.Any(e => e.personID == x.pel.personID && e.employmentStatus == mainStatus.Active))
                     .GroupBy(x => new { x.el.educationLevelCategory, x.el.educationLevelName })
@@ -164,7 +161,7 @@ namespace PIS2.Pages.Department
                         EducationLevelCategory = g.Key.educationLevelCategory,
                         EducationLevelName = g.Key.educationLevelName,
                         EducationLevelCount = g.Count()
-                    }).OrderByDescending(e => e.EducationLevelCount).ToList();
+                    }).OrderByDescending(e => e.EducationLevelCount).ToListAsync();
 
                 //Employment Types
                 EmploymentTypes = new List<NameAndCount>();
@@ -177,12 +174,13 @@ namespace PIS2.Pages.Department
                })
                .ToList();
 
-                //Active Leaves
-                leaveEmployments = _context.Leaves
-                    .Where(l => l.leaveStartDate <= DateTime.Now && l.leaveEndDate >= DateTime.Now
-                    && l.leaveTypeModel.leaveTypeImpact == leaveTypeImpact.Negative
-                    && l.employmentModel.employmentStatus == mainStatus.Active && l.leaveStatus == leaveStatus.Posted
-                    && l.leaveTypeID != 64 && Employments.Select(ae => ae.employmentID).Contains(l.employmentID)).Count();
+            //Active Leaves
+            var lvs = await _context.Leaves
+                .Where(l => l.leaveStartDate <= DateTime.Now && l.leaveEndDate >= DateTime.Now
+                && l.leaveTypeModel.leaveTypeImpact == leaveTypeImpact.Negative
+                && l.employmentModel.employmentStatus == mainStatus.Active && l.leaveStatus == leaveStatus.Posted
+                && l.leaveTypeID != 64 && Employments.Select(ae => ae.employmentID).Contains(l.employmentID)).ToListAsync();
+                leaveEmployments =lvs.Count();
 
                 leaveModel = await _context.Leaves.Where(l => l.leaveStatus == leaveStatus.Hold && Employments.Select(e => e.employmentID).Contains(l.employmentID)
                 && l.leaveTypeModel.leaveGroup == leaveGroup.AnnualLeave)

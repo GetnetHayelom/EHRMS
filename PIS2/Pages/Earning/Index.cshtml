@@ -1,54 +1,68 @@
 ﻿@page
 @model PIS2.Pages.Earning.IndexModel
 @{
-    ViewData["Title"] = "Earning Types";
+    ViewData["Title"] = "Compensation & Benefits";
 }
-
+@await Html.PartialAsync("headerSimple","")
 <div class="container">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2 class="fw-bold text-dark mb-0">
-            <i class="bi bi-cash-stack me-2 text-secondary"></i> Earning Types
+            <i class="bi bi-cash-stack me-2 text-secondary"></i> Compensation and Benefits
         </h2>
-        <a asp-page="Create" class="btn btn-primary">
+        <a asp-page="Create" class="btn btn-primary m-2">
             <i class="bi bi-plus-lg me-1"></i> Add New Earning Type
         </a>
+        
+        
     </div>
 
     @if (Model.EarningTypes.Any())
     {
+        <div class="d-flex justify-content-end">
+            @await Html.PartialAsync("filter")           
+        </div>
+        
         <div class="card shadow-sm border-0">
             <div class="card-body p-0">
-                <table class="table table-hover mb-0 align-middle table-striped">
+                <table class="table table-hover mb-0 align-middle table-striped print-full-width" id="dataTable">
                     <thead class="bg-dark text-white">
                         <tr>
+                            <th>S/N</th>
                             <th>Name</th>
                             <th>Recurring</th>
                             <th>Taxable</th>
+                            <th>Payroll</th>
                             <th>Status</th>
-                            <th class="text-end">Actions</th>
+                            <th class="text-end d-print-none">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
+                        @{
+                            int i = 1;
+                        }
                         @foreach (var earning in Model.EarningTypes)
                         {
                             <tr>
+                                <td>@i</td>
                                 <td>@earning.earningTypeName</td>
-                                <td>@(earning.isRecurring ? "Yes" : "No")</td>
-                                <td>@(earning.isTaxable ? "Yes" : "No")</td>
+                                <td><i class="bi @(earning.isRecurring ? "bi-check-circle-fill text-success" : "bi-x-circle text-danger") fs-4 me-2"></i></td>
+                                <td><i class="bi @(earning.isTaxable ? "bi-check-circle-fill text-success" : "bi-x-circle text-danger") fs-4 me-2"></i></td>
+                                <td><i class="bi @(earning.isPayroll ? "bi-check-circle-fill text-success" : "bi-x-circle text-danger") fs-4 me-2"></i></td>
                                 <td>
                                     <span class="badge @(earning.earningTypeStatus == Models.mainStatus.Active ? "bg-success" : "bg-secondary")">
                                         @earning.earningTypeStatus
                                     </span>
                                 </td>
-                                <td class="text-end">
+                                <td class="text-end d-print-none">
                                     <a asp-page="Edit" asp-route-id="@earning.earningTypeID" class="btn btn-sm btn-outline-primary me-1">
                                         <i class="bi bi-pencil-square"></i>
                                     </a>
-                                    <a asp-page="Delete" asp-route-id="@earning.earningTypeID" class="btn btn-sm btn-outline-danger">
-                                        <i class="bi bi-trash"></i>
+                                    <a asp-page="Details" asp-route-id="@earning.earningTypeID" class="btn btn-sm btn-outline-danger">
+                                        <i class="bi bi-eye"></i>
                                     </a>
                                 </td>
                             </tr>
+                            i++;
                         }
                     </tbody>
                 </table>
@@ -61,4 +75,7 @@
             <i class="bi bi-info-circle me-1"></i> No earning types found.
         </div>
     }
+</div>
+<div class="d-flex justify-content-end m-2">
+    @await Html.PartialAsync("print")
 </div>

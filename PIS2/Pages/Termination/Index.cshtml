@@ -6,100 +6,108 @@
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
 @await Html.PartialAsync("headerSimple", "")
-<h1 class="fw-bold">Terminations</h1>
-@if(User.IsInRole("MIE\\PMS_HRCLERK")){<p>
-    <a asp-page="Create" class="btn btn-primary">Create New Termination</a>
-</p>}
+<div class="d-flex justify-content-between mb-4">
+    <h1 class="fw-bold">Terminations</h1>
+    @if (User.IsInRole("MIE\\PMS_HRCLERK"))
+    {
+        <p>
+            <a asp-page="Create" class="btn btn-primary">New Termination</a>
+        </p>
+    }
+</div>
+
 @{
     int others = Model.total - Model.management - Model.professional;
 }
 <!-- Summary Cards -->
-<div class="d-flex gap-3 mb-4 d-print-flex" id="summaryRow">
-    <div class="flex-fill">
-        <div class="card shadow-sm border-start border-primary border-3">
-            <div class="card-body">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <small class="text-muted">Total</small>
-                        <h3 class="mb-0">@Model.total</h3>
+<div class="card shadow-sm mb-4 p-2">
+    <div class="d-flex gap-3 mb-4 d-print-flex" id="summaryRow">
+        <div class="flex-fill">
+            <div class="card shadow-sm border-start border-primary border-3">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <small class="text-muted">Total</small>
+                            <h3 class="mb-0">@Model.total</h3>
+                        </div>
+                        <div><i class="bi bi-people fs-2 text-primary"></i></div>
                     </div>
-                    <div><i class="bi bi-people fs-2 text-primary"></i></div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <div class="flex-fill">
-        <div class="card shadow-sm border-start border-success border-3">
-            <div class="card-body">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <small class="text-muted">Male</small>
-                        <h3 class="mb-0">@Model.male</h3>
+        <div class="flex-fill">
+            <div class="card shadow-sm border-start border-success border-3">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <small class="text-muted">Male</small>
+                            <h3 class="mb-0">@Model.male</h3>
+                        </div>
+                        <div><i class="bi bi-gender-male fs-2 text-success"></i></div>
                     </div>
-                    <div><i class="bi bi-gender-male fs-2 text-success"></i></div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <div class="flex-fill">
-        <div class="card shadow-sm border-start border-danger border-3">
-            <div class="card-body">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <small class="text-muted">Female</small>
-                        <h3 class="mb-0">@Model.female</h3>
+        <div class="flex-fill">
+            <div class="card shadow-sm border-start border-danger border-3">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <small class="text-muted">Female</small>
+                            <h3 class="mb-0">@Model.female</h3>
+                        </div>
+                        <div><i class="bi bi-gender-female fs-2 text-danger"></i></div>
                     </div>
-                    <div><i class="bi bi-gender-female fs-2 text-danger"></i></div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <div class="flex-fill">
-        <div class="card shadow-sm border-start border-warning border-3">
-            <div class="card-body">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <small class="text-muted">Management</small>
-                        <h3 class="mb-0">@Model.management</h3>
+        <div class="flex-fill">
+            <div class="card shadow-sm border-start border-warning border-3">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <small class="text-muted">Management</small>
+                            <h3 class="mb-0">@Model.management</h3>
+                        </div>
+                        <div><i class="bi bi-briefcase fs-2 text-warning"></i></div>
                     </div>
-                    <div><i class="bi bi-briefcase fs-2 text-warning"></i></div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <div class="flex-fill">
-        <div class="card shadow-sm border-start border-info border-3">
-            <div class="card-body">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <small class="text-muted">Professional</small>
-                        <h3 class="mb-0">@Model.professional</h3>
+        <div class="flex-fill">
+            <div class="card shadow-sm border-start border-info border-3">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <small class="text-muted">Professional</small>
+                            <h3 class="mb-0">@Model.professional</h3>
+                        </div>
+                        <div><i class="bi bi-award fs-2 text-info"></i></div>
                     </div>
-                    <div><i class="bi bi-award fs-2 text-info"></i></div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <div class="flex-fill">
-        <div class="card shadow-sm border-start border-muted border-3">
-            <div class="card-body">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <small class="text-muted">Others</small>
-                        <h3 class="mb-0"> @others</h3>
+        <div class="flex-fill">
+            <div class="card shadow-sm border-start border-muted border-3">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <small class="text-muted">Others</small>
+                            <h3 class="mb-0"> @others</h3>
+                        </div>
+                        <div><i class="bi bi-gear fs-2 text-muted"></i></div>
                     </div>
-                    <div><i class="bi bi-gear fs-2 text-muted"></i></div>
                 </div>
             </div>
         </div>
+
+
     </div>
-
-
 </div>
 
 <!-- Filter Form -->

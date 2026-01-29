@@ -4,10 +4,12 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using PIS2.Models;
+using PIS2.Views;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using static System.Formats.Asn1.AsnWriter;
 
 namespace PIS2.Pages.Termination
 {
@@ -15,15 +17,19 @@ namespace PIS2.Pages.Termination
     public class EditModel : PageModel
     {
         private readonly PIS2.Models.PISContext _context;
-
-        public EditModel(PIS2.Models.PISContext context)
+        private readonly PIS2.Models.Core _core;
+        public EditModel(PIS2.Models.PISContext context, Core core)
         {
             _context = context;
+            _core = core;
         }
 
         [BindProperty]
         public terminationModel terminationModel { get; set; } = default!;
-
+        public decimal SeverancePay { get; set; }
+        public AnnualLeaveSummary LeaveSummary { get; set; }
+        public decimal YearsOfService { get; set; }
+        public jobPlacementModel? jobPlacement { get; set; }
         public async Task<IActionResult> OnGetAsync(int? id)
         {
             if (id == null)
@@ -31,13 +37,23 @@ namespace PIS2.Pages.Termination
                 return NotFound();
             }
 
-            var terminationmodel =  await _context.Terminations.FirstOrDefaultAsync(m => m.terminationID == id);
+            var terminationmodel =  await _context.Terminations
+                .Include(t => t.EmploymentModel).ThenInclude(e => e.personModel).FirstOrDefaultAsync(m => m.terminationID == id);
             if (terminationmodel == null)
             {
                 return NotFound();
             }
             terminationModel = terminationmodel;
-           ViewData["employmentID"] = new SelectList(_context.Employments, "employmentID", "givenID");
+
+            SeverancePay = await _core.GetSeverance(terminationModel.employmentID);
+            LeaveSummary = await _context.AnnualLeaveSummary.FirstOrDefaultAsync(a => a.employmentID == terminationModel.employmentID);
+            YearsOfService = (decimal)((DateTime.Now - terminationModel.EmploymentModel.employmentDate).TotalDays) / 365.25m;
+
+            jobPlacement = await _context.JobPlacements
+                .Include(j => j.departmentModel).ThenInclude(d => d.companyModel)
+                .Include(jp => jp.jobModel)
+                .FirstOrDefaultAsync(j => j.employmentID == terminationModel.employmentID && j.jobPlacementStatus == mainStatus.Active);
+            ViewData["employmentID"] = new SelectList(_context.Employments, "employmentID", "givenID");
             return Page();
         }
 

@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 using PIS2.Models;
 using System;
 using System.Collections.Generic;
@@ -19,10 +20,23 @@ namespace PIS2.Pages.WorkSite
         {
             _context = context;
         }
-
-        public IActionResult OnGet()
+        public SelectList Manager;
+        public async Task<IActionResult> OnGetAsync()
         {
-        ViewData["addressID"] = new SelectList(_context.Addresses, "addressID", "addressFormatted");
+            var managerData = await _context.Employments
+                .Include(e => e.personModel)
+                .Where(e => e.employmentStatus == mainStatus.Active)
+                .Select(e => new
+                {
+                    EmpID = e.employmentID,
+                    // Combine ID and Name for the dropdown display
+                    FullName = e.givenID + " - " + e.personModel.personFullName
+                })
+                .ToListAsync();
+
+            Manager = new SelectList(managerData, "EmpID", "FullName");
+
+            ViewData["addressID"] = new SelectList(_context.Addresses, "addressID", "addressFormatted");
             return Page();
         }
 

@@ -1,0 +1,76 @@
+﻿@page
+@model PIS2.Pages.Payroll.PayableModel
+@{
+}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3 class="fw-bold">Earning Records</h3>
+        <a class="btn btn-primary" asp-page="Create">+ Add Earning</a>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <table class="table table-striped table-hover align-middle">
+                <thead class="table-dark">
+                    <tr>
+                        <th>S/N</th>
+                        <th>Employee ID</th>
+                        <th>Employee Name</th>
+                        <th>Type</th>
+                        <th>Iteration</th>
+                        <th>Amount</th>
+                        <th>Is %</th>
+                        <th>Base</th>
+                        <th>Status</th>
+                        <th style="width:130px;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @{
+                        int sn = 1;
+                    }
+                    @foreach (var item in Model.Earnings)
+                    {
+                        <tr>
+                            <td>@sn</td>
+                            <td>@item.EmploymentModel?.givenID</td>
+                            <td>@item.EmploymentModel?.personModel?.personFullName</td>
+                            <td>@item.earningType?.earningTypeName</td>
+                            <td>@item.earningIteration</td>
+                            <td>@item.earningAmount</td>
+                            <td>@(item.IsPercentage ? "Yes" : "No")</td>
+                            <td>@item.earningBase</td>
+                            <td>
+                                @if (item.earningStatus == Models.mainStatus.Active)
+                                {
+                                    <span class="badge bg-success">@Html.DisplayFor(modelItem => item.earningStatus)</span>
+                                }
+                                else if (item.earningStatus == Models.mainStatus.Suspended)
+                                {
+                                    <span class="badge bg-warning">@Html.DisplayFor(modelItem => item.earningStatus)</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary">@Html.DisplayFor(modelItem => item.earningStatus)</span>
+                                }
+
+                            </td>
+                            <td>
+
+                                <div class="btn-group" role="group">
+                                    <a asp-page="./Details" asp-route-id="@item.earningID" class="btn btn-sm btn-outline-primary" title="View Details">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                    <a asp-page="./NoPayroll" asp-route-id="@item.earningID" class="btn btn-sm btn-outline-success" title="Edit">
+                                        <i class="bi bi-pencil-square"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        sn++;
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

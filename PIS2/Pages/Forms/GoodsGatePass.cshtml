@@ -13,7 +13,7 @@
         
 
         <form id="gatePassForm">
-            <div class="row mb-3">
+            <div class="d-flex gap-2 mb-3">
                 <div class="col-md-6">
                     <label class="form-label fw-bold">To:</label>
                     <input asp-for="GatePass.To" class="form-control" placeholder="Enter recipient" />
@@ -24,7 +24,7 @@
                 </div>
             </div>
 
-            <div class="row mb-3">
+            <div class="d-flex gap-2 mb-3">
                 <div class="col-md-4">
                     <label class="form-label fw-bold">Date:</label>
                     <input asp-for="GatePass.Date" type="date" class="form-control" value="@DateTime.Now.ToString("yyyy-MM-dd")" />
@@ -41,7 +41,7 @@
 
             <hr />
 
-            <div class="row mb-3">
+            <div class="d-flex gap-2 mb-3">
                 <div class="col-md-6">
                     <label class="form-label fw-bold">Item(s) / Product(s):</label>
                     <textarea asp-for="GatePass.Items" class="form-control" rows="4" placeholder="List of items"></textarea>
@@ -52,7 +52,7 @@
                 </div>
             </div>
 
-            <div class="row mb-3">
+            <div class="d-flex gap-2 mb-3">
                 <div class="col-md-6">
                     <label class="form-label fw-bold">Approved By:</label>
                     <input asp-for="GatePass.ApprovedBy" class="form-control" />
@@ -63,7 +63,7 @@
                 </div>
             </div>
 
-            <div class="row mb-4">
+            <div class="d-flex gap-2 mb-4">
                 <div class="col-md-6">
                     <label class="form-label fw-bold">Vehicle Plate No:</label>
                     <input asp-for="GatePass.VehicleNo" class="form-control" />

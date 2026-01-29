@@ -21,30 +21,41 @@
 
             @* ------------------- From (Transferor) ------------------- *@
             <div class="d-flex">
-                <h5 class="fw-bold text-dark me-2">From:</h5>
+                <h6 class="fw-bold text-dark me-2">From:</h6>
                 <div class="row mb-1 d-print-flex">
                     <div class="col-md-3 ">
-                        <label for="EmployeeID" class="form-label">Employee ID:</label>
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="EmployeeID" required placeholder="Enter ID" />
-                            <button class="btn btn-outline-secondary d-print-none" type="button" id="lookupButton"
-                                    onclick="fetchEmployeeData($('#EmployeeID').val(), '#EmployeeName','', '#Department')">
-                                <i class="bi bi-search"></i>
-                            </button>
+                        
+                            <div class="input-group">
+                                <label for="EmployeeID" class="form-label">Employee ID:</label>
+                                <input type="text" class="form-control" id="EmployeeID" required placeholder="Enter ID" />
+                                <button class="btn btn-outline-secondary d-print-none" type="button" id="lookupButton"
+                                        onclick="fetchEmployeeData($('#EmployeeID').val(), '','', '')">
+                                    <i class="bi bi-search"></i>
+                                </button>
+                            </div>
                         </div>
-                    </div>
+
                     <div class="col-md-3">
-                        <label class="form-label fw-bold">Name:</label>
-                        <input asp-for="TransferSlip.FromName" class="form-control" id="EmployeeName"/>
+                        <div class="input-group">
+                            <label class="form-label">Name:</label>
+                            <input asp-for="TransferSlip.FromName" class="form-control" id="employeeName" />
+                        </div>
+                        
                     </div>
                    
                     <div class="col-md-3">
-                        <label class="form-label fw-bold">Dept:</label>
-                        <input asp-for="TransferSlip.FromDept" class="form-control" id="Department"/>
+                        <div class="input-group">
+                            <label class="form-label ">Dept:</label>
+                            <input asp-for="TransferSlip.FromDept" class="form-control" id="department" />
+                        </div>
+                        
                     </div>
                     <div class="col-md-3">
-                        <label class="form-label fw-bold">Sign:</label>
-                        <input asp-for="TransferSlip.FromSign" class="form-control" />
+                        <div class="input-group">
+                            <label class="form-label ">Sign:</label>
+                            <input asp-for="TransferSlip.FromSign" class="form-control" />
+                        </div>
+                        
                     </div>
                 </div>
             </div>
@@ -54,30 +65,40 @@
 
             @* ------------------- To (Receiver) ------------------- *@
             <div class="d-flex">
-                <h5 class="fw-bold text-dark me-2">To:</h5>
+                <h6 class="fw-bold text-dark me-2">To:</h6>
                 <div class="row mb-1">
-                    <div class="col-md-3 ">
-                        <label for="EmployeeID" class="form-label">Employee ID:</label>
+                    <div class="col-md-3 "> 
                         <div class="input-group">
-                            <input type="text" class="form-control" id="EmployeeID1" required placeholder="Enter ID" />
-                            <button class="btn btn-outline-secondary d-print-none" type="button" id="lookupButton"
-                                    onclick="fetchEmployeeData($('#EmployeeID1').val(), '#EmployeeName1','', '#Department1')">
-                                <i class="bi bi-search"></i>
-                            </button>
+                            <label for="EmployeeID" class="form-label">Employee ID:</label>
+                                <input type="text" class="form-control" id="EmployeeID1" required placeholder="Enter ID" />
+                                <button class="btn btn-outline-secondary d-print-none" type="button" id="lookupButton1"
+                                        onclick="fetchEmployeeData($('#EmployeeID1').val(), 'EmployeeName1','', 'Department1')">
+                                    <i class="bi bi-search"></i>
+                                </button>
+                            </div>
                         </div>
-                    </div>
+                        
                     <div class="col-md-3">
-                        <label class="form-label fw-bold">Name:</label>
-                        <input asp-for="TransferSlip.ToName" class="form-control" id="EmployeeName1"/>
+                        <div class="input-group">
+                            <label class="form-label">Name:</label>
+                            <input asp-for="TransferSlip.ToName" class="form-control" id="EmployeeName1" />
+                        </div>
+                        
                     </div>
    
                     <div class="col-md-3">
-                        <label class="form-label fw-bold">Dept:</label>
-                        <input asp-for="TransferSlip.ToDept" class="form-control" id="Department1" />
+                        <div class="input-group">
+                            <label class="form-label ">Dept:</label>
+                            <input asp-for="TransferSlip.ToDept" class="form-control" id="Department1" />
+                        </div>
+                        
                     </div>
                     <div class="col-md-3">
-                        <label class="form-label fw-bold">Sign:</label>
-                        <input asp-for="TransferSlip.ToSign" class="form-control" />
+                        <div class="input-group">
+                            <label class="form-label ">Sign:</label>
+                            <input asp-for="TransferSlip.ToSign" class="form-control" />
+                        </div>
+                        
                     </div>
                 </div>
             </div>
@@ -87,39 +108,57 @@
 
             @* ------------------- Authorized By ------------------- *@
             <div class="d-flex">
-                <h5 class="fw-bold text-dark me-2">Authorization:</h5>
+                <h6 class="fw-bold text-dark me-2">Authorization:</h6>
                 <div class="row mb-1">
                     <div class="col-md-4">
-                        <label class="form-label fw-bold">Authorized By:</label>
-                        <input asp-for="TransferSlip.AuthorizedBy" class="form-control" />
+                        <div class="input-group">
+                            <label class="form-label ">Authorized By:</label>
+                            <input asp-for="TransferSlip.AuthorizedBy" class="form-control" />
+                        </div>
+                        
                     </div>
                     <div class="col-md-4">
-                        <label class="form-label fw-bold">Job Title:</label>
-                        <input asp-for="TransferSlip.AuthJobTitle" class="form-control" />
+                        <div class="input-group">
+                            <label class="form-label ">Job Title:</label>
+                            <input asp-for="TransferSlip.AuthJobTitle" class="form-control" />
+                        </div>
+                        
                     </div>
                     <div class="col-md-4">
-                        <label class="form-label fw-bold">Sign:</label>
-                        <input asp-for="TransferSlip.AuthSign" class="form-control" />
+                        <div class="input-group">
+                            <label class="form-label ">Sign:</label>
+                            <input asp-for="TransferSlip.AuthSign" class="form-control" />
+                        </div>
+                        
                     </div>
                 </div>
             </div>
-            
+            <hr />
 
             @* ------------------- Posted By ------------------- *@
             <div class="d-flex">
-                <h5 class="fw-bold text-dark me-2">Posting Details:</h5>
+                <h6 class="fw-bold text-dark me-2">Posting Details:</h6>
                 <div class="row mb-1">
                     <div class="col-md-4">
-                        <label class="form-label fw-bold">Posted By:</label>
-                        <input asp-for="TransferSlip.PostedBy" class="form-control" />
+                        <div class="input-group">
+                            <label class="form-label ">Posted By:</label>
+                            <input asp-for="TransferSlip.PostedBy" class="form-control" />
+                        </div>
+                        
                     </div>
                     <div class="col-md-4">
-                        <label class="form-label fw-bold">Job Title:</label>
-                        <input asp-for="TransferSlip.PostJobTitle" class="form-control" />
+                        <div class="input-group">
+                            <label class="form-label ">Job Title:</label>
+                            <input asp-for="TransferSlip.PostJobTitle" class="form-control" />
+                        </div>
+                        
                     </div>
                     <div class="col-md-4">
-                        <label class="form-label fw-bold">Sign:</label>
-                        <input asp-for="TransferSlip.PostSign" class="form-control" />
+                        <div class="input-group">
+                            <label class="form-label ">Sign:</label>
+                            <input asp-for="TransferSlip.PostSign" class="form-control" />
+                        </div>
+                        
                     </div>
                 </div>
             </div>
@@ -176,7 +215,6 @@
                     <p class="mb-0">REVISION-05/ ISSUE-01 </p>
                 </div>
             </div>
-
 
             @* ------------------- Buttons ------------------- *@
             <div class="d-flex justify-content-center gap-3">

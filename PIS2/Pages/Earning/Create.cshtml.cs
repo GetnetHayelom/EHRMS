@@ -31,6 +31,7 @@ namespace PIS2.Pages.Earning
             }
             ModelState.Remove("EarningType.modifiedBy");
             EarningType.modifiedBy = User.Identity.Name;
+            EarningType.modifiedDate = DateTime.Now;
             if (!ModelState.IsValid)
                 return Page();
 

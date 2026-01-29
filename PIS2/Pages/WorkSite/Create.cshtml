@@ -30,6 +30,21 @@
                 <span asp-validation-for="workSiteModel.workSiteNature" class="text-danger"></span>
             </div>
             <div class="form-group">
+                <label class="form-label fw-semibold">
+                    <span class="text-danger">*</span> Site Manager/Representative
+                </label>
+                <input type="text" class="form-control" list="personList" placeholder="Type to search..." oninput="selector(this, 'personIDHidden')" />
+                <input type="hidden" asp-for="workSiteModel.employmentID" id="personIDHidden" />
+                <datalist id="personList">
+                    @foreach (var person in Model.Manager)
+                    {
+                        <option data-id="@person.Value" value="@person.Text"></option>
+                    }
+                </datalist>
+                <span asp-validation-for="workSiteModel.employmentID" class="text-danger"></span>
+            </div>
+            
+            <div class="form-group">
                 <label asp-for="workSiteModel.workSiteEstablishDate" class="control-label">Established Date</label>
                 <input asp-for="workSiteModel.workSiteEstablishDate" class="form-control" type="date"/>
                 <span asp-validation-for="workSiteModel.workSiteEstablishDate" class="text-danger"></span>

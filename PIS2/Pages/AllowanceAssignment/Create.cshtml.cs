@@ -26,23 +26,23 @@ namespace PIS2.Pages.AllowanceAssignment
         [BindProperty(SupportsGet = true)]
         public string? searchID { get; set; } = default!;
         public string? successMessage { get; set; }
+
+        public ICollection<allowanceAssignmentModel>? AllowanceAssignments { get; set; }
         
-        public IActionResult OnGet(int? id)
+        public async Task<IActionResult> OnGet(int? id)
         {
 
             if (!User.IsInRole("MIE\\PMS_HRCLERK"))
             {
                 return RedirectToPage("/Shared/AccessDenied");
             }
-            Employment = new employmentModel();
-            
-            
+            Employment = new employmentModel();                   
 
             if (!string.IsNullOrEmpty(searchID))
             {
-                Employment =_context.Employments
+                Employment =await _context.Employments
                     .Include(e => e.personModel)
-                    .Include(e => e.AllowanceAssignments)?.FirstOrDefault(e => e.givenID == searchID);
+                    .Include(e => e.AllowanceAssignments)?.FirstOrDefaultAsync(e => e.givenID == searchID);
                
                 if (Employment == null || Employment.employmentID ==0)
                 {
@@ -58,9 +58,9 @@ namespace PIS2.Pages.AllowanceAssignment
 
             if (id != null)
             {
-                Employment = _context.Employments
+                Employment =await _context.Employments
                     .Include(e => e.personModel)
-                    .Include(e => e.AllowanceAssignments)?.FirstOrDefault(e => e.employmentID == id);
+                    .Include(e => e.AllowanceAssignments)?.FirstOrDefaultAsync(e => e.employmentID == id);
 
                 if (Employment == null || Employment.employmentID == 0)
                 {
@@ -69,6 +69,7 @@ namespace PIS2.Pages.AllowanceAssignment
                 }
             }
 
+            AllowanceAssignments = await _context.AllowanceAssignments.Where(aa=> aa.employmentID == Employment.employmentID).OrderBy(aa=> aa.allowanceAssignmentDate).ToListAsync();
             ViewData["allowanceID"] = new SelectList(_context.Allowances.Where(a => a.allowanceStatus == mainStatus.Active), "allowanceID", "allowanceName");
             return Page();
         }
@@ -83,6 +84,15 @@ namespace PIS2.Pages.AllowanceAssignment
             {
                 return RedirectToPage("/Shared/AccessDenied");
             }
+
+            var ifExist = await _context.AllowanceAssignments.AnyAsync(aa => aa.allowanceID == allowanceAssignmentModel.allowanceID && aa.employmentID == allowanceAssignmentModel.employmentID);
+
+            if (ifExist)
+            {
+                TempData["message"] = ("Error", "Allowance assignment duplicate!");
+                return Page();
+            }
+
             ModelState.Remove("allowanceAssignmentModel.modifiedBy");
             
             allowanceAssignmentModel.modifiedBy = User.Identity.Name;

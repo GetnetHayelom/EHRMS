@@ -38,8 +38,19 @@ namespace PIS2.Pages.Earning
                 return RedirectToPage("/Shared/AccessDenied");
             }
 
+            ModelState.Remove("EarningType.modifiedBy");
+            EarningType.modifiedBy = User.Identity.Name;
+
             if (!ModelState.IsValid)
             {
+                foreach (var kv in ModelState)
+                {
+                    foreach (var error in kv.Value.Errors)
+                    {
+                        Console.WriteLine($"{kv.Key} --> {error.ErrorMessage}");
+                    }
+                    Console.WriteLine(kv.ToString());
+                }
                 return Page();
             }
 
@@ -52,15 +63,18 @@ namespace PIS2.Pages.Earning
 
             // Update fields manually to avoid overposting
             earningTypeFromDb.earningTypeName = EarningType.earningTypeName;
+            earningTypeFromDb.earningTypeDescription = EarningType.earningTypeDescription;
             earningTypeFromDb.isTaxable = EarningType.isTaxable;
             earningTypeFromDb.isRecurring = EarningType.isRecurring;
+            earningTypeFromDb.isPayroll = EarningType.isPayroll;
             earningTypeFromDb.earningTypeStatus = EarningType.earningTypeStatus;
             earningTypeFromDb.modifiedBy = User.Identity?.Name ?? "System";
+            earningTypeFromDb.modifiedDate = DateTime.Now;
 
             await _context.SaveChangesAsync();
 
             TempData["SuccessMessage"] = "Earning Type updated successfully!";
-            return RedirectToPage("Index");
+            return RedirectToPage("Details", new { id=earningTypeFromDb.earningTypeID});
         }
     }
 }

@@ -38,13 +38,15 @@ namespace PIS2.Pages.Person
 
         public async Task<IActionResult> OnGetAsync(int? id)
         {
+            var username = await _context.Users.FirstOrDefaultAsync(p => p.personID == id);
+            var un=username?.userName;
+            
+            isSelf = un == User.Identity.Name ? true : false;
+            
             if(!(User.IsInRole("MIE\\PMS_HRCLERK") || User.IsInRole("MIE\\PMS_HRMANAGER") || User.IsInRole("MIE\\PMS_MANAGEMENT") || isSelf))
             {
                 return RedirectToPage("/Shared/AccessDenied");
             }
-            var username = _context.Users.FirstOrDefault(p => p.personID == id)?.userName;
-            
-            isSelf = username == User.Identity.Name ? true : false;
             
             
             if (id == null)

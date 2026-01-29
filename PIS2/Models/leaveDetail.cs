@@ -10,7 +10,7 @@ namespace PIS2.Models
         public decimal TotalLeave, AllowedLeave, LastAccrualIncrement, leaveCost;
         public DateTime LeaveDetailStartDate, LeaveDetailsEndDate;
         public List<leavePerYear> AnnualLeaveHistory;
-        public companyModel company;
+        public companyModel? company;
         public departmentModel department;
         public personModel person;
        
@@ -51,7 +51,7 @@ namespace PIS2.Models
             LeaveDetailsEndDate = leaveDetailEndDate;
             leaveCost = lCost;
             department = dep;
-            company = dep.companyModel ?? new companyModel();
+            //company = dep.companyModel ?? new companyModel();
         }
         public leaveDetail() { }
     }

@@ -45,38 +45,38 @@
                 <div class="card">
                     <h4 class="card-header bg-dark text-white fw-bold p-2">Employment Information</h4>
                     <div class="card-body">
-                        <div class="col">
+                        <div class="d-flex d-print-flex flex-wrap gap-4">
                             <div class="mb-2">
                                 <strong>Employee ID:</strong>
-                                <span class="text-decoration-underline fw-bold ms-2">@Model.employmentModel.givenID</span>
+                                <span class="text-decoration-underline ms-2">@Model.employmentModel.givenID</span>
                             </div>
                             <div class="mb-2">
                                 <strong>Name:</strong>
-                                <span class="text-decoration-underline fw-bold ms-2">@Model.personModel.personFullName</span>
+                                <span class="text-decoration-underline ms-2">@Model.personModel.personFullName</span>
                             </div>
                             <div class="mb-2">
                                 <strong>Job Title:</strong>
-                                <span class="text-decoration-underline fw-bold ms-2">@Model.jobPlacementModel?.jobModel?.jobTitle</span>
+                                <span class="text-decoration-underline ms-2">@Model.jobPlacementModel?.jobModel?.jobTitle</span>
                             </div>
                             <div class="mb-2">
                                 <strong>Salary:</strong>
-                                <span class="text-decoration-underline fw-bold ms-2">@Model.jobPlacementModel?.jobPlacementSalary</span>
+                                <span class="text-decoration-underline ms-2">@Model.jobPlacementModel?.jobPlacementSalary</span>
                             </div>
                             <div class="mb-2">
                                 <strong>Grade:</strong>
-                                <span class="text-decoration-underline fw-bold ms-2">@Model.jobPlacementModel?.jobStepModel?.jobGradeModel?.jobGradeName</span>
+                                <span class="text-decoration-underline ms-2">@Model.jobPlacementModel?.jobStepModel?.jobGradeModel?.jobGradeName</span>
                             </div>
                             <div class="mb-2">
                                 <strong>Step:</strong>
-                                <span class="text-decoration-underline fw-bold ms-2">@Model.jobPlacementModel?.jobStepModel?.jobStepName</span>
+                                <span class="text-decoration-underline ms-2">@Model.jobPlacementModel?.jobStepModel?.jobStepName</span>
                             </div>
                             <div class="mb-2">
                                 <strong>Department:</strong>
-                                <span class="text-decoration-underline fw-bold ms-2">@Model.jobPlacementModel?.departmentModel?.departmentName</span>
+                                <span class="text-decoration-underline ms-2">@Model.jobPlacementModel?.departmentModel?.departmentName</span>
                             </div>
                             <div class="mb-2">
                                 <strong>Company:</strong>
-                                <span class="text-decoration-underline fw-bold ms-2">@Model.jobPlacementModel?.departmentModel?.companyModel?.companyName</span>
+                                <span class="text-decoration-underline ms-2">@Model.jobPlacementModel?.departmentModel?.companyModel?.companyName</span>
                             </div>
                         </div>
                     </div>
@@ -107,7 +107,7 @@
                                         @foreach (var item in Model.payrollPay.EarningRecords)
                                         {
                                             <tr>
-                                                <td>@(Model.EarningTypes.First(e => e.earningTypeID == item.earningTypeId).earningTypeName)</td>
+                                                <td>@(Model.EarningTypes.First(e => e.earningTypeID == item.earningTypeID).earningTypeName)</td>
                                                 <td class="text-end fw-bold">@item.earningAmount.ToString("N2")</td>
                                             </tr>
                                         }
@@ -197,16 +197,18 @@
 }
 
 <div class="d-flex justify-content-end mb-2 d-print-none">
-    <a href="/EarningRecord/Create?id=@Model.employmentModel?.employmentID" class="btn btn-success text-white m-2">
-        <i class="bi bi-plus-circle"></i> Add Earning
-    </a>
-    <a href="/DeductionRecord/Create?id=@Model.employmentModel?.employmentID" class="btn btn-danger text-white m-2">
-        <i class="bi bi-plus-circle"></i> Add Deduction
-    </a>
+    @if(User.IsInRole("MIE\\PMS_HRCLERK"))
+    {
+        <a href="/EarningRecord/Create?id=@Model.employmentModel?.employmentID" class="btn btn-success text-white m-2">
+            <i class="bi bi-plus-circle"></i> Add Earning
+        </a>
+        <a href="/DeductionRecord/Create?id=@Model.employmentModel?.employmentID" class="btn btn-danger text-white m-2">
+            <i class="bi bi-plus-circle"></i> Add Deduction
+        </a>
+    }
+    
     @await Html.PartialAsync("print")
 </div>
-
-<div class="d-print-none"><a asp-page="./Index">View All Employees Earnings</a></div>
 
 <!-- Three separate charts -->
 <div class="row mb-4 g-3">
@@ -262,6 +264,8 @@
     </div>
 </div>
 
+<div class="d-print-none"><a asp-page="./Index">View All Employees Earnings</a></div>
+
 @section Scripts {
     <script>
         // Store chart instances
@@ -298,7 +302,7 @@
                         foreach (var earning in Model.payrollPay.EarningRecords)
                         {
                                 <text>@Html.Raw(Json.Serialize(
-                                                        Model.EarningTypes.First(e => e.earningTypeID == earning.earningTypeId).earningTypeName
+                                                        Model.EarningTypes.First(e => e.earningTypeID == earning.earningTypeID).earningTypeName
                                                 )),</text>
                         }
                 }

@@ -5,14 +5,14 @@
     ViewData["Title"] = "Details";
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
-
+@await Html.PartialAsync("headerSimple", "")
 <h1 class="fw-bold">Allowance Assignments</h1>
 <hr />
 <div>
-    <h4 class="fw-bold">Allowance Assignment Details</h4>
+    <h4 class="fw-bold">Allowance Assignment Details(#@Model.allowanceAssignmentModel.allowanceAssignmentID)</h4>
     <hr />
     <div class="">
-        <div class="print-full-width">
+        <div class="card shadow-sm p-4 print-full-width mb-4">
             <dl class="d-flex flex-wrap">
                 <dt class="">
                     Employment ID:
@@ -62,7 +62,7 @@
         </div>
         <div class="flex-grow-1 print-full-width">
             <h4 class="fw-bold">Allowance Assignment History</h4>
-            <table class="table table-bordered table-striped table-hover">
+            <table class="table table-bordered table-striped table-hover print-full-width">
                 <thead class="bg-info text-white">
                     <tr>
                         <td>Allowance Status</td>
@@ -92,7 +92,7 @@
                 {
                     <h4 class="fw-bold">Other Allowance Assignments</h4>
                 
-                    <table class="table table-bordered table-striped table-hover" id="dataTable">
+                    <table class="table table-bordered table-striped table-hover print-full-width" id="dataTable">
                         <thead class="bg-info text-white">
                             <tr>
                                 <th>
@@ -154,10 +154,7 @@
     @await Html.PartialAsync("print")
     <a asp-page="./Edit" asp-route-id="@Model.allowanceAssignmentModel.allowanceAssignmentID" class="btn btn-primary m-2 d-print-none">Edit</a> 
 </div>
-<div class="row d-print-none">
-    
-        <a asp-page="/EmployeeService/Earning" asp-route-id="@Model.allowanceAssignmentModel.employmentID">View All Earning</a>
-        <a asp-page="./Index">View All Allowance Assignments</a>
-   
-
+<div class="d-print-none">
+    <a asp-page="/EmployeeService/Earning" asp-route-id="@Model.allowanceAssignmentModel.employmentID">View All Earning</a>
+    <a asp-page="./Index">View All Allowance Assignments</a>
 </div>

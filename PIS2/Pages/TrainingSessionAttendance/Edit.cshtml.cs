@@ -17,21 +17,35 @@ namespace PIS2.Pages.TrainingSessionAttendance
         {
             if (id == null) return NotFound();
 
-            Attendance = await _context.TrainingAttendances.FirstOrDefaultAsync(m => m.trainingAttendanceID == id);
+            Attendance = await _context.TrainingAttendances
+                .Include(ts => ts.EmploymentModel).ThenInclude(e => e.personModel)
+                .FirstOrDefaultAsync(m => m.trainingAttendanceID == id);
             if (Attendance == null) return NotFound();
 
-            ViewData["EmployeeName"] = _context.Employments.Find(Attendance.employmentID)?.personModel?.personFullName;
+            ViewData["EmployeeName"] = _context.Employments.Find(Attendance.employmentID).personModel.personFullName;
             return Page();
         }
 
         public async Task<IActionResult> OnPostAsync()
         {
+            Attendance.modifiedBy = User.Identity.Name;
+            Attendance.modifiedDate = DateTime.Now;
+
             if (!ModelState.IsValid) return Page();
 
             _context.Attach(Attendance).State = EntityState.Modified;
-            await _context.SaveChangesAsync();
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!_context.TrainingAttendances.Any(e => e.trainingAttendanceID == Attendance.trainingAttendanceID))
+                    return NotFound();
+                else throw;
+            }
 
-            return RedirectToPage("./Index", new { sessionId = Attendance.trainingSessionID });
+            return RedirectToPage("/TrainingSessionAttendance/Details", new { id = Attendance.trainingAttendanceID });
         }
     }
 }

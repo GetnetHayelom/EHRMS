@@ -23,6 +23,9 @@ namespace PIS2.Pages.Training
 
         public async Task<IActionResult> OnPostAsync()
         {
+            Training.modifiedBy = User.Identity.Name;
+            Training.modifiedDate = DateTime.Now;
+
             if (!ModelState.IsValid || _context.Trainings == null || Training == null)
             {
                 return Page();

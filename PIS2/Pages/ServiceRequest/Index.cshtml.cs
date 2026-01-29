@@ -35,6 +35,7 @@ namespace PIS2.Pages.ServiceRequest
 
         public async Task OnGetAsync(int? reqStatus, int? department, int? company, int? reqType, DateTime? startDate, DateTime? endDate)
         {
+
             Departments = new SelectList(await _context.Departments
                 .Where(d => d.departmentStatus == mainStatus.Active)
                 .OrderBy(d => d.departmentName).ToListAsync(), "departmentID", "departmentName");
@@ -44,12 +45,7 @@ namespace PIS2.Pages.ServiceRequest
                 .Where(d => d.companyStatus == mainStatus.Active)
                 .OrderBy(c => c.companyName).ToListAsync(), "companyID", "companyName");
 
-
-            StartDate = _context.ServiceRequests.OrderByDescending(s => s.serviceRequestDate).First().serviceRequestDate;
-            EndDate = DateTime.Now;
-            //EndDate = _context.ServiceRequests.OrderBy(s => s.serviceRequestDate).FirstOrDefault().serviceRequestDate;
-
-            var qry = _context.ServiceRequests
+            var qry =_context.ServiceRequests
                 .Include(s => s.Employment).ThenInclude(e => e.SiteAssignments)
                 .Include(s => s.Employment).ThenInclude(e => e.JobPlacements).ThenInclude(j => j.departmentModel).ThenInclude(d => d.companyModel)
                 .Include(s => s.Employment).ThenInclude(e => e.JobPlacements)
@@ -80,7 +76,7 @@ namespace PIS2.Pages.ServiceRequest
 
            
 
-            if (startDate.HasValue) { qry = qry.Where(s => s.serviceRequestDate >= startDate);}
+            if (startDate.HasValue) { qry = qry.Where(s => s.serviceRequestDate >= startDate); }
 
 
             if (endDate.HasValue) { qry = qry.Where(s => s.serviceRequestDate <= endDate); }
@@ -89,9 +85,23 @@ namespace PIS2.Pages.ServiceRequest
             serviceRequestModel = await qry.ToListAsync();
         }
 
+        public async Task<IActionResult> OnPostUpdateAsync(int id)
+        {
+            if (!User.IsInRole("MIE\\PMS_HRCLERK")) { return new JsonResult(new { success = false, message = "Redirecting" }); }
 
+            var req = await _context.ServiceRequests.Include(e => e.Employment).FirstOrDefaultAsync(s => s.serviceRequestID == id);
 
+            if(req == null) { return new JsonResult(new { success = false, message = "NotFound" }); }
 
+            if (req.serviceRequestStatus == ServiceRequestStatus.Hold)
+                req.serviceRequestStatus = ServiceRequestStatus.Reviewed;
+
+            req.modifiedBy = User.Identity?.Name;
+
+            await _context.SaveChangesAsync();
+
+            return new JsonResult(new { success = true, message = "Invalid request type.", type=req.requestedService.ToString(), empID=req.employmentID, prsnID=req.Employment?.personID });
+        }
 
     }
 }

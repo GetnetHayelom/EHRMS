@@ -22,6 +22,8 @@ namespace PIS2.Pages.Experience
         public List<experienceModel> Experiences { get; set; }
         public async Task<IActionResult> OnGetAsync(int id)
         {
+            
+
             Experiences = new List<experienceModel>();
             var person = await _context.Persons.FirstOrDefaultAsync(p => p.personID == id);
             var employment = await _context.Employments.Where(p => p.personID == id).ToListAsync();

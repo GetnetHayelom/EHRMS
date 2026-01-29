@@ -50,6 +50,7 @@ namespace PIS2.Pages.PenaltyType
             penaltyTypeModel.modifiedBy = User.Identity?.Name ?? "N\\A";
             penaltyTypeModel.modifiedDate = DateTime.Now;
 
+
             if (!ModelState.IsValid)
             {
                 foreach (var kv in ModelState)

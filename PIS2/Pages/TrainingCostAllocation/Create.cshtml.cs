@@ -33,6 +33,9 @@ namespace PIS2.Pages.TrainingCostAllocation
 
         public async Task<IActionResult> OnPostAsync()
         {
+            Allocation.modifiedBy = User.Identity.Name;
+            Allocation.modifiedDate = DateTime.Now;
+
             if (!ModelState.IsValid) return Page();
 
             _context.TrainingCostAllocations.Add(Allocation);

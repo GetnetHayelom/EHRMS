@@ -24,7 +24,7 @@
         <div class="card-body">
             <h4 class="fw-bold text-secondary mb-3">Employee Information</h4>
 
-            <div class="row mb-3">
+            <div class="d-flex mb-3">
                 <div class="col-md-6">
                     <p><strong>Employee ID:</strong> @Model.prohibitionModel.employmentModel?.givenID</p>
                     <p><strong>Employee Name:</strong> @Model.prohibitionModel.employmentModel?.personModel?.personFullName</p>
@@ -65,9 +65,7 @@
             <a asp-page="./Edit" asp-route-id="@Model.prohibitionModel.prohibitionID" class="btn btn-success m-2">
                 <i class="bi bi-pencil-square"></i> Edit
             </a>
-            <a asp-page="./Delete" asp-route-id="@Model.prohibitionModel.prohibitionID" class="btn btn-danger m-2">
-                <i class="bi bi-trash"></i> Delete
-            </a>
+           
         </div>
     </div>
 </div>

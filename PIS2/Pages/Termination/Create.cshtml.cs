@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using PIS2.Models;
+using PIS2.Views;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,42 +26,64 @@ namespace PIS2.Pages.Termination
         [BindProperty(SupportsGet = true)]
         public string givenID { get; set; }
         public string ErrorMessage { get; set; }
-        [BindProperty]
-        public employmentModel Employment { get; set; }
+
         int? EmpID { get; set; }
         public decimal SeverancePay { get; set; }
+        public AnnualLeaveSummary? LeaveSummary { get; set; }
+        public decimal YearsOfService { get; set; }
+        public jobPlacementModel? jobPlacement { get; set; }
         public async Task<IActionResult> OnGet(int? id)
         {
-            Employment = new employmentModel();
-            if (!string.IsNullOrEmpty(givenID))
+            if (string.IsNullOrEmpty(givenID) && id == null)
             {
-                var emp = _context.Employments
-                    .FirstOrDefault(e => e.givenID == givenID);
-
-                if (emp != null)
-                {
-
-                    // Redirect to the Details page with employmentID
-                    id = emp.employmentID;
-                    Console.WriteLine("############## The ID is == " + id);
-                    employmentModel = _context.Employments.Include(e => e.personModel).FirstOrDefault(e => e.employmentID == id);
-                    var sp =await _core.GetSeverance(employmentModel.employmentID);
-                    SeverancePay = sp; 
-                    return Page();
-                    //return RedirectToPage("Create", new { id = emp.employmentID });
-                }
-
-                ErrorMessage = "No employee found with that Given ID.";
-            }
-            if(id != null && id != 0)
-            {
-                employmentModel = _context.Employments.Include(e => e.personModel)
-                    .Where(e => e.employmentStatus == mainStatus.Active && e.TerminationModel == null)
-                    .FirstOrDefault(e => e.employmentID == id);
-                SeverancePay =await _core.GetSeverance(employmentModel.employmentID);
-                givenID = employmentModel.givenID;
+                return Page();
             }
             
+            if (!string.IsNullOrEmpty(givenID))
+            {
+                employmentModel = await _context.Employments.Include(e => e.personModel)
+                    .Where(e => e.employmentStatus == mainStatus.Active)
+                    .FirstOrDefaultAsync(e => e.givenID == givenID);
+                              
+            }
+
+            if (id != null && id != 0)
+            {
+                employmentModel = await _context.Employments.Include(e => e.personModel)
+                    .Where(e => e.employmentStatus == mainStatus.Active)
+                    .FirstOrDefaultAsync(e => e.employmentID == id);
+            }
+
+            if (employmentModel == null)
+            {
+                //TempData["message"] = ("Error", $"Employee Record Not Found!");
+                return NotFound();
+            }
+
+            if (employmentModel.employmentStatus != mainStatus.Active)
+            {
+                //TempData["message"] = ("Error", $"Employee is not active.");
+                return NotFound();
+            }
+
+            var exiTermination = await _context.Terminations.Where(t => t.employmentID == employmentModel.employmentID).ToListAsync();
+            
+            if (exiTermination.Any())
+            {
+                //TempData["message"] = ("Error", $"Termination exists for this employment!");
+                return RedirectToPage("Details", new { id = exiTermination.First().terminationID });
+            }
+
+            SeverancePay =await _core.GetSeverance(employmentModel.employmentID);
+            LeaveSummary = await _context.AnnualLeaveSummary.FirstOrDefaultAsync(a => a.employmentID == employmentModel.employmentID);
+            givenID = employmentModel.givenID;
+            YearsOfService = (decimal) ((DateTime.Now - employmentModel.employmentDate).TotalDays)/365.25m;
+                
+
+            jobPlacement = await _context.JobPlacements
+                .Include(j => j.departmentModel).ThenInclude(d => d.companyModel)
+                .Include(jp => jp.jobModel)
+                .FirstOrDefaultAsync(j => j.employmentID == employmentModel.employmentID && j.jobPlacementStatus == mainStatus.Active);
             return Page();
         }
 
@@ -69,7 +92,7 @@ namespace PIS2.Pages.Termination
         public employmentModel employmentModel { get; set; }
 
         // For more information, see https://aka.ms/RazorPagesCRUD.
-        public async Task<IActionResult> OnPostAsync(int? id)
+        public async Task<IActionResult> OnPostAsync()
         {
             ModelState.Remove("terminationModel.modifiedBy");
             ModelState.Remove("modifiedBy");
@@ -86,22 +109,16 @@ namespace PIS2.Pages.Termination
                         
                     }
                 }
-                Console.WriteLine("===ID IS===" +id);
+                TempData["message"] = ("Error", $"Missing field!");
                 
                 return Page();
             }
-            employmentModel = await _context.Employments.Include(e => e.personModel)?.FirstOrDefaultAsync(e => e.employmentID == id);
-            Console.WriteLine("===Emp  ID IS===" + terminationModel.employmentID);
-            if (employmentModel == null)
-            {
-                return NotFound();
-            }
-            
+
+  
             _context.Terminations.Add(terminationModel);
             await _context.SaveChangesAsync();
 
-            
-            return RedirectToPage("./Edit", new { id =employmentModel.employmentID});
+            return RedirectToPage("./Details", new { id =terminationModel.terminationID});
         }
     }
 }

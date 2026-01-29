@@ -29,6 +29,9 @@ namespace PIS2.Pages.TrainingSession
 
         public async Task<IActionResult> OnPostAsync()
         {
+            Session.modifiedBy = User.Identity.Name;
+            Session.modifiedDate = DateTime.Now;
+
             if (!ModelState.IsValid)
             {
                 TrainingList = new SelectList(_context.Trainings, "trainingID", "trainingTitle");

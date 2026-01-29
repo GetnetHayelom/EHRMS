@@ -5,26 +5,20 @@
     ViewData["Title"] = "Service Requests";
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
-
+@Html.AntiForgeryToken()
 <!-- Page Header -->
 <div class="d-flex justify-content-between align-items-center mb-4">
     <div>
         <h1 class="fw-bold text-dark mb-0">Service Requests</h1>
         <p class="text-muted mb-0">Manage and track employee service requests</p>
     </div>
-
-    <a asp-page="Create" class="btn btn-primary d-print-none">
-        + Create New
-    </a>
 </div>
-
-<!-- Filters -->
 <div class="card shadow-sm border-0 mb-4 d-print-none">
     <div class="card-body">
         <form class="row g-3">
             <div class="col-md-2">
                 <label class="form-label fw-semibold">Company</label>
-                <select class="form-select" id="filter-company" onchange="filter()" asp-items="Model.Companies">
+                <select class="form-select" id="filter-company" asp-items="Model.Companies" onchange="filter()">
                     <option value="">All</option>
                 </select>
             </div>
@@ -35,34 +29,39 @@
 
                 </select>
             </div>
-
             <div class="col-md-2">
-                <label class="form-label fw-semibold">Status</label>
-                <select class="form-select" id="filter-status" onchange="filter()"
-                        asp-items="Html.GetEnumSelectList<Models.ServiceRequestStatus>()">
+                <label class="form-label fw-semibold">Type</label>
+                <select class="form-select" id="filter-type" asp-items="@Html.GetEnumSelectList<Models.ServiceRequestTypes>()" onchange="filter()">
                     <option value="">All</option>
                 </select>
             </div>
-            
-           
+
+            <div class="col-md-2">
+                <label class="form-label fw-semibold">Status</label>
+                <select class="form-select" id="filter-status"
+                        asp-items="Html.GetEnumSelectList<Models.ServiceRequestStatus>()" onchange=" filter()">
+                    <option value="">All</option>
+                </select>
+            </div>
+
+
             <div class="col-md-2">
                 <label class="form-label fw-semibold">Date From</label>
-                <input class="form-control" type="date" id="dateStart"
-                       onchange="filter()" asp-for="StartDate" />
+                <input class="form-control" type="date" id="dateStart" asp-for="StartDate" onchange="filter()" />
             </div>
 
             <div class="col-md-2">
                 <label class="form-label fw-semibold">Date To</label>
-                <input class="form-control" type="date" id="dateEnd"
-                       onchange="filter()" asp-for="EndDate" />
+                <input class="form-control" type="date" id="dateEnd" asp-for="EndDate" onchange="filter()" />
             </div>
 
         </form>
     </div>
 </div>
-
-<!-- Table -->
-<div class="card shadow-sm border-0">
+@if(Model.serviceRequestModel.Any())
+{
+    <!-- Table -->
+    <div class="card shadow-sm border-0">
     <div class="card-body p-0">
         <table class="table table-hover mb-0">
             <thead class="table-dark">
@@ -72,6 +71,7 @@
                     <th>Requested By</th>
                     <th>Request Date</th>
                     <th>Status</th>
+                    <th>Actions</th>
                 </tr>
             </thead>
             <tbody>
@@ -85,18 +85,8 @@
                         _ => "bg-secondary"
                     };
 
-                    string UrlTo = item.requestedService switch
-                    {
-
-                        Models.ServiceRequestTypes.Experience => "/Experience/Index?id=" + item.Employment?.personID,
-                        Models.ServiceRequestTypes.Guaranty => "/Guaranty/Create?id=" + item.Employment?.personID,
-                        Models.ServiceRequestTypes.Termination => "/Termination/Details?id=" + item.employmentID,
-                        _ => "Details/id="+ item.serviceRequestID
-
-                    };
-
-                    <tr onclick="location.href='@UrlTo'"
-                        style="cursor:pointer">
+                    <tr onclick="update(this)"
+                        style="cursor:pointer" data-id="@item.serviceRequestID">
                         <td>@item.Employment?.givenID</td>
                         <td>@item.requestedService</td>
                         <td>@item.modifiedBy</td>
@@ -106,6 +96,16 @@
                                 @item.serviceRequestStatus
                             </span>
                         </td>
+                        <td class="text-end px-4">
+                            <div class="btn-group" role="group">
+                                <a asp-page="./Details" asp-route-id="@item.serviceRequestID" class="btn btn-sm btn-outline-primary" title="View Details">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                                <a asp-page="./Edit" asp-route-id="@item.serviceRequestID" class="btn btn-sm btn-outline-success" title="Edit">
+                                    <i class="bi bi-pencil-square"></i>
+                                </a>
+                            </div>
+                        </td>
                     </tr>
                 }
             </tbody>
@@ -113,22 +113,73 @@
     </div>
 </div>
 
-<!-- Print -->
-<div class="d-flex justify-content-end mt-3">
-    @await Html.PartialAsync("print")
-</div>
+    <!-- Print -->
+    <div class="d-flex justify-content-end mt-3">
+        @await Html.PartialAsync("print")
+    </div>
+}
+else
+{
+    <h6> The are no request records!</h6>
+}
+<!-- Filters -->
+
 
 <script>
     function filter() {
         const params = new URLSearchParams({
-            status: document.getElementById("filter-status").value,
+            reqStatus: document.getElementById("filter-status").value,
             department: document.getElementById("filter-department").value,
             company: document.getElementById("filter-company").value,
-            workLoc: document.getElementById("filter-workLoc").value,
+            reqType: document.getElementById("filter-type").value,
             startDate: document.getElementById("dateStart").value,
             endDate: document.getElementById("dateEnd").value
         });
 
         window.location.href = `/ServiceRequest/Index?${params.toString()}`;
+    }
+
+    async function update(row){
+        const id = row.dataset.id;
+        const token = document.querySelector('input[name="__RequestVerificationToken"]')?.value;
+
+        const response = await fetch('/ServiceRequest/Index?handler=Update&id='+id,
+        {
+            method:"POST",
+            headers:{"RequestVerificationToken": token}
+        });
+        
+        if (!response.ok) {
+            showToast("Error", "Request failed");
+            window.location.href='/ServiceRequest/Details/id='+id;
+            return;
+        }
+
+        const res = await response.json();
+
+        if(!res.success){window.location.href='/ServiceRequest/Details/id=${id}';}
+
+            let urlTo;
+
+            switch (res.type) {
+                case "Experience":
+                    urlTo = `/Experience/Index?id=${res.prsnID}`;
+                    break;
+
+                case "Guaranty":
+                    urlTo = `/Guaranty/Create?id=${res.prsnID}`;
+                    break;
+
+                case "Termination":
+                    urlTo = `/Termination/Create?id=${res.empID}`;
+                    break;
+
+                default:
+                
+                    urlTo = `/ServiceRequest/Details?id=${id}`;
+            }
+
+            window.location.href = urlTo;
+    
     }
 </script>

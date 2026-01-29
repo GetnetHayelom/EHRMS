@@ -55,8 +55,7 @@ namespace PIS2.Pages.Management
                 return NotFound();
             }
             
-            var cmp = await _context.Companies.Include(c => c.Departments).ThenInclude(d => d.JobPlacements)
-                .ThenInclude(j => j.employmentModel).ThenInclude(e => e.employmentTypeModel).FirstOrDefaultAsync(c => c.companyID == id);
+            var cmp = await _context.Companies.FirstOrDefaultAsync(c => c.companyID == id);
             if (cmp == null)
             {
                 return NotFound();
@@ -64,20 +63,24 @@ namespace PIS2.Pages.Management
             else
             {
                 try {
-                    Departments = cmp.Departments.ToList();
-                    
-                    Jobs = Departments
-                        .SelectMany(d => d.JobPlacements) // Flatten the JobPlacements
-                        .GroupBy(jp => jp.employmentID) // Group by Employee ID
-                        .Select(g => g.OrderByDescending(jp => jp.jobPlacementDate).First()) // Select latest job placement
-                        .ToList();
+                    Departments = await _context.Departments.Where(c => c.companyID == id).ToListAsync();
+                    var depIDs = Departments.Select(d => d.departmentID).ToList();
 
-                    Employments = Jobs.Select(j => j.employmentModel).ToList();
+                    Jobs = await _context.JobPlacements.Include(j => j.departmentModel).Where(j => depIDs.Contains(j.departmentID)).ToListAsync();
+                    var activeJobs = Jobs.Where(j => j.jobPlacementStatus == mainStatus.Active).ToList();
 
-                    var empIDs = Jobs.Select(e => e.employmentID).ToList();
+                    var empIDs = Jobs.Select(j => j.employmentID).ToList();
 
-                    allowance = _context.AllowanceAssignments.Where(e => empIDs.Contains(e.employmentID) && e.allowanceStatus == mainStatus.Active).Sum(aa => aa.allowanceAssignmentAmount);
-                    var ots = _context.OvertimeRecords.Where(e => empIDs.Contains(e.employmentID) && e.overtimeRecordStatus == overtimeStatus.Hold).ToList();
+                    Employments = await _context.Employments.Where(e => empIDs.Contains(e.employmentID)).Include(e => e.employmentTypeModel).ToListAsync();
+                    var activeEmps = Employments.Where(e => e.employmentStatus == mainStatus.Active).ToList();
+                    var activeEmpIDs = activeEmps.Select(e => e.personID).ToList();
+
+                    var alwnc = await _context.AllowanceAssignments.Where(e => empIDs.Contains(e.employmentID) && e.allowanceStatus == mainStatus.Active).ToListAsync();
+                    allowance =alwnc.Sum(aa => aa.allowanceAssignmentAmount);
+
+                    var activePersons = await _context.Persons.Where(p => activeEmpIDs.Contains(p.personID)).ToListAsync();
+
+                    var ots =await _context.OvertimeRecords.Where(e => empIDs.Contains(e.employmentID) && e.overtimeRecordStatus == overtimeStatus.Hold).ToListAsync();
                     overtime = 0;
                     foreach (var ot in ots)
                     {
@@ -88,12 +91,12 @@ namespace PIS2.Pages.Management
                     //CompanySummary.Manager = cmp.employmentModel.personModel.personFullName;
                     CompanySummary.CompanyName = cmp.companyName;
                     CompanySummary.CompanyID = cmp.companyID;
-                    CompanySummary.Departments = cmp.Departments.Count();
-                    CompanySummary.Salary =(decimal) Jobs.Where(j => j.jobPlacementStatus==mainStatus.Active).Sum(j=>j.jobPlacementSalary);
-                    CompanySummary.Employees = Jobs.Where(e => e.jobPlacementStatus == mainStatus.Active).GroupBy(e =>e.employmentID).Select(g => g.First()).Count();
+                    CompanySummary.Departments = cmp.Departments?.Count() ?? 0;
+                    CompanySummary.Salary =(decimal) activeJobs.Sum(j=>j.jobPlacementSalary);
+                    CompanySummary.Employees = activeEmps.Count();
                     CompanySummary.xEmployees = Employments.Count(e => e.employmentStatus == mainStatus.Inactive);
 
-                    var activeEmps = Employments.Where(e => e.employmentStatus == mainStatus.Active).ToList();//Jobs.Where(j => j.jobPlacementStatus == mainStatus.Active).Select(j => j.employmentModel).ToList();
+                    
                     //Employment Counts
                     totalNoEmployment = Employments.Count();
                     exEmployments = Employments.Where(e => e.employmentStatus == mainStatus.Inactive).Count();
@@ -102,20 +105,29 @@ namespace PIS2.Pages.Management
                     Jobs = Jobs.Where(j => j.jobPlacementStatus == mainStatus.Active).ToList();
 
                     // Education Level Data
-                    EducationLevels = _context.PersonEducationLevels
-                        .Join(_context.EducationLevels, pel => pel.educationLevelID, el => el.educationLevelID, (pel, el) => new { pel, el })
-                        .Where(x => _context.Employments.Any(e => e.personID == x.pel.personID && e.employmentStatus == mainStatus.Active))
-                        .GroupBy(x => new { x.el.educationLevelCategory, x.el.educationLevelName })
+                    EducationLevels = await _context.PersonEducationLevels.Include(p => p.educationLevelModel)
+                        .GroupBy(pe => new {pe.educationLevelModel.educationLevelCategory, pe.educationLevelModel.educationLevelName })
                         .Select(g => new EducationLevelData
                         {
                             EducationLevelCategory = g.Key.educationLevelCategory,
                             EducationLevelName = g.Key.educationLevelName,
                             EducationLevelCount = g.Count()
-                        }).OrderByDescending(e => e.EducationLevelCount).ToList();
+                        }).OrderByDescending(e => e.EducationLevelCount).ToListAsync();
+
+                    //EducationLevels = _context.PersonEducationLevels
+                    //    .Join(_context.EducationLevels, pel => pel.educationLevelID, el => el.educationLevelID, (pel, el) => new { pel, el })
+                    //    .Where(x => _context.Employments.Any(e => e.personID == x.pel.personID && e.employmentStatus == mainStatus.Active))
+                    //    .GroupBy(x => new { x.el.educationLevelCategory, x.el.educationLevelName })
+                    //    .Select(g => new EducationLevelData
+                    //    {
+                    //        EducationLevelCategory = g.Key.educationLevelCategory,
+                    //        EducationLevelName = g.Key.educationLevelName,
+                    //        EducationLevelCount = g.Count()
+                    //    }).OrderByDescending(e => e.EducationLevelCount).ToList();
 
                     //Employment Types
                     EmploymentTypes = new List<NameAndCount>();
-                    EmploymentTypes = Jobs.Select(e => e.employmentModel)
+                    EmploymentTypes = activeEmps
                         .GroupBy(e => new { e.employmentTypeModel.employmentTypeName, e.employmentTypeID })
                        .Select(g => new NameAndCount
                        {
@@ -123,12 +135,14 @@ namespace PIS2.Pages.Management
                            zCount = g.Count()
                        })
                        .ToList();
-                   
+
                     //Active Leaves
-                    leaveEmployments = _context.Leaves
+                    var lvs = await _context.Leaves
                         .Where(l => l.leaveStartDate <= DateTime.Now && l.leaveEndDate >= DateTime.Now && l.leaveTypeModel.leaveTypeImpact == leaveTypeImpact.Negative
-                        && l.employmentModel.employmentStatus == mainStatus.Active && l.leaveStatus == leaveStatus.Posted
-                        && l.leaveTypeID != 64 && activeEmps.Select(ae=> ae.employmentID).Contains(l.employmentID)).Count();
+                        && l.leaveStatus == leaveStatus.Posted
+                        && l.leaveTypeID != 64 && activeEmpIDs.Contains(l.employmentID)).ToListAsync();
+
+                    leaveEmployments = lvs.Count();
 
                     //Employment hire Rate
                     EmploymentHireRate = activeEmps
@@ -142,7 +156,8 @@ namespace PIS2.Pages.Management
                     .ToList();
 
                     //Termination Rate
-                    TerminationRate = _context.Terminations.Where(t => Employments.Select(e => e.employmentID).ToList().Contains(t.employmentID))
+                    var trmnt = await _context.Terminations.Where(t => empIDs.Contains(t.employmentID)).ToListAsync();
+                    TerminationRate =trmnt
                     .GroupBy(e => e.terminationDate.Year) // Group by hire year
                     .Select(g => new YearAndCount
                     {
@@ -184,7 +199,7 @@ namespace PIS2.Pages.Management
                      }).ToList();
 
                     //WorkSite Employee Distribution
-                    WorkSiteEmployees = _context.SiteAssignments
+                    WorkSiteEmployees =await _context.SiteAssignments
                         .Where(ws => ws.employmentModel.employmentStatus == mainStatus.Active)
                         .GroupBy(ws => new { ws.employmentID, ws.workSiteModel.workSiteName })
                         .Select(g => new
@@ -199,20 +214,19 @@ namespace PIS2.Pages.Management
                             zCount = g.Count()
                         })
                         .OrderByDescending(wl => wl.zCount)
-                        .ToList();
-
+                        .ToListAsync();
 
 
                     //edu level summary
-                    EduLevelSummary = _context.PersonEducationLevels.Include(pe => pe.educationLevelModel)
-                        .Where(l => Employments.Select(e => e.personID).Contains(l.personID)).ToList()
+                    var els = await _context.PersonEducationLevels.Include(pe => pe.educationLevelModel)
+                        .Where(l => Employments.Select(e => e.personID).Contains(l.personID)).ToListAsync();
+                    EduLevelSummary = els
                         .GroupBy(pe => pe.educationLevelModel.educationLevelCategory)
                         .Select(el => new NameAndCount
                         { 
                             zName = el.Key.ToString(),
                             zCount = el.Count()
-                        }).OrderByDescending(el => el.zCount).ToList();
-                        
+                        }).OrderByDescending(el => el.zCount).ToList();                       
                    
                     leaveDetails = new List<leaveDetail>();
                     var oneLeave = new leaveDetail();
@@ -222,8 +236,8 @@ namespace PIS2.Pages.Management
                         oneLeave.department = d;
                         leaveDetails.Add(oneLeave);
                     }
-                    DepartmentSummaries = _context.JobPlacements.Include(jp =>jp.departmentModel).Include(jp => jp.employmentModel)
-                        .Where(jp => jp.jobPlacementStatus == mainStatus.Active && Departments.Select(d => d.departmentID).Contains(jp.departmentID)).ToList()
+
+                    DepartmentSummaries =Jobs
                         .GroupBy(jp => new { jp.departmentID, jp.departmentModel.departmentName })
                         .Select(ds => new DepartmentSummary
                         {
@@ -237,7 +251,6 @@ namespace PIS2.Pages.Management
                     foreach (var d in DepartmentSummaries)
                     {
                         d.Leaves = leaveDetails.FirstOrDefault(ld =>ld.department.departmentID == d.DepartmentID);
-                        
                     }
                     allowedLeave = leaveDetails.Sum(l => l.AllowedLeave);
                     leaveCost = leaveDetails.Sum(l => l.leaveCost);

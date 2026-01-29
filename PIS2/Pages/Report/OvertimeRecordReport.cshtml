@@ -36,8 +36,8 @@
         <h4 class="fw-bold">Summary Report</h4>
 
         <!--SUMMARY POINTS-->
-        <div class="card shadow-sm p-2">
-            <div class="d-flex gap-3 mb-4 d-print-flex flex-wrap">
+        <div class="card shadow-sm p-2 mb-4 ">
+            <div class="d-flex gap-3d-print-flex flex-wrap">
 
                 <div class="flex-fill">
                     <div class="card shadow-sm border-start border-info border-3">
@@ -231,96 +231,97 @@
         <h4 class="fw-bold">Custom Report</h4>
 
         <!--SUMMARY POINTS-->
-        <div class="d-flex gap-3 mb-4 d-print-flex flex-wrap">
+        <div class="card shadow-sm p-2 mb-4 ">
+            <div class="d-flex gap-3 d-print-flex flex-wrap">
 
-            <div class="flex-fill">
-                <div class="card shadow-sm border-start border-info border-3">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div>
-                                <small class="text-muted">Total Overtime (Records)</small>
-                                <h4 class="fw-bold mb-0"><u id="TotalRecords">@Model.TotalRecords.ToString("N0")</u></h4>
+                <div class="flex-fill">
+                    <div class="card shadow-sm border-start border-info border-3">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <small class="text-muted">Total Overtime (Records)</small>
+                                    <h4 class="fw-bold mb-0"><u id="TotalRecords">@Model.TotalRecords.ToString("N0")</u></h4>
+                                </div>
+                                <div><i class="bi bi-journal-check fs-2 text-info"></i></div>
                             </div>
-                            <div><i class="bi bi-journal-check fs-2 text-info"></i></div>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <div class="flex-fill">
-                <div class="card shadow-sm border-start border-primary border-3">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div>
-                                <small class="text-muted">Total Overtime</small>
-                                <h4 class="fw-bold mb-0"><u id="TotalHours">@Model.TotalHours.ToString("N0") Hrs</u></h4>
-                                <small><u id="TotalDays">@Model.TotalDays.ToString("N0") Days</u></small>
+                <div class="flex-fill">
+                    <div class="card shadow-sm border-start border-primary border-3">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <small class="text-muted">Total Overtime</small>
+                                    <h4 class="fw-bold mb-0"><u id="TotalHours">@Model.TotalHours.ToString("N0") Hrs</u></h4>
+                                    <small><u id="TotalDays">@Model.TotalDays.ToString("N0") Days</u></small>
+                                </div>
+                                <div><i class="bi bi-clock-history fs-2 text-primary"></i></div>
                             </div>
-                            <div><i class="bi bi-clock-history fs-2 text-primary"></i></div>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <div class="flex-fill">
-                <div class="card shadow-sm border-start border-warning border-3">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div>
-                                <small class="text-muted">Total Overtime Cost</small>
-                                <h4 class="fw-bold mb-0"><u id="TotalCost">@Model.TotalCost.ToString("N2")</u></h4>
+                <div class="flex-fill">
+                    <div class="card shadow-sm border-start border-warning border-3">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <small class="text-muted">Total Overtime Cost</small>
+                                    <h4 class="fw-bold mb-0"><u id="TotalCost">@Model.TotalCost.ToString("N2")</u></h4>
+                                </div>
+                                <div><i class="bi bi-cash fs-2 text-warning"></i></div>
                             </div>
-                            <div><i class="bi bi-cash fs-2 text-warning"></i></div>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <div class="flex-fill">
-                <div class="card shadow-sm border-start border-success border-3">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div>
-                                <small class="text-muted">No. of Employees</small>
-                                <h4 class="fw-bold mb-0"><u id="InvolvedEmployees">@Model.InvolvedEmployees.ToString("N0")</u></h4>
+                <div class="flex-fill">
+                    <div class="card shadow-sm border-start border-success border-3">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <small class="text-muted">No. of Employees</small>
+                                    <h4 class="fw-bold mb-0"><u id="InvolvedEmployees">@Model.InvolvedEmployees.ToString("N0")</u></h4>
+                                </div>
+                                <div><i class="bi bi-people fs-2 text-success"></i></div>
                             </div>
-                            <div><i class="bi bi-people fs-2 text-success"></i></div>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <div class="flex-fill">
-                <div class="card shadow-sm border-start border-danger border-3">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div>
-                                <small class="text-muted">Days Per Employee</small>
-                                <h4 class="fw-bold mb-0"><u id="DaysPerEmployees">@Model.DaysPerEmployees.ToString("N2")</u></h4>
+                <div class="flex-fill">
+                    <div class="card shadow-sm border-start border-danger border-3">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <small class="text-muted">Days Per Employee</small>
+                                    <h4 class="fw-bold mb-0"><u id="DaysPerEmployees">@Model.DaysPerEmployees.ToString("N2")</u></h4>
+                                </div>
+                                <div><i class="bi bi-calendar-day fs-2 text-danger"></i></div>
                             </div>
-                            <div><i class="bi bi-calendar-day fs-2 text-danger"></i></div>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <div class="flex-fill">
-                <div class="card shadow-sm border-start border-secondary border-3">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div>
-                                <small class="text-muted">Cost Per Employee</small>
-                                <h4 class="fw-bold mb-0"><u id="CostPerEmployees">@Model.CostPerEmployees.ToString("N2")</u></h4>
+                <div class="flex-fill">
+                    <div class="card shadow-sm border-start border-secondary border-3">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <small class="text-muted">Cost Per Employee</small>
+                                    <h4 class="fw-bold mb-0"><u id="CostPerEmployees">@Model.CostPerEmployees.ToString("N2")</u></h4>
+                                </div>
+                                <div><i class="bi bi-currency-dollar fs-2 text-secondary"></i></div>
                             </div>
-                            <div><i class="bi bi-currency-dollar fs-2 text-secondary"></i></div>
                         </div>
                     </div>
                 </div>
-            </div>
 
+            </div>
         </div>
-
-
+      
         <!--FILTER CONTROLS-->
         <div class="card shadow-sm p-2 m-2">
             <div class="d-flex m-2 flex-wrap">
@@ -392,7 +393,7 @@
         </ul>
 
         <!-- TAB CONTENT -->
-        <div class="tab-content mt-3">
+        <div class="tab-content mt-3 card shadow-sm p-2">
             <!-- MONTHLY TAB -->
             <div class="tab-pane fade show active" id="monthly" role="tabpanel">
 

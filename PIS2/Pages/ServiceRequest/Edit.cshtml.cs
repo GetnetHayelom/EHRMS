@@ -23,7 +23,7 @@ namespace PIS2.Pages.ServiceRequest
 
         [BindProperty]
         public serviceRequestModel serviceRequestModel { get; set; } = default!;
-
+        public ICollection<serviceRequestHistoryModel> RequestHistory { get; set; }
         public async Task<IActionResult> OnGetAsync(int? id)
         {
             if (id == null)
@@ -31,13 +31,18 @@ namespace PIS2.Pages.ServiceRequest
                 return NotFound();
             }
 
-            var servicerequestmodel =  await _context.ServiceRequests.FirstOrDefaultAsync(m => m.serviceRequestID == id);
+            var servicerequestmodel =  await _context.ServiceRequests
+                .Include(s => s.Employment).ThenInclude(e => e.personModel)
+                .Include(s => s.ServiceRequestHistoies)
+                .FirstOrDefaultAsync(m => m.serviceRequestID == id);
+
             if (servicerequestmodel == null)
             {
                 return NotFound();
             }
             serviceRequestModel = servicerequestmodel;
-           ViewData["employmentID"] = new SelectList(_context.Employments, "employmentID", "givenID");
+            RequestHistory = serviceRequestModel.ServiceRequestHistoies;
+            
             return Page();
         }
 
@@ -45,12 +50,11 @@ namespace PIS2.Pages.ServiceRequest
         // For more information, see https://aka.ms/RazorPagesCRUD.
         public async Task<IActionResult> OnPostAsync()
         {
-            if (!ModelState.IsValid)
-            {
-                return Page();
-            }
+            var sr = await _context.ServiceRequests.FirstOrDefaultAsync(s => s.serviceRequestID == serviceRequestModel.serviceRequestID);
 
-            _context.Attach(serviceRequestModel).State = EntityState.Modified;
+            if(sr == null) { TempData["message"] = ("Error", "Record Not Found!"); return Page(); }
+            sr.serviceRequestStatus = serviceRequestModel.serviceRequestStatus;
+            sr.modifiedBy = User.Identity.Name;
 
             try
             {
@@ -68,7 +72,7 @@ namespace PIS2.Pages.ServiceRequest
                 }
             }
 
-            return RedirectToPage("./Index");
+            return RedirectToPage("./Details", new { id = sr.serviceRequestID});
         }
 
         private bool serviceRequestModelExists(int id)

@@ -12,130 +12,145 @@
 <div class="row m-2">
     @if (Model.allowanceAssignmentModel != null)
     {
-        <!-- SUMMARY POINTS --> <div class="d-flex gap-3 mb-4 d-print-flex flex-wrap">
-            <div class="flex-fill">
-                <div class="card shadow-sm border-start border-info border-3">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div>
-                                <small class="text-muted">Total Allowances (Records)</small>
-                                <h3 class="fw-bold mb-0"><u id="TotalRecords"></u>@Model.GrandCount.ToString("N2")</h3> 
-                            </div> 
-                            <div><i class="bi bi-journal-check fs-2 text-info"></i></div>
-                        </div> </div> </div> </div> <div class="flex-fill">
-                            <div class="card shadow-sm border-start border-primary border-3">
-                                <div class="card-body"> <div class="d-flex justify-content-between align-items-center">
-                                    <div>
-                                        <small class="text-muted">Total Sum</small> <h3 class="fw-bold mb-0"><u id="TotalSum"></u>@Model.GrandSum.ToString("N2") / Birr</h3>
-                                        </div>
-                                    <div><i class="bi bi-currency-dollar fs-2 text-primary"></i></div>
+        <!-- SUMMARY POINTS -->
+        <div class="card shadow-sm p-2 mb-4 ">
+            <div class="d-flex gap-3 mb-4 d-print-flex flex-wrap">
+                <div class="flex-fill">
+                    <div class="card shadow-sm border-start border-info border-3">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <small class="text-muted">Total Allowances (Records)</small>
+                                    <h4 class="fw-bold mb-0"><u id="TotalRecords"></u>@Model.GrandCount.ToString("N2")</h4>
                                 </div>
+                                <div><i class="bi bi-journal-check fs-2 text-info"></i></div>
                             </div>
                         </div>
                     </div>
-                    <div class="flex-fill"> 
-                        <div class="card shadow-sm border-start border-success border-3"> 
-                            <div class="card-body"> <div class="d-flex justify-content-between align-items-center">
-                                <div> <small class="text-muted">Employees</small> <h3 class="fw-bold mb-0"><u id="Employees"></u>@Model.Employees.ToString("N2")</h3> </div> 
-                                <div><i class="bi bi-people fs-2 text-success"></i></div> 
-                            </div> 
-                        </div> 
-                    </div> 
-                </div> 
+                </div> <div class="flex-fill">
+                    <div class="card shadow-sm border-start border-primary border-3">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <small class="text-muted">Total Sum</small> <h4 class="fw-bold mb-0"><u id="TotalSum"></u>@Model.GrandSum.ToString("N2")</h4>
+                                </div>
+                                <div><i class="bi bi-currency-dollar fs-2 text-primary"></i></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex-fill">
+                    <div class="card shadow-sm border-start border-success border-3">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div> <small class="text-muted">Employees</small> <h4 class="fw-bold mb-0"><u id="Employees"></u>@Model.Employees.ToString("N2")</h4> </div>
+                                <div><i class="bi bi-people fs-2 text-success"></i></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-
-
-        <!--FILTER CONTROLLS-->
-        <div class="col-3">
-            <label for="filter-company">Company:</label>
-            <select class="form-select" aria-label="Default select example" id="filter-company" >
-                <option value="">All</option>
-                @foreach (var company in Model.Companies)
-                {
-                    <option value="@company.companyID">@company.companyName</option>
-                }
-            </select>
-        </div>
-        <div class="col-3">
-            <label for="filter-department">Department:</label>
-            <select class="form-select" aria-label="Default select example" id="filter-department">
-                <option value="">All</option>
-                @foreach (var department in Model.Departments)
-                {
-                    <option value="@department.departmentID">@department.departmentName</option>
-                }
-            </select>
-        </div>
-
-        <div class="col-3">
-            <label for="filter-status">Status:</label>
-            <select class="form-select" aria-label="Default select example" id="filter-status" asp-items="Html.GetEnumSelectList<Models.mainStatus>()">
-                <option value="">All</option>
-            </select>
-        </div>
-        <div class="col-3">
-            <label for="filter-empType">Allowance Type:</label>
-            <select class="form-select" aria-label="Default select example" id="filter-type">
-                <option value="">All</option>
-                @foreach (var Atypes in Model.AllowanceTypes)
-                {
-                    <option value="@Atypes.allowanceID">@Atypes.allowanceName</option>
-                }
-            </select>
-        </div>
-        <div class="col-3">
-            <label for="filter-empType">Job Class:</label>
-            <select class="form-select" aria-label="Default select example" id="filter-jobClass">
-                <option value="">All</option>
-                @foreach (var jcalss in Model.JobClasses)
-                {
-                    <option value="@jcalss.JobClassId">@jcalss.JobClassName</option>
-                }
-            </select>
-        </div>
-        <div class="col-3">
-            <label for="filter-empType">Job Title:</label>
-            <select class="form-select" aria-label="Default select example" id="filter-jobTitle">
-                <option value="">All</option>
-                @foreach (var jtitle in Model.JobTitles)
-                {
-                    <option value="@jtitle.jobID">@jtitle.jobTitle</option>
-                }
-            </select>
-        </div>
-        <div class="col-3">
-            <label for="filter-empType">Allowance Duration:</label>
-            <select class="form-select" aria-label="Default select example" id="filter-duration" asp-items="Html.GetEnumSelectList<Models.allowanceDuration>()">
-                <option value="">All</option>
-            </select>
-        </div>
-        <div class="col-3">
-            <label for="filter-empType">Employment Position:</label>
-            <select class="form-select" aria-label="Default select example" id="filter-positions" asp-items="Html.GetEnumSelectList<Models.EmploymentPositions>()">
-                <option value="">All</option>
-            </select>
         </div>
         
 
-        <div class="col-3">
-            <label for="dateStart">Assigned From:</label>
-            <input class="form-control" type="date" id="dateStart"/>
-        </div>
-        <div class="col-3">
-            <label for="dateEnd">Assigned Up To:</label>
-            <input class="form-control" type="date" id="dateEnd"/>
-        </div>
-       <div class="d-flex justify-content-end d-print-none">
-            <excel-export table="dataTable" filename="Allowance_@(DateTime.Now).xlsx"></excel-export>
-            <button id="toggle-allowances" class="btn btn-primary m-2">
-                Show/Hide Detail Rows
-            </button>
+        <!--FILTER CONTROLLS-->
+        <div class="card shadow-sm p-2 mb-4 ">
+            <div class="d-flex d-print-flex flex-wrap gap-4">
+                <div class="flex-fill">
+                    <label for="filter-company">Company:</label>
+                    <select class="form-select" aria-label="Default select example" id="filter-company">
+                        <option value="">All</option>
+                        @foreach (var company in Model.Companies)
+                        {
+                            <option value="@company.companyID">@company.companyName</option>
+                        }
+                    </select>
+                </div>
+                <div class="flex-fill">
+                    <label for="filter-department">Department:</label>
+                    <select class="form-select" aria-label="Default select example" id="filter-department">
+                        <option value="">All</option>
+                        @foreach (var department in Model.Departments)
+                        {
+                            <option value="@department.departmentID">@department.departmentName</option>
+                        }
+                    </select>
+                </div>
 
-           <button onclick="filterAllowance()" class="btn btn-primary m-2">Load</button>
-       </div>
+                <div class="flex-fill">
+                    <label for="filter-status">Status:</label>
+                    <select class="form-select" aria-label="Default select example" id="filter-status" asp-items="Html.GetEnumSelectList<Models.mainStatus>()">
+                        <option value="">All</option>
+                    </select>
+                </div>
+                <div class="flex-fill">
+                    <label for="filter-empType">Allowance Type:</label>
+                    <select class="form-select" aria-label="Default select example" id="filter-type">
+                        <option value="">All</option>
+                        @foreach (var Atypes in Model.AllowanceTypes)
+                        {
+                            <option value="@Atypes.allowanceID">@Atypes.allowanceName</option>
+                        }
+                    </select>
+                </div>
+                <div class="flex-fill">
+                    <label for="filter-empType">Job Class:</label>
+                    <select class="form-select" aria-label="Default select example" id="filter-jobClass">
+                        <option value="">All</option>
+                        @foreach (var jcalss in Model.JobClasses)
+                        {
+                            <option value="@jcalss.JobClassId">@jcalss.JobClassName</option>
+                        }
+                    </select>
+                </div>
+                <div class="flex-fill">
+                    <label for="filter-empType">Job Title:</label>
+                    <select class="form-select" aria-label="Default select example" id="filter-jobTitle">
+                        <option value="">All</option>
+                        @foreach (var jtitle in Model.JobTitles)
+                        {
+                            <option value="@jtitle.jobID">@jtitle.jobTitle</option>
+                        }
+                    </select>
+                </div>
+                <div class="flex-fill">
+                    <label for="filter-empType">Allowance Duration:</label>
+                    <select class="form-select" aria-label="Default select example" id="filter-duration" asp-items="Html.GetEnumSelectList<Models.allowanceDuration>()">
+                        <option value="">All</option>
+                    </select>
+                </div>
+                <div class="flex-fill">
+                    <label for="filter-empType">Employment Position:</label>
+                    <select class="form-select" aria-label="Default select example" id="filter-positions" asp-items="Html.GetEnumSelectList<Models.EmploymentPositions>()">
+                        <option value="">All</option>
+                    </select>
+                </div>
+
+
+                <div class="flex-fill">
+                    <label for="dateStart">Assigned From:</label>
+                    <input class="form-control" type="date" id="dateStart" />
+                </div>
+                <div class="flex-fill">
+                    <label for="dateEnd">Assigned Up To:</label>
+                    <input class="form-control" type="date" id="dateEnd" />
+                </div>
+                <div class="flex-fill">
+                    <div class="d-flex justify-content-end d-print-none">
+                        <excel-export table="dataTable" filename="Allowance_@(DateTime.Now).xlsx"></excel-export>
+                        <button id="toggle-allowances" class="btn btn-info m-2 text-white">
+                            Toggle Rows
+                        </button>
+
+                        <button onclick="filterAllowance()" class="btn btn-primary m-2">Load</button>
+                        @await Html.PartialAsync("print")
+                    </div>
+                </div>
+            </div>
+        </div>      
     }
 </div>
-<table class="table table-bordered table-striped table-hover" id="dataTable">
+<table class="table table-bordered table-striped table-hover print-full-width" id="dataTable">
     <thead class="bg-dark text-white">
         <tr>
             <th>
@@ -268,8 +283,6 @@
             console.error("Error:", error);
         });
     }
-
-       
 
 </script>
 <script> 

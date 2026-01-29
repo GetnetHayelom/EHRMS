@@ -1,0 +1,104 @@
+﻿@page
+@model PIS2.Pages.Benefits.DetailsModel
+@{
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 class="text-dark fw-bold">Payment Details</h2>
+        <div>
+            <a asp-page="./Edit" asp-route-id="@Model.OtherPay.paymentID" class="btn btn-warning">Edit</a>
+            <a asp-page="./Index" class="btn btn-outline-secondary">Back to List</a>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-5">
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Invoice: @Model.OtherPay.invoiceNo</h5>
+                </div>
+                <div class="card-body">
+                    <dl class="row mb-0">
+                        <dt class="col-sm-5">Status</dt>
+                        <dd class="col-sm-7">@Html.Raw(FormatStatus(Model.OtherPay.paymentStatus))</dd>
+
+                        <dt class="col-sm-5">Earning Type</dt>
+                        <dd class="col-sm-7">@Model.OtherPay.earningModel?.earningType?.earningTypeName</dd>
+
+                        <dt class="col-sm-5">Gross Pay</dt>
+                        <dd class="col-sm-7 text-primary fw-bold">@Model.OtherPay.GrossPay.ToString("C")</dd>
+
+                        <dt class="col-sm-5">Net Pay</dt>
+                        <dd class="col-sm-7 text-success fw-bold">@Model.OtherPay.NetPay.ToString("C")</dd>
+
+                        <dt class="col-sm-5 text-muted">Last Modified By</dt>
+                        <dd class="col-sm-7 small">@Model.OtherPay.modifiedBy</dd>
+                    </dl>
+                    <hr />
+                    <h6>Remarks:</h6>
+                    <p class="text-muted small">@(Model.OtherPay.remark ?? "No remarks provided.")</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-7">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-dark text-white d-flex align-items-center">
+                    <i class="bi bi-clock-history me-2"></i> Audit Trail
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive" style="max-height: 500px; overflow-y: auto;">
+                        <table class="table table-sm table-hover mb-0">
+                            <thead class="table-light">
+                                <tr class="small text-uppercase">
+                                    <th>Date</th>
+                                    <th>User</th>
+                                    <th>Field</th>
+                                    <th>Old Value</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (Model.History.Any())
+                                {
+                                    @foreach (var log in Model.History)
+                                    {
+                                        <tr>
+                                            <td class="small">@log.ModifiedDate.ToString("yyyy-MM-dd HH:mm")</td>
+                                            <td class="small fw-bold">@log.ModifiedBy</td>
+                                            <td><span class="badge bg-light text-dark">@log.ColumnName</span></td>
+                                            <td class="text-muted italic small">@log.OldValue</td>
+                                        </tr>
+                                    }
+                                }
+                                else
+                                {
+                                    <tr>
+                                        <td colspan="4" class="text-center py-4 text-muted">No change history found for this record.</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="card-footer bg-white small text-muted">
+                    Total changes tracked: @Model.History.Count
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@functions {
+    public string FormatStatus(PIS2.Models.payrollStatus status)
+    {
+        return status switch
+        {
+            Models.payrollStatus.PENDING => "<span class='badge bg-warning text-dark'><i class='bi bi-hourglass-split'></i> Pending</span>",
+            Models.payrollStatus.APPROVED => "<span class='badge bg-info'><i class='bi bi-check-circle'></i> Approved</span>",
+            Models.payrollStatus.POSTED => "<span class='badge bg-primary'><i class='bi bi-send-check'></i> Posted</span>",
+            Models.payrollStatus.COMPLETED => "<span class='badge bg-success'><i class='bi bi-flag-fill'></i> Completed</span>",
+            _ => $"<span class='badge bg-secondary'>{status}</span>"
+        };
+    }
+}

@@ -23,7 +23,7 @@ namespace PIS2.Models
     {
         [Key]
         public int serviceRequestHistoryID { get; set; }
-        public mainStatus serviceRequestStatus { get; set; }
+        public ServiceRequestStatus serviceRequestStatus { get; set; }
         public string modifiedBy { get; set; }
         public DateTime modifiedDate { get; }
         public int serviceRequestID { get; set; }

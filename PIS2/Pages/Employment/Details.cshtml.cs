@@ -111,68 +111,11 @@ namespace PIS2.Pages.Employment
                     _core.GetYearsAndMonths(employmentModel.employmentDate, employmentModel.employmentTerminationDate ?? DateTime.MinValue).Item2 + " months ";
             }
 
-            EvalReport =GetSingleEvaluationReport(employmentmodel.employmentID);
+            EvalReport =_core.GetSingleEvaluationReport(employmentmodel.employmentID);
 
             return Page();
         }
 
-        
-
-        public List<EvalSingleEmployeeReport> GetSingleEvaluationReport(int empId)
-        {
-            // 1. Fetch data from the view for the specific evaluation
-            var viewData = _context.EvaluationSummaryView
-                .Where(v => v.employmentID == empId)
-                .ToList();
-
-            if (!viewData.Any()) return null;
-
-            // 2. Build the structured report using LINQ GroupBy
-            var report = viewData
-                .GroupBy(v => new { v.evaluationID })
-                .Select(eGroup => new EvalSingleEmployeeReport
-                {
-                    evaluationID = eGroup.Key.evaluationID,
-                    evaluationName = eGroup.FirstOrDefault().evaluationName,
-                    startDate = eGroup.FirstOrDefault().evaluationStartDate,
-                    endDate = eGroup.FirstOrDefault().evaluationEndDate,
-
-                    // Total of all weighted subtask scores
-                    FinalGrandTotal = eGroup.Sum(x => x.WeightedSubTaskScore),
-
-                    Types = eGroup.GroupBy(t => new { t.evaluationTypeName, t.evaluationTypeWeight })
-                        .Select(tGroup => new EvalTypeSummary
-                        {
-                            typeName = tGroup.Key.evaluationTypeName,
-                            typeWeight = tGroup.Key.evaluationTypeWeight,
-                            
-                            Tasks = tGroup.GroupBy(tk => new { tk.evaluationTaskName, tk.evaluationTaskWeight })
-                                .Select(tkGroup => new EvalTaskSummary
-                                {
-                                    taskName = tkGroup.Key.evaluationTaskName,
-                                    taskWeight = tkGroup.Key.evaluationTaskWeight,
-                                    avgTime = tkGroup.Average(x => x.timeValuation),
-                                    avgResource = tkGroup.Average(x => x.resourceValuation),
-                                    avgPerformance = tkGroup.Average(x => x.performanceValuation),
-
-                                    // Group by SubTaskID to get unique subtasks
-                                    SubTasks = tkGroup.GroupBy(st => st.evaluationSubTaskID)
-                                        .Select(stGroup => new EvalSubTaskSummary
-                                        {
-                                            subtaskName = stGroup.First().evaluationSubTaskName,
-                                            subtaskWeight = stGroup.First().evaluationSubTaskWeight,
-                                            subTime = stGroup.First().timeValuation,
-                                            subResource = stGroup.First().resourceValuation,
-                                            subPerformance = stGroup.First().performanceValuation
-                                        }).ToList()
-                                    
-                                }).ToList()
-
-
-                        }).ToList()
-                }).ToList();
-
-            return report;
-        }
+   
     }
 }

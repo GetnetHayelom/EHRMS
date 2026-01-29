@@ -19,6 +19,8 @@ namespace PIS2.Models
         public int? validityMonths { get; set; }  // e.g. Safety training valid for 12 months
 
         public bool isActive { get; set; } = true;
+        public string modifiedBy { get; set; }
+        public DateTime modifiedDate { get; set; }
 
         public virtual ICollection<trainingSessionModel>? TrainingSessions { get; set; }
     }
@@ -33,20 +35,19 @@ namespace PIS2.Models
 
         public int trainingID { get; set; }
         public virtual trainingModel? Training { get; set; }
-
+        public string? trainingSessionTitle { get; set; }
         public DateTime startDate { get; set; }
         public DateTime endDate { get; set; }
-
         public string? location { get; set; }
         public trainingDeliveryMode deliveryMode { get; set; } // Online, Onsite, Hybrid
-
         public int? personID { get; set; }
         public virtual personModel? PersonModel { get; set; }
         public string? provider { get; set; }
-
         public decimal? cost { get; set; }
 
         public trainingStatus sessionStatus { get; set; } // Planned, Ongoing, Completed, Cancelled
+        public string modifiedBy { get; set; }
+        public DateTime modifiedDate { get; set; }
 
         public virtual ICollection<trainingAttendanceModel>? Attendances { get; set; }
     }
@@ -75,6 +76,8 @@ namespace PIS2.Models
         public DateTime? certificateExpiryDate { get; set; }
 
         public string? remarks { get; set; }
+        public string modifiedBy { get; set; }
+        public DateTime modifiedDate { get; set; }
     }
 
     /// <summary>
@@ -84,11 +87,12 @@ namespace PIS2.Models
     {
         [Key]
         public int trainingCostAllocationID { get; set; }
-
         public int trainingAttendanceID { get; set; }
         public virtual trainingAttendanceModel? Attendance { get; set; }
         public string? remarks { get; set; }
-        public decimal allocatedCost { get; set; }
+        public decimal allocatedCost { get; set; } = 0;
+        public string modifiedBy { get; set; }
+        public DateTime modifiedDate { get; set; }
     }
 
     /// <summary>

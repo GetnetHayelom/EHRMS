@@ -27,7 +27,12 @@ namespace PIS2.Pages.WorkSite
                 return NotFound();
             }
 
-            var worksitemodel = await _context.WorkSites.Include(w=> w.WorkSiteHistories).FirstOrDefaultAsync(m => m.workSiteID == id);
+            var worksitemodel = await _context.WorkSites
+                .Include(w=> w.WorkSiteHistories).ThenInclude(e => e.employmentModel).ThenInclude(e => e.personModel)
+                .Include(ws => ws.WorkSiteHistories).ThenInclude( wsh => wsh.addressModel)
+                .Include(e => e.employmentModel).ThenInclude(e => e.personModel)
+                .Include(ws => ws.addressModel)
+                .FirstOrDefaultAsync(m => m.workSiteID == id);
             if (worksitemodel == null)
             {
                 return NotFound();

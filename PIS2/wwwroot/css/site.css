@@ -32,8 +32,10 @@ body {
     /* 🧍 Prevent flex rows from breaking in portrait */
     .row {
         display: flex !important;
-        flex-wrap: nowrap !important; /* Prevent collapsing into multiple lines */
+        flex-wrap: wrap !important;
         align-items: flex-start;
+        margin-left: -5px !important;
+        margin-right: -5px !important;
     }
     /* All col, col-sm, col-md, col-lg variations */
     .col, .col-sm, .col-md, .col-lg, .col-xl {
@@ -174,11 +176,6 @@ body {
         margin-bottom: 0;
     }
 
-    .row {
-        margin-left: -5px !important;
-        margin-right: -5px !important;
-        display:flex;
-    }
 
     .col-md-4, .col-md-8, .col-12 {
         padding-left: 5px !important;
@@ -186,9 +183,8 @@ body {
     }
     /* Adjust textarea for printing */
     textarea.form-control {
-        height: 35px !important; /* Set a fixed, small height for print */
         resize: none !important;
-        overflow: hidden !important;
+        
     }
 
     /* Adjust select dropdowns for printing */
@@ -201,7 +197,6 @@ body {
     button{
         display:none;
     }
-
 
     /* Target common browsers for placeholder styles */
     ::placeholder {
@@ -228,6 +223,8 @@ body {
         color: transparent !important;
     }
 }
+
+
 table select{
     max-width:100px;
 }

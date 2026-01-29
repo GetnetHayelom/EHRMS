@@ -3,7 +3,7 @@
 @{
     ViewData["Title"] = "Edit Earning Type";
 }
-<h1 class="fw-bold">Earning Types</h1>
+<h1 class="fw-bold">Compensation and Benefit Types</h1>
 <div class="container mt-5">
     <div class="card shadow-sm border-0 rounded-4">
         <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center rounded-top-4">
@@ -15,37 +15,51 @@
 
         <div class="card-body p-4">
             <form method="post" class="needs-validation" novalidate>
+                <input asp-for="EarningType.earningTypeID" value="@Model.EarningType.earningTypeID" hidden readonly />
                 <div class="row mb-3">
-                    <div class="col-md-6">
-                        <label asp-for="EarningType.earningTypeName" class="form-label fw-semibold"></label>
+                    <div class="col-md-4">
+                        <label asp-for="EarningType.earningTypeName" class="form-label fw-semibold">Type Name</label>
                         <input asp-for="EarningType.earningTypeName" class="form-control rounded-3" placeholder="Enter earning type name" />
-                        <span asp-validation-for="EarningType.earningTypeName" class="text-danger small"></span>
+                        <span asp-validation-for="EarningType.earningTypeName" class="text-danger small" value=""></span>
                     </div>
 
-                    <div class="col-md-6">
-                        <label asp-for="EarningType.earningTypeDescription" class="form-label fw-semibold"></label>
+                    <div class="col-md-4">
+                        <label asp-for="EarningType.earningTypeDescription" class="form-label fw-semibold">Description</label>
                         <input asp-for="EarningType.earningTypeDescription" class="form-control rounded-3" placeholder="Enter description (optional)" />
                         <span asp-validation-for="EarningType.earningTypeDescription" class="text-danger small"></span>
+                    </div>
+                    <!-- Status -->
+                    <div class="col-md-4">
+                        <label asp-for="EarningType.earningTypeStatus" class="form-label fw-semibold">Status</label>
+                        <select asp-for="EarningType.earningTypeStatus" class="form-select" asp-items="Html.GetEnumSelectList<Models.mainStatus>()">
+                            <option value="">-- Select Status --</option>
+                        </select>
+                        <span asp-validation-for="EarningType.earningTypeStatus" class="text-danger"></span>
                     </div>
                 </div>
 
                 <div class="row mb-4">
-                    <div class="col-md-6">
-                        <label asp-for="EarningType.isTaxable" class="form-label fw-semibold"></label>
-                        <select asp-for="EarningType.isTaxable" class="form-select rounded-3">
-                            <option value="true">Yes</option>
-                            <option value="false">No</option>
-                        </select>
-                        <span asp-validation-for="EarningType.isTaxable" class="text-danger small"></span>
+                    <div class="col-md-4">
+                        <div class="col-md-6 form-check form-switch">
+                            <input asp-for="EarningType.isTaxable" class="form-check-input" type="checkbox" />
+                            <label asp-for="EarningType.isTaxable" class="form-check-label fw-semibold">Taxable</label>
+                            <span asp-validation-for="EarningType.isTaxable" class="text-danger small"></span>
+                        </div>
                     </div>
 
-                    <div class="col-md-6">
-                        <label asp-for="EarningType.isRecurring" class="form-label fw-semibold"></label>
-                        <select asp-for="EarningType.isRecurring" class="form-select rounded-3">
-                            <option value="true">Yes</option>
-                            <option value="false">No</option>
-                        </select>
-                        <span asp-validation-for="EarningType.isRecurring" class="text-danger small"></span>
+                    <div class="col-md-4">
+                        <div class="col-md-6 form-check form-switch">
+                            <input asp-for="EarningType.isRecurring" class="form-check-input" type="checkbox" />
+                            <label asp-for="EarningType.isPayroll" class="form-check-label fw-semibold">Recurring</label>
+                            <span asp-validation-for="EarningType.isRecurring" class="text-danger small"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="col-md-6 form-check form-switch">
+                            <input asp-for="EarningType.isPayroll" class="form-check-input" type="checkbox" />
+                            <label asp-for="EarningType.isPayroll" class="form-check-label fw-semibold">Payroll</label>
+                            <span asp-validation-for="EarningType.isPayroll" class="text-danger small"></span>
+                        </div>
                     </div>
                 </div>
 

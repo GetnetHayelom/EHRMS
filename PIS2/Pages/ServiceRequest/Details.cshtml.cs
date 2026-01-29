@@ -9,7 +9,7 @@ using PIS2.Models;
 
 namespace PIS2.Pages.ServiceRequest
 {
-    public class DetailsModel : PageModel
+     public class DetailsModel : PageModel
     {
         private readonly PIS2.Models.PISContext _context;
 
@@ -19,7 +19,7 @@ namespace PIS2.Pages.ServiceRequest
         }
 
         public serviceRequestModel serviceRequestModel { get; set; } = default!;
-
+        public ICollection<serviceRequestHistoryModel>? RequestHistory { get; set; }
         public async Task<IActionResult> OnGetAsync(int? id)
         {
             if (id == null)
@@ -27,7 +27,10 @@ namespace PIS2.Pages.ServiceRequest
                 return NotFound();
             }
 
-            var servicerequestmodel = await _context.ServiceRequests.FirstOrDefaultAsync(m => m.serviceRequestID == id);
+            var servicerequestmodel = await _context.ServiceRequests
+                .Include(s => s.ServiceRequestHistoies)
+                .Include(s => s.Employment).ThenInclude(e => e.personModel)
+                .FirstOrDefaultAsync(m => m.serviceRequestID == id);
             if (servicerequestmodel == null)
             {
                 return NotFound();
@@ -35,6 +38,7 @@ namespace PIS2.Pages.ServiceRequest
             else
             {
                 serviceRequestModel = servicerequestmodel;
+                RequestHistory = serviceRequestModel.ServiceRequestHistoies;
             }
             return Page();
         }

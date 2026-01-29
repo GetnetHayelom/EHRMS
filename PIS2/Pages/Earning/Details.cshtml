@@ -1,0 +1,149 @@
+﻿@page
+@model PIS2.Pages.Earning.DetailsModel
+@{
+    ViewData["Title"] = "Earning Type Details";
+}
+@await Html.PartialAsync("headerSimple", "")
+<h1 class="fw-bold">Compensation and Benefit Types</h1>
+
+<div class="container mt-2">
+    <div class="card shadow-sm border-0 rounded-4 mb-4">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center rounded-top-4">
+            <h4 class="mb-0">Earning Type Details</h4>
+            <div class="d-print-none">
+                @if(User.IsInRole("MIE\\PMS_HRADMIN"))
+                {
+                    <a asp-page="./Edit" asp-route-id="@Model.EarningType.earningTypeID" class="btn btn-warning btn-sm rounded-pill me-2">
+                        <i class="bi bi-pencil"></i> Edit
+                    </a>                    
+                }
+                
+                <a asp-page="Index" class="btn btn-light btn-sm rounded-pill">
+                    <i class="bi bi-arrow-left"></i> Back to List
+                </a>
+            </div>
+        </div>
+
+        <div class="card-body p-4">
+            <div class="d-flex mb-4">
+                <div class="col-md-4">
+                    <label class="text-muted small text-uppercase fw-bold">Type Name</label>
+                    <p class="fs-5 fw-semibold">@Model.EarningType.earningTypeName</p>
+                </div>
+
+                <div class="col-md-4">
+                    <label class="text-muted small text-uppercase fw-bold">Description</label>
+                    <p class="fs-5">@(Model.EarningType.earningTypeDescription ?? "No description provided")</p>
+                </div>
+
+                <div class="col-md-4">
+                    <label class="text-muted small text-uppercase fw-bold">Status</label>
+                    <div>
+                        @if (Model.EarningType.earningTypeStatus == Models.mainStatus.Active)
+                        {
+                            <span class="badge bg-success rounded-pill px-3">Active</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-secondary rounded-pill px-3">@Model.EarningType.earningTypeStatus</span>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <div class="d-flex mb-4">
+                <div class="col-md-4">
+                    <div class="d-flex align-items-center">
+                        <i class="bi @(Model.EarningType.isTaxable ? "bi-check-circle-fill text-success" : "bi-x-circle text-danger") fs-4 me-2"></i>
+                        <span class="fw-semibold">Taxable</span>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="d-flex align-items-center">
+                        <i class="bi @(Model.EarningType.isRecurring ? "bi-check-circle-fill text-success" : "bi-x-circle text-danger") fs-4 me-2"></i>
+                        <span class="fw-semibold">Recurring</span>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="d-flex align-items-center">
+                        <i class="bi @(Model.EarningType.isPayroll ? "bi-check-circle-fill text-success" : "bi-x-circle text-danger") fs-4 me-2"></i>
+                        <span class="fw-semibold">Include in Payroll</span>
+                    </div>
+                </div>
+                
+            </div>
+            <div class="d-flex mb-4">
+                <div class="col-md-4">
+                    <label class="text-muted small text-uppercase fw-bold">Modified By</label>
+                    <p class="fs-6 fw-semibold">@Model.EarningType.modifiedBy</p>
+                </div>
+                <div class="col-md-4">
+                    <label class="text-muted small text-uppercase fw-bold">Modified Date</label>
+                    <p class="fs-6 fw-semibold">@Model.EarningType.modifiedDate</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow-sm border-0 rounded-4">
+        <div class="card-header bg-dark text-white rounded-top-4">
+            <h5 class="mb-0"><i class="bi bi-clock-history me-2"></i>Change Audit Log</h5>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th class="ps-4">Date & Time</th>
+                            <th>User</th>
+                            <th>Field Changed</th>
+                            <th>Previous Value</th>
+                            
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.AuditLogs != null && Model.AuditLogs.Any())
+                        {
+                            @foreach (var log in Model.AuditLogs)
+                            {
+                                <tr>
+                                    <td class="ps-4 text-muted">
+                                        @log.ModifiedDate.ToString("MMM dd, yyyy HH:mm")
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-info-subtle text-info rounded-pill px-2">
+                                            <i class="bi bi-person"></i> @log.ModifiedBy
+                                        </span>
+                                    </td>
+                                    <td class="fw-bold text-secondary">
+                                        @Model.GetFriendlyColumnName(log.ColumnName)
+                                    </td>
+                                    <td>
+                                        <span class="text-danger text-decoration-line-through small">
+                                            @Model.FormatAuditValue(log.ColumnName, log.OldValue)
+                                        </span>
+                                    </td>
+                                    
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="5" class="text-center py-5">
+                                    <i class="bi bi-info-circle fs-2 text-muted"></i>
+                                    <p class="text-muted mt-2">No audit trail available for this record.</p>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="d-flex justify-content-end m-2">
+    @await Html.PartialAsync("print")
+</div>

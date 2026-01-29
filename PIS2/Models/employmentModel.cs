@@ -56,6 +56,7 @@ namespace PIS2.Models
         public virtual ICollection<departmentModel>? departmentModel { get; set; }
         public virtual ICollection<companyModel>? companyModel { get; set; }
         public virtual ICollection<evaluationModel>? Evaluations { get; set; }
+        public virtual ICollection<workSiteHistoryModel>? WorkSiteHistories { get; set; }
         public string modifiedBy { get; set; }
         public employmentModel() { }
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)

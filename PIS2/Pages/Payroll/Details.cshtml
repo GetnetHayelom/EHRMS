@@ -123,7 +123,7 @@
                                     @foreach (var earn in pay.EarningRecords)
                                     {
                                         <div>
-                                            @(Model.EarningTypes.First(e => e.earningTypeID == earn.earningTypeId).earningTypeName)
+                                            @(Model.EarningTypes.First(e => e.earningTypeID == earn.earningTypeID).earningTypeName)
                                             = <u>@(earn.earningAmount.ToString("N2"))</u>
                                         </div>
                                     }
@@ -146,14 +146,21 @@
 
         <!-- ============================= TAB 2 : PAYROLL VIEW ============================= -->
         <div id="payrollView" class="tab-pane fade">
-            <div class="d-flex justify-content-end d-print-none gap-3">
-                <div class="me-2"><input type="text" id="searchBox1" class="form-control m-2 filter-input" placeholder="finder..." data-target="#dataTable1"></div>
-                <excel-export table="summaryTable" filename="PayrollView_@(Model.Payroll.payrollName)_@(DateTime.Now).xlsx"></excel-export>
-                <div>@await Html.PartialAsync("print")</div>
+            <div class="d-flex justify-content-between">
+                <h3 class="fw-bold">Payroll Summary</h3>
+                <div class="d-flex justify-content-end d-print-none gap-3">
+                    <div class="me-2">
+                        <input type="text" id="searchBox1" class="form-control m-2 filter-input" placeholder="finder..." data-target="#dataTable1">
+                    </div>
+                    <div class="me-2">
+                    <excel-export table="summaryTable" filename="PayrollView_@(Model.Payroll.payrollName)_@(DateTime.Now).xlsx"></excel-export></div>
+                    <div>@await Html.PartialAsync("print")</div>
+                </div>
             </div>
+            
 
             <!-- ============================= SUMMARY TABLE ============================= -->
-            <h3 class="mt-5 fw-bold">Payroll Summary</h3>
+            
             <div class="table-responsive">
                 <table class="table table-bordered table-striped" id="summaryTable">
                     <thead class="table-dark">

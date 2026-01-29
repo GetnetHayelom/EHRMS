@@ -33,11 +33,12 @@
                 </li>
                     @if (Model.employmentModel.employmentStatus == Models.mainStatus.Active)
                     {
+
                         <li class="nav-item">
-                            <a class="btn btn-outline-primary btn-sm" asp-page="/Leave/Create?id=@Model.employmentModel.employmentID"><i class="bi bi-calendar-plus"></i> Leave Request</a>
+                        <a class="btn btn-outline-primary btn-sm" asp-page="/Leave/Create" asp-route-id="@Model.employmentModel.employmentID"><i class="bi bi-calendar-plus"></i> Leave Request</a>
                         </li>
                         <li class="nav-item">
-                            <a class="btn btn-outline-primary btn-sm" asp-page="/OvertimeRecord/Create?id=@Model.employmentModel.employmentID"><i class="bi bi-clock-history"></i> Overtime Record</a>
+                        <a class="btn btn-outline-primary btn-sm" asp-page="/OvertimeRecord/Create" asp-route-id="@Model.employmentModel.employmentID"><i class="bi bi-clock-history"></i> Overtime Record</a>
                         </li>  
                     }
 
@@ -101,7 +102,6 @@
                 </div>
             </div>
         </div>
-
 
         <div class="tab-content col-lg-8" id="employmentTabContent">
             <!--EMPLOYMENT STATUS-->

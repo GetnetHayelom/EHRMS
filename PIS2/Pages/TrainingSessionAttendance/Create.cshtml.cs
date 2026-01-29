@@ -26,6 +26,9 @@ namespace PIS2.Pages.TrainingSessionAttendance
 
         public async Task<IActionResult> OnPostAsync()
         {
+            Attendance.modifiedBy = User.Identity.Name;
+            Attendance.modifiedDate = DateTime.Now;
+
             if (!ModelState.IsValid) return Page();
 
             _context.TrainingAttendances.Add(Attendance);

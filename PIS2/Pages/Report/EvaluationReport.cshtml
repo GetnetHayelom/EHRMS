@@ -3,7 +3,7 @@
 @{
     ViewData["Title"] = "Executive Evaluation Report";
 }
-
+@await Html.PartialAsync("headerSimple", "")
 <div class="container-fluid py-4">
     <div class="card shadow-sm p-2 mb-2">
         <div class="d-flex justify-content-between align-items-center">
@@ -15,9 +15,9 @@
 
     @* Global Metric Cards *@
     <div class="card shadow-sm mb-4 p-2">
-        <div class="row">
-            <div class="col-md-3">
-                <div class="card border-0 shadow-sm text-primary p-2 border-start border-info border-3">
+        <div class="d-flex gap-4">
+            <div class="flex-fill">
+                <div class="card border-0 shadow text-primary p-2 border-start border-info border-4">
                     <div class="small opacity-75">Avg Time Efficiency</div>
                     <h3 class="fw-bold">@((Model.Metrics.AvgTime *25).ToString("F2"))%</h3>
                     <div class="progress mt-2" style="height: 4px; background: rgba(255,255,255,0.2)">
@@ -25,8 +25,8 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-3">
-                <div class="card border-0 shadow-sm text-success p-2 border-start border-info border-3">
+            <div class="flex-fill">
+                <div class="card border-0 shadow text-success p-2 border-start border-info border-4">
                     <div class="small opacity-75">Avg Resource Mgmt</div>
                     <h3 class="fw-bold">@((Model.Metrics.AvgResource * 25).ToString("F2"))%</h3>
                     <div class="progress mt-2" style="height: 4px; background: rgba(255,255,255,0.2)">
@@ -34,8 +34,8 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-3">
-                <div class="card border-0 shadow-sm text-info p-2 border-start border-info border-3">
+            <div class="flex-fill">
+                <div class="card border-0 shadow text-info p-2 border-start border-info border-4">
                     <div class="small opacity-75">Avg Quality Score</div>
                     <h3 class="fw-bold">@((Model.Metrics.AvgPerformance * 25).ToString("F2"))%.</h3>
                     <div class="progress mt-2" style="height: 4px; background: rgba(255,255,255,0.2)">
@@ -43,9 +43,9 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-3">
-                <div class="card border-0 shadow-sm text-dark p-2 border-start border-info border-3">
-                    <div class="small opacity-75">Overall System Health</div>
+            <div class="flex-fill">
+                <div class="card border-0 shadow text-dark p-2 border-start border-info border-4">
+                    <div class="small opacity-75">Overall Performance Health</div>
                     <h3 class="fw-bold">@(((Model.Metrics.AvgTime + Model.Metrics.AvgResource + Model.Metrics.AvgPerformance) / 12 * 100).ToString("F1"))%</h3>
                     <div class="progress mt-2" style="height: 4px; background: rgba(255,255,255,0.2)">
                         <div class="progress-bar bg-dark" style="width: @(((Model.Metrics.AvgTime + Model.Metrics.AvgResource + Model.Metrics.AvgPerformance) / 12 * 100).ToString("F1"))%"></div>

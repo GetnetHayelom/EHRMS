@@ -29,73 +29,76 @@
        
     </div>
     <!--SUMMARY CARDS-->
-    <div class="d-flex d-print-flex mb-4">
-        <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card border-left-primary shadow h-100 py-2 border-0 border-start border-primary border-4">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1 small">Total Records</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.TotalPenalties</div>
-                        </div>
-                        <div class="col-auto">
-                            <i class="bi bi-file-earmark-text fa-2x text-gray-300 h2"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card border-left-warning shadow h-100 py-2 border-0 border-start border-warning border-4">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1 small">Pending/Hold</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.PendingActions</div>
-                        </div>
-                        <div class="col-auto">
-                            <i class="bi bi-clock-history fa-2x text-gray-300 h2"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card border-left-success shadow h-100 py-2 border-0 border-start border-success border-4">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1 small">Total Value</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.TotalPenaltyValue.ToString("N2")</div>
-                        </div>
-                        <div class="col-auto">
-                            <i class="bi bi-currency-dollar fa-2x text-gray-300 h2"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card border-left-info shadow h-100 py-2 border-0 border-start border-info border-4">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1 small">Top Reason</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800 text-truncate" style="max-width: 150px;">
-                                @Model.TopReason
+    <div class="card shadow-sm mb-4 p-2">
+        <div class="d-flex d-print-flex gap-2">
+            <div class="flex-fill mb-4">
+                <div class="card border-left-primary shadow h-100 py-2 border-0 border-start border-primary border-4">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-primary text-uppercase mb-1 small">Total Records</div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.TotalPenalties</div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="bi bi-file-earmark-text fa-2x text-gray-300 h2"></i>
                             </div>
                         </div>
-                        <div class="col-auto">
-                            <i class="bi bi-exclamation-triangle fa-2x text-gray-300 h2"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex-fill mb-4">
+                <div class="card border-left-warning shadow h-100 py-2 border-0 border-start border-warning border-4">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-warning text-uppercase mb-1 small">Pending/Hold</div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.PendingActions</div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="bi bi-clock-history fa-2x text-gray-300 h2"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex-fill mb-4">
+                <div class="card border-left-success shadow h-100 py-2 border-0 border-start border-success border-4">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-success text-uppercase mb-1 small">Total Value</div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.TotalPenaltyValue.ToString("N2")</div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="bi bi-currency-dollar fa-2x text-gray-300 h2"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex-fill mb-4">
+                <div class="card border-left-info shadow h-100 py-2 border-0 border-start border-info border-4">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-info text-uppercase mb-1 small">Top Reason</div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800 text-truncate" style="max-width: 150px;">
+                                    @Model.TopReason
+                                </div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="bi bi-exclamation-triangle fa-2x text-gray-300 h2"></i>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+    
     <!--FILTER CONTROLS-->
     <div class="card border-0 shadow-sm mb-4">
         <div class="card-header bg-white py-3">

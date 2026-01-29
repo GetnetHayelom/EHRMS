@@ -8,10 +8,10 @@
 
 <h1 class="fw-bold">Employment</h1>
 
-<h4 class="fw-bold">Update Termination</h4>
+<h6 class="fw-bold text-muted">Update Termination</h6>
 <hr />
-<div class="row">
-    <div class="col-md-4">
+<div class="d-flex gap-4">
+    <div class="card shadow-sm p-2 col-md-4">
         <form method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="terminationModel.terminationID" />
@@ -48,7 +48,36 @@
             </div>
         </form>
     </div>
+    <div class="card shadow-sm text-center mt-3">
+        <div class="card-header bg-success text-white"><h4 class="fw-bold"><u>@Model.terminationModel?.EmploymentModel?.personModel?.personFullName</u></h4></div>
+        <div class="card-body text-start">
+            <strong>Position:</strong> <span>@Model.terminationModel.EmploymentModel?.employmentPosition</span><br />
+            <strong>Job Title:</strong> <span>@Model.jobPlacement?.jobModel?.jobTitle</span><br />
+            <strong>Salary:</strong> <span>@Model.jobPlacement?.jobPlacementSalary.ToString("N2")</span><br />
+            <strong>Department:</strong> <span>@Model.jobPlacement?.departmentModel?.departmentName</span><br />
+            <strong>Company:</strong> <span>@Model.jobPlacement?.departmentModel?.companyModel?.companyName</span>
+        </div>
+
+    </div>
+    <div class="flex-fill d-flex gap-3">
+        <div class="card shadow-sm text-center mt-3">
+            <div class="card-header bg-warning text-white">
+                <h6 class="fw-bold mb-1"> Severance Pay</h6>
+            </div>
+            <div class="card-body">
+                <h4 class="card-body fw-bold">@Model.SeverancePay.ToString("N2")</h4>
+            </div>
+            <div class="card-footer text-muted"><p class="fw-bold">Year of Service: @Model.YearsOfService.ToString("N2")</p></div>
+        </div>
+
+        <div class="card shadow-sm text-center mt-3">
+            <div class="card-header bg-info text-white"><h6 class="fw-bold mb-1">Leave Payable</h6></div>
+            <div class="card-body"><h4 class="card-body fw-bold">@Model.LeaveSummary.adjustedLeaveBalanceCost.ToString("N2")</h4></div>
+            <div class="card-footer  text-muted"><p class="fw-bold">Leave Balance: @(Math.Round(Model.LeaveSummary.adjustedLeaveBalance, 2))</p></div>
+        </div>
+    </div>
 </div>
+
 
 <div>
     <a asp-page="./Index">View All Termination</a>

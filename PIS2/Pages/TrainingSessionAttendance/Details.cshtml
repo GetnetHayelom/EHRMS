@@ -1,4 +1,143 @@
 ﻿@page
-@model PIS2.Pages.Training.DetailsModel
+@model PIS2.Pages.TrainingSessionAttendance.DetailsModel
 @{
 }
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Attendance Record #@Model.Attendance.trainingAttendanceID</h5>
+                    <a asp-page="./Edit" asp-route-id="@Model.Attendance.trainingAttendanceID" class="btn btn-light btn-sm">Edit Record</a>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-4">
+                        <div class="col-sm-4">
+                            <label class="text-muted small uppercase">Employee ID</label>
+                            <p class="fw-bold">@Model.Attendance?.EmploymentModel?.givenID</p>
+                        </div>
+                        <div class="col-sm-4">
+                            <label class="text-muted small uppercase">Employee ID</label>
+                            <p class="fw-bold">@Model.Attendance?.EmploymentModel?.personModel?.personFullName</p>
+                        </div>
+                        <div class="col-sm-4 text-sm-end">
+                            <label class="text-muted small">Completion Date</label>
+                            <p>@(Model.Attendance?.completionDate?.ToShortDateString() ?? "Pending")</p>
+                        </div>
+                    </div>
+
+                    <table class="table table-bordered bg-light">
+                        <tr>
+                            <th class="w-50">Training Title</th>
+                            <td>@Model.Attendance?.TrainingSession?.Training?.trainingTitle</td>
+                        </tr>
+                        <tr>
+                            <th>Result</th>
+                            <td><span class="badge bg-secondary">@Model.Attendance?.result</span></td>
+                        </tr>
+                        <tr>
+                            <th>Score</th>
+                            <td>@(Model.Attendance?.score?.ToString("F2") ?? "N/A")</td>
+                        </tr>
+                        <tr>
+                            <th>Certificate #</th>
+                            <td>@Model.Attendance?.certificateNumber</td>
+                        </tr>
+                    </table>
+
+                    @if(!string.IsNullOrEmpty(Model.Attendance?.remarks))
+                    {
+                        <div class="mt-3 p-3 bg-light border-start border-4 border-info">
+                            <strong>Remarks:</strong> @Model.Attendance?.remarks
+                        </div>
+                    }
+                </div>
+                <div class="card-footer bg-white">
+                    <a asp-page="/Trainings/Details" asp-route-id="@Model.Attendance?.trainingSessionID" class="btn btn-link btn-sm">← Back to Session</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="container mt-4">
+    <div class="row mt-4">
+        <div class="col-md-8 mx-auto">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="bi bi-cash-stack"></i> Cost Allocations</h5>
+                    <button class="btn btn-light btn-sm" data-bs-toggle="modal" data-bs-target="#addCostModal">
+                        + Add Allocation
+                    </button>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Remarks / Description</th>
+                                <th class="text-end">Amount</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @* Logic to iterate through allocations linked to this attendance *@
+                            @* Note: Ensure your Context/Model allows access to these *@
+                            @foreach (var cost in Model.Costs)
+                            {
+                                <tr>
+                                    <td>@cost?.remarks</td>
+                                    <td class="text-end fw-bold">@cost?.allocatedCost.ToString("C")</td>
+                                    <td class="text-end">
+                                        @* Optional: Delete button *@
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                        <tfoot class="table-group-divider">
+                            <tr class="table-active">
+                                <th>Total Allocated</th>
+                                <td class="text-end fw-bold text-success">
+                                    @Model.Costs.Sum(x => x.allocatedCost).ToString("C")
+                                </td>
+                                <td></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="addCostModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="post" asp-page-handler="AddAllocation">
+                <input type="hidden" value="@Model.Attendance?.trainingAttendanceID" asp-for="NewAllocation.trainingAttendanceID" />
+                <div class="modal-header">
+                    <h5 class="modal-title">New Cost Allocation</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label asp-for="NewAllocation.allocatedCost" class="form-label">Amount</label>
+                        <div class="input-group">
+                            <span class="input-group-text">$</span>
+                            <input asp-for="NewAllocation.allocatedCost" class="form-control" type="number" step="0.01" required />
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="NewAllocation.remarks" class="form-label">Remarks (e.g., Course Fee, Travel)</label>
+                        <input asp-for="NewAllocation.remarks" class="form-control" placeholder="Description of the expense" />
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-success">Save Allocation</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

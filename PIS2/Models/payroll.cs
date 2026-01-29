@@ -59,23 +59,40 @@ namespace PIS2.Models
         public payrollPay() { }
     }
 
+    public class otherPay
+    {
+        [Key]
+        public int paymentID { get; set; }
+        public string invoiceNo { get; set; } = "";
+        public int earningID { get; set; }
+        public virtual earningModel? earningModel { get; set; }
+        public decimal GrossPay { get; set; }
+        public decimal NetPay { get; set; }
+        public string? remark { get; set; }
+        public payrollStatus paymentStatus { get; set; }
+        public string modifiedBy { get; set; }
+        public DateTime modifiedDate { get; set; }
+
+        public otherPay() { }
+    }
     public class earningModel {
         [Key]
         public int earningID { get; set; }
-        public int earningTypeId { get; set; }
+        public int earningTypeID { get; set; }
         public int employmentID { get; set; }
         public virtual employmentModel? EmploymentModel { get; set; }
         public earningType? earningType { get; set; }
         public string? earningReference { get; set; }
         public mainStatus earningStatus { get; set; }
         public int earningIteration { get; set; } = 1; //no of months the earning will recure
-        public int remainingIteration { get; set; } = 1;
+        public int remainingIteration { get; set; } = 0;
         // Calculation method
         public bool IsPercentage { get; set; } // true = % of base value, false = fixed
         public earningBase earningBase { get; set; } = earningBase.NONE;
         public decimal earningAmount { get; set; }// e.g. 7 for 7%, or 500 for fixed
         public string modifiedBy { get; set; }
         public virtual List<earningHistoryModel>? EarningHistories { get; set; }
+        public virtual List<otherPay>? OtherPayments { get; set; }
         public earningModel() { }
     }
     public class earningHistoryModel
@@ -96,7 +113,7 @@ namespace PIS2.Models
     {
         [Key]
         public int earningRecordID { get; set; }
-        public int earningTypeId { get; set; }
+        public int earningTypeID { get; set; }
         public earningType? earningType { get; set; }
         public string earningReference { get; set; }
         public decimal earningAmount { get; set; }

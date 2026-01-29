@@ -1296,7 +1296,7 @@ namespace PIS2.Migrations
                     b.Property<int>("earningStatus")
                         .HasColumnType("int");
 
-                    b.Property<int>("earningTypeId")
+                    b.Property<int>("earningTypeID")
                         .HasColumnType("int");
 
                     b.Property<int>("employmentID")
@@ -1311,7 +1311,7 @@ namespace PIS2.Migrations
 
                     b.HasKey("earningID");
 
-                    b.HasIndex("earningTypeId");
+                    b.HasIndex("earningTypeID");
 
                     b.HasIndex("employmentID");
 
@@ -1335,7 +1335,7 @@ namespace PIS2.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("earningTypeId")
+                    b.Property<int>("earningTypeID")
                         .HasColumnType("int");
 
                     b.Property<string>("modifiedBy")
@@ -1347,7 +1347,7 @@ namespace PIS2.Migrations
 
                     b.HasKey("earningRecordID");
 
-                    b.HasIndex("earningTypeId");
+                    b.HasIndex("earningTypeID");
 
                     b.HasIndex("payrollPayID");
 
@@ -3039,6 +3039,49 @@ namespace PIS2.Migrations
                     b.HasAnnotation("SqlServer:UseSqlOutputClause", false);
                 });
 
+            modelBuilder.Entity("PIS2.Models.otherPay", b =>
+                {
+                    b.Property<int>("paymentID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("paymentID"));
+
+                    b.Property<decimal>("GrossPay")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("NetPay")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("earningID")
+                        .HasColumnType("int");
+
+                    b.Property<string>("invoiceNo")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("modifiedBy")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("modifiedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("paymentStatus")
+                        .HasColumnType("int");
+
+                    b.Property<string>("remark")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("paymentID");
+
+                    b.HasIndex("earningID");
+
+                    b.ToTable("OtherPayments", (string)null);
+
+                    b.HasAnnotation("SqlServer:UseSqlOutputClause", false);
+                });
+
             modelBuilder.Entity("PIS2.Models.overtimeHistoryModel", b =>
                 {
                     b.Property<int>("overtimeHistoryID")
@@ -4206,6 +4249,13 @@ namespace PIS2.Migrations
                     b.Property<int>("employmentID")
                         .HasColumnType("int");
 
+                    b.Property<string>("modifiedBy")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("modifiedDate")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("remarks")
                         .HasColumnType("nvarchar(max)");
 
@@ -4243,6 +4293,13 @@ namespace PIS2.Migrations
                     b.Property<decimal>("allocatedCost")
                         .HasColumnType("decimal(18,2)");
 
+                    b.Property<string>("modifiedBy")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("modifiedDate")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("remarks")
                         .HasColumnType("nvarchar(max)");
 
@@ -4278,6 +4335,13 @@ namespace PIS2.Migrations
                     b.Property<bool>("isMandatory")
                         .HasColumnType("bit");
 
+                    b.Property<string>("modifiedBy")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("modifiedDate")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("trainingTitle")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -4312,6 +4376,13 @@ namespace PIS2.Migrations
                     b.Property<string>("location")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("modifiedBy")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("modifiedDate")
+                        .HasColumnType("datetime2");
+
                     b.Property<int?>("personID")
                         .HasColumnType("int");
 
@@ -4326,6 +4397,9 @@ namespace PIS2.Migrations
 
                     b.Property<int>("trainingID")
                         .HasColumnType("int");
+
+                    b.Property<string>("trainingSessionTitle")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("trainingSessionID");
 
@@ -4461,6 +4535,8 @@ namespace PIS2.Migrations
                     b.HasKey("workSiteHistoryID");
 
                     b.HasIndex("addressModeladdressID");
+
+                    b.HasIndex("employmentID");
 
                     b.HasIndex("workSiteID");
 
@@ -4910,7 +4986,13 @@ namespace PIS2.Migrations
 
             modelBuilder.Entity("PIS2.Views.EvalGrandView", b =>
                 {
-                    b.Property<decimal>("FinalGrandTotal")
+                    b.Property<decimal>("FinalScore")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("TaskScoreSum")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("TypeScore")
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<int?>("companyID")
@@ -4923,8 +5005,13 @@ namespace PIS2.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("departmentName")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("employmentID")
+                        .HasColumnType("int");
+
+                    b.Property<int>("employmentStatus")
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("endDate")
                         .HasColumnType("datetime2");
@@ -4933,6 +5020,20 @@ namespace PIS2.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("evaluationName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("evaluationStatus")
+                        .HasColumnType("int");
+
+                    b.Property<int>("evaluationTypeID")
+                        .HasColumnType("int");
+
+                    b.Property<string>("evaluationTypeName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("givenID")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -5682,7 +5783,7 @@ namespace PIS2.Migrations
                 {
                     b.HasOne("PIS2.Models.earningType", "earningType")
                         .WithMany()
-                        .HasForeignKey("earningTypeId")
+                        .HasForeignKey("earningTypeID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -5701,7 +5802,7 @@ namespace PIS2.Migrations
                 {
                     b.HasOne("PIS2.Models.earningType", "earningType")
                         .WithMany("Earnings")
-                        .HasForeignKey("earningTypeId")
+                        .HasForeignKey("earningTypeID")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
@@ -6144,6 +6245,17 @@ namespace PIS2.Migrations
                     b.Navigation("loyaltyModel");
                 });
 
+            modelBuilder.Entity("PIS2.Models.otherPay", b =>
+                {
+                    b.HasOne("PIS2.Models.earningModel", "earningModel")
+                        .WithMany("OtherPayments")
+                        .HasForeignKey("earningID")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("earningModel");
+                });
+
             modelBuilder.Entity("PIS2.Models.overtimeHistoryModel", b =>
                 {
                     b.HasOne("PIS2.Models.overtimeRecordModel", "overtimeRecordModel")
@@ -6528,6 +6640,11 @@ namespace PIS2.Migrations
                         .WithMany()
                         .HasForeignKey("addressModeladdressID");
 
+                    b.HasOne("PIS2.Models.employmentModel", "employmentModel")
+                        .WithMany("WorkSiteHistories")
+                        .HasForeignKey("employmentID")
+                        .OnDelete(DeleteBehavior.NoAction);
+
                     b.HasOne("PIS2.Models.workSiteModel", "workSiteModel")
                         .WithMany("WorkSiteHistories")
                         .HasForeignKey("workSiteID")
@@ -6535,6 +6652,8 @@ namespace PIS2.Migrations
                         .IsRequired();
 
                     b.Navigation("addressModel");
+
+                    b.Navigation("employmentModel");
 
                     b.Navigation("workSiteModel");
                 });
@@ -6675,6 +6794,8 @@ namespace PIS2.Migrations
             modelBuilder.Entity("PIS2.Models.earningModel", b =>
                 {
                     b.Navigation("EarningHistories");
+
+                    b.Navigation("OtherPayments");
                 });
 
             modelBuilder.Entity("PIS2.Models.earningType", b =>
@@ -6733,6 +6854,8 @@ namespace PIS2.Migrations
                     b.Navigation("TerminationModel");
 
                     b.Navigation("TrainingAttendaces");
+
+                    b.Navigation("WorkSiteHistories");
 
                     b.Navigation("WorkSites");
 

@@ -4,8 +4,9 @@ console.log("Function invoked for employeeId:");
  * Fetches employee data using jQuery AJAX based on the Employee ID.
  * The data is retrieved from the Razor Page handler OnGetEmployeeLookup.
  * @param {string} employeeId - The ID of the employee to look up.
+ * 
  */
-function fetchEmployeeData(employeeId) {
+function fetchEmployeeData(employeeId, empName, comp, dep) {
     const $status = $('#statusMessage');
     $status.addClass('d-none').removeClass('alert-success alert-danger');
 
@@ -23,20 +24,30 @@ function fetchEmployeeData(employeeId) {
     $.getJSON(`/api/core/EmployeeLookup/${employeeId}`, function (data) {
 
         console.log("API response:", data);
-
         
         if (data.isFound) {
             // Loop through each property in the JSON object
             $.each(data, function (key, value) {
+                let targetId = key; // default mapping
 
-                // Only set if an element with the same ID exists
-                let ctrl = $("#" + key);
+                if (key === 'employeeName' && empName) {
+                    targetId = empName;   // e.g. employeeName2
+                }
+                if (key === 'company' && comp) {
+                    targetId = comp;
+                }
+                if (key === 'department' && dep) {
+                    targetId = dep;
+                }
 
-                if (ctrl.length > 0) {
-                    console.log("Setting:", key, "→ value:", value);
-                    ctrl.val(value ?? ""); // handle null values
+                let ctrl = $("#" + targetId);
+
+                if (ctrl.length) {
+                    console.log("Setting:", targetId, "→ value:", value);
+                    ctrl.val(value ?? "null");
                 } else {
-                    console.warn("No element found for:", key);
+                    console.warn("No element found for:", targetId);
+                    return { success: false };
                 }
             });
             $status.text('Employee data loaded successfully.')

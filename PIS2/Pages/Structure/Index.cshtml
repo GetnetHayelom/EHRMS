@@ -18,87 +18,88 @@
     var percActive = (totalActive * 100) / totalRequired;
     string gapColor = totalGap < 0 ? "danger" : totalGap > 0 ? "warning" : "success";
 }
+<div class="card shadow-sm mb-4 p-2">
+    <div class="d-flex gap-3 d-print-flex">
 
-<div class="d-flex gap-3 mb-4 d-print-flex">
-
-    <div class="flex-fill">
-        <div class="card shadow-sm border-start border-info border-3">
-            <div class="card-body">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <small class="text-muted">Companies</small>
-                        <h3 class="fw-bold mb-0">@Model.Structures.Select(s => s.CompanyID).Distinct().Count()</h3>
+        <div class="flex-fill">
+            <div class="card shadow-sm border-start border-info border-3">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <small class="text-muted">Companies</small>
+                            <h3 class="fw-bold mb-0">@Model.Structures.Select(s => s.CompanyID).Distinct().Count()</h3>
+                        </div>
+                        <div><i class="bi bi-building fs-2 text-info"></i></div>
                     </div>
-                    <div><i class="bi bi-building fs-2 text-info"></i></div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <div class="flex-fill">
-        <div class="card shadow-sm border-start border-primary border-3">
-            <div class="card-body">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <small class="text-muted">Positions</small>
-                        <h3 class="fw-bold mb-0">@Model.Structures.Count()</h3>
+        <div class="flex-fill">
+            <div class="card shadow-sm border-start border-primary border-3">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <small class="text-muted">Positions</small>
+                            <h3 class="fw-bold mb-0">@Model.Structures.Count()</h3>
+                        </div>
+                        <div><i class="bi bi-briefcase fs-2 text-primary"></i></div>
                     </div>
-                    <div><i class="bi bi-briefcase fs-2 text-primary"></i></div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <div class="flex-fill">
-        <div class="card shadow-sm border-start border-warning border-3">
-            <div class="card-body">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <small class="text-muted">Required</small>
-                        <h3 class="fw-bold mb-0">@totalRequired</h3>
+        <div class="flex-fill">
+            <div class="card shadow-sm border-start border-warning border-3">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <small class="text-muted">Required</small>
+                            <h3 class="fw-bold mb-0">@totalRequired</h3>
+                        </div>
+                        <div><i class="bi bi-list-check fs-2 text-warning"></i></div>
                     </div>
-                    <div><i class="bi bi-list-check fs-2 text-warning"></i></div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <div class="flex-fill">
-        <div class="card shadow-sm border-start border-success border-3">
-            <div class="card-body">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <small class="text-muted">Active</small>
-                        <h3 class="fw-bold mb-0">@totalActive<span class="fw-light small">(@percActive%)</span></h3>
+        <div class="flex-fill">
+            <div class="card shadow-sm border-start border-success border-3">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <small class="text-muted">Active</small>
+                            <h3 class="fw-bold mb-0">@totalActive<span class="fw-light small">(@percActive%)</span></h3>
+                        </div>
+                        <div><i class="bi bi-check-circle fs-2 text-success"></i></div>
                     </div>
-                    <div><i class="bi bi-check-circle fs-2 text-success"></i></div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <div class="flex-fill">
-        <div class="card shadow-sm border-start border-@gapColor border-3">
-            <div class="card-body">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <small class="text-muted">Overall Gap</small>
-                        <h3 class="fw-bold mb-0">@totalGap</h3>
+        <div class="flex-fill">
+            <div class="card shadow-sm border-start border-@gapColor border-3">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <small class="text-muted">Overall Gap</small>
+                            <h3 class="fw-bold mb-0">@totalGap</h3>
+                        </div>
+                        <div><i class="bi bi-exclamation-triangle fs-2 text-@gapColor"></i></div>
                     </div>
-                    <div><i class="bi bi-exclamation-triangle fs-2 text-@gapColor"></i></div>
                 </div>
             </div>
         </div>
-    </div>
 
+    </div>
 </div>
 
-<div class="d-flex gap-4 flex-wrap card p-2">
+<div class="d-flex gap-4 mb-2 flex-wrap card p-2">
 
     <form method="GET" class="d-flex gap-3 align-items-end flex-wrap ">
 
         <!-- Company -->
-        <div class="d-flex flex-column">
+        <div class="flex-fill d-flex flex-column">
             <label for="filter-company" class="form-label fw-bold">Company:</label>
             <select class="form-select mb-2" id="filter-company" name="CompanyID">
                 <option value="">All</option>
@@ -110,7 +111,7 @@
         </div>
 
         <!-- Department -->
-        <div class="d-flex flex-column">
+        <div class="flex-fill d-flex flex-column">
             <label for="filter-department" class="form-label fw-bold">Department:</label>
             <select class="form-select mb-2" id="filter-department" name="DepartmentID">
                 <option value="">All</option>
@@ -118,7 +119,7 @@
         </div>
 
         <!-- Status -->
-        <div class="d-flex flex-column">
+        <div class="flex-fill d-flex flex-column">
             <label for="filter-status" class="form-label fw-bold">Status:</label>
             <select class="form-select mb-2" id="filter-status" name="StatusID"
                     asp-items="@Html.GetEnumSelectList<Models.mainStatus>()">
@@ -127,7 +128,7 @@
         </div>
 
         <!-- Buttons -->
-        <div class="d-flex align-items-end gap-2">
+        <div class="flex-fill d-flex align-items-end gap-2 d-print-none">
             <button type="submit" class="btn btn-primary d-print-none m-2">Load</button>
             @await Html.PartialAsync("print")
             <excel-export table="dataTable" filename="StructureReport_@(DateTime.Today).xlsx"></excel-export>
@@ -136,12 +137,11 @@
     </form>
 
     <!-- Partial filter box -->
-    <div class="">
+    <div class="px-4">
         @await Html.PartialAsync("filter")
     </div>
 
 </div>
-
 
 <table class="table table-bordered table-striped table-hover print-full-width" id="dataTable">
     <thead class="bg-dark text-white">
@@ -180,8 +180,11 @@
                 <tr class="table-secondary">
                     <td>@companyIndex.@departmentIndex</td>
                     <td colspan="2"><strong>@departmentGroup.Key</strong>
-                        <a href="/Structure/Create?id=@departmentGroup.First().DepartmentID" class="d-print-none"><i class="bi bi-plus-circle"></i>Add Structure</a></td>
-                    
+                        @if(User.IsInRole("MIE\\PMS_HRADMIN"))
+                        { 
+                            <a href="/Structure/Create?id=@departmentGroup.First().DepartmentID" class="d-print-none"><i class="bi bi-plus-circle"></i>Add Structure</a>
+                        }
+                    </td>
                     <td><strong>@departmentGroup.Sum(s => s.RequiredNumber)</strong></td>
                     <td><strong>@departmentGroup.Sum(s => s.ActivePlacements)</strong></td>
                     <td>

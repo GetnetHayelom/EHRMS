@@ -127,7 +127,10 @@
                                             <th>Date</th>
                                             <th>Title/School</th>
                                             <th>CGPA</th>
-                                            <th class="text-end pe-3">Action</th>
+                                            @if (User.IsInRole("MIE\\PMS_HRCLERK"))
+                                            {
+                                                <th class="text-end pe-3">Action</th>
+                                            }
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -141,9 +144,13 @@
                                                     <div class="small text-muted">@item.educationLevelInstitutionName</div>
                                                 </td>
                                                 <td><span class="badge bg-secondary">@item.educationLevelMark</span></td>
-                                                <td class="text-end pe-3">
-                                                    <a href="@Url.Page("/PersonEducationLevel/Edit", new { id = item.personEducationLevelID })" class="btn btn-sm btn-light">Edit</a>
-                                                </td>
+                                                @if(User.IsInRole("<IE\\PMS_HRCLERK"))
+                                                {
+                                                    <td class="text-end pe-3">
+                                                        <a href="@Url.Page("/PersonEducationLevel/Edit", new { id = item.personEducationLevelID })" class="btn btn-sm btn-light">Edit</a>
+                                                    </td>
+                                                }
+                                                
                                             </tr>
                                         }
                                     </tbody>
@@ -215,7 +222,10 @@
                                                 <th>Relationship</th>
                                                 <th>Last Updated</th>
                                                 <th>Verified By</th>
-                                                <th class="text-end pe-3">Action</th>
+                                                @if (User.IsInRole("MIE\\PMS_HRCLERK"))
+                                                {
+                                                    <th class="text-end pe-3">Action</th>
+                                                }
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -256,11 +266,15 @@
                                         </tbody>
                                     </table>
                                 </div>
-                                <div class="p-3 bg-light border-top text-end">
-                                    <a href="/Family/Create?id=@Model.personModel.personID" class="btn btn-sm btn-primary">
-                                        <i class="bi bi-plus"></i> Add Family Member
-                                    </a>
-                                </div>
+                                @if(User.IsInRole("MIE\\PMS_HRCLERK"))
+                                {
+                                    <div class="p-3 bg-light border-top text-end">
+                                        <a href="/Family/Create?id=@Model.personModel.personID" class="btn btn-sm btn-primary">
+                                            <i class="bi bi-plus"></i> Add Family Member
+                                        </a>
+                                    </div>
+                                }
+                                
                             </div>
                         </div>
                     </div>
@@ -285,7 +299,10 @@
                                                 <th>Job Title & Company</th>
                                                 <th>Type</th>
                                                 <th>Salary</th>
-                                                <th class="text-end pe-3">Action</th>
+                                                @if (User.IsInRole("MIE\\PMS_HRCLERK"))
+                                                {
+                                                    <th class="text-end pe-3">Action</th>
+                                                }
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -302,17 +319,23 @@
                                                     </td>
                                                     <td><span class="badge bg-light text-dark border">@item.experienceType</span></td>
                                                     <td class="fw-medium text-success">@item.jobSalary</td>
-                                                    <td class="text-end pe-3">
-                                                        <a href="@Url.Page("/Experience/Edit", new { id = item.experienceID })" class="btn btn-sm btn-light border">Edit</a>
-                                                    </td>
+                                                    @if (User.IsInRole("MIE\\PMS_HRCLERK"))
+                                                    {
+                                                        <td class="text-end pe-3">
+                                                            <a href="@Url.Page("/Experience/Edit", new { id = item.experienceID })" class="btn btn-sm btn-light border">Edit</a>
+                                                        </td>
+                                                    }
                                                 </tr>
                                             }
                                         </tbody>
                                     </table>
                                 </div>
-                                <div class="p-3 bg-light border-top text-end">
-                                    <a asp-page="/Experience/Create" asp-route-id="@Model.personModel.personID" class="btn btn-sm btn-primary">+ Add Experience</a>
-                                </div>
+                                @if (User.IsInRole("MIE\\PMS_HRCLERK"))
+                                {
+                                    <div class="p-3 bg-light border-top text-end">
+                                        <a asp-page="/Experience/Create" asp-route-id="@Model.personModel.personID" class="btn btn-sm btn-primary">+ Add Experience</a>
+                                    </div>
+                                }
                             </div>
                         </div>
                     </div>

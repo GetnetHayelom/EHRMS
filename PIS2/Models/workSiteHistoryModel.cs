@@ -12,6 +12,7 @@ namespace PIS2.Models
         public DateTime modifiedDate {get; set;}
         public string worksiteName { get; set; }
         public int? employmentID { get; set; }
+        public virtual employmentModel? employmentModel { get; set; }
         public string mapLink {get; set;}
         public int? addressID { get; set; }
         public virtual addressModel? addressModel {get; set; }

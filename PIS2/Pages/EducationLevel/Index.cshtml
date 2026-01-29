@@ -7,15 +7,23 @@
 }
 @await Html.PartialAsync("headerSimple", "")
 <h1 class="fw-bold">Education/Academic Levels</h1>
+<h6 class="text-muted">Manage Education and Certification Levels</h6>
 
-<p class="d-print-none">
-    <a asp-page="Create" class="btn btn-primary">Add New Academic Level</a>
-</p>
-<div class="d-flex justify-content-end d-print-none">
-    <div class="me-2">@await Html.PartialAsync("filter")</div>
-    @await Html.PartialAsync("print")
-    <excel-export table="dataTable" filename="Companies_@(DateTime.UtcNow).xlsx"></excel-export>
+<div class="card shadow-sm p-2 mb-4">
+    <div class="d-flex justify-content-between">
+        <div class="d-flex d-print-none m-2">
+            <a asp-page="Create" class="btn btn-primary">Add New Academic Level</a>
+        </div>
+        <div class="d-flex justify-content-end d-print-none">
+            <div class="me-2">@await Html.PartialAsync("filter")</div>
+            @await Html.PartialAsync("print")
+            <excel-export table="dataTable" filename="Companies_@(DateTime.UtcNow).xlsx"></excel-export>
+        </div>
+    </div>
 </div>
+
+
+
 <table class="table table-striped table-hover" id="dataTable">
     <thead>
         <tr class="bg-dark text-white">
@@ -85,8 +93,8 @@
                                 <i class="bi bi-pencil-square"></i>
                             </a>
                         </div>
-                </td>
-            </tr>
+                    </td>
+                </tr>
             } 
         }
         

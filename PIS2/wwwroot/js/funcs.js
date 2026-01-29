@@ -252,6 +252,7 @@ function selector(input, hiddenId) {
         }
     });
     if (!found) {
+        showToast('Error', 'Employee Not Found');
         document.getElementById(hiddenId).value = '';
     }
 }

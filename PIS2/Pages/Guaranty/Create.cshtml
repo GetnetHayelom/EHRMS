@@ -8,11 +8,11 @@
 }
 
 <h1 class="fw-bold">Guaranty</h1>
+<h6 class="fw-bold text-muted">Request Guaranty Service</h6>
 
-<h4 class="fw-bold">Request Guaranty Service</h4>
 <hr />
-<div class="row">
-    <div class="col-md-4">
+<div class="d-flex gap-4">
+    <div class="card shadow-sm p-2 col-md-4">
         <form method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             @if (User.IsInRole("MIE\\PMS_HRCLERK"))
@@ -68,78 +68,81 @@
             </div>
         </form>
     </div>
-</div>
-<table class="table table-striped table-hover">
-    <thead class="bg-dark text-white">
-        <tr>
-            
-            <th>
-                Guaranty Start Date
-            </th>
-            <th>
-                Guaranty End Date
-            </th>
-            <th>
-                Guaranty Amount
-            </th>
-            <th>
-                Guaranty Type
-            </th>
-            <th>
-                Guarantee
-            </th>
-            <th>
-                Beneficiary
-            </th>
-            <th>Status</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model.GuarantyStatus)
-        {
-            <tr onclick="location.href='@Url.Page("Details", new { id = item.guarantyID })'" style="cursor:pointer;" )>
-                
-                <td>
-                    @Html.DisplayFor(modelItem => item.guarantyStartDate)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.guarantyEndDate)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.guarantyAmount)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.guarantyType)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.guarantyFor)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.guarantyBeneficiary)
-                </td>
-                @{
-                    string bg_color;
-                    if (item.guarantyStatus == Models.mainStatus.Suspended)
-                    {
-                        bg_color = "bg-warning text-black";
-                    }
-                    else if (item.guarantyStatus == Models.mainStatus.Active)
-                    {
-                        bg_color = "bg-success text-white";
-                    }
-                    else
-                    {
-                        bg_color = "bg-grey text-black";
-                    }
-                }
-                <td class="@bg_color">
-                    @Html.DisplayFor(modelItem => item.guarantyStatus)
-                </td>
+   
+    <div class="card shadow-sm p-2 flex-fill">
+        <table class="table table-striped table-hover print-full-width">
+            <thead class="bg-dark text-white">
+                <tr>
 
-            </tr>
-        }
-    </tbody>
-</table>
+                    <th>
+                        Guaranty Start Date
+                    </th>
+                    <th>
+                        Guaranty End Date
+                    </th>
+                    <th>
+                        Guaranty Amount
+                    </th>
+                    <th>
+                        Guaranty Type
+                    </th>
+                    <th>
+                        Guarantee
+                    </th>
+                    <th>
+                        Beneficiary
+                    </th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.GuarantyStatus)
+                {
+                    <tr onclick="location.href='@Url.Page("Details", new { id = item.guarantyID })'" style="cursor:pointer;" )>
+
+                        <td>
+                            @Html.DisplayFor(modelItem => item.guarantyStartDate)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.guarantyEndDate)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.guarantyAmount)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.guarantyType)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.guarantyFor)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.guarantyBeneficiary)
+                        </td>
+                        @{
+                            string bg_color;
+                            if (item.guarantyStatus == Models.mainStatus.Suspended)
+                            {
+                                bg_color = "bg-warning text-black";
+                            }
+                            else if (item.guarantyStatus == Models.mainStatus.Active)
+                            {
+                                bg_color = "bg-success text-white";
+                            }
+                            else
+                            {
+                                bg_color = "bg-grey text-black";
+                            }
+                        }
+                        <td class="@bg_color">
+                            @Html.DisplayFor(modelItem => item.guarantyStatus)
+                        </td>
+
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
 
 <div>
     <a asp-page="Index">View All Guaranty</a>

@@ -68,12 +68,7 @@
     <div class="card shadow-sm p-2">
         <div class="d-flex justify-content-between">
             <ul class="nav nav-tabs mb-3 d-print-none" id="mainTabs" role="tablist">
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link active" id="summary-tab" data-bs-toggle="tab"
-                            data-bs-target="#summary-content" type="button" role="tab">
-                        Payroll Summary
-                    </button>
-                </li>
+                
 
                 <li class="nav-item" role="presentation">
                     <button class="nav-link" id="list-tab" data-bs-toggle="tab"
@@ -105,62 +100,7 @@
     <!-- TAB CONTENT -->
     <div class="card shadow-sm p-2 tab-content" id="mainTabsContent">
 
-        <!-- TAB 1: SUMMARY -->
-        <div class="tab-pane fade show active" id="summary-content" role="tabpanel">
-
-            <div class="table-responsive">
-                <table class="table table-bordered table-striped table-hover print-full-width" id="dataTable">
-                    <thead class="table-dark">
-                        <tr>
-                            <th>Employee</th>
-                            <th>Gross Pay</th>
-                            <th>Net Pay</th>
-                            <th>Earnings Breakdown</th>
-                            <th>Deductions Breakdown</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var pay in Model.payrollPays.OrderBy(p => p.EmploymentModel?.givenID))
-                        {
-                            <tr>
-                                <td onclick="location.href='@Url.Page("/EmployeeService/Earning", new { id = pay.EmploymentModel?.employmentID })'" style="cursor:pointer;">
-                                    @pay.EmploymentModel?.givenID
-                                </td>
-                                <td>@pay.GrossPay.ToString("N2")</td>
-                                <td>@pay.NetPay.ToString("N2")</td>
-                                <td>
-                                    @foreach (var earn in pay.EarningRecords)
-                                    {
-                                        <div>
-                                            @(Model.EarningTypes.First(e => e.earningTypeID == earn.earningTypeId).earningTypeName)
-                                            =
-                                            <u>@earn.earningAmount.ToString("N2")</u>
-                                        </div>
-                                    }
-                                </td>
-                                <td>
-                                    @foreach (var ded in pay.DeductionRecords)
-                                    {
-                                        <div>
-                                            @(Model.DeductionTypes.First(e => e.deductionTypeID == ded.deductionTypeID).deductionName)
-                                            =
-                                            <u>@ded.deductionAmount</u>
-                                        </div>
-                                    }
-                                </td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-            </div>
-
-            <div class="d-flex justify-content-end gap-3 d-print-none">
-                <excel-export table="summary-content" filename="Earnings_Payroll_Report_@(DateTime.UtcNow).xlsx"></excel-export>
-                @await Html.PartialAsync("print")
-            </div>
-        </div>
-        
-
+       
         <!-- TAB 2: LIST VIEW -->
         <div class="tab-pane fade" id="list-content" role="tabpanel">
             @await Html.PartialAsync("filter")

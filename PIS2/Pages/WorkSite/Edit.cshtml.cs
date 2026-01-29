@@ -24,6 +24,7 @@ namespace PIS2.Pages.WorkSite
         [BindProperty]
         public workSiteModel workSiteModel { get; set; } = default!;
         public List<workSiteHistoryModel> workSiteHistoryModel { get; set; }
+        public SelectList Manager;
 
         public async Task<IActionResult> OnGetAsync(int? id)
         {
@@ -33,13 +34,30 @@ namespace PIS2.Pages.WorkSite
                 return NotFound();
             }
 
-            var worksitemodel =  await _context.WorkSites.Include(ws => ws.WorkSiteHistories).FirstOrDefaultAsync(m => m.workSiteID == id);
+            var worksitemodel =  await _context.WorkSites
+                .Include(ws => ws.WorkSiteHistories)
+                .Include(ws => ws.employmentModel).ThenInclude(e => e.personModel)
+                .FirstOrDefaultAsync(m => m.workSiteID == id);
             if (worksitemodel == null)
             {
                 return NotFound();
             }
+
+            var managerData = await _context.Employments
+                .Include(e => e.personModel)
+                .Where(e => e.employmentStatus == mainStatus.Active)
+                .Select(e => new
+                {
+                    EmpID = e.employmentID,
+                    // Combine ID and Name for the dropdown display
+                    FullName = e.givenID + " - " + e.personModel.personFullName
+                })
+                .ToListAsync();
+
+            Manager = new SelectList(managerData, "EmpID", "FullName", worksitemodel.employmentID);
+
             workSiteModel = worksitemodel;
-           ViewData["addressID"] = new SelectList(_context.Addresses, "addressID", "addressFormatted");
+            ViewData["addressID"] = new SelectList(_context.Addresses, "addressID", "addressFormatted");
             return Page();
         }
 
@@ -52,6 +70,7 @@ namespace PIS2.Pages.WorkSite
 
             if (!ModelState.IsValid)
             {
+                TempData["message"] = ("Error", "Data Not Valid, Check values not filled!");
                 return Page();
             }
 
