@@ -1,0 +1,68 @@
+﻿@page
+@model PIS2.Pages.Report.TrainingReport
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<h3 class="fw-bold mb-3">📊 Training Analytics Dashboard</h3>
+
+<form method="get" class="row g-2 mb-4">
+    <div class="col-md-3">
+        <input type="date" asp-for="From" class="form-control" />
+    </div>
+    <div class="col-md-3">
+        <input type="date" asp-for="To" class="form-control" />
+    </div>
+    <div class="col-md-2">
+        <button class="btn btn-primary w-100">Filter</button>
+    </div>
+</form>
+
+<div class="row g-3 text-center">
+    <div class="col-md-3"><div class="card p-3 shadow">Trainings <h3>@Model.TotalTrainings</h3></div></div>
+    <div class="col-md-3"><div class="card p-3 shadow">Sessions <h3>@Model.TotalSessions</h3></div></div>
+    <div class="col-md-3"><div class="card p-3 shadow text-success">Completed <h3>@Model.CompletedSessions</h3></div></div>
+    <div class="col-md-3"><div class="card p-3 shadow">Cost <h3>@Model.TotalCost.ToString("N2")</h3></div></div>
+</div>
+
+<hr />
+
+<div class="row g-4">
+
+    <div class="col-md-4"><canvas id="statusChart"></canvas></div>
+    <div class="col-md-4"><canvas id="resultChart"></canvas></div>
+    <div class="col-md-4"><canvas id="categoryChart"></canvas></div>
+
+</div>
+
+<hr />
+
+<h5>🎯 Compliance Status</h5>
+
+<div class="row g-3">
+    <div class="col-md-4"><div class="alert alert-success">Compliant: <b>@Model.Compliant</b></div></div>
+    <div class="col-md-4"><div class="alert alert-warning">Expiring Soon: <b>@Model.ExpiringSoon</b></div></div>
+    <div class="col-md-4"><div class="alert alert-danger">Overdue: <b>@Model.Overdue</b></div></div>
+</div>
+
+<script>
+    const statusData = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.StatusStats));
+    const resultData = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.ResultStats));
+    const categoryData = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.CategoryStats));
+
+    function renderChart(id, data, type) {
+        new Chart(document.getElementById(id), {
+            type: type,
+            data: {
+                labels: Object.keys(data),
+                datasets: [{
+                    data: Object.values(data),
+                    borderWidth: 1
+                }]
+            }
+        });
+    }
+
+    renderChart('statusChart', statusData, 'pie');
+    renderChart('resultChart', resultData, 'bar');
+    renderChart('categoryChart', categoryData, 'doughnut');
+</script>

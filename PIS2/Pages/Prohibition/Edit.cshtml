@@ -106,7 +106,12 @@
 <div class="m-2">
     <a asp-page="./Index">View All Prohibirion</a>
 </div>
-
+@await Html.PartialAsync("_AttachmentPartial",
+new Pages.Shared.AttachmentPartialModel
+{
+    tableName = "Prohibition",
+    recordId = Model.prohibitionModel.prohibitionID
+})
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 }

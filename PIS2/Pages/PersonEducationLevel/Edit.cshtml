@@ -62,7 +62,12 @@
 <div>
     <a asp-page="./Index">View All Certifications</a>
 </div>
-
+@await Html.PartialAsync("_AttachmentPartial",
+new Pages.Shared.AttachmentPartialModel
+{
+    tableName = "PersonEducationLevel",
+    recordId = Model.personEducationLevelModel.personEducationLevelID
+})
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 }

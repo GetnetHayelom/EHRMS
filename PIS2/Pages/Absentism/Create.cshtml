@@ -7,9 +7,9 @@
     var successMessage = TempData["SuccessMessage"] as string;
 }
 
-<h1 class="fw-bold">Absenteeism</h1>
+<h2 class="fw-bold">Absenteeism</h2>
 
-<h4 class="fw-bold">Add Absenteeism</h4>
+<h6 class="text-muted">Add Absenteeism</h6>
 <hr />
 <div class="d-flex justify-content-between gap-3">
     <div class="col-md-4 card shadow-sm p-2 d-print-none">
@@ -47,7 +47,7 @@
                 }
 
             </div>
-            <div class="col-md-8">
+            <div class="">
                 @if (Model.Employment.employmentID == 0)
                 {
                     <div class="bg-info p-4 text-white"><h4>Select Employee</h4></div>
@@ -111,7 +111,7 @@
     @if(Model.Absentism != null && Model.Absentism.Any())
     {
         <div class="col-md-8 card shadow-sm p-2 print-full-width">
-            <h4 class="fw-bold">Absentism History</h4>
+            <h6 class="fw-bold">Absenteeism History</h6>
             <div class="d-flex justify-content-around w-100 mb-2 d-none d-print-block">
                 <div class="d-flex">
                     <div class="fw-bold">Name:</div>
@@ -143,11 +143,11 @@
             <div class="d-flex" id="summary">
                 <div class="d-flex p-2 justify-content-around w-100">
                     <div class="d-flex">
-                        <div class="fw-bold">Number of absentism records: </div>
+                        <div class="fw-bold">Number of absenteeism records: </div>
                         <div><u id="count">@Model.aCount</u></div>
                     </div class="d-flex">
                     <div class="d-flex">
-                        <div class="fw-bold">Sum of absentism in days: </div>
+                        <div class="fw-bold">Sum of absenteeism in days: </div>
                         <div><u id="sum">@Model.aSum</u></div>
                     </div>
                 </div>

@@ -38,7 +38,7 @@ namespace PIS2.Pages.Job
             }
             jobModel = jobmodel;
            ViewData["jobCategoryID"] = new SelectList(_context.JobCategories, "jobCategoryID", "jobCategoryName");
-           ViewData["jobClassID"] = new SelectList(_context.JobClasses, "JobClassId", "JobClassName");
+           ViewData["jobClassID"] = new SelectList(_context.JobClasses, "jobClassId", "jobClassName");
            ViewData["jobGradeID"] = new SelectList(_context.JobGrades, "jobGradeID", "jobGradeName");
             return Page();
         }

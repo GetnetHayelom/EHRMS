@@ -44,7 +44,7 @@ namespace PIS2.Pages.Termination
         public async Task OnGetAsync()
         {
             Companies = await _context.Companies.OrderBy(c => c.companyName).ToListAsync();
-            JobClasses = await _context.JobClasses.OrderBy(j => j.JobClassName).ToListAsync();
+            JobClasses = await _context.JobClasses.OrderBy(j => j.jobClassName).ToListAsync();
             JobCategories = await _context.JobCategories.OrderBy(j => j.jobCategoryName).ToListAsync();
             Reasons = await _context.Terminations.OrderBy(t => t.terminationReason).Select(t => t.terminationReason).Distinct().ToListAsync();
             // ------------------------------------

@@ -137,7 +137,7 @@ namespace PIS2.Pages.Management
 
             //jobclass Summary
             JobClassSummary = _context.JobPlacements.Include(j => j.jobModel).ThenInclude(j => j.jobClassModel)
-                .GroupBy(j => j.jobModel.jobClassModel.JobClassName)
+                .GroupBy(j => j.jobModel.jobClassModel.jobClassName)
                 .Select(g => new NameAndCount
                 {
                     zName = g.Key,

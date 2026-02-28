@@ -18,7 +18,7 @@ namespace PIS2.Pages.Evaluation
         public evaluationModel Evaluation { get; set; } = new();
 
         public List<evaluationTypeModel> EvaluationTypes { get; set; } = new();
-
+        public SelectList EvTypes { get; set; }
         public SelectList Employee { get; set; }
 
         public async Task OnGetAsync(int dep, int? emp)
@@ -28,8 +28,17 @@ namespace PIS2.Pages.Evaluation
 
             Employee = new SelectList("", "");
 
-            tempDep = await _context.Departments.FirstOrDefaultAsync(d => d.departmentID == dep);
+            EvaluationTypes = await _context.EvaluationTypes
+                .Include(t => t.EvaluationTasks)
+                    .ThenInclude(tk => tk.EvaluationSubTasks)
+                .Where(t => t.evaluationTypeStatus == mainStatus.Active)
+                .ToListAsync();
 
+            EvTypes = new SelectList(EvaluationTypes, "evaluationTypeID", "evaluationTypeName");
+
+            tempDep = await _context.Departments.FirstOrDefaultAsync(d => d.departmentID == dep);
+            var jobClass = 0;
+            var position = 0;
             if (tempDep != null)
             {
                 var employees = _context.JobPlacements.Where(d => d.departmentID == tempDep.departmentID && d.jobPlacementStatus == mainStatus.Active).Select(d => d.employmentID).ToList();
@@ -40,7 +49,6 @@ namespace PIS2.Pages.Evaluation
                 .Select(e => new
                 {
                     EmpID = e.employmentID,
-
                     FullName = e.givenID + " - " + e.personModel.personFullName
                 })
                 .ToListAsync();
@@ -54,20 +62,15 @@ namespace PIS2.Pages.Evaluation
                 .Select(e => new
                 {
                     EmpID = e.employmentID,
-
                     FullName = e.givenID + " - " + e.personModel.personFullName
                 })
                 .ToListAsync();
 
                 Employee = new SelectList(employee, "EmpID", "FullName", emp);
             }
-
-                // Load types with their predefined tasks/subtasks for the UI
-                EvaluationTypes = await _context.EvaluationTypes
-                    .Include(t => t.EvaluationTasks)
-                        .ThenInclude(tk => tk.EvaluationSubTasks)
-                    .Where(t => t.evaluationTypeStatus == mainStatus.Active)
-                    .ToListAsync();
+            
+            // Load types with their predefined tasks/subtasks for the UI
+            
 
         }
 
@@ -76,11 +79,16 @@ namespace PIS2.Pages.Evaluation
         {
             var data = new evaluationModel();
             var jobPlacementID = await _context.JobPlacements.Where(j => j.employmentID == dto.employmentID && j.jobPlacementStatus == mainStatus.Active).Select(j => j.jobPlacementID).FirstOrDefaultAsync();
+            if(jobPlacementID == null || jobPlacementID == 0)
+            {
+                return new JsonResult(new { success = false, message = "No active job placement found" });
+            }
             data.employmentID = dto.employmentID;
             data.jobPlacementID = jobPlacementID;
             data.evaluationName = dto.evaluationName;
             data.evaluationStartDate = dto.evaluationStartDate;
             data.evaluationEndDate = dto.evaluationEndDate;
+            data.evaluationTypes = dto.evaluationTypes;
             data.modifiedDate = DateTime.Now;
             data.modifiedBy = User.Identity.Name;
             data.evaluationStatus = evaluationStatus.Pending;
@@ -234,6 +242,7 @@ namespace PIS2.Pages.Evaluation
             public string evaluationName { get; set; }
             public DateTime evaluationStartDate { get; set; }
             public DateTime evaluationEndDate { get; set; }
+            public List<string> evaluationTypes { get; set; }
         }
     public class CreateTaskDto { public string evaluationTaskName { get; set; } public int evaluationTypeID { get; set; } public decimal evaluationTaskWeight { get; set; } }
     public class CreateSubTaskDto { public string evaluationSubTaskName { get; set; } public int evaluationTaskID { get; set; } public decimal evaluationSubTaskWeight { get; set; } }

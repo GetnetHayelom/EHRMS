@@ -16,7 +16,7 @@ namespace PIS2.Pages.Evaluation
 
         public evaluationModel Evaluation { get; set; }
         public List<evaluationTypeModel> EvaluationTypes { get; set; }
-        public List<evaluationTaskModel> ExistingTasks { get; set; }
+        public ICollection<evaluationTaskModel> ExistingTasks { get; set; }
         public List<evaluationValuationModel> ExistingValuations { get; set; }
 
         public async Task<IActionResult> OnGetAsync(int id)
@@ -32,27 +32,36 @@ namespace PIS2.Pages.Evaluation
             // 2. Load the Valuation entries for this specific evaluation
             // These records bridge the Evaluation to the Subtasks
             ExistingValuations = await _context.EvaluationValuations
+                .Include(e => e.EvaluationSubTaskModel).ThenInclude(e => e.EvaluationTaskModel).ThenInclude(e => e.EvaluationTypeModel)
                 .Where(v => v.evaluationID == id)
                 .ToListAsync();
 
             // 3. Get IDs of Subtasks that have valuations for this evaluation
             var valuatedSubTaskIds = ExistingValuations.Select(v => v.evaluationSubTaskID).ToList();
-
-            // 4. Load Active Evaluation Types
-            EvaluationTypes = await _context.EvaluationTypes
-                .Where(t => t.evaluationTypeStatus == mainStatus.Active)
-                .ToListAsync();
-
-            // 5. Load ONLY related Tasks and Subtasks
+            
+            // 4. Load ONLY related Tasks and Subtasks
             // We load tasks if:
             // a) The Task's Type is "Fixed" (meaning it's a standard requirement)
             // b) OR the Task contains Subtasks that have already been valuated for THIS evaluation
             ExistingTasks = await _context.EvaluationTasks
                 .Include(t => t.EvaluationSubTasks)
-                .Where(t => t.EvaluationTypeModel.isFixed ||
-                            t.EvaluationSubTasks.Any(st => valuatedSubTaskIds.Contains(st.evaluationSubTaskID)))
+                .Where(t => t.EvaluationSubTasks.Any(st => valuatedSubTaskIds.Contains(st.evaluationSubTaskID)))
                 .ToListAsync();
 
+            var SelectedTasks = ExistingTasks.Select(e => e.evaluationTaskID).ToList();
+            // 5. Load Active Evaluation Types
+            //EvaluationTypes = await _context.EvaluationTypes.Include(e => e.EvaluationTasks).ThenInclude(t => t.EvaluationSubTasks)
+            //    .Where(t => ExistingTasks.Select(es => es.evaluationTypeID).ToList().Contains(t.evaluationTypeID))
+            //    .ToListAsync();
+
+            EvaluationTypes = await _context.EvaluationTypes.Include(e => e.EvaluationTasks).ThenInclude(t => t.EvaluationSubTasks)
+                .Where(t => Evaluation.evaluationTypes.Contains(t.evaluationTypeID.ToString())).ToListAsync();
+
+            ExistingTasks = EvaluationTypes.SelectMany(t =>
+                t.isFixed == true
+                    ? t.EvaluationTasks                     // ALL tasks
+                    : t.EvaluationTasks.Where(x => SelectedTasks.Contains(x.evaluationTaskID))  // ONLY specific ones
+            ).ToList();
             return Page();
         }
 

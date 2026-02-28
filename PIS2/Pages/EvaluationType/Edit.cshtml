@@ -11,12 +11,12 @@
     <input type="hidden" asp-for="EvaluationType.evaluationTypeID" />
     <div class="d-flex p-2 gap-4">
         <div class="mb-3 col-md-3">
-            <label asp-for="EvaluationType.evaluationTypeName" class="form-label">Evaluation Type Name</label>
+            <label asp-for="EvaluationType.evaluationTypeName" class="form-label">Evaluation Name</label>
             <input asp-for="EvaluationType.evaluationTypeName" class="form-control" />
         </div>
 
-        <div class="mb-3 col-md-3">
-            <label asp-for="EvaluationType.evaluationTypeWeight" class="form-label">Evaluation Share</label>
+        <div class="mb-3 col-md-1">
+            <label asp-for="EvaluationType.evaluationTypeWeight" class="form-label">Share</label>
             <input asp-for="EvaluationType.evaluationTypeWeight" class="form-control" />
         </div>
 
@@ -25,10 +25,23 @@
             <label class="form-check-label">Is Fixed(Standard)</label>
         </div>
 
-        <div class="mb-3 col-md-3">
+        <div class="mb-3 col-md-1">
             <label asp-for="EvaluationType.evaluationTypeStatus" class="form-label">Status</label>
             <select asp-for="EvaluationType.evaluationTypeStatus" class="form-select"
                     asp-items="Html.GetEnumSelectList<Models.mainStatus>()"></select>
+        </div>
+        <div class="mb-3 col-md-2">
+            <label asp-for="EvaluationType.Position" class="form-label">Target Position</label>
+            <select asp-for="EvaluationType.Position" class="form-select"
+                    asp-items="Html.GetEnumSelectList<Models.EmploymentPositions>()">
+                <option value=""> All</option>
+            </select>
+        </div>
+        <div class="mb-3 col-md-2">
+            <label asp-for="EvaluationType.jobClassID" class="form-label">Target Job Class</label>
+            <select asp-for="EvaluationType.jobClassID" class="form-select" asp-items="@Model.JobClasses">
+                <option value=""> All</option>
+            </select>
         </div>
     </div>
     <div class="d-flex justify-content-end m-2 gap-2">
@@ -40,7 +53,7 @@
 </form>
 
 <div id="container" class="task-list">
-    <button class="btn btn-sm btn-primary" onclick="addTaskRow(@Model.EvaluationType.evaluationTypeID)">+ Add New Task</button>
+    
     @* Load Existing Tasks for this Type *@
     @foreach (var task in Model.EvaluationType.EvaluationTasks)
     {
@@ -85,6 +98,10 @@
     }
     @* Dynamic area for new tasks *@
     <div class="dynamic-tasks-area"></div>
+    <div class="d-flex justify-content-end m-2">
+        <button class="btn btn-sm btn-primary" onclick="addTaskRow(@Model.EvaluationType.evaluationTypeID)">+ Add New Task</button>
+    </div>
+
 </div>
 @* TEMPLATES *@
 <template id="taskTemplate">
@@ -144,7 +161,7 @@
             evaluationTaskName: name,
             evaluationTaskWeight: weight
         });
-        if(res.id) location.reload(); // Easier to reload to get the full UI for subtasks
+        //if(res.id) location.reload(); // Easier to reload to get the full UI for subtasks
     }
 
     async function updateTask(id, input) {
@@ -185,7 +202,7 @@
             evaluationSubTaskName: name,
             evaluationSubTaskWeight: weight
         });
-        if(res.id) location.reload();
+        //if(res.id) location.reload();
     }
 
     async function updateSubTask(id, input) {

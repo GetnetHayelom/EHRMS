@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
@@ -5,6 +6,7 @@ using PIS2.Models;
 
 namespace PIS2.Pages.Benefits
 {
+    [Authorize(Roles = "MIE\\PMS_HRMANAGER, MIE\\PMS_FINANCE, MIE\\PMS_HRCLERK")]
     public class IndexModel : PageModel
     {
         private readonly PISContext _context;

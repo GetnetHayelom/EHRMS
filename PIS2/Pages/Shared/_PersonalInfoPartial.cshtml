@@ -17,11 +17,15 @@
                     @Model.personFullName
                 </a>
             </h5>
-            <a href="/Employment/Details?id=@(Model.Employments?.FirstOrDefault(e => e.employmentStatus == Models.mainStatus.Active)?.employmentID)">
-                <span class="badge @(Model.Employments.Any(e => e.employmentStatus == Models.mainStatus.Active) ? "bg-success" : "bg-danger") rounded-pill">
-                    @(Model.Employments?.OrderByDescending(e => e.employmentDate).FirstOrDefault()?.employmentStatus.ToString() ?? "Not Employed")
-                </span>
-            </a>
+            @if (Model.Employments?.Any() == true)
+            {
+                <a href="/Employment/Details?id=@(Model.Employments?.FirstOrDefault(e => e.employmentStatus == Models.mainStatus.Active)?.employmentID)">
+                    <span class="badge @(Model.Employments.Any(e => e.employmentStatus == Models.mainStatus.Active) ? "bg-success" : "bg-danger") rounded-pill">
+                        @(Model.Employments?.OrderByDescending(e => e.employmentDate).FirstOrDefault()?.employmentStatus.ToString() ?? "Not Employed")
+                    </span>
+                </a>
+            }
+            
             
         </div>
 

@@ -155,7 +155,7 @@
                                     @foreach (var sub in task.EvaluationSubTasks)
                                     {
                                         var val = Model.ExistingValuations.FirstOrDefault(v => v.evaluationSubTaskID == sub.evaluationSubTaskID);
-                                        var rowAvg = val != null ? (val.timeValuation + val.resourceValuation + val.performanceValuation) / 3 : 0;
+                                        var rowAvg = val != null ? ((val.timeValuation + val.resourceValuation + val.performanceValuation) / 3).ToString("F2") : "-";
 
                                         <tr class="text-center">
                                             <td class="text-start">@sub.evaluationSubTaskName</td>
@@ -163,7 +163,7 @@
                                             <td>@(val?.timeValuation.ToString("F1") ?? "0.0")</td>
                                             <td>@(val?.resourceValuation.ToString("F1") ?? "0.0")</td>
                                             <td>@(val?.performanceValuation.ToString("F1") ?? "0.0")</td>
-                                            <td class="fw-bold">@rowAvg.ToString("F2")</td>
+                                            <td class="fw-bold">@rowAvg</td>
                                         </tr>
                                         
                                     }
@@ -177,11 +177,11 @@
         }
 
         @* Signature Area (Visible on Print) *@
-        <div class="row mt-5 pt-5 print-only d-print-flex d-flex justify-content-around">
-            <div class="col-6 text-center">
+        <div class="mt-5 pt-5 print-only d-print-flex d-none justify-content-around print-full-width">
+            <div class="col-5 text-center">
                 <div class="border-top border-dark mx-auto w-75 pt-2">Employee Signature</div>
             </div>
-            <div class="col-6 text-center">
+            <div class="col-5 text-center">
                 <div class="border-top border-dark mx-auto w-75 pt-2">Evaluator Signature</div>
             </div>
         </div>

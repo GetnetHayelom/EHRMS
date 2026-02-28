@@ -22,9 +22,10 @@ namespace PIS2.Pages.Job
 
         public IActionResult OnGet()
         {
-        ViewData["jobCategoryID"] = new SelectList(_context.JobCategories.OrderBy(j => j.jobCategoryName), "jobCategoryID", "jobCategoryName");
-        ViewData["jobClassID"] = new SelectList(_context.JobClasses.OrderBy(j => j.JobClassName), "JobClassId", "JobClassName");
-        ViewData["jobGradeID"] = new SelectList(_context.JobGrades.OrderBy(j => j.jobGradeName), "jobGradeID", "jobGradeName");
+            
+            ViewData["jobCategoryID"] = new SelectList(_context.JobCategories, "jobCategoryID", "jobCategoryName");
+            ViewData["jobClassID"] = new SelectList(_context.JobClasses, "jobClassId", "jobClassName");
+            ViewData["jobGradeID"] = new SelectList(_context.JobGrades, "jobGradeID", "jobGradeName");
             return Page();
         }
 

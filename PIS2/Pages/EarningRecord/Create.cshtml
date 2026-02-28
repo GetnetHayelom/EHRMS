@@ -5,12 +5,12 @@
     ViewData["Title"] = "Create Earning";
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
-<h2 class="fw-bold">Employee Earning</h2>
+<h2 class="fw-bold">Compensation & Benefits</h2>
 <div class="container mt-4">
 
     <div class="card shadow-lg">
         <div class="card-header bg-primary text-white">
-            <h4 class="mb-0">Add New Earning</h4>
+            <h6 class="fw-bold mb-0">Add New Earning</h6>
         </div>
 
         <div class="card-body">
@@ -61,9 +61,32 @@
 
                     <div class="col-md-4">
                         <label class="form-label">Earning Type</label>
-                        <select asp-for="Earning.earningTypeID" class="form-select" asp-items="Model.EarningTypes"></select>
+                        <select asp-for="Earning.earningTypeID" class="form-select" id="earningTypeSelect" onchange="togglePayroll()">
+                            <option value="">--Select Type--</option>
+                            @foreach (var et in Model.EarningTypes)  // your actual earning types list
+                            {
+                                <option value="@et.earningTypeID" data-ispayroll="@et.isPayroll">
+                                    @et.earningTypeName
+                                </option>
+                            }
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Amount</label>
+                        <input asp-for="Earning.earningAmount" type="number" step="0.01" class="form-control" />
                     </div>
 
+                    <div class="col-md-4">
+                        <label class="form-label">Status</label>
+                        <select asp-for="Earning.earningStatus" class="form-select">
+                            @foreach (var st in Enum.GetValues(typeof(Models.mainStatus)))
+                            {
+                                <option value="@st">@st</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+                <div class="row g-3 mt-2" id="payrollRelated" style="display:none;">
                     <div class="col-md-4">
                         <label class="form-label">Iteration (Months)</label>
                         <input asp-for="Earning.earningIteration" type="number" min="1" class="form-control" />
@@ -83,21 +106,6 @@
                             @foreach (var baseVal in Enum.GetValues(typeof(Models.deductionBase)))
                             {
                                 <option value="@baseVal">@baseVal</option>
-                            }
-                        </select>
-                    </div>
-
-                    <div class="col-md-4">
-                        <label class="form-label">Amount</label>
-                        <input asp-for="Earning.earningAmount" type="number" step="0.01" class="form-control" />
-                    </div>
-
-                    <div class="col-md-4">
-                        <label class="form-label">Status</label>
-                        <select asp-for="Earning.earningStatus" class="form-select">
-                            @foreach (var st in Enum.GetValues(typeof(Models.mainStatus)))
-                            {
-                                <option value="@st">@st</option>
                             }
                         </select>
                     </div>
@@ -157,6 +165,17 @@
 
         loadForm(empId);
     });
+
+    function togglePayroll()
+    {
+        const select = document.getElementById("earningTypeSelect");
+        const selected = select.options[select.selectedIndex];
+        const isPayroll = selected.dataset.ispayroll === "true";
+
+        const payrollDiv = document.getElementById("payrollRelated");
+
+        payrollDiv.style.display = isPayroll ? "flex" : "none";
+    }
 </script>
 <script>
     window.addEventListener("DOMContentLoaded", function () {

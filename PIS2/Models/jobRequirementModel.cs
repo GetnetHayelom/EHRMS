@@ -2,25 +2,41 @@
 
 namespace PIS2.Models
 {
-    public class jobRequirementModel
+    public class jobRequirementModel//request made to hr to employ new employees only managers can request
     {
         [Key]
+        [Display(Name = "Employment Request Record ID")]
         public int jobRequirementID { get; set; }
         [Required]
+        [Display(Name = "Requesting Department")]
         public int departmentID { get; set; }
         public virtual departmentModel? DepartmentModel { get; set; }
         [Required]
+        [Display(Name = "Employment Requested Job")]
         public int jobID { get; set; }
         public virtual jobModel? JobModel { get; set; }
         [Required]
+        [Display(Name = "Required No.")]
         public int requiredNumber { get; set; }
+        [Display(Name = "Employment Type")]
+        public int employmentTypeID { get; set; }
+        public employmentTypeModel? employmentTypeModel { get; set; }
+        [Display(Name = "Reason")]
+        [Required]
+        public string? requiredReason { get; set; }
+        [Display(Name = "Approved No")]
         public int? approvedNumber { get; set; }
+        [Display(Name = "Hired No")]
         public int? hiredNumber { get; set; }
+        [Display(Name = "Request Status")]
         public jobReqStatus jobRequirementStatus { get; set; }
+        [Display(Name = "Modified By")]
         public string modifiedBy { get; set; }
+        [Display(Name = "Date Modified")]
         public DateTime modifiedDate { get; set; } = DateTime.Now;
         public virtual ICollection<jobRequirementHistoryModel>? JobRequirementHistories { get; set; }
         public virtual ICollection<VacancyModel>? Vacancies { get; set; }
+        public virtual ICollection<employmentModel>? Employments { get; set; }
         public jobRequirementModel() { }
 
     }
@@ -31,6 +47,10 @@ namespace PIS2.Models
         [Required]
         public int jobRequirementID { get; set; }
         public virtual jobRequirementModel? JobRequirementModel { get; set; }
+        [Required]
+        [Display(Name = "Employment Requested Job")]
+        public int jobID { get; set; }
+        public virtual jobModel? JobModel { get; set; }
         [Required]
         public int requiredNumber { get; set; }
         public jobReqStatus jobRequirementStatus { get; set; }
@@ -86,7 +106,7 @@ namespace PIS2.Models
         public string? Remark { get; set; }           // Job description
 
         [Required]
-        public int departmentID { get; set; }             // Link to Department
+        public int? departmentID { get; set; }             // Link to Department
         public virtual departmentModel? departmentModel { get; set; }
 
         public string? Location { get; set; }              // Work location
@@ -96,7 +116,7 @@ namespace PIS2.Models
 
         [Required]
         public VacancyStatus Status { get; set; }         // Open, Closed, OnHold
-
+        public jobReqStatus VacancyStage { get; set; } = jobReqStatus.Hold;
         public DateTime DatePosted { get; set; } = DateTime.Now;
 
         public DateTime? ClosingDate { get; set; }       // Optional closing date
@@ -108,7 +128,7 @@ namespace PIS2.Models
 
         public int employmentTypeID { get; set; }
         public virtual employmentTypeModel? employmentTypeModel { get; set; }
-        public Ex_In VacancyType { get; set; }
+        public VacancyTypes VacancyType { get; set; }
         public string modifiedBy { get; set; }
         public DateTime modifiedDate { get; set; } = DateTime.Now;
 
@@ -120,6 +140,15 @@ namespace PIS2.Models
         Open = 1,
         Closed = 2,
         OnHold = 3
+    }
+    public enum VacancyTypes
+    {
+        [Display(Name = "Internal")]
+        Internal,
+        [Display(Name = "External")]
+        External,
+        [Display(Name = "Internal\\External")]
+        In_Ex
     }
 
 

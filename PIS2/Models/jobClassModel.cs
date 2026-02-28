@@ -4,14 +4,14 @@ namespace PIS2.Models
 {
     public class jobClassModel //Electrician, Accountant
     {
-        [Key] public int JobClassId { get; set; }
+        [Key] public int jobClassId { get; set; }
         [Required]
-        public string JobClassName { get; set; }
+        public string jobClassName { get; set; }
         [Required]
-        public string? JobClassDescription { get; set; }
-        public mainStatus JobClasStatus { get; set; }
-
+        public string? jobClassDescription { get; set; }
+        public mainStatus jobClassStatus { get; set; }
         public virtual ICollection<jobModel>? Jobs { get; set; }
+        public virtual ICollection<evaluationTypeModel>? EvaluationTypes { get; set; }
         public string modifiedBy { get; set; }
         public DateTime modifiedDate { get; set; } = DateTime.Now;
 

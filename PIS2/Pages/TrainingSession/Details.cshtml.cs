@@ -28,6 +28,7 @@ namespace PIS2.Pages.TrainingSession
             
             Session = await _context.TrainingSessions
                 .Include(s => s.Training)
+                .Include(s => s.PersonModel)
                 .Include(s => s.Attendances)
                     .ThenInclude(a => a.EmploymentModel).ThenInclude(e => e.personModel)
                 .FirstOrDefaultAsync(m => m.trainingSessionID == id);
@@ -55,16 +56,28 @@ namespace PIS2.Pages.TrainingSession
 
         public async Task<IActionResult> OnPostAddAttendanceAsync()
         {
-           
-            ModelState.Remove("NewAttendance.TrainingSession");
-            ModelState.Remove("NewAttendance.EmploymentModel");
+
+            ModelState.Clear();
+
+            NewAttendance.modifiedBy = User.Identity.Name;
+            NewAttendance.modifiedDate = DateTime.Now;
 
             if (!ModelState.IsValid)
             {
+                foreach (var kv in ModelState)
+                {
+                    foreach (var error in kv.Value.Errors)
+                    {
+                        Console.WriteLine($"{kv.Key} --> {error.ErrorMessage}");
+
+                    }
+                }
+                TempData["message"] = ("Error", $"Missing field!");
                 // Reload data if validation fails
                 await OnGetAsync(NewAttendance.trainingSessionID);
                 return Page();
             }
+           
 
             _context.TrainingAttendances.Add(NewAttendance);
             await _context.SaveChangesAsync();

@@ -9,105 +9,136 @@
 <form id="tokenForm">
     @Html.AntiForgeryToken()
 </form>
+<div class="d-flex align-items-end gap-3">
+    <h2 class="fw-bold">@Model.departmentModel.departmentName</h2>
+    <h6><small class="text-muted">(@Model.departmentModel.departmentShort)</small></h6>
+</div>
 
-<h1 class="fw-bold mb-3">@Model.departmentModel.departmentName <small class="text-muted">(@Model.departmentModel.departmentShort)</small></h1>
 
-<!-- =======================
+<!-- 
+    =======================
      BUTTONS
-     ======================= -->
-@if (Model.departmentModel.departmentStatus == Models.mainStatus.Active && (Model.isManager || Model.isDelegatee || Model.isMember))
+    ======================= 
+-->
+@if (Model.departmentModel.departmentStatus == Models.mainStatus.Active && (Model.isManager || Model.Delegations.Any() || Model.isMember))
 {
     <div class="mb-3">
         <div class="d-flex flex-wrap gap-2 border-top border-bottom border-1 border-primary p-2">
-            <button type="button" class="btn btn-primary flex-fill position-relative" data-bs-toggle="modal" data-bs-target="#LeaveModal">
-                Leaves <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                    @Model.leaveModel.Count() <span class="visually-hidden">Pending Leaves</span>
-                </span>
-            </button> <button type="button" class="btn btn-primary flex-fill position-relative" data-bs-toggle="modal" data-bs-target="#OTModal">
-                Overtime <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                    @Model.overtimeModel.Count() <span class="visually-hidden">Pending Overtime Records</span>
-                </span>
-            </button> <a asp-page="ShiftSite" asp-route-id="@Model.departmentModel.departmentID" class="btn btn-primary flex-fill">Shift & Work Location</a>
-            <a asp-page="/Penalty/Create" class="btn btn-primary flex-fill">Penalty</a>
-            <a asp-page="/Evaluation/Index" asp-route-department="@Model.departmentModel.departmentID" class="btn btn-primary flex-fill">Evaluation</a>
-            <a asp-page="/Delegation/Create" asp-route-id="@Model.departmentModel.employmentID" class="btn btn-primary flex-fill">Delegate</a>
-            <a asp-page="/JobRequirement/Create" asp-route-id="@Model.departmentModel.departmentID" class="btn btn-warning flex-fill">Employment Request</a>
+            @if (Model.Delegations.Any(d => d == Models.delegationScopes.Fulldelegation || d == Models.delegationScopes.LeaveApprove))
+            {
+                <button type="button" class="btn btn-primary flex-fill position-relative" data-bs-toggle="modal" data-bs-target="#LeaveModal">
+                    Leaves
+                    @if (Model.leaveModel.Count() > 0)
+                    {
+                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                            @Model.leaveModel.Count() <span class="visually-hidden">Pending Leaves</span>
+                        </span>
+                    }
+                </button>
+            }
+            @if (Model.Delegations.Any(d => d == Models.delegationScopes.Fulldelegation || d == Models.delegationScopes.OTApprove))
+            {
+             <button type="button" class="btn btn-primary flex-fill position-relative" data-bs-toggle="modal" data-bs-target="#OTModal">
+                Overtime
+                @if (Model.overtimeModel.Count() > 0)
+                {
+                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                        @Model.overtimeModel.Count() <span class="visually-hidden">Pending Overtime Records</span>
+                    </span>
+                }
+
+                </button>
+            }
+            @if (Model.Delegations.Any(d => d == Models.delegationScopes.Fulldelegation))
+            {
+                <a asp-page="ShiftSite" asp-route-id="@Model.departmentModel.departmentID" class="btn btn-primary flex-fill">Shift & Work Location</a> 
+            }
+            
+            @if (Model.Delegations.Any(d => d == Models.delegationScopes.Fulldelegation))
+            {
+                <a asp-page="/Penalty/Create" class="btn btn-primary flex-fill">Penalty</a>
+                <a asp-page="/Evaluation/Index" asp-route-department="@Model.departmentModel.departmentID" class="btn btn-primary flex-fill">Evaluation</a>
+                <a asp-page="/Delegation/Create" asp-route-id="@Model.UserEmpID" class="btn btn-primary flex-fill">Delegate</a>
+                <a asp-page="/JobRequirement/Create" asp-route-id="@Model.departmentModel.departmentID" class="btn btn-warning flex-fill">Employment Request</a>
+            }
         </div>
     </div>
 }
+<div class="card shadow-sm p-2">
+    <div class="row">
+        <!-- Department Details -->
+        <div class="col-md-4 mb-3">
+            <div class="card shadow-sm">
+                <div class="card-header bg-dark text-white fw-bold">Department Details</div>
+                <div class="card-body">
+                    <dl class="row mb-0">
+                        <dt class="col-6">Department Code:</dt>
+                        <dd class="col-6">@Html.DisplayFor(m => m.departmentModel.departmentShort)</dd>
 
-<div class="row">
-    <!-- Department Details -->
-    <div class="col-md-4 mb-3">
-        <div class="card shadow-sm">
-            <div class="card-header bg-dark text-white fw-bold">Department Details</div>
-            <div class="card-body">
-                <dl class="row mb-0">
-                    <dt class="col-6">Department Code:</dt>
-                    <dd class="col-6">@Html.DisplayFor(m => m.departmentModel.departmentShort)</dd>
+                        <dt class="col-6">Department Name:</dt>
+                        <dd class="col-6">@Html.DisplayFor(m => m.departmentModel.departmentName)</dd>
 
-                    <dt class="col-6">Department Name:</dt>
-                    <dd class="col-6">@Html.DisplayFor(m => m.departmentModel.departmentName)</dd>
+                        <dt class="col-6">Status:</dt>
+                        <dd class="col-6 badge @((Model.departmentModel.departmentStatus == Models.mainStatus.Active) ? "bg-success" : "bg-danger")">
+                            @Html.DisplayFor(m => m.departmentModel.departmentStatus)
+                        </dd>
 
-                    <dt class="col-6">Status:</dt>
-                    <dd class="col-6 badge @((Model.departmentModel.departmentStatus == Models.mainStatus.Active) ? "bg-success" : "bg-danger")">
-                        @Html.DisplayFor(m => m.departmentModel.departmentStatus)
-                    </dd>
+                        <dt class="col-6">Sub-Account:</dt>
+                        <dd class="col-6">@Html.DisplayFor(m => m.departmentModel.subAccountModel.subAccountDescription)</dd>
 
-                    <dt class="col-6">Sub-Account:</dt>
-                    <dd class="col-6">@Html.DisplayFor(m => m.departmentModel.subAccountModel.subAccountDescription)</dd>
+                        <dt class="col-6">Company:</dt>
+                        <dd class="col-6">@Html.DisplayFor(m => m.departmentModel.companyModel.companyName)</dd>
 
-                    <dt class="col-6">Company:</dt>
-                    <dd class="col-6">@Html.DisplayFor(m => m.departmentModel.companyModel.companyName)</dd>
+                        <dt class="col-6">Manager:</dt>
+                        <dd class="col-6">@Model.departmentModel.employmentModel?.personModel?.personFullName</dd>
 
-                    <dt class="col-6">Manager:</dt>
-                    <dd class="col-6">@Model.departmentModel.employmentModel?.personModel?.personFullName</dd>
-                    
-                </dl>
+                    </dl>
+                </div>
             </div>
         </div>
+
+        <!-- Payable Summary -->
+        @if (Model.departmentModel.departmentStatus == Models.mainStatus.Active)
+        {
+            <div class="col-md-4 mb-3">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-dark text-white fw-bold">Current Payable</div>
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between mb-1"><span>Salary</span><strong>$@Math.Round(Model.EmploymentView.Sum(e => e.Job.jobPlacementSalary), 2).ToString("N0")</strong></div>
+                        <div class="d-flex justify-content-between mb-1"><span>Overtime</span><strong>$@Math.Round(Model.DepartmentSummary.Overtime ?? 0, 2).ToString("N0")</strong></div>
+                        <div class="d-flex justify-content-between mb-1"><span>Acc. Leaves</span><strong>$@Math.Round(Model.leaveCost, 2).ToString("N0")</strong></div>
+                        <div class="d-flex justify-content-between mb-1"><span>Allowance</span><strong>$@Math.Round(Model.DepartmentSummary.Allowance ?? 0, 2).ToString("N0")</strong></div>
+                        <div class="d-flex justify-content-between mt-2"><span>Total</span><h5 class="fw-bold"><u>$@Math.Round(Model.DepartmentSummary.Total ?? 0, 2).ToString("N0")</u></h5></div>
+                    </div>
+                </div>
+            </div>
+        }
+
+        <!-- Employment Summary -->
+        @if (Model.departmentModel.departmentStatus == Models.mainStatus.Active)
+        {
+            <div class="col-md-4 mb-3">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-dark text-white fw-bold">Employment Summary</div>
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between mb-1"><span class="text-success">Active Employees</span><span class="bg-success text-white rounded px-2">@Model.DepartmentSummary.Employees</span></div>
+                        <div class="d-flex justify-content-between mb-1"><span class="text-info">Required Employees</span><span class="bg-info text-white rounded px-2">@Model.RequiredEmployee</span></div>
+                        <div class="d-flex justify-content-between mb-1"><span class="text-danger">Former Employees</span><span class="bg-danger text-white rounded px-2">@Model.DepartmentSummary.xEmployees</span></div>
+
+                        @foreach (var item in Model.EmploymentTypes)
+                        {
+                            <div class="d-flex justify-content-between mb-1"><span class="text-success">@item.zName</span><span class="bg-success text-white rounded px-2">@item.zCount</span></div>
+                        }
+                        <div class="d-flex justify-content-between"><span class="text-warning">Employees On Leave</span><span class="bg-warning text-white rounded px-2">@Model.leaveEmployments</span></div>
+                    </div>
+                </div>
+            </div>
+        }
+
+
     </div>
-
-    <!-- Payable Summary -->
-    @if (Model.departmentModel.departmentStatus == Models.mainStatus.Active)
-    {
-        <div class="col-md-4 mb-3">
-            <div class="card shadow-sm">
-                <div class="card-header bg-dark text-white fw-bold">Current Payable</div>
-                <div class="card-body">
-                    <div class="d-flex justify-content-between mb-1"><span>Salary</span><strong>$@Math.Round(Model.EmploymentView.Sum(e => e.Job.jobPlacementSalary), 2).ToString("N0")</strong></div>
-                    <div class="d-flex justify-content-between mb-1"><span>Overtime</span><strong>$@Math.Round(Model.DepartmentSummary.Overtime??0, 2).ToString("N0")</strong></div>
-                    <div class="d-flex justify-content-between mb-1"><span>Acc. Leaves</span><strong>$@Math.Round(Model.leaveCost, 2).ToString("N0")</strong></div>
-                    <div class="d-flex justify-content-between mb-1"><span>Allowance</span><strong>$@Math.Round(Model.DepartmentSummary.Allowance??0, 2).ToString("N0")</strong></div>
-                    <div class="d-flex justify-content-between mt-2"><span>Total</span><h5 class="fw-bold"><u>$@Math.Round(Model.DepartmentSummary.Total ??0, 2).ToString("N0")</u></h5></div>
-                </div>
-            </div>
-        </div>
-    }
-
-    <!-- Employment Summary -->
-    @if (Model.departmentModel.departmentStatus == Models.mainStatus.Active)
-    {
-        <div class="col-md-4 mb-3">
-            <div class="card shadow-sm">
-                <div class="card-header bg-dark text-white fw-bold">Employment Summary</div>
-                <div class="card-body">
-                    <div class="d-flex justify-content-between mb-1"><span class="text-success">Active Employees</span><span class="bg-success text-white rounded px-2">@Model.DepartmentSummary.Employees</span></div>
-                    <div class="d-flex justify-content-between mb-1"><span class="text-info">Required Employees</span><span class="bg-info text-white rounded px-2">@Model.RequiredEmployee</span></div>
-                    <div class="d-flex justify-content-between mb-1"><span class="text-danger">Former Employees</span><span class="bg-danger text-white rounded px-2">@Model.DepartmentSummary.xEmployees</span></div>
-
-                    @foreach (var item in Model.EmploymentTypes)
-                    {
-                        <div class="d-flex justify-content-between mb-1"><span class="text-success">@item.zName</span><span class="bg-success text-white rounded px-2">@item.zCount</span></div>
-                    }
-                    <div class="d-flex justify-content-between"><span class="text-warning">Employees On Leave</span><span class="bg-warning text-white rounded px-2">@Model.leaveEmployments</span></div>
-                </div>
-            </div>
-        </div>
-    }
-
-
 </div>
+
 
 <!-- Active Employees Table -->
 @if (Model.departmentModel.departmentStatus == Models.mainStatus.Active)
@@ -127,7 +158,7 @@
                             <td>@Math.Round(item.Leave.AllowedLeave, 2)</td>
                             <td>
                                 <div class="position-relative d-inline-block shift-wrapper">
-                                    <select class="form-select shift-selector" data-focus="1" data-employment="@item.Employment.employmentID" @(Model.isManager || Model.isDelegatee ? "disabled" : "")>
+                                    <select class="form-select shift-selector" data-focus="1" data-employment="@item.Employment.employmentID" @(Model.isManager || Model.Delegations.Any(d => d == Models.delegationScopes.ShiftAssignment) ? "disabled" : "")>
                                         <option value="">-- Select Shift --</option>
                                         @foreach (var shift in Model.Shifts)
                                         {
@@ -138,7 +169,7 @@
                             </td>
                             <td>
                                 <div class="position-relative d-inline-block shift-wrapper">
-                                    <select class="form-select shift-selector" data-focus="2" data-employment="@item.Employment.employmentID" @(Model.isManager || Model.isDelegatee ? "disabled" : "")>
+                                    <select class="form-select shift-selector" data-focus="2" data-employment="@item.Employment.employmentID" @(Model.isManager || Model.Delegations.Any(d => d == Models.delegationScopes.WorkSiteAssignment) ? "disabled" : "")>
                                         <option value="">-- Select Site --</option>
                                         @foreach (var site in Model.WorkSites)
                                         {

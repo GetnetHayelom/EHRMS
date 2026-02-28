@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using PIS2.Models;
+using System.Diagnostics.Metrics;
 
 
 namespace PIS2.Pages.Experience
@@ -18,12 +19,12 @@ namespace PIS2.Pages.Experience
             _core = core;
         }
         public personModel personName { get; set; }
+        public string successMessage { get; set; }
+        public string errorMessage { get; set; }
         public decimal Salary { get; set; } = 0;
         public List<experienceModel> Experiences { get; set; }
         public async Task<IActionResult> OnGetAsync(int id)
         {
-            
-
             Experiences = new List<experienceModel>();
             var person = await _context.Persons.FirstOrDefaultAsync(p => p.personID == id);
             var employment = await _context.Employments.Where(p => p.personID == id).ToListAsync();
@@ -70,6 +71,33 @@ namespace PIS2.Pages.Experience
             Salary = salary?.jobPlacementSalary ?? 0;
 
             return Page();
+        }
+
+        [BindProperty]
+        public string LBody { get; set; }
+        public async Task<IActionResult> OnPostAsync()
+        {
+            letterModel l = new letterModel();
+            l.letterTitle = "To Whom It May Concern";
+            l.letterSubject = "Work Experience Information";
+            l.modifiedBy = User.Identity.Name;
+            l.modifiedDate = DateTime.Now;
+            l.letterBody = LBody;
+            var letterType = _context.LetterTypes.FirstOrDefault(l => l.letterTypeName.Contains("Employee"));
+            if (letterType == null) {
+                errorMessage="'Employee' Letter type not configured";
+                return Page();
+            }
+            l.letterTypeID = letterType.letterTypeID;
+            l.letterGroup = LetterGroup.Internal;
+            l.letterStatus = LetterStatus.Approved;
+            l.letterSender = "";
+            l.letterReceiver = "";
+            _context.Letters.Add(l);
+            await _context.SaveChangesAsync();
+
+
+            return RedirectToPage("/Letter/Details", new { id = l.letterID });
         }
     }
 }

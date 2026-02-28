@@ -6,11 +6,16 @@
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
 @await Html.PartialAsync("headerSimple", "")
-<h1 class="fw-bold">Job Steps</h1>
+<div class="d-flex justify-content-between">
+    <div>
+        <h2 class="fw-bold">Job Steps</h2>
+        <h6 class="text-muted">Job steps catalogue</h6>
+    </div>
+    <p>
+        <a asp-page="Create" class="btn btn-primary d-print-none">Add New Job Step</a>
+    </p>
+</div>
 
-<p>
-    <a asp-page="Create" class="btn btn-primary d-print-none">Add New Job Step</a>
-</p>
 <hr />
 <!-- SUMMARY CARDS -->
 <div class="row my-3">

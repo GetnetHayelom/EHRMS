@@ -681,9 +681,75 @@ namespace PIS2.Models
 
             return report;
         }
+
+        /// <summary>
+        /// GET SUGGESTION WHEn FILLING ADDRESS
+        /// </summary>
+        /// <param name="level"></param>
+        /// <param name="country"></param>
+        /// <param name="region"></param>
+        /// <param name="zone"></param>
+        /// <param name="woreda"></param>
+        /// <param name="term"></param>
+        /// <returns></returns>
+        public async Task<JsonResult> GetAddressSuggestions(
+        string level,
+        Country country,
+        string region,
+        string zone,
+        string woreda,
+        string term)
+        {
+            IQueryable<addressModel> q = _context.Addresses.AsNoTracking();
+
+            q = q.Where(a => a.addressCountry == country);
+
+            if (!string.IsNullOrEmpty(region))
+                q = q.Where(a => a.addressRegion == region);
+
+            if (!string.IsNullOrEmpty(zone))
+                q = q.Where(a => a.addressZone == zone);
+
+            if (!string.IsNullOrEmpty(woreda))
+                q = q.Where(a => a.addressWoreda == woreda);
+
+            return level switch
+            {
+                "region" => new JsonResult(await q
+                    .Where(a => a.addressRegion.Contains(term))
+                    .Select(a => a.addressRegion)
+                    .Distinct()
+                    .Take(10)
+                    .ToListAsync()),
+
+                "zone" => new JsonResult(await q
+                    .Where(a => a.addressZone.Contains(term))
+                    .Select(a => a.addressZone)
+                    .Distinct()
+                    .Take(10)
+                    .ToListAsync()),
+
+                "woreda" => new JsonResult(await q
+                    .Where(a => a.addressWoreda.Contains(term))
+                    .Select(a => a.addressWoreda)
+                    .Distinct()
+                    .Take(10)
+                    .ToListAsync()),
+
+                "tabya" => new JsonResult(await q
+                    .Where(a => a.addressTabya.Contains(term))
+                    .Select(a => a.addressTabya)
+                    .Distinct()
+                    .Take(10)
+                    .ToListAsync()),
+
+                _ => new JsonResult(new List<string>())
+            };
+        }
+
         public Core() { }
 
     }
     
 
-    }
+}

@@ -1,0 +1,91 @@
+﻿
+@page
+@model PIS2.Pages.Archive.CreateModel
+@{
+    ViewData["Title"] = "Archive Letter";
+}
+<div>
+    <h2 class="fw-bold">Letters</h2>
+    <h6 class="text-muted">Fill details to archive a letter</h6>
+</div>
+<div class="container mt-5">
+
+    <div class="card shadow-lg border-0 rounded-4">
+
+
+        <div class="card-body p-4">
+
+            <!-- LETTER INFORMATION -->
+            <div class="card shadow-sm p-2 mb-4">
+                <h5 class="text-secondary mb-3">Letter Information</h5>
+                
+                <div class="row mb-2">
+                    <div class="col-md-3 fw-bold">Title</div>
+                    <div class="col-md-9">@(Model.Letter.letterTitle ?? "")</div>
+                </div>
+
+                <div class="row mb-2">
+                    <div class="col-md-3 fw-bold">Date</div>
+                    <div class="col-md-9">
+                        @(Model.Letter.letterDate.ToString("MM/dd/yyyy") ?? "")
+                    </div>
+                </div>
+
+                <div class="row mb-2">
+                    <div class="col-md-3 fw-bold">From</div>
+                    <div class="col-md-9">@(Model.Letter.letterSender ?? "")</div>
+                </div>
+
+                <div class="row mb-2">
+                    <div class="col-md-3 fw-bold">To</div>
+                    <div class="col-md-9">@(Model.Letter.letterReceiver ?? "")</div>
+                </div>
+            </div>
+
+            <hr />
+
+            <!-- ARCHIVE FORM -->
+            <form method="post">
+
+                <input type="hidden" asp-for="Archive.letterID" value="@Model.Letter.letterID" />
+
+                <div class="mb-3">
+                    <label asp-for="Archive.recievedBy" class="form-label fw-semibold">
+                        Received By
+                    </label>
+                    <input asp-for="Archive.recievedBy" class="form-control" />
+                    <span asp-validation-for="Archive.recievedBy" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Archive.remark" class="form-label fw-semibold">
+                        Remarks
+                    </label>
+                    <textarea asp-for="Archive.remark"
+                              class="form-control"
+                              rows="3"></textarea>
+                    <span asp-validation-for="Archive.remark" class="text-danger"></span>
+                </div>
+
+                <div class="d-flex justify-content-between mt-4">
+                    <a asp-page="/Letters/Details"
+                       asp-route-id="@Model.Letter.letterID"
+                       class="btn btn-outline-secondary">
+                        Cancel
+                    </a>
+
+                    <button type="submit" class="btn btn-dark px-4">
+                        Archive Letter
+                    </button>
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

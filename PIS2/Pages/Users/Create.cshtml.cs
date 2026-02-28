@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.CodeAnalysis.Elfie.Model.Strings;
+using Microsoft.EntityFrameworkCore;
 using PIS2.Models;
 using PIS2.Pages.Shared;
 using System;
@@ -11,9 +12,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
-
-
-
 
 namespace PIS2.Pages.Users
 {
@@ -26,27 +24,27 @@ namespace PIS2.Pages.Users
         {
             _context = context;
         }
-        [BindProperty]
-        public employmentModel Employment { get; set; }
-        public List<employmentModel> Employments { get; set; }
+        
+        public SelectList PersonsList { get; set; } = default!;
 
         public IActionResult OnGet()
         {
-        ViewData["personID"] = new SelectList(_context.Persons
-            .OrderBy(p => p.personFirstName).ThenBy(p => p.personFatherName).ThenBy(p => p.personLastName)
-            .Where(p => !_context.Users.Any(u => u.personID == p.personID)), "personID", "personFullName");
+            LoadPersons();
 
             return Page();
         }
 
         [BindProperty]
-        public userModel userModel { get; set; } = default!;
+        public userModel userModel { get; set; } = default!;        
 
         // For more information, see https://aka.ms/RazorPagesCRUD.
         public async Task<IActionResult> OnPostAsync()
         {
-            ModelState.Clear();
+            ModelState.Remove("userModel.modifiedBy");
+            ModelState.Remove("userModel.userStatus");
             userModel.modifiedBy = User.Identity.Name!;
+            userModel.userStatus = mainStatus.Active;
+
             if (!ModelState.IsValid)
             {
                 foreach (var kv in ModelState)
@@ -54,50 +52,46 @@ namespace PIS2.Pages.Users
                     foreach (var error in kv.Value.Errors)
                     {
                         Console.WriteLine($"{kv.Key} --> {error.ErrorMessage}");
+                        TempData["message"] = ("Error", $"{kv.Key} --> {error.ErrorMessage}");
                     }
                     Console.WriteLine(kv.ToString());
                 }
                 return Page();
             }
-            Console.WriteLine("+++++++++++++");
+
+            var exists = await _context.Users.AnyAsync(e => e.personID == userModel.personID || e.userName == userModel.userName);
+            if (exists) {
+                LoadPersons();
+                TempData["message"] = ("Error", "Person or username already exists in users list!");
+                return Page();
+            }
+
+            
             _context.Users.Add(userModel);
             await _context.SaveChangesAsync();
 
             return RedirectToPage("./Index");
         }
-        public IActionResult OnGetFetchEmp(string givenID)
+
+        private void LoadPersons()
         {
-            if (string.IsNullOrEmpty(givenID))
-                return new JsonResult(0);
-
-            var personID = _context.Employments.Where(e => e.givenID == givenID).Select(e => (int?)e.personID).FirstOrDefault();
-
-            if(_context.Users.Any(e => e.personID == personID))
-            {
-                return new JsonResult(new
+            var selectEmps = _context.Persons
+                .OrderBy(p => p.personFirstName)
+                .ThenBy(p => p.personFatherName)
+                .ThenBy(p => p.personLastName)
+                .Where(p => !_context.Users.Any(u => u.personID == p.personID))
+                .Select(p => new
                 {
-                    success = false,
-                    message = "User is already registered, with user name " + _context.Users.Where(e => e.personID == personID).Select(e => e.userName).FirstOrDefault()
-                });
-            }
+                    Value = p.personID,
+                    Text = p.Employments
+                            .Where(e => e.employmentStatus == mainStatus.Active)
+                            .Select(e => e.givenID.ToString() + " - " + p.personFullName)
+                            .FirstOrDefault()
+                           ?? p.personFullName
+                })
+                .ToList();
 
-            if (personID > 0)
-            {
-                return new JsonResult(new
-                {
-                    success = true,
-                    message = personID,
-                });
-            }
-            else
-            {
-                return new JsonResult(new
-                {
-                    success = false,
-                    message = "No employment found with the provided employee ID!"
-                });
-            }
-            
+            PersonsList = new SelectList(selectEmps, "Value", "Text");
         }
     }
 }

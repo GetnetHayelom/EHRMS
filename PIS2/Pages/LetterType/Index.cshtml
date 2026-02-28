@@ -1,0 +1,36 @@
+﻿@page
+@model PIS2.Pages.LetterType.IndexModel
+@{
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between mb-3">
+        <h3>Letter Types</h3>
+        <a asp-page="Create" class="btn btn-primary">+ New Type</a>
+    </div>
+
+    <table class="table table-bordered table-hover">
+        <thead class="table-light">
+            <tr>
+                <th>Name</th>
+                <th>Code</th>
+                <th>Description</th>
+                <th width="160"></th>
+            </tr>
+        </thead>
+        <tbody>
+        @foreach (var t in Model.LetterTypes)
+        {
+            <tr>
+                <td>@t.letterTypeName</td>
+                <td>@t.letterTypeCode</td>
+                <td>@t.letterTypeDescription</td>
+                <td>
+                    <a asp-page="Edit" asp-route-id="@t.letterTypeID" class="btn btn-sm btn-warning">Edit</a>
+                    <a asp-page="Delete" asp-route-id="@t.letterTypeID" class="btn btn-sm btn-danger">Delete</a>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+</div>

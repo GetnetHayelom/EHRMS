@@ -6,17 +6,17 @@
 
 <div class="container-fluid px-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1 class="h3 mb-0 text-gray-800">Training Catalog</h1>
+        <h2 class="fw-bold h3 mb-0 text-gray-800">Training Catalog</h2>
         <a asp-page="Create" class="btn btn-primary shadow-sm">
-            <i class="fas fa-plus fa-sm text-white-50 mr-2"></i> Create New Training
+            <i class="fas fa-plus fa-sm text-white-50 mr-2"></i>New Training
         </a>
     </div>
 
     <div class="card shadow mb-4">
-        <div class="card-body">
+        <div class="card-body p-0">
             <div class="table-responsive">
                 <table class="table table-hover align-middle">
-                    <thead class="table-light">
+                    <thead class="table-dark">
                         <tr>
                             <th>Title</th>
                             <th>Category</th>
@@ -39,22 +39,21 @@
                                     }
                                     else
                                     {
-
                                         <span class="badge bg-secondary">Optional</span>
                                     }
                                 </td>
-                                <td>@(item.validityMonths?.ToString() ?? "N/A") Months</td>
+                                <td>@(item.validityMonths?.ToString() ?? "N/A")</td>
                                 <td>
                                     @if (item.isActive)
                                     {
                                         <i class="fas fa-circle text-success small"></i>
                                         <span>Active</span>
-     }
+                                    }
                                     else
                                     {
                                         <i class="fas fa-circle text-muted small"></i>
                                         <span>Inactive</span>
-     }
+                                    }
                                 </td>
                                 <td class="text-end">
                                     <a asp-page="./Edit" asp-route-id="@item.trainingID" class="btn btn-sm btn-outline-primary">Edit</a>

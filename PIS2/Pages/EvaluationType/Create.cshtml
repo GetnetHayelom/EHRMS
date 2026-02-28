@@ -4,35 +4,53 @@
     ViewData["Title"] = "Create Evaluation Type";
 }
 
-<h3>Create Evaluation Type</h3>
+<h2 class="fw-bold">Evaluation Type</h2>
+<h6 class="fw-bold text-muted">Create New Evaluation Type</h6>
+<div class="card shadow-sm p-2 col-md-6">
+    <form method="post">
+        <div class="mb-3">
+            <label asp-for="EvaluationType.evaluationTypeName" class="form-label">EvaluationType Name</label>
+            <input asp-for="EvaluationType.evaluationTypeName" class="form-control" />
+            <span asp-validation-for="EvaluationType.evaluationTypeName" class="text-danger"></span>
+        </div>
 
-<form method="post">
-    <div class="mb-3">
-        <label asp-for="EvaluationType.evaluationTypeName" class="form-label"></label>
-        <input asp-for="EvaluationType.evaluationTypeName" class="form-control" />
-        <span asp-validation-for="EvaluationType.evaluationTypeName" class="text-danger"></span>
-    </div>
+        <div class="mb-3">
+            <label asp-for="EvaluationType.evaluationTypeWeight" class="form-label">Maximum/Weight</label>
+            <input asp-for="EvaluationType.evaluationTypeWeight" class="form-control" />
+            <span asp-validation-for="EvaluationType.evaluationTypeWeight" class="text-danger"></span>
+        </div>
 
-    <div class="mb-3">
-        <label asp-for="EvaluationType.evaluationTypeWeight" class="form-label"></label>
-        <input asp-for="EvaluationType.evaluationTypeWeight" class="form-control" />
-        <span asp-validation-for="EvaluationType.evaluationTypeWeight" class="text-danger"></span>
-    </div>
+        <div class="form-check mb-3">
+            <input asp-for="EvaluationType.isFixed" class="form-check-input" />
+            <label asp-for="EvaluationType.isFixed" class="form-check-label">Is Fixed (Standard)</label>
+        </div>
 
-    <div class="form-check mb-3">
-        <input asp-for="EvaluationType.isFixed" class="form-check-input" />
-        <label asp-for="EvaluationType.isFixed" class="form-check-label">Is Fixed (HR)</label>
-    </div>
+        <div class="mb-3">
+            <label asp-for="EvaluationType.evaluationTypeStatus" class="form-label">Status</label>
+            <select asp-for="EvaluationType.evaluationTypeStatus" class="form-select"
+                    asp-items="Html.GetEnumSelectList<Models.mainStatus>()"></select>
+        </div>
+        <div class="mb-3">
+            <label asp-for="EvaluationType.Position" class="form-label">Target Position</label>
+            <select asp-for="EvaluationType.Position" class="form-select"
+                    asp-items="Html.GetEnumSelectList<Models.EmploymentPositions>()">
+                <option value=""> All</option>
+            </select>
+        </div>
+        <div class="mb-3">
+            <label asp-for="EvaluationType.jobClassID" class="form-label">Target Job Class</label>
+            <select asp-for="EvaluationType.jobClassID" class="form-select" asp-items="@Model.JobClasses">
+                <option value=""> All</option>
+            </select>
+        </div>
+        <div class="d-flex justify-content-end m-2 gap-2">
+            <button type="submit" class="btn btn-success">Save</button>
+            <a asp-page="Index" class="btn btn-secondary">Cancel</a>
+        </div>
 
-    <div class="mb-3">
-        <label asp-for="EvaluationType.evaluationTypeStatus" class="form-label"></label>
-        <select asp-for="EvaluationType.evaluationTypeStatus" class="form-select"
-                asp-items="Html.GetEnumSelectList<Models.mainStatus>()"></select>
-    </div>
+    </form>
+</div>
 
-    <button type="submit" class="btn btn-success">Save</button>
-    <a asp-page="Index" class="btn btn-secondary">Cancel</a>
-</form>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />

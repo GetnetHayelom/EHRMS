@@ -19,7 +19,7 @@ namespace PIS2.Pages.TrainingSession
         {
             if (id == null) return NotFound();
             
-            Session = await _context.TrainingSessions.FirstOrDefaultAsync(m => m.trainingSessionID == id);
+            Session = await _context.TrainingSessions.Include(s => s.PersonModel).FirstOrDefaultAsync(m => m.trainingSessionID == id);
             if (Session == null) return NotFound();
 
             TrainerList = new SelectList(_context.Persons, "personID", "personFullName", Session.personID);
@@ -29,19 +29,40 @@ namespace PIS2.Pages.TrainingSession
 
         public async Task<IActionResult> OnPostAsync()
         {
-            Session.modifiedBy = User.Identity.Name;
-            Session.modifiedDate = DateTime.Now;
-
+            ModelState.Remove("Session.ModifiedBy");
+            ModelState.Remove("Session.ModifiedDate");
+            
             if (!ModelState.IsValid)
             {
-                TrainingList = new SelectList(_context.Trainings, "trainingID", "trainingTitle");
+                foreach (var kv in ModelState)
+                {
+                    foreach (var error in kv.Value.Errors)
+                    {
+                        Console.WriteLine($"{kv.Key} --> {error.ErrorMessage}");
+                        TempData["message"] = ("Error", $"{kv.Key} --> {error.ErrorMessage}");
+                    }
+                }
+                
+                TrainerList = new SelectList(_context.Persons, "personID", "personFullName", Session.personID);
+                TrainingList = new SelectList(_context.Trainings, "trainingID", "trainingTitle", Session.trainingID);
                 return Page();
             }
 
-            _context.Attach(Session).State = EntityState.Modified;
-            await _context.SaveChangesAsync();
+            var existing = await _context.TrainingSessions.FirstOrDefaultAsync(t => t.trainingSessionID == Session.trainingSessionID);
 
-            return RedirectToPage("./Index");
+            if (existing == null)
+                return NotFound();
+
+            existing.trainingID = Session.trainingID;
+            existing.personID = Session.personID;
+            existing.startDate = Session.startDate;
+            existing.endDate = Session.endDate;
+            existing.modifiedBy = User.Identity.Name;
+            existing.modifiedDate = DateTime.Now;
+
+            await _context.SaveChangesAsync();
+           
+            return RedirectToPage("./Details", new {id=Session.trainingSessionID});
         }
     }
 }

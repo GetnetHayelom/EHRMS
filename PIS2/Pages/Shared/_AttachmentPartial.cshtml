@@ -1,0 +1,86 @@
+﻿@model AttachmentPartialModel
+
+<div class="card mt-3 shadow-sm">
+    <div class="card-header fw-bold">
+        Attachments
+    </div>
+
+    <div class="card-body">
+        @if(User.IsInRole("MIE\\PMS_HRCLERK"))
+        {
+            <form id="uploadForm" enctype="multipart/form-data">
+                <input type="hidden" name="tableName" value="@Model.tableName" />
+                <input type="hidden" name="recordId" value="@Model.recordId" />
+
+                <div class="form-group m-2">
+                    <label asp-for="fileTitle" class="control-label">Title</label>
+                    <input asp-for="fileTitle" class="form-control" type="text"/>
+                    <span asp-validation-for="fileTitle" class="text-danger"></span>
+                </div>
+
+                <div class="input-group mb-3">
+                    <input type="file" class="form-control" name="file" required>
+                    <button class="btn btn-primary" type="submit">Upload</button>
+                </div>
+            </form>
+        }
+        
+
+        <ul id="attachmentList" class="list-group small"></ul>
+    </div>
+</div>
+
+<script>
+    const tableName = "@Model.tableName";
+    const recordId = "@Model.recordId";
+    const fileTitle =document.getElementById("fileTitle").ariaValueMax;
+
+    async function loadAttachments() {
+        const res = await fetch(`/api/attachments/${tableName}/${recordId}`);
+        const data = await res.json();
+
+        const list = document.getElementById("attachmentList");
+        list.innerHTML = "";
+
+        data.forEach(a => {
+            const isImage = [".jpg", ".jpeg", ".png"].includes(a.fileType.toLowerCase());
+
+            list.innerHTML += `
+            <li class="list-group-item d-flex align-items-center justify-content-between gap-3">
+
+                <div class="d-flex align-items-center gap-2">
+                    ${isImage
+                        ? `<img src="/api/attachments/view/${a.attachmentID}"
+                               style="width:60px;height:60px;object-fit:cover;border-radius:6px;">`
+                        : `<span class="badge bg-secondary">PDF</span>`}
+
+                    <div class="d-flex flex-column">
+                        <span>${a.fileName}</span>
+                        <span class="text-muted">${a.uploadedBy}, ${a.uploadedDate}</span>
+                       
+                    </div>
+                </div>
+
+                <a class="btn btn-sm btn-outline-primary"
+                   href="/api/attachments/view/${a.attachmentID}" target="_blank">
+                   Open
+                </a>
+            </li>`;
+        });
+
+    }
+
+    document.getElementById("uploadForm").addEventListener("submit", async e => {
+        e.preventDefault();
+
+        const formData = new FormData(e.target);
+        await fetch("/api/attachments/upload", {
+            method: "POST",
+            body: formData
+        });
+
+        loadAttachments();
+    });
+
+    loadAttachments();
+</script>

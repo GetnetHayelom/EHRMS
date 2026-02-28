@@ -36,53 +36,52 @@
     <!--TOP BUTTONS -->
     <div class="card shadow-sm border-0 mb-3 d-print-none">
         <div class="card-body p-0">
-            <div class="d-flex justify-content-between">
-                <ul class="nav nav-pills gap-2" id="employmentTab" role="tablist">
-                    <li class="vav-item" role="presentation">
-                        <a role="button" class="btn btn-outline-primary flex-fill rounded-0 border-0 active" data-bs-target="#home"><i class="bi bi-house"></i>Home</a>
+            <ul class="nav nav-pills gap-2 d-flex w-100" id="employmentTab" role="tablist">
+                <li class="nav-item flex-fill" role="presentation">
+                    <a role="button" class="btn btn-outline-primary rounded-0 border-0 active w-100" data-bs-toggle="tab" data-bs-target="#home"><i class="bi bi-house"></i>Home</a>
+                </li>               
+
+                <!--leave report-->
+                @if (Model.Leaves != null && Model.Leaves.Any() && Model.isSelf)
+                {
+                    <li class="nav-item flex-fill" role="presentation">
+                        <a role="button" class="btn btn-outline-primary rounded-0 border-0 w-100" data-bs-toggle="tab" data-bs-target="#leaveAggrigate"><i class="bi bi-pie-chart"></i>Leave Summary</a>
                     </li>
-                    @if (Model.Employment.employmentStatus == Models.mainStatus.Active)
+                    <li class="nav-item flex-fill" role="presentation">
+                        <a role="button" class="btn btn-outline-primary rounded-0 border-0 w-100" data-bs-toggle="tab" data-bs-target="#overtimeHistoryView"><i class="bi bi-stopwatch"></i>OT History</a>
+                    </li>
+                    <li class="nav-item flex-fill" role="presentation">
+                        <a role="button" class="btn btn-outline-primary rounded-0 border-0 w-100" data-bs-toggle="tab" data-bs-target="#employmentHistoryView"><i class="bi bi-person-lines-fill me-1"></i>My Employment</a>
+                    </li>
+                    <li class="nav-item flex-fill" role="presentation">
+                        <a role="button" class="btn btn-outline-primary rounded-0 border-0 w-100" data-bs-toggle="tab" data-bs-target="#evaluationHistoryView"><i class="bi bi-star me-1"></i>Evaluations</a>
+                    </li>
+                    <li class="nav-item flex-fill" role="presentation">
+                        <a role="button" class="btn btn-outline-primary rounded-0 border-0 w-100" data-bs-toggle="tab" data-bs-target="#serviceRequestsView"><i class="bi-chat-square-text me-1"></i>My Requests</a>
+                    </li>
+                }
+
+                @if (Model.Employment.employmentStatus == Models.mainStatus.Active)
+                {
+                    <!--Leave Request button-->
+                    @if (Model.IsLeaveAllow)
                     {
-                        <!--Leave Request button-->
-                        @if (Model.IsLeaveAllow)
-                        {
-                            <li class="nav-item">
-                                <a role="button" class="btn btn-outline-primary flex-fill rounded-0 border-0" asp-page="/Leave/Create" asp-route-id="@Model.Employment.employmentID"><i class="bi bi-calendar-plus"></i>Leave Request</a>
-                            </li>
-                        }
-
-                        <!--Ovetime Button-->
-                        @if (Model.IsOvertimeAllow)
-                        {
-                            <li class="nav-item">
-                                <a role="button" class="btn btn-outline-primary flex-fill rounded-0 border-0" asp-page="/OvertimeRecord/Create" asp-route-id="@Model.Employment.employmentID"><i class="bi bi-clock-history"></i>Overtime Record</a>
-                            </li>
-                        }
-
-                    }
-
-                    <!--leave report-->
-                    @if (Model.Leaves != null && Model.Leaves.Any() && Model.isSelf)
-                    {
-                        <li class="nav-item" role="presentation">
-                            <a role="button" class="btn btn-outline-primary flex-fill rounded-0 border-0" data-bs-toggle="tab" data-bs-target="#leaveHistoryView"><i class="bi bi-list-check"></i>Leave History</a>
-                        </li>
-                        <li class="nav-item" role="presentation">
-                            <a role="button" class="btn btn-outline-primary flex-fill rounded-0 border-0" data-bs-toggle="tab" data-bs-target="#leaveAggrigate"><i class="bi bi-pie-chart"></i>Leave Summary</a>
-                        </li>
-                        <li class="nav-item" role="presentation">
-                            <a role="button" class="btn btn-outline-primary flex-fill rounded-0 border-0" data-bs-toggle="tab" data-bs-target="#overtimeHistoryView"><i class="bi bi-stopwatch"></i>Overtime History</a>
-                        </li>
-                        <li class="nav-item" role="presentation">
-                            <a role="button" class="btn btn-outline-primary flex-fill rounded-0 border-0" data-bs-toggle="tab" data-bs-target="#employmentHistoryView"><i class="bi bi-person-lines-fill me-1"></i>Employment Preview</a>
-                        </li>
-                        <li class="nav-item" role="presentation">
-                            <a role="button" class="btn btn-outline-primary flex-fill rounded-0 border-0" data-bs-toggle="tab" data-bs-target="#evaluationHistoryView"><i class="bi bi-star me-1"></i>Evaluations</a>
+                        <li class="nav-item flex-fill">
+                            <a role="button" class="btn btn-outline-primary rounded-0 border-0 text-decoration-underline w-100" asp-page="/Leave/Create" asp-route-id="@Model.Employment.employmentID"><i class="bi bi-calendar-plus"></i>Leave Request</a>
                         </li>
                     }
 
-                </ul>
-            </div>
+                    <!--Ovetime Button-->
+                    @if (Model.IsOvertimeAllow)
+                    {
+                        <li class="nav-item flex-fill">
+                            <a role="button" class="btn btn-outline-primary rounded-0 border-0 text-decoration-underline w-100" asp-page="/OvertimeRecord/Create" asp-route-id="@Model.Employment.employmentID"><i class="bi bi-clock-history"></i>OT Record</a>
+                        </li>
+                    }
+
+                }
+
+            </ul>
         </div>
     </div>
 }
@@ -205,8 +204,7 @@
     </div>
 
     <div class="col-md-9 d-print-flex print-full-width">
-        @if (Model.Person != null && Model.Employment != null)
-        {
+        
             <!--ROW FOR VIEWS-->
             <div class="tab-content row mt-1 d-flex justify-content-center">
                 <!--HOME-->
@@ -327,42 +325,54 @@
                         </div>
                     </div>
                 </div>
-                @if(Model.isSelf)
+               @if(Model.isSelf)
                 {
                     @if (Model.Leaves != null && Model.Leaves.Any())
                     {
-                        <!--LEAVE SUMMARY-->
                         <div class="tab-pane fade border-primary rounded" role="tabpanel" aria-labelledby="leave-tab" id="leaveAggrigate">
-                        <div class="card shadow-sm border-0">
-                            <div class="card-body">
-                                <h5 class="fw-bold mb-3">Leave History & Summary</h5>
-
-                                @if (Model.Employment.Leaves != null)
-                                {
-                                    @await Html.PartialAsync("Employment/_LeaveSummaryPartial", Model.LeaveDetail)
-                                }
-                                else
-                                {
-                                    <p class="text-muted">No leave records found.</p>
-                                }
+                            <h4 class="fw-bold">My Leaves & Attendance</h4>
+                            <ul class="nav nav-pills gap-2" id="employmentTab" role="tablist">
+                                <li class="vav-item" role="presentation">
+                                    <a role="button" class="btn btn-outline-primary flex-fill rounded-0 border-0 active" data-bs-toggle="tab" data-bs-target="#leaveSummary"><i class="bi bi-pie-chart"></i>Summary</a>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <a role="button" class="btn btn-outline-primary flex-fill rounded-0 border-0" data-bs-toggle="tab" data-bs-target="#leaveHistoryView"><i class="bi bi-list-check"></i>Detail</a>
+                                </li>
+                            </ul>
+                            <div class="tab-content row mt-1 d-flex justify-content-center">
+                                <!--LEAVE SUMMARY-->
+                                <div class="tab-pane fade show active border-primary rounded" role="tabpanel" aria-labelledby="leave-tab" id="leaveSummary">
+                                    <div class="card shadow-sm border-0">
+                                        <div class="card-body">
+                                            
+                                            @if (Model.Employment.Leaves != null)
+                                            {
+                                                @await Html.PartialAsync("Employment/_LeaveSummaryPartial", Model.LeaveDetail)
+                                            }
+                                            else
+                                            {
+                                                <p class="text-muted">No leave records found.</p>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                                <!--LEAVE HISTORY-->
+                                <div class="tab-pane fade row border-primary rounded" role="tabpanel" id="leaveHistoryView">
+                                    <div class="card shadow-sm border-0">
+                                        <div class="card-body">
+                                            <h5 class="fw-bold mb-3">Leave History</h5>
+                                            @if (Model.Employment == null)
+                                            {
+                                                <p>@Model.Person.personFullName is not an active employee.</p>
+                                            }
+                                            else
+                                            {
+                                                @await Html.PartialAsync("Employment/_LeaveHistoryPartial", Model.Leaves)
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                    </div>      
-                        <!--LEAVE HISTORY-->
-                        <div class="tab-pane fade row border-primary rounded" role="tabpanel" id="leaveHistoryView">
-                            <div class="card shadow-sm border-0">
-                                <div class="card-body">
-                                    <h5 class="fw-bold mb-3">Leave History & Summary</h5>
-                                    @if (Model.Employment == null)
-                                    {
-                                        <p>@Model.Person.personFullName is not an active employee.</p>
-                                    }
-                                    else
-                                    {
-                                        @await Html.PartialAsync("Employment/_LeaveHistoryPartial", Model.Leaves)
-                                    }
-                                </div>  
-                            </div>  
                         </div>
                     }
                 
@@ -549,10 +559,60 @@
                         </div>
                     </div>
                 </div>
+
+                    <!--SERVICE REQUESTS-->
+                    <div class="tab-pane fade" id="serviceRequestsView" role="tabpanel" aria-labelledby="req-tab">
+                        <div class="card shadow-sm p-2">
+                            @if (Model.Requests.Any())
+                            {
+
+                                <h4 class="fw-bold">Requested Services Status</h4>
+                                <table class="table table-striped table-hover">
+                                    <thead class="bg-dark text-white">
+                                        <tr>
+                                            <th>S/No</th>
+                                            <th>Requested Service</th>
+                                            <th>Requested Date</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @{
+                                            int index = 0;
+                                            string bg = "";
+                                        }
+                                        @foreach (var req in Model.Requests)
+                                        {
+                                            bg = req.serviceRequestStatus switch
+                                                {
+                                                Models.ServiceRequestStatus.Hold => "bg-warning",
+                                                Models.ServiceRequestStatus.Reviewed => "bg-success",
+                                                Models.ServiceRequestStatus.Completed => "bg-secondary",
+                                                _ => "bg-danger"
+                                                };
+
+                                            index++;
+                                            <tr>
+                                                <td>@index</td>
+                                                <td>@req.requestedService</td>
+                                                <td>@req.serviceRequestDate</td>
+                                                <td><span class="badge @bg">@req.serviceRequestStatus</span></td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+
+                            }
+                            else
+                            {
+                                <h6 class="text-muted">No Service Request History</h6>
+                            }
+                        </div>
+                    </div>
                 }
                 
             </div>
-        }
+        
     </div>
 
 </div>

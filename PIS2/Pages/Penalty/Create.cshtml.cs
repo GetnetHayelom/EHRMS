@@ -36,8 +36,7 @@ namespace PIS2.Pages.Penalty
 
         {
             Employment = new employmentModel();
-
-            Employment = new employmentModel();
+            
             if (!string.IsNullOrEmpty(searchID))
             {
                 Employment = _context.Employments?

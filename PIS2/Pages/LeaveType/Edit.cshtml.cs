@@ -44,25 +44,23 @@ namespace PIS2.Pages.LeaveType
         // For more information, see https://aka.ms/RazorPagesCRUD.
         public async Task<IActionResult> OnPostAsync()
         {
-            //ModelState.Remove(nameof(leaveTypeModel.modifiedBy));
-            ModelState.Clear();
+            ModelState.Remove("leaveTypeModel.modifiedBy");           
             leaveTypeModel.modifiedBy = User.Identity.Name;
 
             if (!ModelState.IsValid)
             {
-               
-                foreach (var modelState in ModelState.Values)
+                foreach (var kv in ModelState)
                 {
-                    foreach (var error in modelState.Errors)
+                    foreach (var error in kv.Value.Errors)
                     {
-                        Console.WriteLine("Validation Error: " + error.ErrorMessage);
+                        Console.WriteLine($"{kv.Key} --> {error.ErrorMessage}");
+                        TempData["message"] = ("Error", $"{kv.Key} --> {error.ErrorMessage}");
                     }
                 }
+
                 return Page();
             }
-             
-                
-            
+
             _context.Attach(leaveTypeModel).State = EntityState.Modified;
 
             try
@@ -83,7 +81,6 @@ namespace PIS2.Pages.LeaveType
 
             return RedirectToPage("./Index");
         }
-
         private bool leaveTypeModelExists(int id)
         {
             return _context.LeaveTypes.Any(e => e.leaveTypeID == id);

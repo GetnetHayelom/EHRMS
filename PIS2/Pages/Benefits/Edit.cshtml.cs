@@ -37,38 +37,64 @@ namespace PIS2.Pages.Benefits
 
         public async Task<IActionResult> OnPostAsync()
         {
-            var exisiting = await _context.OtherPayments.FirstOrDefaultAsync(e => e.paymentID == OtherPay.paymentID);
+            var existing = await _context.OtherPayments.FirstOrDefaultAsync(e => e.paymentID == OtherPay.paymentID);
             
-            if(exisiting == null) { return NotFound(); }
+            if(existing == null) { return NotFound(); }
 
-            if (exisiting.paymentStatus != payrollStatus.PENDING && !User.IsInRole("MIE\\PMS_HRMANGER"))
+            switch (existing.paymentStatus)
             {
-                return RedirectToPage("/Shared/AccessDenied");
+                case payrollStatus.PENDING:
+
+                    if (User.IsInRole("MIE\\PMS_HRMANAGER"))
+                    {
+                        
+                        if (OtherPay.paymentStatus == payrollStatus.APPROVED)
+                            existing.paymentStatus = payrollStatus.APPROVED;
+                    }
+                    else
+                    {
+                        return RedirectToPage("/Shared/AccessDenied");
+                    }
+
+                    break;
+
+                case payrollStatus.APPROVED:
+
+                    if (!User.IsInRole("MIE\\PMS_HRMANAGER"))
+                        return RedirectToPage("/Shared/AccessDenied");
+
+                    if (OtherPay.paymentStatus == payrollStatus.POSTED)
+                        existing.paymentStatus = payrollStatus.POSTED;
+
+                    break;
+
+                case payrollStatus.POSTED:
+
+                    if (!User.IsInRole("MIE\\PMS_FINANCE"))
+                        return RedirectToPage("/Shared/AccessDenied");
+
+                    if (OtherPay.paymentStatus == payrollStatus.COMPLETED)
+                    {
+                        if(OtherPay.invoiceNo =="" || OtherPay.invoiceNo == "Empty")
+                        {
+                            TempData["message"] = ("Error", "Invoice No is required!");
+                            return Page();
+                        }
+                        existing.paymentStatus = payrollStatus.COMPLETED;
+                        existing.NetPay = OtherPay.NetPay;
+                        existing.remark = OtherPay.remark;
+                        existing.invoiceNo = OtherPay.invoiceNo;
+                    }
+                        
+                    break;
+
+                case payrollStatus.COMPLETED:
+
+                    TempData["message"] = ("Error", "Payment already completed.");
+                    return Page();
             }
-
-            if (exisiting.paymentStatus == payrollStatus.POSTED && !User.IsInRole("MIE\\PMS_FINANCE"))
-            {
-                return RedirectToPage("/Shared/AccessDenied");
-            }
-
-            if (exisiting.paymentStatus == payrollStatus.COMPLETED)
-            {
-                return RedirectToPage("/Shared/AccessDenied");
-            }
-                // Update Audit Info before saving
-                // In a real app, User.Identity.Name would be used for modifiedBy
-            OtherPay.modifiedBy = User.Identity?.Name ?? "Illegal User";
-            OtherPay.modifiedDate = DateTime.Now;
-
-            //if (!ModelState.IsValid)
-            //{
-            //    EarningOptions = new SelectList(_context.Earnings, "earningID", "earningName");
-            //    return Page();
-            //}
-
-            
-
-            _context.Attach(OtherPay).State = EntityState.Modified;
+            existing.modifiedBy = User.Identity.Name;
+            existing.modifiedDate = DateTime.Now;
 
             try
             {
@@ -81,7 +107,5 @@ namespace PIS2.Pages.Benefits
 
             return RedirectToPage("./Details", new {id = OtherPay.paymentID});
         }
-
-        
     }
 }

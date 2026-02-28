@@ -66,8 +66,12 @@
                                         <tr>
                                             <td class="small">@log.ModifiedDate.ToString("yyyy-MM-dd HH:mm")</td>
                                             <td class="small fw-bold">@log.ModifiedBy</td>
-                                            <td><span class="badge bg-light text-dark">@log.ColumnName</span></td>
-                                            <td class="text-muted italic small">@log.OldValue</td>
+                                            <td><span class="badge bg-light text-dark">@Model.GetFriendlyColumnName(log.ColumnName)</span></td>
+                                            <td class="text-muted italic small">
+                                                <span class="text-danger text-decoration-line-through small">
+                                                    @Model.FormatAuditValue(log.ColumnName, log.OldValue)
+                                                </span>
+                                            </td>
                                         </tr>
                                     }
                                 }

@@ -3,13 +3,13 @@
 @{
     ViewData["Title"] = "Edit Training";
 }
-
+<h2 class="fw-bold">Training</h2>
 <div class="container mt-4">
     <div class="row justify-content-center">
         <div class="col-lg-8">
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a asp-page="./Index">Catalog</a></li>
+                    <li class="breadcrumb-item"><a asp-page="./Index">Training</a></li>
                     <li class="breadcrumb-item active">Edit @Model.Training.trainingTitle</li>
                 </ol>
             </nav>
@@ -21,14 +21,17 @@
                 <div class="card-body p-4">
                     <form method="post">
                         <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
-                        <input type="hidden" asp-for="Training.trainingID" />
+                        <input type="hidden" asp-for="Training.trainingID" value="@Model.Training.trainingID"/>
 
                         <div class="mb-3">
                             <label asp-for="Training.trainingTitle" class="form-label fw-bold">Training Title</label>
                             <input asp-for="Training.trainingTitle" class="form-control form-control-lg" />
                             <span asp-validation-for="Training.trainingTitle" class="text-danger"></span>
                         </div>
-
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="Training.trainingStatus" class="form-label fw-bold">Status</label>
+                            <select asp-for="Training.trainingStatus" asp-items="Html.GetEnumSelectList<Models.trainingStatus>()" class="form-select"></select>
+                        </div>
                         <div class="mb-3">
                             <label asp-for="Training.description" class="form-label fw-bold">Description</label>
                             <textarea asp-for="Training.description" class="form-control" rows="4"></textarea>

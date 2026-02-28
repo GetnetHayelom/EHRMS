@@ -17,7 +17,7 @@
     </div>
 
     <!-- Manager Actions -->
-    @if (User.IsInRole("PMS_HRMANAGER"))
+    @if (User.IsInRole("MIE\\PMS_HRMANAGER"))
     {
         <div class="card border-0 shadow-sm rounded-4 mb-4">
             <div class="card-header bg-primary text-white fw-semibold rounded-top-4">
@@ -53,19 +53,33 @@
 
                 <button class="btn btn-outline-primary m-2 flex-grow-1 shadow-sm position-relative" onclick="getList('JobPlacement')">
                     <i class="bi bi-diagram-3"></i> Job Placements
-                    @if(Model.jobPlacements >0){<span class="badge rounded-pill bg-danger position-absolute top-0 start-100 translate-middle">
-                        @Model.jobPlacements
-                        <span class="visually-hidden">Pending Job Placements</span>
-                    </span>}
+                    @if(Model.jobPlacements >0)
+                    {
+                        <span class="badge rounded-pill bg-danger position-absolute top-0 start-100 translate-middle">
+                            @Model.jobPlacements
+                            <span class="visually-hidden">Pending Job Placements</span>
+                        </span>
+                    }
                     
+                </button>
+                <button class="btn btn-outline-primary m-2 flex-grow-1 shadow-sm position-relative" onclick="getList('Letter')">
+                    <i class="bi bi-envelope"></i> Letters
+                    @if (Model.lettersCount > 0)
+                    {
+                        <span class="badge rounded-pill bg-danger position-absolute top-0 start-100 translate-middle">
+                            @Model.lettersCount
+                            <span class="visually-hidden">Letters</span>
+                        </span>
+                    }
+
                 </button>
 
                 <button class="btn btn-outline-warning m-2 flex-grow-1 shadow-sm position-relative" onclick="getList('Termination')">
                     <i class="bi bi-person-x"></i> Termination
-                    @if(Model.terminations >0){} <span class="badge rounded-pill bg-danger position-absolute top-0 start-100 translate-middle">
+                    @if(Model.terminations >0){<span class="badge rounded-pill bg-danger position-absolute top-0 start-100 translate-middle">
                         @Model.terminations
                         <span class="visually-hidden">Pending Terminations</span>
-                    </span>
+                    </span>} 
                    
                 </button>
 
@@ -77,6 +91,7 @@
                     </span>}
                     
                 </a>
+
             </div>
 
         </div>
@@ -85,10 +100,10 @@
     <!-- HR Summary Section -->
     <div class="row">
         <!-- Left Column: Cards -->
-        <div class="col-md-4">
+        <div class="col-md-2">
             <div class="card border-0 shadow-sm rounded-4 mb-3 hover-card" onclick="getList('Leave')" style="cursor:pointer;">
                 <div class="card-body text-center">
-                    <h5 class="fw-bold text-secondary mb-2"><i class="bi bi-calendar-x"></i> Leaves On Hold</h5>
+                    <h6 class="text-secondary mb-2"><i class="bi bi-calendar-x"></i> Leaves On Hold</h6>
                     <div class="bg-info text-white rounded-3 py-2">
                         <h2 class="fw-bold mb-0">@Model.leaveCount</h2>
                     </div>
@@ -97,7 +112,7 @@
 
             <div class="card border-0 shadow-sm rounded-4 mb-3 hover-card" onclick="getList('Overtime')" style="cursor:pointer;">
                 <div class="card-body text-center">
-                    <h5 class="fw-bold text-secondary mb-2"><i class="bi bi-clock-history"></i> Overtime On Hold</h5>
+                    <h6 class="text-secondary mb-2"><i class="bi bi-clock-history"></i> Overtime On Hold</h6>
                     <div class="bg-info text-white rounded-3 py-2">
                         <h2 class="fw-bold mb-0">@Model.overtimeCount</h2>
                     </div>
@@ -106,7 +121,7 @@
 
             <div class="card border-0 shadow-sm rounded-4 mb-3 hover-card" onclick="getList('Service')" style="cursor:pointer;">
                 <div class="card-body text-center">
-                    <h5 class="fw-bold text-secondary mb-2"><i class="bi bi-tools"></i> Service Requests</h5>
+                    <h6 class="text-secondary mb-2"><i class="bi bi-tools"></i> Service Requests</h6>
                     <div class="bg-info text-white rounded-3 py-2">
                         <h2 class="fw-bold mb-0">@Model.serviceRequestCount</h2>
                     </div>
@@ -115,7 +130,7 @@
 
             <div class="card border-0 shadow-sm rounded-4 mb-3 hover-card" onclick="getList('Contract')" style="cursor:pointer;">
                 <div class="card-body text-center">
-                    <h5 class="fw-bold text-secondary mb-2"><i class="bi bi-file-earmark-break"></i> Contract Terminations (This Week)</h5>
+                    <h6 class="text-secondary mb-2"><i class="bi bi-file-earmark-break"></i> Contract Terminations (This Week)</h6>
                     <div class="bg-info text-white rounded-3 py-2">
                         <h2 class="fw-bold mb-0">@Model.contractEndCount</h2>
                     </div>
@@ -124,7 +139,7 @@
 
             <div class="card border-0 shadow-sm rounded-4 mb-3 hover-card" onclick="getList('Pension')" style="cursor:pointer;">
                 <div class="card-body text-center">
-                    <h5 class="fw-bold text-secondary mb-2"><i class="bi bi-person-vcard"></i> Pensioners Within 6 Months</h5>
+                    <h6 class="text-secondary mb-2"><i class="bi bi-person-vcard"></i> Pensioners Within 6 Months</h6>
                     <div class="bg-info text-white rounded-3 py-2">
                         <h2 class="fw-bold mb-0">@Model.pensionCount</h2>
                     </div>
@@ -133,7 +148,7 @@
         </div>
 
         <!-- Right Column: Dynamic Table -->
-        <div class="col-md-8">
+        <div class="col-md-10">
             <div class="card border-0 shadow-sm rounded-4">
                 <div class="card-header bg-dark text-white rounded-top-4">
                     <h5 class="fw-semibold mb-0" id="tableTitle">Summary Details</h5>

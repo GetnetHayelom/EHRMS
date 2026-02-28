@@ -4,11 +4,11 @@
     ViewData["Title"] = "Evaluation List";
 }
 
-<div class="container-fluid py-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-2">
         <h2 class="fw-bold text-dark">Employee Evaluations</h2>
         <a asp-page="./Create" class="btn btn-primary shadow-sm">
-            <i class="bi bi-plus-lg"></i> Create New Evaluation
+            <i class="bi bi-plus-lg"></i>New Evaluation
         </a>
     </div>
     <div class="row g-3 mb-4">
@@ -52,28 +52,28 @@
                 <div class="col-md-2">
                     <label class="form-label small fw-bold">Company</label>
                     <select asp-for="company" asp-items="Model.CompanyList" class="form-select form-select-sm" onchange="this.form.submit()">
-                        <option value="">All Companies</option>
+                        <option value="">All</option>
                     </select>
                 </div>
                 <div class="col-md-2">
                     <label class="form-label small fw-bold">Department</label>
                     <select asp-for="department" asp-items="Model.DepartmentList" class="form-select form-select-sm">
-                        <option value="">All Departments</option>
+                        <option value="">All</option>
                     </select>
                 </div>
                 <div class="col-md-2">
                     <label class="form-label small fw-bold">Status</label>
                     <select asp-for="Status" asp-items="Html.GetEnumSelectList<PIS2.Models.evaluationStatus>()" class="form-select form-select-sm">
-                        <option value="">All Statuses</option>
+                        <option value="">All</option>
                     </select>
                 </div>
                 <div class="col-md-2">
                     <label class="form-label small fw-bold">From</label>
-                    <input type="date" asp-for="StartDate" class="form-control form-control-sm" />
+                    <input type="date" asp-for="StartDate" class="form-control form-control-sm" onchange="updateMinDate()" />
                 </div>
                 <div class="col-md-2">
                     <label class="form-label small fw-bold">To</label>
-                    <input type="date" asp-for="EndDate" class="form-control form-control-sm" />
+                    <input type="date" asp-for="EndDate" class="form-control form-control-sm" onchange="updateMinDate()"/>
                 </div>
                 <div class="col-md-2">
                     <div class="d-flex gap-2">
@@ -88,7 +88,7 @@
         <div class="card-body p-0">
             <div class="table-responsive">
                 <table class="table table-hover align-middle mb-0">
-                    <thead class="bg-light">
+                    <thead class="table-dark">
                         <tr>
                             <th class="ps-4">Evaluation Name</th>
                             <th>Employee</th>

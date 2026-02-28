@@ -1,274 +1,230 @@
 ﻿@page
 @model PIS2.Pages.LeaveType.IndexModel
-
 @{
     ViewData["Title"] = "Leave Types";
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
+
 @await Html.PartialAsync("headerSimple", "")
-<h1 class="fw-bold">Leave Types</h1>
 
-<p class="d-print-none">
-    <a asp-page="Create" class="btn btn-primary">Add New Leave Types</a>
-</p>
-<!-- LEAVE TYPE SUMMARY -->
-<div class="d-flex gap-3 mb-4 d-print-none flex-wrap">
+<div class="container-fluid">
 
-    <!-- Active -->
-    <div class="flex-fill">
-        <div class="card shadow-sm border-start border-success border-3">
-            <div class="card-body">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <small class="text-muted">Active Leave Types</small>
-                        <h3 class="fw-bold mb-0">@Model.ActiveTypes</h3>
-                    </div>
-                    <div><i class="bi bi-check-circle fs-2 text-success"></i></div>
-                </div>
-            </div>
+    <!-- PAGE HEADER -->
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+            <h3 class="fw-bold mb-0">Leave Types</h3>
+            <small class="text-muted d-print-none">Manage leave categories and policies</small>
         </div>
+
+        <a asp-page="Create" class="btn btn-primary d-print-none">
+            <i class="bi bi-plus-circle me-1"></i> Add Leave Type
+        </a>
     </div>
 
-    <!-- Suspended -->
-    <div class="flex-fill">
-        <div class="card shadow-sm border-start border-warning border-3">
-            <div class="card-body">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <small class="text-muted">Suspended</small>
-                        <h3 class="fw-bold mb-0">@Model.SuspendedTypes</h3>
-                    </div>
-                    <div><i class="bi bi-pause-circle fs-2 text-warning"></i></div>
-                </div>
-            </div>
-        </div>
-    </div>
+    <!-- KPI ROW -->
+    <div class="d-flex gap-3 mb-3">
 
-    <!-- Disabled -->
-    <div class="flex-fill">
-        <div class="card shadow-sm border-start border-secondary border-3">
-            <div class="card-body">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <small class="text-muted">Disabled</small>
-                        <h3 class="fw-bold mb-0">@Model.DisabledTypes</h3>
-                    </div>
-                    <div><i class="bi bi-x-circle fs-2 text-secondary"></i></div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Total -->
-    <div class="flex-fill">
-        <div class="card shadow-sm border-start border-primary border-3">
-            <div class="card-body">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <small class="text-muted">Total Leave Types</small>
-                        <h3 class="fw-bold mb-0">@Model.TotalTypes</h3>
-                    </div>
-                    <div><i class="bi bi-collection fs-2 text-primary"></i></div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-</div>
-
-
-<!-- SECOND ROW -->
-<div class="d-flex gap-3 mb-4 d-print-none flex-wrap">
-
-    <!-- Annual Leave -->
-    <div class="flex-fill">
-        <div class="card shadow-sm border-start border-info border-3">
-            <div class="card-body">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <small class="text-muted">Annual Leave</small>
-                        <h3 class="fw-bold mb-0">@Model.AnnualLeaveCount</h3>
-                    </div>
-                    <div><i class="bi bi-calendar-event fs-2 text-info"></i></div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Allowed Leave -->
-    <div class="flex-fill">
-        <div class="card shadow-sm border-start border-success border-3">
-            <div class="card-body">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <small class="text-muted">Allowed Leave</small>
-                        <h3 class="fw-bold mb-0">@Model.AllowedLeaveCount</h3>
-                    </div>
-                    <div><i class="bi bi-check2-square fs-2 text-success"></i></div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Absenteeism -->
-    <div class="flex-fill">
-        <div class="card shadow-sm border-start border-danger border-3">
-            <div class="card-body">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <small class="text-muted">Absenteeism</small>
-                        <h3 class="fw-bold mb-0">@Model.AbsentismCount</h3>
-                    </div>
-                    <div><i class="bi bi-exclamation-octagon fs-2 text-danger"></i></div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-</div>
-
-
-<div class="card p-2 mb-2">
-    <!-- FILTERS -->
-    <form method="get" class="row mb-4 d-print-none">
-
-        <div class="col-md-3">
-            <label>Status</label>
-            <select name="StatusFilter" class="form-control" onchange="this.form.submit()">
-                <option value="">All</option>
-                @foreach (var s in Enum.GetValues(typeof(Models.mainStatus)))
-                {
-                    <option value="@s" selected="@(Model.StatusFilter == (Models.mainStatus)s)">
-                        @s
-                    </option>
-                }
-            </select>
-        </div>
-
-        <div class="col-md-3">
-            <label>Leave Group</label>
-            <select name="GroupFilter" class="form-control" onchange="this.form.submit()">
-                <option value="">All</option>
-                @foreach (var g in Enum.GetValues(typeof(Models.leaveGroup)))
-                {
-                    <option value="@g" selected="@(Model.GroupFilter == (Models.leaveGroup)g)">
-                        @g
-                    </option>
-                }
-            </select>
-        </div>
-
-        <div class="col-md-3">
-            <label>Impact</label>
-            <select name="ImpactFilter" class="form-control" onchange="this.form.submit()">
-                <option value="">All</option>
-                @foreach (var i in Enum.GetValues(typeof(Models.leaveTypeImpact)))
-                {
-                    <option value="@i" selected="@(Model.ImpactFilter == (Models.leaveTypeImpact)i)">
-                        @i
-                    </option>
-                }
-            </select>
-        </div>
-
-        <div class="col-md-3">
-            <label>Availabilty</label>
-            <select name="AvailabilityFilter" class="form-control" onchange="this.form.submit()">
-                <option value="">All</option>
-                @foreach (var i in Model.leaveAvailabilty)
-                {
-                    <option value="@i" >
-                        @i
-                    </option>
-                }
-            </select>
-        </div>
-
-    </form>
-
-    
-</div>
-<div class="d-flex justify-content-end">
-    <div class="me-2">@await Html.PartialAsync("filter")</div>
-    @await Html.PartialAsync("print")
-    <excel-export table="dataTable" filename="Leave_Types_@(DateTime.UtcNow).xlsx"></excel-export>
-</div>
-
-<table class="table table-striped table-hover" id="dataTable">
-    <thead>
-        <tr class="bg-dark text-white">
-            <th>
-                Leave Group
-            </th>
-            <th>
-                Leave Type Name
-            </th>
-            <th>
-                Leave Type Impact
-            </th>
-            <th>
-                Availability
-            </th>
-            
-            <th>
-                Status
-            </th>
-            <th class="d-print-none">Actions</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach(var leavetypes in Model.leaveTypeModel.GroupBy(l => l.leaveGroup))
-        {
-            <tr class="table-primary">
-                <td class="fw-bold">@leavetypes.FirstOrDefault().leaveGroup</td>
-                <td colspan="5"></td>
-            </tr>
-            @foreach (var item in leavetypes)
+        @{
+            var cards = new[]
             {
-                <tr>
-                    <td></td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.leaveTypeName)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.leaveTypeImpact)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.leaveAvailability)
-                    </td>
+                ("Active", Model.ActiveTypes, "success", "check-circle"),
+                ("Suspended", Model.SuspendedTypes, "warning", "pause-circle"),
+                ("Disabled", Model.DisabledTypes, "secondary", "x-circle"),
+                ("Total", Model.TotalTypes, "primary", "collection")
+                };
+        }
 
-                    <td>
-                            @if (item.leaveTypeStatus == Models.mainStatus.Active)
-                            {
-                                <span class="badge bg-success">@Html.DisplayFor(modelItem => item.leaveTypeStatus)</span>
+        @foreach (var c in cards)
+        {
+            <div class="flex-fill">
+                <div class="card shadow-sm border-start border-@c.Item3 border-1 h-100">
+                    <div class="card-body d-flex justify-content-between align-items-center">
+                        <div>
+                            <small class="text-muted">@c.Item1</small>
+                            <h3 class="fw-bold mb-0">@c.Item2</h3>
+                        </div>
+                        <i class="bi bi-@c.Item4 fs-2 text-@c.Item3"></i>
+                    </div>
+                </div>
+            </div>
+        }
 
-                            }
-                            else if (item.leaveTypeStatus == Models.mainStatus.Suspended)
-                            {
-                                <span class="badge bg-warning">@Html.DisplayFor(modelItem => item.leaveTypeStatus)</span>
-                            }
-                            else
-                            {
-                                <span class="badge bg-secondary">@Html.DisplayFor(modelItem => item.leaveTypeStatus)</span>
-                            }
-                    </td>
-                    <td class="d-print-none">
-                            <div class="btn-group" role="group">
-                                <a asp-page="./Details" asp-route-id="@item.leaveTypeID" class="btn btn-sm btn-outline-primary" title="View Details">
+    </div>
+
+    <!-- CATEGORY CARDS -->
+    <div class="d-flex gap-3 mb-4">
+        <div class="flex-fill">
+            <div class="card shadow-sm border-start border-info border-2">
+                <div class="card-body d-flex justify-content-between">
+                    <div>
+                        <small>Annual Leave</small>
+                        <h3 class="fw-bold">@Model.AnnualLeaveCount</h3>
+                    </div>
+                    <i class="bi bi-calendar-event fs-2 text-info"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="flex-fill">
+            <div class="card shadow-sm border-start border-success border-2">
+                <div class="card-body d-flex justify-content-between">
+                    <div>
+                        <small>Allowed Leave</small>
+                        <h3 class="fw-bold">@Model.AllowedLeaveCount</h3>
+                    </div>
+                    <i class="bi bi-check2-square fs-2 text-success"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="flex-fill">
+            <div class="card shadow-sm border-start border-danger border-2">
+                <div class="card-body d-flex justify-content-between">
+                    <div>
+                        <small>Absenteeism</small>
+                        <h3 class="fw-bold">@Model.AbsentismCount</h3>
+                    </div>
+                    <i class="bi bi-exclamation-octagon fs-2 text-danger"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- FILTER PANEL -->
+    <div class="card shadow-sm mb-3">
+        <div class="card-body">
+            <form method="get" class="d-flex g-3 align-items-end">
+
+                <div class="flex-fill">
+                    <label class="form-label fw-semibold">Status</label>
+                    <select name="StatusFilter" class="form-select" onchange="this.form.submit()">
+                        <option value="">All</option>
+                        @foreach (var s in Enum.GetValues(typeof(Models.mainStatus)))
+                        {
+                            <option value="@s" selected="@(Model.StatusFilter == (Models.mainStatus)s)">
+                                @s
+                            </option>
+                        }
+                    </select>
+                </div>
+
+                <div class="flex-fill">
+                    <label class="form-label fw-semibold">Leave Group</label>
+                    <select name="GroupFilter" class="form-select" onchange="this.form.submit()">
+                        <option value="">All</option>
+                        @foreach (var g in Enum.GetValues(typeof(Models.leaveGroup)))
+                        {
+                            <option value="@g" selected="@(Model.GroupFilter == (Models.leaveGroup)g)">
+                                @g
+                            </option>
+                        }
+                    </select>
+                </div>
+
+                <div class="flex-fill">
+                    <label class="form-label fw-semibold">Impact</label>
+                    <select name="ImpactFilter" class="form-select" onchange="this.form.submit()">
+                        <option value="">All</option>
+                        @foreach (var i in Enum.GetValues(typeof(Models.leaveTypeImpact)))
+                        {
+                            <option value="@i" selected="@(Model.ImpactFilter == (Models.leaveTypeImpact)i)">
+                                @i
+                            </option>
+                        }
+                    </select>
+                </div>
+
+                <div class="flex-fill">
+                    <label class="form-label fw-semibold">Availability</label>
+                    <select name="AvailabilityFilter" class="form-select" onchange="this.form.submit()">
+                        <option value="">All</option>
+                        @foreach (var i in Model.leaveAvailabilty)
+                        {
+                            <option value="@i">@i</option>
+                        }
+                    </select>
+                </div>
+
+            </form>
+        </div>
+    </div>
+
+    <!-- ACTION BAR -->
+    <div class="d-flex justify-content-end ">
+        <div class="flex-fill m-2">
+            @await Html.PartialAsync("filter")
+        </div>
+            <div class="m-2">
+                @await Html.PartialAsync("print")
+            </div>
+        <div class="m-2 d-print-none"><excel-export table="dataTable" filename="Leave_Types_@(DateTime.UtcNow).xlsx"></excel-export></div>
+    </div>
+
+    <!-- DATA TABLE -->
+    <div class="card shadow-sm">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0 print-full-width" id="dataTable">
+
+                <thead class="table-dark">
+                    <tr>
+                        <th>Group</th>
+                        <th>Name</th>
+                        <th>Impact</th>
+                        <th>Availability</th>
+                        <th>On Job</th>
+                        <th>Status</th>
+                        <th class="text-end d-print-none">Actions</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    @foreach (var grp in Model.leaveTypeModel.GroupBy(l => l.leaveGroup))
+                    {
+                        <tr class="table-primary fw-semibold">
+                            <td colspan="7" class="fw-bold">@grp.Key</td>
+                        </tr>
+
+                        @foreach (var item in grp)
+                        {
+                            <tr>
+                                <td></td>
+                                <td>@item.leaveTypeName</td>
+                                <td>@item.leaveTypeImpact</td>
+                                <td>@item.leaveAvailability</td>
+                                <td>
+                                    @if (item.leaveJob)
+                                    {
+                                        <span class="badge bg-success"><i class="bi bi-check-circle"></i></span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-danger"><i class="bi bi-x-circle"></i></span>
+                                    }
+                                </td>
+                                <td>
+                                    <span class="badge bg-@(item.leaveTypeStatus == Models.mainStatus.Active ? "success" :
+                                                                                   item.leaveTypeStatus == Models.mainStatus.Suspended ? "warning" : "secondary")">
+                                @item.leaveTypeStatus
+                            </span>
+                        </td>
+                        <td class="text-end d-print-none">
+                            <div class="btn-group btn-group-sm">
+                                <a asp-page="./Details" asp-route-id="@item.leaveTypeID" class="btn btn-outline-primary">
                                     <i class="bi bi-eye"></i>
                                 </a>
-                                <a asp-page="./Edit" asp-route-id="@item.leaveTypeID" class="btn btn-sm btn-outline-success" title="Edit">
+                                <a asp-page="./Edit" asp-route-id="@item.leaveTypeID" class="btn btn-outline-success">
                                     <i class="bi bi-pencil-square"></i>
                                 </a>
                             </div>
-                    </td>
-                </tr>
-            }
-    
-        }
-    </tbody>
-</table>
-<div class="d-flex justify-content-end d-print-none">
-    @await Html.PartialAsync("print")
-    <excel-export table="dataTable" filename="Leave_Types_@(DateTime.UtcNow).xlsx"></excel-export>
+                        </td>
+                    </tr>
+                                        }
+                    }
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+
 </div>

@@ -368,6 +368,13 @@
                     </div>
                 </div>
             </div>
+
+            @await Html.PartialAsync("_AttachmentPartial",
+            new Pages.Shared.AttachmentPartialModel
+            {
+                tableName = "Employment",
+                recordId = Model.employmentModel.employmentID
+            })
         </div>
 
 

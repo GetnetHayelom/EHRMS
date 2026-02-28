@@ -12,11 +12,13 @@
         <div>
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb mb-1">
-                    <li class="breadcrumb-item"><a asp-page="./Index">Persons</a></li>
-                    <li class="breadcrumb-item active">View Profile</li>
+                    <li class="breadcrumb-item"><a asp-page="./Index">Persons</a>
+                        
+                    </li>
+                    <li class="breadcrumb-item active">View Profile(#@Model.personModel.personID)</li>
                 </ol>
             </nav>
-            <h2 class="fw-bold m-0">Personnel Profile</h2>
+            <h2 class="fw-bold m-0">Personal Profile</h2>
         </div>
         <!--CALL TO ACTION-->
         @if (User.IsInRole("MIE\\PMS_HRCLERK"))
@@ -156,9 +158,13 @@
                                     </tbody>
                                 </table>
                             </div>
-                            <div class="p-3 bg-light border-top text-end">
-                                <a asp-page="/PersonEducationLevel/Create" asp-route-id="@Model.personModel.personID" class="btn btn-sm btn-primary">+ Add New</a>
-                            </div>
+                            @if (User.IsInRole("MIE\\PMS_HRCLERK"))
+                            {
+                                <div class="p-3 bg-light border-top text-end">
+                                    <a asp-page="/PersonEducationLevel/Create" asp-route-id="@Model.personModel.personID" class="btn btn-sm btn-primary">+ Add New</a>
+                                </div>
+                            }
+                            
                         </div>
                     </div>
                 </div>

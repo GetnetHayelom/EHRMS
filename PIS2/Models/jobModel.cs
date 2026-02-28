@@ -16,6 +16,7 @@ namespace PIS2.Models
         public virtual jobCategoryModel? jobCategoryModel { get; set; }
         public int jobClassID { get; set; }
         public virtual jobClassModel? jobClassModel { get; set; }
+        public string? jobPurpose { get; set; }
         public string? jobDescription { get; set; }
         public mainStatus jobStatus { get; set; }
         public string? jobQualifications { get; set; }
@@ -24,7 +25,6 @@ namespace PIS2.Models
         public virtual ICollection<educationLevelModel>? EducationLevels {get; set; }
         public virtual ICollection<jobPlacementModel>? JobPlacements { get; set; }
         public virtual ICollection<jobRequirementModel>? JobRequirements { get; set; }
-        public virtual ICollection<employmentRequestModel>? EmploymentRequests { get; set; }
         public virtual ICollection<VacancyModel>? Vacancies { get; set; }
         public virtual List<structureModel>? Structures { get; set; }
         public string modifiedBy { get; set; }

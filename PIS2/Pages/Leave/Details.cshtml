@@ -6,225 +6,181 @@
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
 @await Html.PartialAsync("headerSimple", "")
-<h1 class="fw-bold">Leave Request</h1>
-
-<div id="leaveDetail" class="d-flex d-print-flex">   
-    <div class="flex-grow-1 print-full-width">
-    <h3 class="fw-bold">Leave Detail</h3>
-        <hr />
-        <dl class="d-flex justify-content-between  me-3">            
-                <div class="flex-grow-1">
-                    <div class="d-flex mb-2">
-                        <dt class="me-2">
-                            Voucher ID:
-                        </dt>
-                        <dd class="me-4">
-                            <u>@Html.DisplayFor(model => model.leaveModel.leaveID)</u>
-                        </dd>
-                        <dt class="me-2">
-                            Employee ID:
-                        </dt>
-                        <dd class="">
-                            <u>@Html.DisplayFor(model => model.leaveModel.employmentModel.givenID)</u>
-                        </dd>
-                    </div>
-                    <div class="d-flex mb-2">
-                        <dt class="me-2">
-                            Company:
-                        </dt>
-                        <dd class="">
-                            <u>@Html.DisplayFor(model => model.Job.departmentModel.companyModel.companyName)</u>
-                        </dd>
-                    </div>
-                    <div class="d-flex mb-2">
-                        <dt class="me-2">
-                            Work Location:
-                        </dt>
-                        <dd class="">
-                            <u>workSiteName</u>
-                        </dd>
-                    </div>
-                    <div class="d-flex mb-2">
-                        <dt class="me-2">
-                            Leave Type:
-                        </dt>
-                        <dd class="">
-                            <u>@Html.DisplayFor(model => model.leaveModel.leaveTypeModel.leaveTypeName)</u>
-                        </dd>
-                    </div>
-                    <div class="d-flex mb-2">
-                        <dt class="me-2">
-                            Start Date:
-                        </dt>
-                        <dd class="">
-                            <u> @Model.leaveModel.leaveStartDate.ToString("MMM dd, yyyy")</u>
-                        </dd>
-                    </div>
-                    <div class="d-flex mb-2">
-                        <dt class="me-2">
-                            Leave Days:
-                        </dt>
-                        <dd class="">
-                            <u>@Html.DisplayFor(model => model.leaveModel.leaveDays)</u>
-                        </dd>
-                    </div>
-                </div>
-                <div class="flex-grow-1">
-                    <div class="d-flex mb-2">
-                        <dt class="me-2">
-                            Name:
-                        </dt>
-                        <dd class="">
-                            <u>@Html.DisplayFor(model => model.leaveModel.employmentModel.personModel.personFullName)</u>
-                        </dd>
-                    </div>
-                    <div class="d-flex mb-2">
-                        <dt class="me-2">
-                            Department:
-                        </dt>
-                        <dd class="">
-                            <u>@Model.Job.departmentModel.departmentName</u>
-                        </dd>
-                    </div>
-                    <div class="d-flex mb-2">
-                        <dt class="me-2">
-                            Shift:
-                        </dt>
-                        <dd class="">
-                            <u>shiftName</u>
-                        </dd>
-                    </div>
-                    <div class="d-flex mb-2">
-                        <dt class="me-2">
-                            Request Date:
-                        </dt>
-                        <dd class="">
-                            <u>@Model.leaveModel.leaveRequestDate.ToString("MMM dd, yyyy")</u>
-                        </dd>
-                    </div>
-
-                    <div class="d-flex mb-2">
-                        <dt class="me-2">
-                            End Date:
-                        </dt>
-                        <dd class="">
-                            <u>@Model.leaveModel.leaveEndDate.ToString("MMM dd, yyyy")</u>
-                        </dd>
-                    </div>
-                    <div class="d-flex mb-2">
-                        <dt class="me-2">
-                            Status:
-                        </dt>
-                        <dd class="">
-                            <u>@Html.DisplayFor(model => model.leaveModel.leaveStatus)</u>
-                        </dd>
-                    </div>
-                </div>     
-        </dl>
+<div class="container mt-4">
+ 
+    <div class="d-flex justify-content-between mb-4 border-bottom pb-2">
+        <div>
+            <h1 class="fw-bold mb-0">Leave Request</h1>
+            <span class="text-muted">Voucher ID: #@Model.leaveModel.leaveID</span>
+        </div>
+        <div class="d-print-none">
+            @await Html.PartialAsync("print")
+        </div>
     </div>
-    
-    <div class="flex-grow-1 d-print-none">
-        <form method="get" class="d-print-none">
-            <div class="d-flex justify-content-between">
-                <h4 class="fw-bold">Leave History</h4>
-                <div class="d-flex">
-                    <input id="overtimeRecordID" class="form-control me-2" placeholder="Enter Leave Batch Number" name="id" />
-                    <button type="submit" class="btn btn-primary" id="goButton">Go</button>
+
+    <div class="d-flex gap-1">
+        <div class="col-lg-7 print-full-width">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-white py-3">
+                    <h5 class="card-title fw-bold mb-0 text-primary">Leave Information</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex mb-3">
+                        <div class="col-sm-6 mb-3">
+                            <label class="small text-uppercase text-muted fw-bold">Employee</label>
+                            <p class="mb-0 fw-bold border-bottom pb-1">@Model.leaveModel?.employmentModel?.personModel?.personFullName (@Model.leaveModel?.employmentModel?.givenID)</p>
+                        </div>
+                        <div class="col-sm-6">
+                            <label class="small text-muted text-uppercase">Request Date</label>
+                            <p class="small">@Model.leaveModel?.leaveRequestDate.ToString("MMM dd, yyyy")</p>
+                        </div>
+                    </div>
+                    <div class="d-flex mb-3">
+                        <div class="col-sm-6 mb-3">
+                            <label class="small text-uppercase text-muted fw-bold">Leave Type</label>
+                            <p class="mb-0 border-bottom pb-1">@Model.leaveModel?.leaveTypeModel?.leaveTypeName</p>
+                        </div>
+                        <div class="col-sm-6 mb-3">
+                            <label class="small text-uppercase text-muted fw-bold">Status</label>
+                            <div>
+                                <span class="badge @(Model.leaveModel?.leaveStatus == Models.leaveStatus.Approved ? "bg-success" : "bg-warning")">@Model.leaveModel?.leaveStatus</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-around bg-light rounded p-3 mb-3 mx-0">
+                        <div class="col-md-4">
+                            <label class="small text-muted d-block text-uppercase">Start Date</label>
+                            <strong>@Model.leaveModel?.leaveStartDate.ToString("MMM dd, yyyy")</strong>
+                        </div>
+                        <div class="col-md-4 text-center">
+                            <label class="small text-muted d-block text-uppercase">Days</label>
+                            <span class="h5 fw-bold text-primary">@Model.leaveModel?.leaveDays</span>
+                        </div>
+                        <div class="col-md-4 text-end">
+                            <label class="small text-muted d-block text-uppercase">End Date</label>
+                            <strong>@Model.leaveModel?.leaveEndDate.ToString("MMM dd, yyyy")</strong>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-around">
+                        <div class="col-sm-6 mb-3">
+                            <label class="small text-uppercase text-muted fw-bold">Department</label>
+                            <p class="mb-0 border-bottom pb-1">@Model.Job?.departmentModel?.departmentName</p>
+                        </div>
+                        <div class="col-sm-6">
+                            <label class="small text-muted text-uppercase">Company</label>
+                            <p class="small">@Model.Job?.departmentModel?.companyModel?.companyName</p>
+                        </div>
+                        
+                        
+                    </div>
                 </div>
             </div>
-        </form>
-        <hr />
-        <table class="table table-striped table-hover">
-            <thead>
-                <tr class="bg-info text-white print-dark">
-                    <th>Date</th>
-                    <th>Status</th>
-                    <th>User</th>
+        </div>
+
+        <div class="col-lg-5 d-print-none">
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-body">
+                    <h6 class="fw-bold mb-3">Quick Search</h6>
+                    <form method="get">
+                        <div class="input-group">
+                            <input id="overtimeRecordID" class="form-control" placeholder="Leave Batch #" name="id" />
+                            <button type="submit" class="btn btn-primary" id="goButton">Go</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-white py-3">
+                    <h6 class="fw-bold mb-0">Workflow History</h6>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0" style="font-size: 0.85rem;">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Date</th>
+                                <th>Status</th>
+                                <th>By</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.leaveModel.LeaveHistories)
+                            {
+                                <tr>
+                                    <td>@item.modifiedDate.ToString("g")</td>
+                                    <td><span class="badge bg-light text-dark border">@item.leaveHistoryAction</span></td>
+                                    <td>@item.modifiedBy</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="d-none print-full-width d-print-block mt-5">
+        <table class="table table-bordered border-dark text-center">
+            <thead class="table-light border-dark">
+                <tr>
+                    <th width="25%">Action</th>
+                    <th width="30%">Name</th>
+                    <th width="25%">Signature</th>
+                    <th width="20%">Date</th>
                 </tr>
             </thead>
             <tbody>
-                @foreach (var item in Model.leaveModel.LeaveHistories)
-                {
-                    <tr>
-                        <td>@item.modifiedDate</td>
-                        <td>@item.leaveHistoryAction</td>
-                        <td>@item.modifiedBy</td>
-                    </tr>
-                }
+                <tr>
+                    <td class="fw-bold">Requested By:</td>
+                    <td>@Model.leaveModel.employmentModel.personModel.personFullName</td>
+                    <td class="border-bottom-2 border-dark"></td>
+                    <td>@Model.leaveModel.leaveRequestDate.ToString("MMM dd, yyyy")</td>
+                </tr>
+                <tr>
+                    <td class="fw-bold">Approved By:</td>
+                    @if (Model.leaveModel.leaveStatus == Models.leaveStatus.Approved)
+                    {
+                        var lastApproved = Model.leaveModel.LeaveHistories.LastOrDefault(lh => lh.leaveHistoryAction == Models.leaveStatus.Approved);
+                        <td>@(lastApproved?.modifiedBy ?? "")</td>
+                        <td></td>
+                        <td>@(lastApproved?.modifiedDate.ToString("MMM dd, yyyy") ?? "")</td>
+                    }
+                    else
+                    {
+                        <td class="border-buttom-1"></td>
+                        <td></td>
+                        <td></td>
+                    }
+                </tr>
+                <tr>
+                    <td class="fw-bold">Posted By:</td>
+                    @if (Model.leaveModel.leaveStatus == Models.leaveStatus.Posted)
+                    {
+                        var lastPosted = Model.leaveModel.LeaveHistories.LastOrDefault(lh => lh.leaveHistoryAction == Models.leaveStatus.Posted);
+                        <td>@(lastPosted?.modifiedBy ?? "")</td>
+                        <td></td>
+                        <td>@(lastPosted?.modifiedDate.ToString("MMM dd, yyyy") ?? "")</td>
+                    }
+                    else
+                    {
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    }
+                </tr>
             </tbody>
         </table>
     </div>
-   
-</div>
-<table class="table d-none d-print-block print-full-width">
-    <thead>
-        <tr>
-            <th>Action</th>
-            <th>Name</th>
 
-            <th>Signature</th>
-            <th>Date</th>
-        </tr>
-    </thead>
-    <tbody class="print-full-width">
-        <tr>
-            <td>Requested By:</td>
-            
-            <td><u>@Html.DisplayFor(model => model.leaveModel.employmentModel.personModel.personFullName)</u></td>
-            <td>______________________</td>
-            <td> <u>@Model.leaveModel.leaveRequestDate.ToString("MMM dd, yyyy")</u></td>
-        </tr>
-        <tr>
-            <td>Approved By:</td>
-            @if(Model.leaveModel.leaveStatus == Models.leaveStatus.Approved)
-            {
-                <td>
-                    <u>@Model.leaveModel.LeaveHistories.Where(lh => lh.leaveHistoryAction == Models.leaveStatus.Approved).Last().modifiedBy</u>
-                </td>
-                <td>______________________</td>
-                <td>
-                    <u>@Model.leaveModel.LeaveHistories.Where(lh => lh.leaveHistoryAction == Models.leaveStatus.Approved).Last().modifiedDate</u>
-                </td>
-            }
-            else
-            {
-                <td>______________________</td>
-                <td>______________________</td>
-                <td>______________________</td>
-            }
-      
-          
-        </tr>
-        <tr>
-            <td>Posted By:</td>
-            @if(Model.leaveModel.leaveStatus == Models.leaveStatus.Posted)
-            {
-                <td>
-                    <u>@Model.leaveModel.LeaveHistories.Where(lh => lh.leaveHistoryAction == Models.leaveStatus.Posted).Last().modifiedBy</u>
-                </td>
-                <td>______________________</td>
-                <td>
-                    <u>@Model.leaveModel.LeaveHistories.Where(lh => lh.leaveHistoryAction == Models.leaveStatus.Posted).Last().modifiedDate</u>
-                </td>
-            }
-            else
-            {
-            <td>______________________</td>
-            <td>______________________</td>
-            <td>______________________</td>
-            }
-        </tr>
-    </tbody>
-</table>
-
-<div class="d-print-none d-flex justify-content-end">
-    
-    @if (User.IsInRole("MIE\\PMS_HRCLERK") && (Model.leaveModel.leaveStatus == Models.leaveStatus.Hold || Model.leaveModel.leaveStatus == Models.leaveStatus.Approved))
-    {
-        <form method="post">
-            <input asp-for="leaveModel.leaveID" name="leaveId" type="hidden"></input>
-            <button type="submit" class="btn btn-success post-button d-print-none m-2" data-id="Model.leaveID">Post</button>
-        </form>
-    }
-    @await Html.PartialAsync("print")
+    <div class="d-print-none mt-4 d-flex justify-content-end gap-2">
+        @if (User.IsInRole("MIE\\PMS_HRCLERK") && (Model.leaveModel.leaveStatus == Models.leaveStatus.Hold || Model.leaveModel.leaveStatus == Models.leaveStatus.Approved))
+        {
+            <form method="post">
+                <input asp-for="leaveModel.leaveID" name="leaveId" type="hidden" />
+                <button type="submit" class="btn btn-success px-4 shadow-sm">Post</button>
+            </form>
+        }
+    </div>
 </div>

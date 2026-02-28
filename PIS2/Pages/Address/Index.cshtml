@@ -6,22 +6,28 @@
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
 @await Html.PartialAsync("headerSimple", "")
-<h1 class="fw-bold">Addresses</h1>
+<div class="d-flex justify-content-between align-items-end">
+    <div>
+        <h1 class="fw-bold">Addresses</h1>
 
-<p class="d-print-none">
-    <a asp-page="Create" class="btn btn-primary">Add New Address</a>
-</p>
-<div class="d-flex justify-content-end d-print-none">
-    <form method="get" class="d-flex">
-        <label class="form-label m-2 "> Status</label>
-        <select asp-for="AddressStatus" class="form-control m-2" asp-items="@Html.GetEnumSelectList<Models.mainStatus>()" onchange="this.form.submit()">
-            <option value="" selected> All</option>
-        </select>
-    </form>
-    <div class="me-2">@await Html.PartialAsync("filter")</div>
-    @await Html.PartialAsync("print")
-    <excel-export table="dataTable" filename="Adresses_@(DateTime.UtcNow).xlsx"></excel-export>
+        <p class="d-print-none">
+            <a asp-page="Create" class="btn btn-primary">Add New Address</a>
+        </p>
+    </div>
+    <div class="d-flex justify-content-end d-print-none">
+        <form method="get" class="d-flex">
+            <label class="form-label m-2 "> Status</label>
+            <select asp-for="AddressStatus" class="form-control m-2" asp-items="@Html.GetEnumSelectList<Models.mainStatus>()" onchange="this.form.submit()">
+                <option value="" selected> All</option>
+            </select>
+        </form>
+        <div class="me-2">@await Html.PartialAsync("filter")</div>
+        @await Html.PartialAsync("print")
+        <excel-export table="dataTable" filename="Adresses_@(DateTime.UtcNow).xlsx"></excel-export>
+    </div>
 </div>
+
+
 <table class="table table-stripped table-hover" id="dataTable">
     <thead>
         <tr class="bg-dark text-white">

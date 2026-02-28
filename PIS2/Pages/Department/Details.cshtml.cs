@@ -46,7 +46,8 @@ namespace PIS2.Pages.Department
         public string ModifiedBy { get; set; }
         public bool isManager { get; set; }
         public bool isMember { get; set; }
-        public bool isDelegatee { get; set; }
+        public List<delegationScopes> Delegations { get; set; }
+        public int UserEmpID { get; set; }
         public int RequiredEmployee {get; set;} =0;
 
 
@@ -62,6 +63,7 @@ namespace PIS2.Pages.Department
 
             var emp = await _context.Employments.FirstOrDefaultAsync(e => e.personID == personID && e.employmentStatus == mainStatus.Active);
             int empID = emp.employmentID;
+            UserEmpID = empID;
 
             var dep = await _context.JobPlacements.FirstOrDefaultAsync(jp => jp.employmentID == empID && jp.jobPlacementStatus == mainStatus.Active);
             int depID = dep.departmentID;
@@ -89,9 +91,11 @@ namespace PIS2.Pages.Department
                     d.delegationFrom == departmentModel.employmentID &&
                     d.delegationStatus == mainStatus.Active);
 
-            bool isDelegatee = delegation != null && delegation.delegationTo == empID;
+            var delg = await _context.Delegations.Where(d => d.delegationTo == empID && d.delegationStatus == mainStatus.Active).ToListAsync();
+            Delegations =delg.Select(d => d.delegationScope).ToList();
 
-            if (!(isManager || isMember || isDelegatee)) return RedirectToPage("/Shared/AccessDenied");
+            if (!(isManager || isMember || Delegations.Any())) return RedirectToPage("/Shared/AccessDenied");
+
             Jobs = await _context.JobPlacements.Where(j => j.departmentID ==departmentModel.departmentID && j.jobPlacementStatus == mainStatus.Active)
                 .Include(j => j.employmentModel)?.ThenInclude(e => e.personModel)
                 .Include(j => j.employmentModel)?.ThenInclude(e => e.employmentTypeModel)
@@ -145,11 +149,14 @@ namespace PIS2.Pages.Department
                 DepartmentSummary.xEmployees = Employments
                         .Where(e => e.employmentStatus == mainStatus.Inactive).Count();
 
+                var allowance = await _context.AllowanceAssignments.Where(e => Jobs.Select(j => j.employmentID).Contains(e.employmentID) && e.allowanceStatus == mainStatus.Active).ToListAsync();
+                DepartmentSummary.Allowance = allowance.Sum(a => a.allowanceAssignmentAmount); 
+
                 allowedLeave =(decimal) DepartmentSummary.Leaves.AllowedLeave;
                 leaveCost = (decimal)DepartmentSummary.Leaves.leaveCost;
                 overtimeCost = (decimal)DepartmentSummary.Overtime;
                 DepartmentSummary.Total = (decimal) leaveCost + EmploymentView.Where(ev => ev.Job.jobPlacementStatus == mainStatus.Active).Sum(ev => ev.Job.jobPlacementSalary); ;
-                
+                DepartmentSummary.Total += DepartmentSummary.Allowance;
                 // Education Level Data
                 
                 EducationLevels =await _context.PersonEducationLevels
@@ -197,8 +204,6 @@ namespace PIS2.Pages.Department
         [ValidateAntiForgeryToken]
         public async Task<JsonResult> OnPostApprove(LeaveDecision decision)
         {
-
-            
             // Check if the decisions list is null or empty
             if (decision == null )
             {

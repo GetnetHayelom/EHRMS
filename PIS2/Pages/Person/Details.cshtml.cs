@@ -74,7 +74,7 @@ namespace PIS2.Pages.Person
                 familyRelations = _context.Families.Include(f=> f.personModel)
                     .Include(f => f.personModel2).Where(f => f.personID == id || f.personID2 == id).ToList();
 
-                isPersonActiveEmployee = personEmployments.Any(e => e.employmentStatus == mainStatus.Active);
+                isPersonActiveEmployee = personEmployments?.Any(e => e.employmentStatus == mainStatus.Active) ?? false;
                 
                 //Check if photo is available
                 var imagesFolder = Path.Combine(_environment.WebRootPath, "images");

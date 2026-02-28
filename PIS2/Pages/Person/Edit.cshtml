@@ -5,8 +5,8 @@
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
 
-<h1 class="fw-bold">Person</h1>
-<h4 class="fw-bold text-secondary"> Update Persons Information</h4>
+<h2 class="fw-bold">Person</h2>
+<h6 class="fw-bold text-secondary"> Update a Persons Information</h6>
 <hr />
 <div class="row">
     <div>
@@ -19,7 +19,6 @@
                 <div class="col-md-4 me-4 card shadow-sm">
                     <div class="card-header bg-dark text-white"><h5 class="fw-bold card-title">Personal Info.</h5></div>
                     <div class="card-body">
-                        
 
                         <div class="form-group">
                             <label asp-for="personModel.personFirstName">First Name</label>
@@ -106,28 +105,29 @@
                             </div>
 
                             <div class="form-group">
-                                <label asp-for="addressModel.addressRegion">Region</label>
-                                <input asp-for="addressModel.addressRegion" class="form-control" />
-                                <span asp-validation-for="addressModel.addressRegion" class="text-danger"></span>
+                                <label>Region</label>
+                                <input class="form-control" id="regionInput" list="regionList" asp-for="addressModel.addressRegion" />
+                                <datalist id="regionList"></datalist>
                             </div>
 
                             <div class="form-group">
-                                <label asp-for="addressModel.addressZone">Zone</label>
-                                <input asp-for="addressModel.addressZone" class="form-control" />
-                                <span asp-validation-for="addressModel.addressZone" class="text-danger"></span>
+                                <label>Zone</label>
+                                <input class="form-control" id="zoneInput" list="zoneList" asp-for="addressModel.addressZone" />
+                                <datalist id="zoneList"></datalist>
                             </div>
 
                             <div class="form-group">
-                                <label asp-for="addressModel.addressWoreda">Woreda</label>
-                                <input asp-for="addressModel.addressWoreda" class="form-control" />
-                                <span asp-validation-for="addressModel.addressWoreda" class="text-danger"></span>
+                                <label>Woreda</label>
+                                <input class="form-control" id="woredaInput" list="woredaList" asp-for="addressModel.addressWoreda" />
+                                <datalist id="woredaList"></datalist>
                             </div>
 
                             <div class="form-group">
-                                <label asp-for="addressModel.addressTabya">Tabya</label>
-                                <input asp-for="addressModel.addressTabya" class="form-control" />
-                                <span asp-validation-for="addressModel.addressTabya" class="text-danger"></span>
+                                <label>Tabya</label>
+                                <input class="form-control" id="tabyaInput" list="tabyaList" asp-for="addressModel.addressTabya" />
+                                <datalist id="tabyaList"></datalist>
                             </div>
+
                         </div>
                     </div>
                     
@@ -160,7 +160,12 @@
         </form>
     </div>
 </div>
-
+@await Html.PartialAsync("_AttachmentPartial",
+new Pages.Shared.AttachmentPartialModel
+{
+    tableName = "Person",
+    recordId = Model.personModel.personID
+})
 <div>
     <a asp-page="./Index">View All Person Records</a>
 </div>
@@ -177,6 +182,50 @@
             reader.readAsDataURL(event.target.files[0]);
         }
     </script>
+
+    <script>
+        async function loadSuggestions(level, inputId, listId) {
+
+            const term = document.getElementById(inputId).value;
+            const country = document.getElementById("addressModel_addressCountry").value;
+            const region = document.getElementById("regionInput").value;
+            const zone = document.getElementById("zoneInput").value;
+            const woreda = document.getElementById("woredaInput").value;
+
+            const url = `?handler=AddressSuggestions
+                &level=${level}
+                &country=${country}
+                &region=${region}
+                &zone=${zone}
+                &woreda=${woreda}
+                &term=${term}`;
+
+            const res = await fetch(url);
+            const data = await res.json();
+
+            const list = document.getElementById(listId);
+            list.innerHTML = "";
+
+            data.forEach(x => {
+                const opt = document.createElement("option");
+                opt.value = x;
+                list.appendChild(opt);
+            });
+        }
+
+        document.getElementById("regionInput")
+            .addEventListener("input", () => loadSuggestions("region","regionInput","regionList"));
+
+        document.getElementById("zoneInput")
+            .addEventListener("input", () => loadSuggestions("zone","zoneInput","zoneList"));
+
+        document.getElementById("woredaInput")
+            .addEventListener("input", () => loadSuggestions("woreda","woredaInput","woredaList"));
+
+        document.getElementById("tabyaInput")
+            .addEventListener("input", () => loadSuggestions("tabya","tabyaInput","tabyaList"));
+    </script>
+
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }

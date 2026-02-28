@@ -52,7 +52,7 @@ namespace PIS2.Pages.Report
         public async Task OnGetAsync(int? companyID, int? departmentID, int? jstatus, int? jclass, string reason, int? category, string? from, string? to)
         {
             Companies = await _context.Companies.OrderBy(c => c.companyName).ToListAsync();
-            JobClasses = await _context.JobClasses.OrderBy(j => j.JobClassName).ToListAsync();
+            JobClasses = await _context.JobClasses.OrderBy(j => j.jobClassName).ToListAsync();
             JobCategories = await _context.JobCategories.OrderBy(j => j.jobCategoryName).ToListAsync();
             Reasons = await _context.JobPlacements.OrderBy(j => j.jobPlacementReason).Select(j => j.jobPlacementReason).Distinct().ToListAsync();
 

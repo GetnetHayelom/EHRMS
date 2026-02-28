@@ -31,7 +31,7 @@ namespace PIS2.Pages.JobClass
                 return NotFound();
             }
 
-            var jobclassmodel =  await _context.JobClasses.FirstOrDefaultAsync(m => m.JobClassId == id);
+            var jobclassmodel =  await _context.JobClasses.FirstOrDefaultAsync(m => m.jobClassId == id);
             if (jobclassmodel == null)
             {
                 return NotFound();
@@ -60,7 +60,7 @@ namespace PIS2.Pages.JobClass
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!jobClassModelExists(jobClassModel.JobClassId))
+                if (!jobClassModelExists(jobClassModel.jobClassId))
                 {
                     return NotFound();
                 }
@@ -75,7 +75,7 @@ namespace PIS2.Pages.JobClass
 
         private bool jobClassModelExists(int id)
         {
-            return _context.JobClasses.Any(e => e.JobClassId == id);
+            return _context.JobClasses.Any(e => e.jobClassId == id);
         }
     }
 }

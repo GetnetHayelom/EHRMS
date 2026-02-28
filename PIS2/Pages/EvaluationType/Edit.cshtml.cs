@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using PIS2.Models;
 
@@ -18,9 +19,12 @@ namespace PIS2.Pages.EvaluationType
 
         [BindProperty]
         public evaluationTypeModel EvaluationType { get; set; }
-
+        public SelectList JobClasses { get; set; }
         public async Task<IActionResult> OnGetAsync(int id)
         {
+            var jobClasses = await _context.JobClasses.Where(j => j.jobClassStatus == mainStatus.Active).ToListAsync();
+            JobClasses = new SelectList(jobClasses, "jobClassId", "jobClassName");
+
             EvaluationType = await _context.EvaluationTypes
                 .Include(et => et.EvaluationTasks)
                 .ThenInclude(t => t.EvaluationSubTasks).FirstOrDefaultAsync(et => et.evaluationTypeID == id);

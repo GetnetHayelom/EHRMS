@@ -40,6 +40,7 @@ namespace PIS2.Pages.HRClerck
         public int pensionCount { get; set; } = default!;
         public int contractEndCount { get; set; } = default!;
         public int prohibitions { get; set; } = default!;
+        public int lettersCount { get; set; } = default!;
         public async Task OnGetAsync()
         {
             var userID = _context.Users.FirstOrDefault(u => u.userName == User.Identity.Name)?.userID ?? 0;
@@ -69,6 +70,7 @@ namespace PIS2.Pages.HRClerck
             var empIDs = emps.Select(e => e.employmentID).ToList();
 
             var persons = _context.Persons.Where(p => emps.Select(e => e.personID).Contains(p.personID));
+           
 
             employments = _context.Employments.Where(e => e.employmentStatus == mainStatus.Suspended).Count();
             terminations = _context.Terminations.Where(t => t.terminationStatus != terminationStatus.Complete && empIDs.Contains(t.employmentID)).Count();
@@ -94,6 +96,7 @@ namespace PIS2.Pages.HRClerck
 
             contractEndCount = _context.Contracts.Where(e => empIDs.Contains(e.employmentID) && e.endDate < DateTime.Now.AddDays(-7)).Count();
             prohibitions = _context.Prohibitions.Where(p => p.prohibitionStatus != mainStatus.Inactive && empIDs.Contains(p.employmentID)).Count();
+            lettersCount = _context.Letters.Where(l=> l.letterStatus == LetterStatus.Draft).Count();
         }
 
         public IActionResult OnGetGetSummary(string sumType)
@@ -259,7 +262,7 @@ namespace PIS2.Pages.HRClerck
                         .ThenInclude(e => e.JobPlacements).ThenInclude(j => j.departmentModel)
                         .Include(a => a.allowanceModel)
                         .Include(e => e.employmentModel).ThenInclude(e => e.personModel)
-                        .Where(e => e.allowanceStatus == mainStatus.Suspended && empIDs.Contains(e.employmentID)).ToList();
+                        .Where(e => (e.allowanceStatus == mainStatus.Suspended || (e.allowanceAssignmentEndDate < DateTime.Now && e.allowanceStatus == mainStatus.Active))&& empIDs.Contains(e.employmentID)).ToList();
 
 
                     tableTitle = "Pending Allowance";
@@ -319,6 +322,7 @@ namespace PIS2.Pages.HRClerck
                     }));
                     break;
                 case "Employment":
+                    
                     var employmentsList = _context.Employments.Include(e => e.personModel)
                         .Include(e => e.employmentTypeModel)
                         .Where(e => e.employmentStatus == mainStatus.Suspended && empIDs.Contains(e.employmentID)).ToList();
@@ -333,6 +337,21 @@ namespace PIS2.Pages.HRClerck
                         return $"<tr onclick=\"location.href='{url}'\" style='cursor:pointer'><td>{e.givenID}</td>" +
                         $"<td>{e.personModel?.personFullName}</td><td>{e.employmentDate}</td><td>{e.employmentTypeModel?.employmentTypeName}</td>" +
                         $"<td>{e.employmentReference}</td><td>{e.modifiedBy}</td></tr>";
+                    }));
+                    break;
+                case "Letter":
+
+                    var letters = _context.Letters.Include(l => l.LetterType).Where(l => l.letterStatus == LetterStatus.Draft).ToList();
+
+                    tableTitle = "Drafted Letters";
+                    tableHeader = "<td>Title/Subject</td><td>Group</td><td>Type</td><td>Last Modified</td><td>From-To</td>";
+
+                    tableBody = string.Join("", letters.Select(e =>
+                    {
+                        var url = Url.Page("/Letter/Details", new { id = e.letterID });
+                        return $"<tr onclick=\"location.href='{url}'\" style='cursor:pointer'>" +
+                        $"<td>{e.letterSubject}</td><td>{e.letterGroup}</td><td>{e.LetterType?.letterTypeName}</td><td><div><h6 class='fw-bold'>{e.modifiedBy}</h6><h6 class='text-muted'>{e.modifiedDate}</h6></div></td><td>{e.letterSender}-{e.letterReceiver}</td>" +
+                        $"</tr>";
                     }));
                     break;
 

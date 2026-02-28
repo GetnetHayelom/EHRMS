@@ -148,7 +148,7 @@
                 <option value="">All</option>
                 @foreach (var jc in Model.JobClasses)
                 {
-                    <option value="@jc.JobClassId">@jc.JobClassName</option>
+                    <option value="@jc.jobClassId">@jc.jobClassName</option>
                 }
             </select>
         </div>
@@ -202,8 +202,8 @@
 </div>
 
 <table class="table table-hover table-striped print-full-width" id="dataTable">
-    <thead>
-        <tr class="bg-dark text-white">
+    <thead class="table-dark">
+        <tr>
             <th>Employee</th>
             <th>Gender</th>           
             <th>Job Category</th>
@@ -211,36 +211,67 @@
             <th>Reason</th>
             <th>Status</th>
             <th>Date</th>
+            <th>Action</th>
         </tr>
     </thead>
 
     <tbody>
+        @{
+            int index = 0;
+        }
         @foreach (var comp in Model.terminationModel.GroupBy(t =>
                 t.companyID))
         {
+            index++;
             <tr class="table-primary fw-bold">
-                <td colspan="9">@comp.FirstOrDefault().companyName</td>
+                <td colspan="9">@(index). @comp.FirstOrDefault().companyName</td>
             </tr>
-
+            int index2 = 0;
             foreach (var dep in comp.GroupBy(t =>
             t.departmentID))
             {
+                index2++;
                 <tr class="table-secondary fw-bold">
-                    <td colspan="9">@dep.FirstOrDefault().departmentName</td>
+                    <td colspan="9">@(index).@(index2). @dep.FirstOrDefault().departmentName</td>
                 </tr>
-
+                int index3 = 0;
                 foreach (var t in dep)
                 {
-                    
-
+                    index3++;
                     <tr>
-                        <td>@t.FullName</td>
+                        <td>
+                            @(index3). @t.FullName
+                        </td>
                         <td>@((Models.Gender) t.personGender)</td>
                         <td>@t.jobCategoryName</td>
                         <td>@t.jobClassName</td>
                         <td>@t.terminationReason</td>
-                        <td>@t.terminationStatus</td>
+                        <td>
+                            @{
+                                var badgeClass = t.terminationStatus switch
+                                {
+                                    (int) PIS2.Models.terminationStatus.Posted => "bg-success",
+                                    (int) PIS2.Models.terminationStatus.Hold => "bg-warning",
+                                    (int) PIS2.Models.terminationStatus.Complete => "bg-secondary",
+                                    (int )PIS2.Models.terminationStatus.Approved => "bg-info",
+                                    _ => "bg-primary"
+                                };
+                            }
+                            <span class="badge rounded-pill @badgeClass" style="min-width: 80px;">
+                                @((PIS2.Models.terminationStatus)t.terminationStatus)
+                            </span>
+                        </td>
                         <td>@t.terminationDate.ToString("MM/dd/yyyy")</td>
+                        <td>
+                            <div class="btn-group" role="group">
+                                <a asp-page="./Details" asp-route-id="@t.terminationID" class="btn btn-sm btn-outline-primary" title="View Details">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                                <a asp-page="./Edit" asp-route-id="@t.terminationID" class="btn btn-sm btn-outline-success" title="Edit">
+                                    <i class="bi bi-pencil-square"></i>
+                                </a>
+                            </div>
+                        </td>
                     </tr>
                 }
             }

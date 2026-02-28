@@ -252,7 +252,7 @@ function selector(input, hiddenId) {
         }
     });
     if (!found) {
-        showToast('Error', 'Employee Not Found');
+        showToast('Error', 'Not Found');
         document.getElementById(hiddenId).value = '';
     }
 }
@@ -426,5 +426,20 @@ function showToast(type, message) {
 
     new bootstrap.Toast(toastEl).show();
 }
+
+function updateMinDate() {
+    const startInput = document.getElementById('startDate');
+    const endInput = document.getElementById('endDate');
+
+    // Update the minimum selectable date for the End Date picker
+    endInput.min = startInput.value;
+
+    // If the current end date is now earlier than the new start date, reset it
+    if (endInput.value && endInput.value < startInput.value) {
+        alert("End Date cannot be earlier than the Start Date.");
+    endInput.value = startInput.value; 
+    }
+}
+
 
 

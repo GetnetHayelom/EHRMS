@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using PIS2.Models;
@@ -6,6 +7,7 @@ using System.Threading.Tasks;
 
 namespace PIS2.Pages.TaxRate
 {
+    [Authorize(Roles ="MIE\\PMS_HRADMIN")]
     public class CreateModel : PageModel
     {
         private readonly PISContext _context;

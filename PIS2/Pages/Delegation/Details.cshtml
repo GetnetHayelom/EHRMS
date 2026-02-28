@@ -6,35 +6,35 @@
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
 
-<h1 class="fw-bold">delegation</h1>
-
-<div>
-    <h4 class="fw-bold">delegation Detail</h4>
-    <hr />
-    <dl class="row">
+<h2 class="fw-bold">Delegations</h2>
+<h6 class="text-muted">Delegation Detail</h6>
+<hr />
+<div class="row g-4">
+ 
+    <dl class="card shadow-sm p-2 col-md-6" >
         <dt class="col-sm-2">
             Deligator:
         </dt>
         <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.delegationModel.FromEmployment.givenID)<h5>(@Model.delegationModel.FromEmployment.personModel.personFullName)</h5>
+            @Html.DisplayFor(model => model.delegationModel.FromEmployment.givenID)<h5 class="text-muted">@Model.delegationModel?.FromEmployment?.personModel?.personFullName</h5>
         </dd>
         <dt class="col-sm-2">
             Deligatee:
         </dt>
         <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.delegationModel.ToEmployment.givenID)<h5>(@Model.delegationModel.ToEmployment.personModel.personFullName)</h5>
+            @Html.DisplayFor(model => model.delegationModel.ToEmployment.givenID)<h5 class="text-muted">@Model.delegationModel?.ToEmployment?.personModel?.personFullName</h5>
         </dd>
         <dt class="col-sm-2">
             Start:
         </dt>
         <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.delegationModel.delegationStartDate)
+            @Model.delegationModel?.delegationStartDate.ToString("MM/dd/yyyy")
         </dd>
         <dt class="col-sm-2">
             End:
         </dt>
         <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.delegationModel.delegationEndDate)
+            @Model.delegationModel?.delegationEndDate.ToString("MM/dd/yyyy")
         </dd>
         <dt class="col-sm-2">
             Scope:
@@ -49,21 +49,76 @@
             @Html.DisplayFor(model => model.delegationModel.delegationStatus)
         </dd>
         <dt class="col-sm-2">
-            Modified Date:
+            Modified:
         </dt>
         <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.delegationModel.modifiedDate)
-        </dd>
-        <dt class="col-sm-2">
-            Modified By:
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.delegationModel.modifiedBy)
+            <h6>@Html.DisplayFor(model => model.delegationModel.modifiedBy)</h6>
+            <h6 class="text-muted">@Html.DisplayFor(model => model.delegationModel.modifiedDate)</h6>
         </dd>
     </dl>
+    <div class="col-md-6">
+        <h5 class="fw-bold">Delegation Record History</h5>
+        <div class="card shadow-sm p-2 ">
+            <table class="table table-strinped table-hover">
+                <thead class="bg-dark text-white">
+                    <tr>
+                        <th>S/No</th>
+                        <th>From</th>
+                        <th>To</th>
+                        <th>Status</th>
+                        <th>Modified By/Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (!Model.DelegationHistory.Any())
+                    {
+                        <tr>
+                            <td colspan="7" class="text-center text-muted">
+                                No delegation history found.
+                            </td>
+                        </tr>
+                    }
+
+                    @{
+                        int index = 1;
+                    }
+                    @foreach (var item in Model.DelegationHistory)
+                    {
+                        <tr>
+                            <td>@(index++)</td>
+
+                            <td>@item.delegationStartDate.ToString("MM/dd/yyyy")</td>
+
+                            <td>@item.delegationEndDate.ToString("MM/dd/yyyy")</td>
+                            <td>
+                                @if (item.delegationStatus == Models.mainStatus.Active)
+                                {
+                                    <span class="badge bg-success">@Html.DisplayFor(modelItem => item.delegationStatus)</span>
+                                }
+                                else if (item.delegationStatus == Models.mainStatus.Suspended)
+                                {
+                                    <span class="badge bg-warning">@Html.DisplayFor(modelItem => item.delegationStatus)</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary">@Html.DisplayFor(modelItem => item.delegationStatus)</span>
+                                }
+                            </td>
+                            <td>
+                                <h6>@item.modifiedBy</h6>
+                                <p class="text-muted">@item.modifiedDate</p>
+
+                            </td>
+
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        
+    </div>
 </div>
-<div class="btn btn-primary">
-    <a asp-page="./Edit" asp-route-id="@Model.delegationModel.delegationID" class="btn btn-primary">Edit</a>
-    
+<div class="d-flex justify-content-end m-2">
+    <a asp-page="./Edit" asp-route-id="@Model.delegationModel?.delegationID" class="btn btn-primary">Edit</a>
 </div>
-<a asp-page="./Index">View All delegations</a>
+<a asp-page="./Index">View Delegations</a>

@@ -1,5 +1,7 @@
-﻿@{
+﻿
+@{
     Layout = null;
+    var refNo = ViewData["RefNo"] as string;
 }
 <!DOCTYPE html>
 <html>
@@ -56,7 +58,7 @@
     <div class="d-print-flex container print-full-width">
         <main role="main" class="pb-3">
             <!-- HEADER -->
-            <div>
+            <div class="d-none d-print-block">
                 <div class="d-flex d-print-flex align-items-center justify-content-between mb-2">
 
                     <div style="width:15%;">
@@ -100,7 +102,9 @@
                     </p>
                 </div>
                 <div class="d-flex d-print-flex justify-content-end">
-                    <p style="margin:0;"><strong>Ref.No:</strong> <u>___________________</u></p>
+                    <p style="margin:0;"><strong>Ref.No:</strong> 
+                        <u>@(string.IsNullOrEmpty(refNo) ? "_________" : refNo)</u>
+                    </p>
                 </div>
                 <hr class="d-block d-print-block border border-dark border-4" />
             </div>
@@ -110,7 +114,7 @@
            
             <div class="d-flex d-print-flex container print-full-width" style="padding-bottom:35mm">
                 <!--LEFT SIDE-->
-                <div style="width:20%; border-right:1px solid #000; padding-right:10px;">
+                <div style="width:20%; border-right:1px solid #000; padding-right:10px;" class="d-none d-print-block">
                     <h6 class="fw-bold">Main Products & Services</h6>
                     <ul class="h-100 d-flex flex-column justify-content-evenly">
                         <li class="mt-4"><strong>Electromechanical Works</strong></li>
@@ -126,15 +130,10 @@
                 </div>
 
             </div>
-
-            <div class="d-flex d-print-none justify-content-end">
-                @await Html.PartialAsync("back")
-                @await Html.PartialAsync("print")
-            </div>
             
         </main>
     </div>
-    <div style="position:fixed; bottom:0;" class="print-footer print-full-width w-100">
+    <div style="position:fixed; bottom:0;" class="d-none print-footer print-full-width w-100">
         <hr class="d-block d-print-block border border-dark border-2 bg-dark" />
         <div class="d-flex d-print-flex justify-content-center">
             ISO 9001:2000 QMS Certified By BSI – Certificate No. FM512406

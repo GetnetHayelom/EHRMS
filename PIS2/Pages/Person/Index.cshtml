@@ -1,160 +1,164 @@
 ﻿@page
 @model PIS2.Pages.Person.IndexModel
-
 @{
-    ViewData["Title"] = "Pereson";
+    ViewData["Title"] = "Persons";
     Layout = "~/Pages/Shared/_Layout.cshtml";
-    int No = 0;
+    int No = (Model.CurrentPage - 1) * Model.PageSize;
 }
+
 @await Html.PartialAsync("headerSimple", "")
-<div class="container-fluid mt-3">
-<h1 class="fw-bold">Person</h1>
-@if(User.IsInRole("MIE\\PMS_HRCLERK"))
-{
-    <p>
-        <a asp-page="Create" class="btn btn-primary d-print-none">Add New Person</a>
-    </p>
-}
-<!-- PERSON SUMMARY POINTS -->
-<div class="d-flex gap-3 mb-4 d-print-flex flex-wrap">
 
-    <div class="flex-fill">
-        <div class="card shadow-sm border-start border-primary border-3">
-            <div class="card-body d-flex justify-content-between align-items-center">
-                <div>
-                    <small class="text-muted">Male</small>
-                    <h3 class="fw-bold mb-0"><u>@Model.personModel.Count(p => p.personGender == Models.Gender.Male)</u></h3>
-                </div>
-                <div><i class="bi bi-gender-male fs-2 text-primary"></i></div>
-            </div>
+<div class="container-fluid py-3">
+
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+            <h2 class="fw-bold mb-0">Persons Directory</h2>
+            <small class="text-muted">Employee & personnel records</small>
         </div>
+
+        @if (User.IsInRole("MIE\\PMS_HRCLERK"))
+        {
+            <a asp-page="Create" class="btn btn-primary shadow-sm">
+                <i class="bi bi-plus-circle me-1"></i> Add Person
+            </a>
+        }
     </div>
 
-    <div class="flex-fill">
-        <div class="card shadow-sm border-start border-danger border-3">
-            <div class="card-body d-flex justify-content-between align-items-center">
-                <div>
-                    <small class="text-muted">Female</small>
-                    <h3 class="fw-bold mb-0"><u>@Model.personModel.Count(p => p.personGender == Models.Gender.Female)</u></h3>
+    <!-- Summary Cards -->
+    <div class="card shadow-sm p-2 m-2">
+        <div class="row g-3">
+
+        <div class="col-xl col-md-4">
+            <div class="card h-100 shadow-sm border-start border-primary border-4">
+                <div class="card-body d-flex justify-content-between">
+                    <div>
+                        <small class="text-muted">Male</small>
+                        <h4 class="fw-bold">@Model.personModel.Count(p => p.personGender == Models.Gender.Male)</h4>
+                    </div>
+                    <i class="bi bi-gender-male fs-2 text-primary"></i>
                 </div>
-                <div><i class="bi bi-gender-female fs-2 text-danger"></i></div>
             </div>
         </div>
-    </div>
 
-    <div class="flex-fill">
-        <div class="card shadow-sm border-start border-info border-3">
-            <div class="card-body d-flex justify-content-between align-items-center">
-                <div>
-                    <small class="text-muted">Total</small>
-                    <h3 class="fw-bold mb-0"><u>@Model.personModel.Count()</u></h3>
+        <div class="col-xl col-md-4">
+            <div class="card h-100 shadow-sm border-start border-danger border-4">
+                <div class="card-body d-flex justify-content-between">
+                    <div>
+                        <small class="text-muted">Female</small>
+                        <h4 class="fw-bold">@Model.personModel.Count(p => p.personGender == Models.Gender.Female)</h4>
+                    </div>
+                    <i class="bi bi-gender-female fs-2 text-danger"></i>
                 </div>
-                <div><i class="bi bi-people fs-2 text-info"></i></div>
             </div>
         </div>
-    </div>
 
-    <div class="flex-fill">
-        <div class="card shadow-sm border-start border-success border-3">
-            <div class="card-body d-flex justify-content-between align-items-center">
-                <div>
-                    <small class="text-muted">Active Employee</small>
-                    <h3 class="fw-bold mb-0"><u>@Model.Employed</u></h3>
+        <div class="col-xl col-md-4">
+            <div class="card h-100 shadow-sm border-start border-info border-4">
+                <div class="card-body d-flex justify-content-between">
+                    <div>
+                        <small class="text-muted">Total</small>
+                        <h4 class="fw-bold">@Model.personModel.Count</h4>
+                    </div>
+                    <i class="bi bi-people fs-2 text-info"></i>
                 </div>
-                <div><i class="bi bi-check-circle fs-2 text-success"></i></div>
             </div>
         </div>
-    </div>
 
-    <div class="flex-fill">
-        <div class="card shadow-sm border-start border-warning border-3">
-            <div class="card-body d-flex justify-content-between align-items-center">
-                <div>
-                    <small class="text-muted">Ex-Employee</small>
-                    <h3 class="fw-bold mb-0"><u>@Model.xEmployed</u></h3>
+        <div class="col-xl col-md-4">
+            <div class="card h-100 shadow-sm border-start border-success border-4">
+                <div class="card-body d-flex justify-content-between">
+                    <div>
+                        <small class="text-muted">Active</small>
+                        <h4 class="fw-bold">@Model.Employed</h4>
+                    </div>
+                    <i class="bi bi-check-circle fs-2 text-success"></i>
                 </div>
-                <div><i class="bi bi-person-x fs-2 text-warning"></i></div>
             </div>
         </div>
+
+        <div class="col-xl col-md-4">
+            <div class="card h-100 shadow-sm border-start border-warning border-4">
+                <div class="card-body d-flex justify-content-between">
+                    <div>
+                        <small class="text-muted">Ex-Employee</small>
+                        <h4 class="fw-bold">@Model.xEmployed</h4>
+                    </div>
+                    <i class="bi bi-person-x fs-2 text-warning"></i>
+                </div>
+            </div>
+        </div>
+
+    </div>
     </div>
 
-    <div class="flex-fill">
-        <div class="card shadow-sm border-start border-secondary border-3">
-            <div class="card-body d-flex justify-content-between align-items-center">
-                <div>
-                    <small class="text-muted">Others</small>
-                    <h3 class="fw-bold mb-0"><u>@(Model.personModel.Count() - Model.Employed - Model.xEmployed)</u></h3>
-                </div>
-                <div><i class="bi bi-question-circle fs-2 text-secondary"></i></div>
+    <!-- Tools -->
+    <div class="card shadow-sm p-2 d-print-none m-2">
+        <div class="d-flex justify-content-between align-items-center gap-2">
+            <div><h6 class="fw-bold">Persons Catalog</h6></div>
+            <div class="d-flex justify-content-end">
+                <div class="me-2">@await Html.PartialAsync("filter")</div>
+                <div>@await Html.PartialAsync("print")</div>
+                <div class=""><excel-export table="dataTable" filename="Persons_Report_@DateTime.UtcNow:yyyyMMdd.xlsx"></excel-export></div>               
             </div>
+            
+        </div>
+    </div>
+    <!-- Table -->
+    <div class="card shadow-sm">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0" id="dataTable">
+                <thead class="table-dark">
+                    <tr>
+                        <th>#</th>
+                        <th>Full Name</th>
+                        <th>DOB</th>
+                        <th>Gender</th>
+                        <th>Phone</th>
+                        <th>File No</th>
+                        <th>Email</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.personModel)
+                    {
+                        No++;
+                        <tr>
+                            <td>@No</td>
+                            <td class="fw-semibold">@item.personFullName</td>
+                            <td>@item.personDoB.ToString("dd MMM yyyy")</td>
+                            <td>
+                                <span class="badge bg-secondary">@item.personGender</span>
+                            </td>
+                            <td>@item.personPhoneNumber</td>
+                            <td>@item.personRecordNumber</td>
+                            <td>@item.personEmailAddress</td>
+                            <td>
+                                <div class="btn-group" role="group">
+                                    <a asp-page="./Details" asp-route-id="@item.personID" class="btn btn-sm btn-outline-primary" title="View Details">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                    <a asp-page="./Edit" asp-route-id="@item.personID" class="btn btn-sm btn-outline-success" title="Edit">
+                                        <i class="bi bi-pencil-square"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
         </div>
     </div>
 
 </div>
 
-<hr />
-<div class="d-flex justify-content-end d-print-none">
-    @await Html.PartialAsync("filter")
-    @await Html.PartialAsync("print")
-    <excel-export table="dataTable" filename="Persons_Report_@(DateTime.UtcNow).xlsx"></excel-export>
-</div>
-<table class="table table-striped table-hover" id="dataTable">
-    <thead>
-        <tr class="bg-dark text-white">
-        <th>No</th>    
-        <th>
-                Full Name
-            </th>
-            
-            <th>
-                Date of Birth
-            </th>
-            <th>
-                Gender
-            </th>
-           
-            <th>
-                Phone Number
-            </th>
-            <th>
-                File Number
-            </th>
-            
-            <th>
-                Email
-            </th>
-            
-        </tr>
-    </thead>
-    <tbody>
-        <div class="d-none">@(No = (Model.CurrentPage - 1) * (Model.PageSize))</div>
-@foreach (var item in Model.personModel) {
-            No++;
-            <tr onclick="location.href='@Url.Page("Details", new {id =item.personID})'" style="cursor:pointer;">
-            <td>@No</td>
-            <td>
-                @Html.DisplayFor(modelItem => item.personFullName)
-            </td>
-            <td>
-                @item.personDoB.ToString("MM/dd/yyyy")
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.personGender)
-            </td>
-            
-            <td>
-                @Html.DisplayFor(modelItem => item.personPhoneNumber)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.personRecordNumber)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.personEmailAddress)
-            </td>
-            
-        </tr>
-}
-    </tbody>
-</table>
-</div>
+<style>
+    .cursor-pointer {
+        cursor: pointer;
+    }
 
+    tbody tr:hover {
+        background-color: #f8f9fa;
+    }
+</style>

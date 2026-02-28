@@ -1,0 +1,29 @@
+﻿@page
+@model PIS2.Pages.LetterType.DetailsModel
+@{
+}
+
+<div class="container mt-4 col-md-6">
+    <h4>Letter Type Details</h4>
+
+    <dl class="row">
+        <dt class="col-sm-4">Name</dt>
+        <dd class="col-sm-8">@Model.LetterType.letterTypeName</dd>
+
+        <dt class="col-sm-4">Code</dt>
+        <dd class="col-sm-8">@Model.LetterType.letterTypeCode</dd>
+
+        <dt class="col-sm-4">Description</dt>
+        <dd class="col-sm-8">@Model.LetterType.letterTypeDescription</dd>
+
+        <dt class="col-sm-4">Last Modified</dt>
+        <dd class="col-sm-8">@Model.LetterType.modifiedDate</dd>
+    </dl>
+
+    <div class="mt-3">
+        <a asp-page="Edit" asp-route-id="@Model.LetterType.letterTypeID"
+           class="btn btn-warning">Edit</a>
+
+        <a asp-page="Index" class="btn btn-secondary">Back</a>
+    </div>
+</div>

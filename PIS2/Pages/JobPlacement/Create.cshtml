@@ -13,23 +13,15 @@
         <h1 class="fw-bold text-dark">Job Placements</h1>
         <p class="text-muted mb-0">Assign and manage employee job placements</p>
     </div>
-
-    <!-- Search Card -->
-    <div class="card shadow-sm mb-4 d-print-none">
-        <div class="card-body">
-            <h5 class="fw-semibold mb-3">Find Employee</h5>
-
-            <form method="get">
-                <div class="d-flex gap-2 align-items-center">
-                    <input asp-for="employmentModel.givenID" id="givenID" class="form-control w-25" placeholder="Enter Given ID" name="givenID" />
-
-                    <button type="submit" class="btn btn-primary px-4">
-                        Go
-                    </button>
-                </div>
-            </form>
-        </div>
+    <!--EMPLOYEE LOOKUP-->
+    <div class="card shadow-sm border-0 px-3 py-2">
+        <form method="get" class="d-flex align-items-center gap-2">
+            <label for="givenID" class="text-nowrap small fw-bold text-uppercase text-muted mb-0">Find Employee:</label>
+            <input asp-for="employmentModel.givenID" id="givenID" class="form-control form-control-sm" placeholder="Enter ID..." name="givenID" style="width: 150px;" />
+            <button type="submit" class="btn btn-sm btn-primary px-3" id="goButton">Go</button>
+        </form>
     </div>
+    
 
     @if (Model.employmentModel != null && Model.employmentModel.employmentStatus == Models.mainStatus.Active)
     {

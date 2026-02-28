@@ -9,8 +9,8 @@
 <div class="container py-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
-            <h1 class="fw-bold text-dark mb-1">Jobs</h1>
-            <h5 class="text-muted">New Job Setup</h5>
+            <h2 class="fw-bold text-dark mb-1">Jobs</h2>
+            <h6 class="text-muted">New Job Setup</h6>
         </div>
         <a asp-page="Index" class="btn btn-outline-secondary">
             <i class="bi bi-arrow-left-circle"></i> Back to List
@@ -47,7 +47,10 @@
 
                 <div class="mb-3">
                     <label asp-for="jobModel.jobDescription" class="form-label fw-semibold">Description</label>
-                    <textarea asp-for="jobModel.jobDescription" class="form-control" rows="3" placeholder="Describe the job role"></textarea>
+                    <!-- Editor -->
+                    <div id="editor" style="height:300px; background:white;"></div>
+                    <!-- Hidden input for form -->
+                    <input type="hidden" id="letterBody" asp-for="jobModel.jobDescription" />
                     <span asp-validation-for="jobModel.jobDescription" class="text-danger"></span>
                 </div>
 
@@ -85,6 +88,20 @@
 </div>
 
 @section Scripts {
+    <script>
+        
+        document.addEventListener('DOMContentLoaded', function () {
+            const hiddenInput =document.getElementById("letterBody");
+            const quill = new Quill('#editor', {
+              theme: 'snow'
+            });
+
+            quill.on('text-change', () => {
+                hiddenInput.value = quill.root.innerHTML;
+            });
+        });
+        
+    </script>
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }

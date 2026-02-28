@@ -33,9 +33,11 @@ namespace PIS2.Pages.TrainingSessionAttendance
 
         public async Task<IActionResult> OnPostAddAllocationAsync(int id)
         {
-            
+
             // Clean up validation for navigation properties
-            ModelState.Remove("NewAllocation.Attendance");
+            ModelState.Clear();
+            NewAllocation.modifiedBy = User.Identity.Name;
+            NewAllocation.modifiedDate = DateTime.Now;
 
             if (!ModelState.IsValid)
             {
@@ -46,7 +48,7 @@ namespace PIS2.Pages.TrainingSessionAttendance
             _context.TrainingCostAllocations.Add(NewAllocation);
             await _context.SaveChangesAsync();
 
-            return RedirectToPage(new { id = id });
+            return RedirectToPage(new { id = NewAllocation.trainingAttendanceID });
         }
     }
 }

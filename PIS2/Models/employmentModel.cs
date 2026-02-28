@@ -10,27 +10,40 @@ namespace PIS2.Models
     public class employmentModel : IValidatableObject
     {
         [Key]
+        [Display(Name = "Employment Record ID")]
         public int employmentID { get; set; }
         [Required]
+        [Display(Name ="Employee ID")]
         public string givenID { get; set; }
         [Required]
+        [Display(Name = "Person")]
         public int personID { get; set; }
         public virtual personModel? personModel { get; set; } = default!;
         [Required]
+        [Display(Name = "Date of Employment")]
         public DateTime employmentDate { get; set; } = DateTime.Now;
+        [Display(Name = "Employment Termination Date")]
         public DateTime? employmentTerminationDate { get; set; }
         [Required]
+        [Display(Name = "Employment Status")]
         public mainStatus employmentStatus { get; set; } = mainStatus.Active;
+        [Display(Name = "Employment Refrence No.")]
         public string? employmentReference { get; set; }
+        [Display(Name = "Working Hours per Week")]
         public int? workingHoursPerWeek { get; set; }
+        [Display(Name = "Carried Over Leave(from previous employment)")]
         public double employmentCarriedOverLeave { get; set; } = 0;
         [Required]
+        [Display(Name = "Employment Type")]
         public int employmentTypeID { get; set; }
         public virtual employmentTypeModel? employmentTypeModel { get; set; }
+        [Display(Name = "Employment Method")]
         public int? employmentMethodID { get; set; }
         public virtual employmentMethodModel? employmentMethodModel { get; set; }
-        public int? employmentRequestID { get; set; }
-        public virtual employmentRequestModel? employmentRequestModel { get; set; }
+        [Display(Name = "Associated Employment Request")]
+        public int? jobRequirementID { get; set; }
+        public virtual jobRequirementModel? JobRequirementModel { get; set; }
+        [Display(Name = "Employment Position")]
         public EmploymentPositions employmentPosition { get; set; }
         public virtual ICollection<overtimeRecordModel>? OvertimeRecords { get; set; }
         public virtual ICollection<jobPlacementModel>? JobPlacements { get; set; }
@@ -39,7 +52,6 @@ namespace PIS2.Models
         public virtual ICollection<employmentHistoryModel>? EmploymentHistories { get; set; }
         public virtual ICollection<loyaltyHistoryModel>? LoyaltyHistories { get; set; }
         public virtual ICollection<workSiteModel>? WorkSites { get; set; }
-        public virtual ICollection<employmentRequestModel>? EmploymentRequests { get; set; }
         public virtual ICollection<guarantyModel>? Guaranties { get; set; }
         public virtual ICollection<serviceRequestModel>? ServiceRequests { get; set; }
         public virtual ICollection<prohibitionModel>? Prohibitions { get; set; }
@@ -93,15 +105,23 @@ namespace PIS2.Models
     {
         [Key]
         public int employmentHistoryID { get; set; }
+        [Display(Name = "Employment Record ID")]
         public int employmentID { get; set; }
+        [Display(Name = "Employee ID")]
         public string givenID { get; set; }
         public virtual employmentModel? employmentModel { get; set; } = default!;
+        [Display(Name = "Date Modified")]
         public DateTime modifiedDate { get; set; } = DateTime.Now;
+        [Display(Name = "Employment Type")]
         public int employmentTypeID { get; set; }
         public virtual employmentTypeModel? employmentTypeModel { get; set; }
+        [Display(Name = "Employment Position")]
         public string employmentPosition { get; set; }
+        [Display(Name = "Employment Status")]
         public mainStatus employmentStatus { get; set; } = mainStatus.Active;
+        [Display(Name = "Remark")]
         public string? employmentHistoryRemark { get; set; }
+        [Display(Name = "Modified By")]
         public string modifiedBy { get; set; }
         public void validateAge()
         {
@@ -121,69 +141,44 @@ namespace PIS2.Models
     public class employmentMethodModel //indicates how the employment is made, exam, transfer, by letter
     {
         [Key]
+        [Display(Name = "Method ID")]
         public int employmentMethodID { get; set; }
+        [Display(Name = "Employment Method Name")]
         public string employmentMethodName { get; set; }
+        [Display(Name = "Employment Method Description")]
         public string employmentMethodDescription { get; set; }
+        [Display(Name = "Employment Method Status")]
         public mainStatus employmentMethodStatus { get; set; } = mainStatus.Active;
         public virtual ICollection<employmentModel>? Employments { get; set; }
         public virtual ICollection<employmentMethodHistoryModel>? EmploymentMethodHistories { get; set; }
+        [Display(Name = "Date Modified")]
         public DateTime? modifiedDate { get; set; }
         public virtual ICollection<VacancyModel>? Vacancies { get; set; }
+        [Display(Name = "Modified By")]
         public string modifiedBy { get; set; }
         public employmentMethodModel(){}
     }
     public class employmentMethodHistoryModel 
     {
         [Key]
+        [Display(Name = "Employment Method History Record ID")]
         public int employmentMethodHistoryID { get; set; }
+        [Display(Name = "Employment Method")]
         public int employmentMethodID { get; set; }
         public virtual employmentMethodModel employmentMethodModel { get; set; }
+        [Display(Name = "Employment Method Name")]
         public string employmentMethodName { get; set; }
+        [Display(Name = "Employment Method Description")]
         public string employmentMethodDescription { get; set; }
+        [Display(Name = "Employment Method Status")]
         public mainStatus employmentMethodStatus { get; set; } = mainStatus.Active;
+        [Display(Name = "Date Modified")]
         public DateTime modifiedDate { get; set; }
+        [Display(Name = "Modified By")]
         public string modifiedBy { get; set; }
         public employmentMethodHistoryModel(){}
     }
-    public class employmentRequestModel //request made to hr to employ new employees only managers can request
-    {
-        [Key]
-        public int employmentRequestID { get; set; }
-        public int jobID { get; set; }
-        public virtual jobModel jobModel { get; set; }
-        public DateTime employmentRequestDate { get; set; } = DateTime.Now;
-        public int employmentTypeID { get; set; }
-        public employmentTypeModel employmentTypeModel { get; set; }
-        public int requiredNo { get; set; }
-        public employmentRequestStatus requestStatus { get; set; }
-        public string modifiedBy { get; set; }
-        public virtual ICollection<employmentRequestHistoryModel> EmploymentRequestHistories { get; set; }
-        public virtual ICollection<employmentModel>? Employments { get; set; }
-        public employmentRequestModel() { }
-    }
-    public class employmentRequestHistoryModel
-    {
 
-        [Key]
-        public int employmentRequestHistoryID { get; set; }
-        public int employmentRequestID { get; set; }
-        public virtual employmentRequestModel? employmentRequestModel { get; set; }
-        public int jobID { get; set; }
-        public virtual jobModel? jobModel { get; set; }
-        public DateTime modifiedDate { get; set; } = DateTime.Now;
-        public int employmentType { get; set; }
-        public employmentTypeModel? employmentTypeModel { get; set; }
-        public employmentRequestStatus requestStatus { get; set; }
-        public string modifiedBy { get; set; }
-        public employmentRequestHistoryModel() { }
-    }
-    public enum employmentRequestStatus
-    {
-        Pending,
-        Approved,
-        Inprogress,
-        Completed
-    }
     public enum EmploymentPositions
     {        
         Non_Management,

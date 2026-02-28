@@ -81,9 +81,9 @@
                                 <div class="col-md-6 col-xl-4">
                                     <div class="card h-100 shadow-sm border-0 overflow-hidden">
                                         <div class="ratio ratio-4x3 bg-dark d-flex align-items-center justify-content-center">
-                                            @if (file.fileName.ToLower().EndsWith(".jpg") || file.fileName.ToLower().EndsWith(".png") || file.fileName.ToLower().EndsWith(".jpeg"))
+                                            @if (file.FileName.ToLower().EndsWith(".jpg") || file.FileName.ToLower().EndsWith(".png") || file.FileName.ToLower().EndsWith(".jpeg"))
                                             {
-                                                <img src="@file.filePath" class="card-img-top object-fit-cover" alt="@file.fileName">
+                                                <img src="@file.FilePath" class="card-img-top object-fit-cover" alt="@file.FileName">
                                             }
                                             else
                                             {
@@ -94,11 +94,11 @@
                                             }
                                         </div>
                                         <div class="card-body p-2 border-top bg-white">
-                                            <p class="card-text small text-truncate mb-2 fw-semibold" title="@file.fileName">
-                                                @file.fileName
+                                            <p class="card-text small text-truncate mb-2 fw-semibold" title="@file.FileName">
+                                                @file.FileName
                                             </p>
                                             <div class="d-grid">
-                                                <a href="@file.filePath" target="_blank" class="btn btn-outline-primary btn-sm py-1">
+                                                <a href="@file.FilePath" target="_blank" class="btn btn-outline-primary btn-sm py-1">
                                                     View Full File
                                                 </a>
                                             </div>

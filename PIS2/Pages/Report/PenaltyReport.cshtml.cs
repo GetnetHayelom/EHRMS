@@ -7,7 +7,7 @@ using PIS2.Models;
 
 namespace PIS2.Pages.Report
 {
-    [Authorize(Roles = "MIE\\PMS_HRCLERK")]
+    [Authorize(Roles = "MIE\\PMS_HRCLERK, MIE\\PMS_HRMANAGER, MIE\\PMS_MANAGEMENT")]
     public class PenaltyReport : PageModel
     {
         private readonly PIS2.Models.PISContext _context;

@@ -44,6 +44,7 @@ namespace PIS2.Models
     public enum Ex_In
     {
         External,
-        Internal
+        Internal,
+
     }
 }

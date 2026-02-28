@@ -16,7 +16,11 @@
                                     <option value="">-- Select Training --</option>
                                 </select>
                             </div>
-
+                            <div class="col-md-12">
+                                <label class="form-label fw-bold">Session Title</label>
+                                <input asp-for="Session.trainingSessionTitle"  class="form-control" type="text"/>
+                                   
+                            </div>
                             <div class="col-md-6">
                                 <label asp-for="Session.startDate" class="form-label fw-bold">Start Date & Time</label>
                                 <input asp-for="Session.startDate" class="form-control" type="datetime-local" />
@@ -28,8 +32,8 @@
 
                             <!-- Selector -->
                             <div class="col-md-6">
-                                <label asp-for="Session.personID" class="form-label fw-semibold">
-                                    <span class="text-danger">*</span> Person
+                                <label asp-for="Session.personID" class="form-label fw-bold">
+                                    <span class="text-danger">*</span> Trainer Name
                                 </label>
                                 <input type="text" class="form-control" list="personList" placeholder="Type to select..." oninput="selector(this, 'personIDHidden')" />
                                 <input type="hidden" asp-for="Session.personID" id="personIDHidden" />

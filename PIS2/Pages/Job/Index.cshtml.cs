@@ -24,7 +24,7 @@ namespace PIS2.Pages.Job
         public async Task OnGetAsync()
         {
             ViewData["jobCategoryID"] = new SelectList(_context.JobCategories, "jobCategoryID", "jobCategoryName");
-            ViewData["jobClassID"] = new SelectList(_context.JobClasses, "JobClassId", "JobClassName");
+            ViewData["jobClassID"] = new SelectList(_context.JobClasses, "jobClassId", "jobClassName");
             ViewData["jobGradeID"] = new SelectList(_context.JobGrades, "jobGradeID", "jobGradeName");
 
             jobModel = await _context.Jobs
@@ -36,7 +36,7 @@ namespace PIS2.Pages.Job
             int? jobGrade,
             int? jobCategory,
             int? jobClass,
-            string jobStatus)
+            int? jobStatus)
         {
             var query = _context.Jobs
                 .Include(j => j.jobGradeModel)
@@ -45,16 +45,16 @@ namespace PIS2.Pages.Job
                 .AsQueryable();
 
             if (jobGrade.HasValue)
-                query = query.Where(j => j.jobGradeID == jobGrade);
+            { query = query.Where(j => j.jobGradeID == jobGrade); }
 
             if (jobCategory.HasValue)
-                query = query.Where(j => j.jobCategoryID == jobCategory);
+            { query = query.Where(j => j.jobCategoryID == jobCategory); }
 
             if (jobClass.HasValue)
-                query = query.Where(j => j.jobClassID == jobClass);
+            { query = query.Where(j => j.jobClassID == jobClass); }
 
-            if (!string.IsNullOrEmpty(jobStatus))
-                query = query.Where(j => j.jobStatus.ToString() == jobStatus);
+            if (jobClass.HasValue && jobClass != null)
+            { query = query.Where(j => (int) j.jobStatus == jobStatus); }
 
             var filteredJobs = await query.ToListAsync();
 

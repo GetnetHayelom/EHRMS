@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -10,6 +11,7 @@ using PIS2.Models;
 
 namespace PIS2.Pages.delegation
 {
+    [Authorize(Roles = "MIE\\PMS_MANAGEMENT,MIE\\PMS_HRCLERK, MIE\\PMS_HRMANAGER")]
     public class CreateModel : PageModel
     {
         private readonly PIS2.Models.PISContext _context;
@@ -21,30 +23,25 @@ namespace PIS2.Pages.delegation
         [BindProperty]
         public employmentModel delegator { get; set; }
         public employmentModel delegatee { get; set; }
-        public List<employmentModel> Employments { get; set; } =new List<employmentModel>();
-        public IActionResult OnGet(int? id)
+        public SelectList Employments { get; set; }
+        public List<delegationModel> myDelegations { get; set; } = new List<delegationModel>();
+        public async Task<IActionResult> OnGetAsync(int? id)
         {
-            Employments = _context.Employments.Include(e => e.personModel).Where(e => e.employmentStatus == mainStatus.Active)
-                    .OrderBy(e => e.personModel.personFirstName).ThenBy(e => e.personModel.personFatherName).ThenBy(e => e.personModel.personLastName)
-                    .ToList() ?? new List<employmentModel>();
+            
+            await LoadHelper();
+
+            delegationModel = new delegationModel();
             if (id != null)
             {
-                delegationModel.delegationFrom = id ?? 0;
-                delegationModel.FromEmployment = _context.Employments.FirstOrDefault(e => e.employmentID ==id);
+                var delegator = await _context.Employments.Include(e => e.personModel).Where(e => e.employmentStatus == mainStatus.Active).FirstOrDefaultAsync(e => e.employmentID ==id);
+                myDelegations = await _context.Delegations
+               .Include(d => d.FromEmployment).ThenInclude(e => e.personModel)
+               .Include(d => d.ToEmployment).ThenInclude(e => e.personModel)
+               .Where(d => d.delegationFrom == delegator.employmentID).ToListAsync();
 
+                delegationModel.delegationFrom = delegator.employmentID;
+                delegationModel.FromEmployment = delegator;
             }
-            if(User.IsInRole("MIE\\PMS_MANAGEMENT") || User.IsInRole("MIE\\PMS_HRCLERK") || User.IsInRole("MIE\\PMS_HRMANAGER"))
-            {
-                 
-
-                //ViewData["delegationFrom"] = new SelectList(employments, "employmentID", "personName");
-                //ViewData["delegationTo"] = new SelectList(employments, "employmentID", "personName");
-            }
-            else
-            {
-                return NotFound();
-            }   
-     
             
             return Page();
         }
@@ -55,13 +52,18 @@ namespace PIS2.Pages.delegation
         // For more information, see https://aka.ms/RazorPagesCRUD.
         public async Task<IActionResult> OnPostAsync()
         {
-            if (!(User.IsInRole("MIE\\PMS_HRMANAGER") || User.IsInRole("MIE\\PMS_MANAGEMENT"))) { return RedirectToPage("/Shared/AccessDenied"); }
+            var exists = await _context.Delegations.Where(d => d.delegationFrom == delegationModel.delegationFrom
+            && d.delegationTo == delegationModel.delegationTo && d.delegationScope == delegationModel.delegationScope
+            && d.delegationStatus == mainStatus.Active).AnyAsync();
+
+            if (exists) { TempData["message"] = ("Error","Delegation Already Exists!");
+               
+                await LoadHelper(); return Page(); }
+
             if (delegationModel.delegationFrom == delegationModel.delegationTo)
             {
-                ModelState.AddModelError("", "Delegator and Delegatee can not be the same.");
-                Employments = _context.Employments.Include(e => e.personModel).Where(e => e.employmentStatus == mainStatus.Active)
-                    .OrderBy(e => e.personModel.personFirstName).ThenBy(e => e.personModel.personFatherName).ThenBy(e => e.personModel.personLastName)
-                    .ToList() ?? new List<employmentModel>();
+                ModelState.AddModelError("Error", "Delegator and Delegatee can not be the same.");
+                await LoadHelper();
                 return Page();
             }
             ModelState.Remove("delegationModel.modifiedBy");
@@ -89,6 +91,21 @@ namespace PIS2.Pages.delegation
             await _context.SaveChangesAsync();
 
             return RedirectToPage("./Index");
+        }
+        private async Task LoadHelper()
+        {
+            ModelState.AddModelError("Error", "Delegator and Delegatee can not be the same.");
+            var emps = await _context.Employments
+            .Include(e => e.personModel)
+            .Where(e => e.employmentStatus == mainStatus.Active)
+            .Select(e => new
+            {
+                EmpID = e.employmentID,
+                // Combine ID and Name for the dropdown display
+                FullName = e.givenID + " - " + e.personModel.personFullName
+            })
+            .ToListAsync();
+            Employments = new SelectList(emps, "EmpID", "FullName");
         }
     }
 }

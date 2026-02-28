@@ -1,0 +1,55 @@
+﻿@page
+@model PIS2.Pages.Archive.ArchivedModel
+@{
+}
+@await Html.PartialAsync("headerSimple","")
+<div class="container mt-4">
+    <div>
+        <h2 class="fw-bold">Letters</h2>
+        <h6 class="text-muted">Archived letters catalogue</h6>
+    </div>
+
+    <table class="table table-striped table-hover">
+        <thead class="table-dark">
+            <tr>
+                <th>S/No</th>
+                <th>Number</th>
+                <th>Title</th>
+                <th>Subject</th>
+                <th>Type</th>
+                <th>Group</th>
+                <th>Date</th>
+                <th>Recieved</th>
+                <th>Remark</th>
+            </tr>
+        </thead>
+        <tbody>
+            @{
+                int index = 1;
+            }
+            @foreach (var l in Model.Letters)
+            {
+                <tr class="clickable-row" onclick="location.href='@Url.Page("/Letter/Details", new { id = l.letterID })'">
+                    <td>@(index++)</td>
+                    <td><a asp-page="/Letter/Details" asp-route-id="@l.letterID"></a>@l.letterNumber</td>
+                    <td>@l.letterTitle</td>
+                    <td>@l.letterSubject</td>
+                    <td>@l.LetterType?.letterTypeName</td>
+                    <td>@l.letterGroup</td>
+                    <td>@l.Archive?.archivedDate.ToShortDateString()</td>
+                    <td>@l.Archive?.recievedBy
+                        
+                    </td>
+                    <td>
+                        @l.Archive?.remark
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <div class="d-flex justify-content-end mb-3">
+        @await Html.PartialAsync("back")
+        @await Html.PartialAsync("print")
+    </div>
+</div>

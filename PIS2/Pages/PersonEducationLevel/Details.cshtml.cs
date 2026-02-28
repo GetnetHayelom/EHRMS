@@ -19,7 +19,7 @@ namespace PIS2.Pages.PersonEducationLevel
         }
 
         public personEducationLevelModel personEducationLevelModel { get; set; } = default!;
-        public List<Attachements> attachments = new List<Attachements>();
+        public List<AttachmentModel> attachments = new List<AttachmentModel>();
 
         public async Task<IActionResult> OnGetAsync(int? id)
         {
@@ -42,8 +42,8 @@ namespace PIS2.Pages.PersonEducationLevel
 
             if (personeducationlevelmodel.AttachementIDs != null && personeducationlevelmodel.AttachementIDs.Any())
             {
-                attachments = _context.Attachements
-                    .Where(a => personeducationlevelmodel.AttachementIDs.Contains(a.attachmentID))
+                attachments = _context.Attachments
+                    .Where(a => personeducationlevelmodel.AttachementIDs.Contains(a.AttachmentID))
                     .ToList();
             }
 

@@ -20,6 +20,7 @@ namespace PIS2.Pages.EvaluationType
         {
             EvaluationTypes = _context.EvaluationTypes
                 .Include(et => et.EvaluationTasks).ThenInclude(et => et.EvaluationSubTasks)
+                .Include(e => e.jobClassModel)
                 .OrderBy(e => e.evaluationTypeName)
                 .ToList();
         }

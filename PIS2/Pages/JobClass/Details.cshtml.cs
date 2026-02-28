@@ -29,7 +29,7 @@ namespace PIS2.Pages.JobClass
                 return NotFound();
             }
 
-            var jobclassmodel = await _context.JobClasses.FirstOrDefaultAsync(m => m.JobClassId == id);
+            var jobclassmodel = await _context.JobClasses.FirstOrDefaultAsync(m => m.jobClassId == id);
             if (jobclassmodel == null)
             {
                 return NotFound();

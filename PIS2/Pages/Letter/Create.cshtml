@@ -1,0 +1,69 @@
+﻿@page
+@model PIS2.Pages.Letter.CreateModel
+@{
+}
+<h2 class="fw-bold">Letters</h2>
+<h6 class="text-muted">Compose a letter</h6>
+<div class="container mt-4 col-md-8">
+ 
+    <form method="post">
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <label>Letter Group</label>
+                <select asp-for="Letter.letterGroup"
+                        asp-items="Html.GetEnumSelectList<Models.LetterGroup>()"
+                        class="form-select"></select>
+            </div>
+
+            <div class="col-md-6">
+                <label>Letter Type</label>
+                <select asp-for="Letter.letterTypeID"
+                        asp-items="Model.LetterTypes"
+                        class="form-select"></select>
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label>Subject</label>
+            <input asp-for="Letter.letterSubject" class="form-control" />
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <label>Sender</label>
+                <input asp-for="Letter.letterSender" class="form-control" />
+            </div>
+            <div class="col-md-6">
+                <label>Receiver</label>
+                <input asp-for="Letter.letterReceiver" class="form-control" />
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="editor">Content</label>
+
+            @await Html.PartialAsync("_EditorHeader")
+            <!-- Hidden input for form -->
+            <input type="hidden" id="letterBody" name="Letter.letterBody" />
+        </div>
+
+        <button class="btn btn-success">Save</button>
+        <a asp-page="Index" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>
+
+
+
+@section Scripts {
+    <script src="/lib/quill/quill.min.js"></script>
+    <script src="/js/quill-editor.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            window.initQuillEditor({
+                editorId: 'editor',
+                hiddenInputId: 'letterBody',
+                initialContent: '@Html.Raw(Model.Letter.letterBody)'
+            });
+        });
+    </script>
+}
+

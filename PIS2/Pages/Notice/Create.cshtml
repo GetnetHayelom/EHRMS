@@ -3,11 +3,12 @@
 @{
     ViewData["Title"] = "Create New Notice";
 }
-
-<div class="container mt-5">
+<h2 class="fw-bold">Announcements & Notice</h2>
+<h6 class="text-muted">Create New Announcement / Notice</h6>
+<div class="container mt-2">
     <div class="card shadow-lg border-0">
         <div class="card-header bg-dark text-white">
-            <h3 class="mb-0 fw-bold">Create New Announcement / Notice</h3>
+            <h6 class="mb-0 fw-bold">Fill Announcement / Notice Details</h6>
         </div>
         <div class="card-body p-4">
 
@@ -39,8 +40,11 @@
                 <!-- Content (Main Section) -->
                 <div class="row mb-3">
                     <div class="col-12">
-                        <label asp-for="Notice.noticeContent" class="form-label"></label>
-                        <textarea asp-for="Notice.noticeContent" class="form-control" rows="8"></textarea>
+                        <label for="editor">Content</label>
+
+                        @await Html.PartialAsync("_EditorHeader")
+                        <!-- Hidden input for form -->
+                        <input type="hidden" id="letterBody" asp-for="Notice.noticeContent" />
                         <span asp-validation-for="Notice.noticeContent" class="text-danger"></span>
                     </div>
                 </div>
@@ -70,20 +74,31 @@
 
                 <!-- Posted By, Approved By, Notice From -->
                 <div class="row mb-4">
+                    
                     <div class="col-md-4">
-                        <label asp-for="Notice.noticePostedBy" class="form-label"></label>
-                        <input asp-for="Notice.noticePostedBy" class="form-control" readonly />
-                    </div>
-
-                    <div class="col-md-4">
-                        <label asp-for="Notice.noticeApprovedBy" class="form-label"></label>
-                        <input asp-for="Notice.noticeApprovedBy" class="form-control" />
-                    </div>
-
-                    <div class="col-md-4">
-                        <label asp-for="Notice.noticeFrom" class="form-label"></label>
+                        <label asp-for="Notice.noticeFrom" class="form-label">From</label>
                         <input asp-for="Notice.noticeFrom" class="form-control" />
                     </div>
+                    <div class="col-md-4">
+                        <label asp-for="Notice.noticeTo" class="form-label">To</label>
+                        <input asp-for="Notice.noticeTo" class="form-control" />
+                    </div>
+                    
+                    <!-- Selector -->
+                    <div class="col-md-4">
+                        <label asp-for="Notice.noticeSignedBy" class="form-label">Signed By</label>
+                       
+                        <input type="text" class="form-control" list="personList" placeholder="Type to search..." oninput="selector(this, 'personIDHidden')" />
+                        <input type="hidden" asp-for="Notice.noticeSignedBy" id="personIDHidden" />
+                        <datalist id="personList">
+                            @foreach (var person in Model.PersonList)
+                            {
+                                <option data-id="@person.Text" value="@person.Text"></option>
+                            }
+                        </datalist>
+                        <span asp-validation-for="Notice.noticeSignedBy" class="text-danger"></span>
+                    </div>
+                    
                 </div>
 
                 <hr />
@@ -96,18 +111,15 @@
                             <label class="form-check-label" for="isActiveSwitch" asp-for="Notice.IsActive"></label>
                         </div>
                     </div>
-                    <div class="col-md-6">
-                        <label asp-for="Notice.AttachmentPath" class="form-label"></label>
-                        <input asp-for="Notice.AttachmentPath" class="form-control" placeholder="e.g., /attachments/policy-update.pdf" />
-                    </div>
+                  
                 </div>
 
                 <!-- Submission Button -->
-                <div class="d-grid gap-2 mt-4">
+                <div class="d-flex justify-content-end gap-2 mt-4">
                     <button type="submit" class="btn btn-success btn-lg">
-                        <i class="fas fa-bullhorn me-2"></i> Post Notice
+                        <i class="fas fa-bullhorn me-2"></i> Save
                     </button>
-                    <a asp-page="/Index" class="btn btn-outline-secondary">Cancel</a>
+                    <a asp-page="/Notice/Index" class="btn btn-outline-secondary">Cancel</a>
                 </div>
 
             </form>
@@ -120,4 +132,16 @@
         // Assuming you have _ValidationScriptsPartial for client-side validation
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
+
+    <script src="/lib/quill/quill.min.js"></script>
+    <script src="/js/quill-editor.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            window.initQuillEditor({
+                editorId: 'editor',
+                hiddenInputId: 'letterBody',
+                initialContent: '@Html.Raw(Model.Notice.noticeContent)'
+            });
+        });
+    </script>
 }

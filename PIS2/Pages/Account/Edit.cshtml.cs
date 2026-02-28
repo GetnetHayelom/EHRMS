@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace PIS2.Pages.Account
 {
-    [Authorize(Roles = "MIE\\PMS_FINANCE")]
+    [Authorize(Roles = "MIE\\PMS_HRADMIN")]
     public class EditModel : PageModel
     {
         private readonly PIS2.Models.PISContext _context;

@@ -38,7 +38,7 @@ namespace PIS2.Pages.Report
         public decimal ActiveSum { get; set; }
         public async Task OnGetAsync()
         {
-            JobClasses = await _context.JobClasses.OrderBy(e => e.JobClassName).ToListAsync();
+            JobClasses = await _context.JobClasses.OrderBy(e => e.jobClassName).ToListAsync();
             Departments = await _context.Departments.OrderBy(d => d.departmentName).ToListAsync();
             JobTitles = await _context.Jobs.OrderBy(j => j.jobTitle).ToListAsync();
             Companies = await _context.Companies.OrderBy(c => c.companyName).ToListAsync();

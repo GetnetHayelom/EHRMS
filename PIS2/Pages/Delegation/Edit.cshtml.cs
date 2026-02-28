@@ -31,14 +31,16 @@ namespace PIS2.Pages.delegation
                 return NotFound();
             }
 
-            var delegationmodel =  await _context.Delegations.FirstOrDefaultAsync(m => m.delegationID == id);
+            var delegationmodel =  await _context.Delegations
+                .Include(d => d.FromEmployment).ThenInclude(e => e.personModel)
+                .Include(d => d.ToEmployment).ThenInclude(e => e.personModel)
+                .FirstOrDefaultAsync(m => m.delegationID == id);
             if (delegationmodel == null)
             {
                 return NotFound();
             }
             delegationModel = delegationmodel;
-           ViewData["delegationFrom"] = new SelectList(_context.Employments, "employmentID", "givenID");
-           ViewData["delegationTo"] = new SelectList(_context.Employments, "employmentID", "givenID");
+          
             return Page();
         }
 
@@ -46,21 +48,34 @@ namespace PIS2.Pages.delegation
         // For more information, see https://aka.ms/RazorPagesCRUD.
         public async Task<IActionResult> OnPostAsync()
         {
-            if (!User.IsInRole("MIE\\PMS_HRMANAGER"))
+            if (!User.IsInRole("MIE\\PMS_HRMANAGER") || !User.IsInRole("MIE\\PMS_HRCLERK"))
             {
                 return RedirectToPage("/Shared/AccessDenied");
             }
+            var existing = await _context.Delegations.FirstOrDefaultAsync(d => d.delegationID == delegationModel.delegationID);
+
+            if (existing == null) { return NotFound(); }
 
             ModelState.Remove("delegationModel.modifiedBy");
-            delegationModel.modifiedBy = User.Identity.Name;
 
             if (!ModelState.IsValid)
             {
+                foreach (var kv in ModelState)
+                {
+                    foreach (var error in kv.Value.Errors)
+                    {
+                        Console.WriteLine($"{kv.Key} --> {error.ErrorMessage}");
+                        TempData["message"] = ("Error", $"{kv.Key} --> {error.ErrorMessage}");
+                    }
+                }
+
                 return Page();
             }
 
-            _context.Attach(delegationModel).State = EntityState.Modified;
-
+            existing.delegationStatus = delegationModel.delegationStatus;
+            existing.modifiedBy = User.Identity.Name;
+            existing.delegationStartDate = existing.delegationStartDate > DateTime.Now ? delegationModel.delegationStartDate :existing.delegationStartDate;
+            existing.delegationEndDate = delegationModel.delegationEndDate;
             try
             {
                 await _context.SaveChangesAsync();

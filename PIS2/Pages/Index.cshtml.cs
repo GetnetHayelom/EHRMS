@@ -52,6 +52,7 @@ namespace PIS2.Pages
         public bool IsGuarantyAllow { get; set; } = true;
         public List<NoticeModel> ActiveNoticesForCarousel { get; set; } = new List<NoticeModel>();
         public List<EvalSingleEmployeeReport> EvalReport { get; set; }
+        public List<serviceRequestModel> Requests { get; set; } = new List<serviceRequestModel>();
         public IndexModel(PISContext ctx, Core methods, IWebHostEnvironment environment)
         {
             _context = ctx;
@@ -99,7 +100,12 @@ namespace PIS2.Pages
                 else { Person = new personModel(); }
                 
             }
-            EvalReport = _core.GetSingleEvaluationReport(Employment.employmentID);
+            if(Employment != null)
+            {
+                EvalReport = _core.GetSingleEvaluationReport(Employment.employmentID);
+                Requests = await _context.ServiceRequests.Where(s => s.employmentID == Employment.employmentID).ToListAsync();
+            }
+            
 
         }
         [BindProperty]
@@ -332,7 +338,7 @@ namespace PIS2.Pages
         {
             ActiveNoticesForCarousel = await _context.Notices
                 .Where(n => n.IsActive &&
-                            (!n.ExpiryDate.HasValue || n.ExpiryDate.Value.Date >= DateTime.Now.Date))
+                            (!n.ExpiryDate.HasValue || n.ExpiryDate.Value.Date >= DateTime.Now.Date) && n.noticeStatus == NoticeStatus.Posted)
                 .OrderByDescending(n => n.noticePriority)
                 .ThenByDescending(n => n.DatePosted)
                 .ToListAsync();

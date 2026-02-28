@@ -18,19 +18,23 @@
                             <p class="fw-bold">@Model.Attendance?.EmploymentModel?.givenID</p>
                         </div>
                         <div class="col-sm-4">
-                            <label class="text-muted small uppercase">Employee ID</label>
+                            <label class="text-muted small uppercase">Employee Name</label>
                             <p class="fw-bold">@Model.Attendance?.EmploymentModel?.personModel?.personFullName</p>
                         </div>
                         <div class="col-sm-4 text-sm-end">
                             <label class="text-muted small">Completion Date</label>
-                            <p>@(Model.Attendance?.completionDate?.ToShortDateString() ?? "Pending")</p>
+                            <p class="fw-bold">@(Model.Attendance?.completionDate?.ToShortDateString() ?? "Pending")</p>
                         </div>
                     </div>
 
                     <table class="table table-bordered bg-light">
                         <tr>
                             <th class="w-50">Training Title</th>
-                            <td>@Model.Attendance?.TrainingSession?.Training?.trainingTitle</td>
+                            <td><a href="/Training/Details?id=@Model.Attendance?.TrainingSession?.trainingID">@Model.Attendance?.TrainingSession?.Training?.trainingTitle</a></td>
+                        </tr>
+                        <tr>
+                            <th class="w-50">Session Title</th>
+                            <td><a href="/TrainingSession/Details/@Model.Attendance?.trainingSessionID">@Model.Attendance?.TrainingSession?.trainingSessionTitle</a></td>
                         </tr>
                         <tr>
                             <th>Result</th>
@@ -54,7 +58,13 @@
                     }
                 </div>
                 <div class="card-footer bg-white">
-                    <a asp-page="/Trainings/Details" asp-route-id="@Model.Attendance?.trainingSessionID" class="btn btn-link btn-sm">← Back to Session</a>
+                    <div class="d-flex d-print-none justify-content-around">
+                        <a asp-page="/TrainingSession/Details" asp-route-id="@Model.Attendance?.trainingSessionID" class="btn btn-link btn-sm">← Back to Session</a>
+                        <a asp-page="/Training/Details" asp-route-id="@Model.Attendance?.TrainingSession?.trainingID" class="btn btn-link btn-sm">← Go to Training</a>
+                        <a asp-page="/Training/Index" class="btn btn-link btn-sm">Trainings</a>
+                        <a asp-page="/TrainingSession/Index" class="btn btn-link btn-sm">Sessions</a>
+                    </div>
+                    
                 </div>
             </div>
         </div>

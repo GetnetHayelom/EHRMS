@@ -7,8 +7,8 @@
 }
 @section LetterBody
 {
-    <div class="container mt-4 job-publish">
-
+    <div class="container mt-1 job-publish">
+        <h1 class="fw-bold">Vacancy</h1>
     <!-- HEADER -->
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h2>@Model.Vacancy.VacancyTitle</h2>
@@ -43,7 +43,7 @@
             <h5>Description</h5>
         </div>
         <div class="card-body">
-            <p>@Model.Vacancy.jobModel.jobDescription</p>
+            <p>@Model.Vacancy?.jobModel?.jobDescription</p>
         </div>
     </div>
 
@@ -53,8 +53,8 @@
             <h5>Qualifications</h5>
         </div>
         <div class="card-body">
-            <p>@Model.Vacancy.jobModel?.jobQualifications</p>
-            <p><strong>Experience:</strong> @Model.Vacancy.jobModel?.jobExperience years</p>
+            <p>@Model.Vacancy?.jobModel?.jobQualifications</p>
+            <p><strong>Experience:</strong> @(Model.Vacancy?.jobModel?.jobExperience > 0 ? Model.Vacancy?.jobModel?.jobExperience : 0) years</p>
         </div>
     </div>
     <!-- Remark -->
@@ -63,12 +63,12 @@
             <h5>Remark</h5>
         </div>
         <div class="card-body">
-            <p>@Model.Vacancy.Remark</p>
+            <p>@Model.Vacancy?.Remark</p>
         </div>
     </div>
     <!-- ACTIONS -->
     <div class="d-flex gap-2 no-print">
-        @if (Model.Vacancy.Status == Models.VacancyStatus.Open)
+        @if (Model.Vacancy?.Status == Models.VacancyStatus.Open)
         {
             <a asp-page="/Applications/Create"
                asp-route-vacancyId="@Model.Vacancy.VacancyID"

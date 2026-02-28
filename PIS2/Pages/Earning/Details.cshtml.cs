@@ -15,7 +15,7 @@ namespace PIS2.Pages.Earning
         }
 
         public earningType EarningType { get; set; }
-        public List<AuditLog> AuditLogs { get; set; }
+        public List<Models.AuditLog> AuditLogs { get; set; }
 
         public async Task<IActionResult> OnGetAsync(int id)
         {
@@ -35,6 +35,7 @@ namespace PIS2.Pages.Earning
 
             return Page();
         }
+        
         // Helper to make column names and values friendly
         public string FormatAuditValue(string columnName, string value)
         {

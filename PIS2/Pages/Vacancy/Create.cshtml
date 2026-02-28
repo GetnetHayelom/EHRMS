@@ -37,47 +37,70 @@
                     </div>
                     <div class="col-md-6">
                         <label asp-for="VacancyModel.jobRequirementID" class="form-label fw-semibold small">Job Request Reference</label>
-                        <select asp-for="VacancyModel.jobRequirementID" class="form-select border-info" asp-items="Model.JobRequests">
+                        <select asp-for="VacancyModel.jobRequirementID" class="form-select border-info" asp-items="Model.JobRequests" onchange="loadInfo()">
                             <option value="">-- Select Job Request If Any --</option>
                         </select>
                     </div>
                     <div class="col-md-6">
                         <label asp-for="VacancyModel.VacancyTitle" class="form-label fw-semibold small"><span class="text-danger">*</span> Vacancy Display Title</label>
-                        <input asp-for="VacancyModel.VacancyTitle" class="form-control" placeholder="e.g. Marketing Lead - Q3 Expansion" />
+                        <input asp-for="VacancyModel.VacancyTitle" class="form-control" placeholder="e.g. Marketing Lead - Q3 Expansion" value="@Model.JobReq?.JobModel?.jobTitle"/>
                     </div>
                 </div>
-
-                <div class="row g-3 mb-4">
-                    <div class="col-12">
-                        <div class="p-2 bg-light rounded-2 mb-3">
-                            <span class="fw-bold small text-uppercase text-secondary px-2">2. Position & Placement</span>
+                @if(Model.JobReq == null || Model.JobReq?.jobRequirementID == 0)
+                {
+                    <div class="row g-3 mb-4">
+                        <div class="col-12">
+                            <div class="p-2 bg-light rounded-2 mb-3">
+                                <span class="fw-bold small text-uppercase text-secondary px-2">2. Position & Placement</span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="VacancyModel.jobID" class="form-label fw-semibold small"><span class="text-danger">*</span> Job Title/Position</label>
+                            <input type="text" class="form-control" list="jobList" placeholder="Search and select position..." oninput="selector(this, 'jobIDHidden')" value="@Model.JobReq?.JobModel?.jobTitle"/>
+                            <input type="hidden" asp-for="VacancyModel.jobID" id="jobIDHidden" value="@Model.JobReq?.jobID"/>
+                            <datalist id="jobList">
+                                @foreach (var job in Model.JobList)
+                                {
+                                    <option data-id="@job.jobID" value="@job.jobTitle">@job.jobTitle</option>
+                                }
+                            </datalist>
+                            <span asp-validation-for="VacancyModel.jobID" class="text-danger small"></span>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label fw-semibold small">Company</label>
+                            <select class="form-select" id="filter-company" asp-items="Model.CompanyList">
+                                <option value="">-- Select Company --</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label asp-for="VacancyModel.departmentID" class="form-label fw-semibold small">Department</label>
+                            <select asp-for="VacancyModel.departmentID" class="form-select" id="filter-department">
+                                <option value="">-- Select Department --</option>
+                            </select>
                         </div>
                     </div>
-                    <div class="col-md-6">
-                        <label asp-for="VacancyModel.jobID" class="form-label fw-semibold small"><span class="text-danger">*</span> Job Title/Position</label>
-                        <input type="text" class="form-control" list="jobList" placeholder="Search and select position..." oninput="selector(this, 'jobIDHidden')" />
-                        <input type="hidden" asp-for="VacancyModel.jobID" id="jobIDHidden" />
-                        <datalist id="jobList">
-                            @foreach (var job in Model.JobList)
-                            {
-                                <option data-id="@job.jobID" value="@job.jobTitle">@job.jobTitle</option>
-                            }
-                        </datalist>
-                        <span asp-validation-for="VacancyModel.jobID" class="text-danger small"></span>
+                }
+                else
+                {
+                    <div class="row g-3 mb-4">
+                        <div class="col-12">
+                            <div class="p-2 bg-light rounded-2 mb-3">
+                                <span class="fw-bold small text-uppercase text-secondary px-2">2. Position & Placement</span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="VacancyModel.jobID" class="form-label fw-semibold small">Job Title/Position:<span class="fw-bold">@Model.JobReq?.JobModel?.jobTitle</span></label>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label fw-semibold small">Company: <span class="fw-bold">@Model.JobReq?.DepartmentModel?.companyModel?.companyName</span></label>  
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label fw-semibold small"> Department: <span class="fw-bold">@Model.JobReq?.DepartmentModel?.departmentName</span></label>
+                            <input asp-for="VacancyModel.departmentID" value="@Model.JobReq?.departmentID"  hidden/>
+                        </div>
                     </div>
-                    <div class="col-md-3">
-                        <label class="form-label fw-semibold small">Company</label>
-                        <select class="form-select" id="filter-company" asp-items="Model.CompanyList">
-                            <option value="">-- Select Company --</option>
-                        </select>
-                    </div>
-                    <div class="col-md-3">
-                        <label asp-for="VacancyModel.departmentID" class="form-label fw-semibold small"><span class="text-danger">*</span> Department</label>
-                        <select asp-for="VacancyModel.departmentID" class="form-select" id="filter-department">
-                            <option value="">-- Select Department --</option>
-                        </select>
-                    </div>
-                </div>
+                }
+                
 
                 <div class="row g-3 mb-4">
                     <div class="col-12">
@@ -87,7 +110,7 @@
                     </div>
                     <div class="col-md-4">
                         <label asp-for="VacancyModel.VacancyType" class="form-label fw-semibold small"><span class="text-danger">*</span> Vacancy Type</label>
-                        <select asp-for="VacancyModel.VacancyType" class="form-select" asp-items="@Html.GetEnumSelectList<Models.Ex_In>()">
+                        <select asp-for="VacancyModel.VacancyType" class="form-select" asp-items="@Html.GetEnumSelectList<Models.VacancyTypes>()">
                             <option value="">-- Select Type --</option>
                         </select>
                     </div>
@@ -114,12 +137,12 @@
                     </div>
 
                     <div class="col-md-6">
-                        <label asp-for="VacancyModel.DatePosted" class="form-label fw-semibold small"><span class="text-danger">*</span> Posting Date</label>
+                        <label asp-for="VacancyModel.DatePosted" class="form-label fw-semibold small" id="startDate" onchange="updateMinDate()"><span class="text-danger">*</span> Posting Date</label>
                         <input asp-for="VacancyModel.DatePosted" type="date" class="form-control" value="@DateTime.Now.ToString("yyyy-MM-dd")" />
                     </div>
                     <div class="col-md-6">
-                        <label asp-for="VacancyModel.ClosingDate" class="form-label fw-semibold small"><span class="text-danger">*</span> Closing Date</label>
-                        <input asp-for="VacancyModel.ClosingDate" type="date" class="form-control border-warning" />
+                        <label asp-for="VacancyModel.ClosingDate" class="form-label fw-semibold small" id="endDate" onchange="updateMinDate()"><span class="text-danger">*</span> Closing Date</label>
+                        <input asp-for="VacancyModel.ClosingDate" type="date" class="form-control border-warning" value="@DateTime.Now.AddDays(7).ToString("yyyy-MM-dd")" />
                     </div>
                 </div>
 
@@ -141,3 +164,12 @@
 
 <script src="~/lib/jquery/dist/jquery.min.js"></script>
 <script src="~/js/filter-department.js"></script>
+<script>
+        function loadInfo() {
+        var id = $('#jobReq').val();
+
+        if (id && id > 0) {
+            window.location.href = '?id=' + id;
+        }
+    }
+</script>

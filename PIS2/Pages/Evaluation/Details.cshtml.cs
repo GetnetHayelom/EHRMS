@@ -30,15 +30,24 @@ namespace PIS2.Pages.Evaluation
                 .ToListAsync();
 
             var valuatedSubIds = ExistingValuations.Select(v => v.evaluationSubTaskID).ToList();
-
-            EvaluationTypes = await _context.EvaluationTypes.ToListAsync();
-
+            
             ExistingTasks = await _context.EvaluationTasks
                 .Include(e => e.EvaluationTypeModel)
                 .Include(t => t.EvaluationSubTasks)
-                .Where(t => t.EvaluationTypeModel.isFixed ||
-                            t.EvaluationSubTasks.Any(st => valuatedSubIds.Contains(st.evaluationSubTaskID)))
+                .Where(t => t.EvaluationSubTasks.Any(st => valuatedSubIds.Contains(st.evaluationSubTaskID)))
                 .ToListAsync();
+
+            var SelectedTasks = ExistingTasks.Select(e => e.evaluationTaskID).ToList();
+
+            EvaluationTypes = await _context.EvaluationTypes.Include(e => e.EvaluationTasks).ThenInclude(t => t.EvaluationSubTasks)
+                .Where(t => ExistingTasks.Select(es => es.evaluationTypeID).ToList().Contains(t.evaluationTypeID))
+                .ToListAsync();
+
+            ExistingTasks = EvaluationTypes.SelectMany(t =>
+                t.isFixed == true
+                    ? t.EvaluationTasks                     // ALL tasks
+                    : t.EvaluationTasks.Where(x => SelectedTasks.Contains(x.evaluationTaskID))  // ONLY specific ones
+            ).ToList();
 
             CalculateGrandTotal();
 

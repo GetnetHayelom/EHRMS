@@ -106,10 +106,16 @@
     </div>
 </div>
 
+
 <div>
     <a asp-page="./Index">View All Penalties</a>
 </div>
-
+@await Html.PartialAsync("_AttachmentPartial",
+new Pages.Shared.AttachmentPartialModel
+{
+    tableName = "Panlty",
+    recordId = Model.penaltyModel.penaltyID
+})
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 }

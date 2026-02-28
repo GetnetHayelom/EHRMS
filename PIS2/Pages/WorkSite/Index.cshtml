@@ -7,12 +7,13 @@
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
 @await Html.PartialAsync("headerSimple", "")
-<div id="printDiv" class="col-12">
-    <h1 class="fw-bold">Work Locations</h1>
-    
+<div class="d-flex justify-content-between align-items-end">
+    <h2 class="fw-bold">Work Locations</h2>
     <p>
-        <a class="btn btn-primary d-print-none" asp-page="Create" >Add New Work Location</a>
+        <a class="btn btn-primary d-print-none" asp-page="Create">Add New Work Location</a>
     </p>
+</div>
+<div id="printDiv" class="col-12">   
     @await Html.PartialAsync("filter")
     <table class="table table-striped table-hover" id="dataTable">
         <thead>

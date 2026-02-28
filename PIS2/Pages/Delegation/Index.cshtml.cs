@@ -25,8 +25,9 @@ namespace PIS2.Pages.delegation
         public async Task OnGetAsync()
         {
             delegationModel = await _context.Delegations
-                .Include(d => d.FromEmployment)
-                .Include(d => d.ToEmployment).ToListAsync();
+                .Include(d => d.FromEmployment).ThenInclude(e => e.personModel)
+                .Include(d => d.ToEmployment).ThenInclude(e => e.personModel)
+                .Where(d => d.delegationStatus != mainStatus.Inactive).ToListAsync();
         }
     }
 }

@@ -1,0 +1,58 @@
+﻿
+<!-- Custom toolbar -->
+<div id="editor-toolbar" class="d-flex align-items-center gap-1 table-icons d-print-none">
+    <!-- Standard formatting -->
+    <span class="ql-formats">
+        <button class="ql-bold"></button>
+        <button class="ql-italic"></button>
+        <button class="ql-underline"></button>
+    </span>
+    <span class="ql-formats">
+        <select class="ql-header">
+            <option value="1"></option>
+            <option value="2"></option>
+            <option value="3"></option>
+            <option selected></option>
+        </select>
+    </span>
+    <span class="ql-formats">
+        <button class="ql-list" value="ordered"></button>
+        <button class="ql-list" value="bullet"></button>
+    </span>
+    <span class="ql-formats">
+        <button class="ql-link"></button>
+        <button class="ql-image"></button>
+    </span>
+    <span class="ql-formats">
+        <button class="ql-clean"></button>
+    </span>
+
+    <!-- Table controls -->
+    <span class="ql-formats d-flex align-items-center gap-1 table-icons">
+
+        <!-- Insert Table dropdown -->
+        <div class="dropdown">
+            <button class="btn btn-sm btn-light dropdown-toggle" type="button" id="insertTableDropdown" data-bs-toggle="dropdown" aria-expanded="false" title="Insert Table">
+                <i class="bi bi-table"></i>
+            </button>
+            <ul class="dropdown-menu" aria-labelledby="insertTableDropdown">
+                <li><a class="dropdown-item insert-table" data-rows="1" data-cols="1" href="#">1×1</a></li>
+                <li><a class="dropdown-item insert-table" data-rows="2" data-cols="2" href="#">2×2</a></li>
+                <li><a class="dropdown-item insert-table" data-rows="3" data-cols="3" href="#">3×3</a></li>
+            </ul>
+        </div>
+
+        <!-- Row / Column Buttons -->
+        <button type="button" class="btn btn-sm btn-light" id="addRowBtn" title="Add Row"><i class="bi bi-arrow-down"></i></button>
+        <button type="button" class="btn btn-sm btn-light" id="addColBtn" title="Add Column"><i class="bi bi-arrow-right"></i></button>
+        <button type="button" class="btn btn-sm btn-light" id="delRowBtn" title="Delete Row"><i class="bi bi-dash-lg"></i></button>
+        <button type="button" class="btn btn-sm btn-light" id="delColBtn" title="Delete Column"><i class="bi bi-dash-lg rotate-90"></i></button>
+        <button type="button" class="btn btn-sm btn-light" id="delTableBtn" title="Delete Table"><i class="bi bi-trash"></i></button>
+    </span>
+
+</div>
+
+<!-- Editor -->
+<div id="editor" style="height:300px; background:white;"></div>
+
+

@@ -6,9 +6,9 @@
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
 
-<h1 class="fw-bold">Education and Certification</h1>
+<h2 class="fw-bold">Education and Certification</h2>
 
-<h4 class="fw-bold">Add New Certification</h4>
+<h6 class="fw-bold text-muted">Maintain New Certification</h6>
 <hr />
 <div class="d-flex justify-content-between">
     <div class="col-md-4">
@@ -24,8 +24,8 @@
                 <select asp-for="personEducationLevelModel.educationLevelID" class ="form-control" asp-items="ViewBag.educationLevelID"></select>
             </div>
             <div class="form-group">
-                <label asp-for="personEducationLevelModel.educationField" class="control-label">Date Issued</label>
-                <input asp-for="personEducationLevelModel.educationField" class="form-control" type="date" />
+                <label asp-for="personEducationLevelModel.educationField" class="control-label">Field of Study</label>
+                <input asp-for="personEducationLevelModel.educationField" class="form-control" type="text" />
                 <span asp-validation-for="personEducationLevelModel.educationField" class="text-danger"></span>
             </div>
             <div class="form-group">
@@ -58,8 +58,9 @@
             </div>
         </form>
     </div>
-
-    <div class="flex-grow">
+    @if (Model.CertificationList.Any())
+    {
+        <div class="flex-grow">
         <h4 class="fw-bold">Certifications</h4>
         <table class="table table-bordered table-striped table-hover">
             <thead class="bg-info text-white">
@@ -91,6 +92,8 @@
             </tbody>
         </table>
     </div>
+    }
+    
 </div>
 
 <div>

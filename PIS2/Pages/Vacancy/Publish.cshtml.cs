@@ -46,7 +46,7 @@ namespace PIS2.Pages.Vacancy
 
             if (personID == 0)
             {
-                TempData["message"] = ("Error","Please select a person before applying!");
+                //TempData["message"] = ("Error","Please select a person before applying!");
                 return RedirectToPage(new { id });
             }
 
@@ -63,7 +63,7 @@ namespace PIS2.Pages.Vacancy
             _context.Applicants.Add(applicant);
             await _context.SaveChangesAsync();
 
-            TempData["Success"] = $"Application submitted successfully. Applicant ID: {applicant.ApplicantID}";
+            //TempData["Success"] = $"Application submitted successfully. Applicant ID: {applicant.ApplicantID}";
 
             return RedirectToPage(new { id });
         }

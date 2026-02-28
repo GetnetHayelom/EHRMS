@@ -37,8 +37,21 @@ namespace PIS2.Pages.Training
         {
             Training.modifiedBy = User.Identity.Name;
             Training.modifiedDate = DateTime.Now;
+            ModelState.Remove("Training.modifiedBy");
+            ModelState.Remove("Training.modifiedDate");
+
+
             if (!ModelState.IsValid)
             {
+                foreach (var kv in ModelState)
+                {
+                    foreach (var error in kv.Value.Errors)
+                    {
+                        Console.WriteLine($"{kv.Key} --> {error.ErrorMessage}");
+                        TempData["message"] = ("Error", $"{kv.Key} --> {error.ErrorMessage}");
+                    }
+                }
+
                 return Page();
             }
 

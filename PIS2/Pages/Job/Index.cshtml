@@ -6,11 +6,11 @@
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
 @await Html.PartialAsync("headerSimple", "")
-<div class="container py-4 print-container">
-    <div class="d-flex justify-content-between align-items-center mb-4 no-print">
+<div class="container py-4 print-container mb-2">
+    <div class="d-flex justify-content-between align-items-center no-print">
         <div>
-            <h1 class="fw-bold text-dark mb-1">Jobs</h1>
-            <h5 class="text-muted">Manage and Review Job Records</h5>
+            <h2 class="fw-bold text-dark">Jobs</h2>
+            <h6 class="text-muted">Manage and Review Jobs</h6>
         </div>
         <div>
             <a asp-page="Create" class="btn btn-primary me-2">
@@ -21,30 +21,33 @@
             </button>
         </div>
     </div>
-    <div class="row">
-        <div class="col-md-3 mb-3">
-            <label  class="form-label fw-semibold">Job Grade</label>
-            <select class="form-select" asp-items="ViewBag.jobGradeID" id="jobGrade">
-                <option value="" selected> All</option>
-            </select>
+    <div class="card shadow-sm p-2 mb-3">
+        <div class="d-flex justify-content-between gap-3">
+            <div class="flex-fill">
+                <label class="form-label fw-semibold">Job Grade</label>
+                <select class="form-select" asp-items="ViewBag.jobGradeID" id="jobGrade">
+                    <option value="" selected> All</option>
+                </select>
+            </div>
+
+            <div class="flex-fill">
+                <label class="form-label fw-semibold">Job Category</label>
+                <select class="form-select" asp-items="ViewBag.jobCategoryID" id="jobCategory"><option value="" selected> All</option></select>
+            </div>
+
+            <div class="flex-fill">
+                <label class="form-label fw-semibold">Job Class</label>
+                <select class="form-select" asp-items="ViewBag.jobClassID" id="jobClass"><option value="" selected> All</option></select>
+            </div>
+            <div class="flex-fill">
+                <label class="form-label fw-semibold">Job Status</label>
+                <select class="form-select" asp-items="@Html.GetEnumSelectList<Models.mainStatus>()" id="jobStatus"><option value="" selected> All</option></select>
+            </div>
+            <div class="col-md-1 d-flex justify-content-end align-items-center">
+                <button class="btn btn-primary" onclick="filterJobs()">Load</button>
+            </div>
         </div>
 
-        <div class="col-md-3 mb-3">
-            <label  class="form-label fw-semibold">Job Category</label>
-            <select class="form-select" asp-items="ViewBag.jobCategoryID" id="jobCategory"><option value="" selected> All</option></select>
-        </div>
-
-        <div class="col-md-3 mb-3">
-            <label  class="form-label fw-semibold">Job Class</label>
-            <select class="form-select" asp-items="ViewBag.jobClassID" id="jobClass"><option value="" selected> All</option></select>
-        </div>
-        <div class="col-md-2 mb-3">
-            <label class="form-label fw-semibold">Job Status</label>
-            <select class="form-select" asp-items="@Html.GetEnumSelectList<Models.mainStatus>()" id="jobStatus"><option value="" selected> All</option></select>
-        </div>
-        <div class="col-md-1 d-flex justify-content-end align-items-end mb-3">            
-            <button class="btn btn-primary" onclick="filterJobs()">Load</button>
-        </div>
     </div>
     <div class="card shadow-sm border-0">
         <div class="card-body">
@@ -67,11 +70,11 @@
                         @foreach (var item in Model.jobModel.OrderBy(j => j.jobTitle))
                         {
                             <tr>
-                                <td>@Html.DisplayFor(modelItem => item.jobTitle)</td>
-                                <td>@Html.DisplayFor(modelItem => item.jobGradeModel.jobGradeName)</td>
-                                <td>@Html.DisplayFor(modelItem => item.jobCategoryModel.jobCategoryName)</td>
-                                <td>@Html.DisplayFor(modelItem => item.jobClassModel.JobClassName)</td>
-                                <td>@Html.DisplayFor(modelItem => item.jobExperience)</td>
+                                <td>@item.jobTitle</td>
+                                <td>@item.jobGradeModel?.jobGradeName</td>
+                                <td>@item.jobCategoryModel?.jobCategoryName</td>
+                                <td>@item.jobClassModel?.jobClassName</td>
+                                <td>@item.jobExperience</td>
                                 <td>
                                     @if (item.jobStatus.ToString() == "Active")
                                     {

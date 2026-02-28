@@ -10,6 +10,7 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using static System.Formats.Asn1.AsnWriter;
 
 namespace PIS2.Pages.Person
 {
@@ -17,11 +18,13 @@ namespace PIS2.Pages.Person
     public class EditModel : PageModel
     {
         private readonly PISContext _context;
+        private readonly PIS2.Models.Core _core;
         private readonly IWebHostEnvironment _environment;
 
-        public EditModel(PISContext context, IWebHostEnvironment environment)
+        public EditModel(PISContext context, IWebHostEnvironment environment, PIS2.Models.Core core)
         {
             _context = context;
+            _core = core;
             _environment = environment;
         }
 
@@ -49,18 +52,29 @@ namespace PIS2.Pages.Person
 
             ViewData["addressID"] = new SelectList(_context.Addresses, "addressID", "addressFormatted");
 
-
             return Page();
         }
 
         public async Task<IActionResult> OnPostAsync()
         {
+            ModelState.Remove("personModel.modifiedBy");
+            ModelState.Remove("addressModel.modifiedBy");
+            ModelState.Remove("Photo");
+
             personModel.modifiedBy = User.Identity?.Name ?? "system";
             personModel.addressID = await GetOrCreateAddress(addressModel);
 
-            ModelState.Clear(); // Ensure clean state for re-validation
-            if (!TryValidateModel(personModel))
+            if (!ModelState.IsValid)
             {
+                foreach (var kv in ModelState)
+                {
+                    foreach (var error in kv.Value.Errors)
+                    {
+                        Console.WriteLine($"{kv.Key} --> {error.ErrorMessage}");
+                        TempData["message"] = ("Error", $"{kv.Key} --> {error.ErrorMessage}");
+                    }
+                }
+                
                 return Page();
             }
 
@@ -122,7 +136,7 @@ namespace PIS2.Pages.Person
 
         public async Task<int> GetOrCreateAddress(addressModel addressModel)
         {
-            var existingAddress = _context.Addresses.FirstOrDefault(a =>
+            var existingAddress =await _context.Addresses.FirstOrDefaultAsync(a =>
                 a.addressCountry == addressModel.addressCountry &&
                 a.addressRegion.ToLower() == addressModel.addressRegion.ToLower() &&
                 a.addressZone.ToLower() == addressModel.addressZone.ToLower() &&
@@ -130,7 +144,10 @@ namespace PIS2.Pages.Person
                 a.addressTabya.ToLower() == addressModel.addressTabya.ToLower());
 
             if (existingAddress != null)
+            {
                 return existingAddress.addressID;
+            }
+            
 
             addressModel.modifiedBy = User.Identity?.Name ?? "system";
             addressModel.addressStatus = mainStatus.Active;
@@ -138,6 +155,20 @@ namespace PIS2.Pages.Person
             _context.Addresses.Add(addressModel);
             await _context.SaveChangesAsync();
             return addressModel.addressID;
+        }
+
+        public async Task<JsonResult> OnGetAddressSuggestions(
+        string level,
+        Country country,
+        string region,
+        string zone,
+        string woreda,
+        string term)
+        {
+            var result = await _core.GetAddressSuggestions(
+                level, country, region, zone, woreda, term);
+
+            return new JsonResult(result);
         }
     }
 }

@@ -1,14 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization.Infrastructure;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using PIS2.Models;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace PIS2.Pages.JobRequirement
 {
+    [Authorize(Roles = "MIE\\PMS_HRMANAGEMENT, MIE\\PMS_HRCLERK")]
     public class DetailsModel : PageModel
     {
         private readonly PIS2.Models.PISContext _context;
@@ -21,6 +24,7 @@ namespace PIS2.Pages.JobRequirement
         public jobRequirementModel jobRequirementModel { get; set; } = default!;
         public List<jobRequirementHistoryModel> RequestHistory { get; set; } = default!;
         public List<jobReqCost> JobReqCosts { get; set; } = default!;
+        public bool IsPublished { get; set; } = false;
         public async Task<IActionResult> OnGetAsync(int? id)
         {
             if (id == null)
@@ -41,9 +45,16 @@ namespace PIS2.Pages.JobRequirement
             RequestHistory = new List<jobRequirementHistoryModel>();
             var jrHistory = _context.JobRequirementHistories.Where(m => m.jobRequirementID == id).ToList();
             if (jrHistory.Any()) RequestHistory = jrHistory;
+
+            var isPublished = await _context.Vacancies.AnyAsync(v => v.jobRequirementID == id);
+            if (isPublished)
+            {
+                IsPublished = true;
+                var jrCost = _context.JobReqCosts.Include(jr => jr.VacancyModel).Where(m => m.VacancyModel.jobRequirementID == id).ToList();
+                if (jrCost.Any()) JobReqCosts = jrCost;
+            }
+
             
-            var jrCost = _context.JobReqCosts.Include(jr => jr.VacancyModel).Where(m => m.VacancyModel.jobRequirementID == id).ToList();
-            if (jrCost.Any()) JobReqCosts = jrCost;
             return Page();
         }
     }

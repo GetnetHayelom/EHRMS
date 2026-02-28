@@ -14,23 +14,23 @@
     <div class="col-md-4">
         <form method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="jobClassModel.JobClassId" />
+            <input type="hidden" asp-for="jobClassModel.jobClassId" />
             <div class="form-group">
                 <span class="text-danger">*</span>
-                <label asp-for="jobClassModel.JobClassName" class="control-label">Job Class Name</label>
-                <input asp-for="jobClassModel.JobClassName" class="form-control" />
-                <span asp-validation-for="jobClassModel.JobClassName" class="text-danger"></span>
+                <label asp-for="jobClassModel.jobClassName" class="control-label">Job Class Name</label>
+                <input asp-for="jobClassModel.jobClassName" class="form-control" />
+                <span asp-validation-for="jobClassModel.jobClassName" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <span class="text-danger">*</span>
-                <label asp-for="jobClassModel.JobClassDescription" class="control-label">Description</label>
-                <input asp-for="jobClassModel.JobClassDescription" class="form-control" />
-                <span asp-validation-for="jobClassModel.JobClassDescription" class="text-danger"></span>
+                <label asp-for="jobClassModel.jobClassDescription" class="control-label">Description</label>
+                <input asp-for="jobClassModel.jobClassDescription" class="form-control" />
+                <span asp-validation-for="jobClassModel.jobClassDescription" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="jobClassModel.JobClasStatus" class="control-label">Status</label>
-                <select asp-for="jobClassModel.JobClasStatus" class="form-control" asp-items="Html.GetEnumSelectList<Models.mainStatus>()"></select>
-                <span asp-validation-for="jobClassModel.JobClasStatus" class="text-danger"></span>
+                <label asp-for="jobClassModel.jobClassStatus" class="control-label">Status</label>
+                <select asp-for="jobClassModel.jobClassStatus" class="form-control" asp-items="Html.GetEnumSelectList<Models.mainStatus>()"></select>
+                <span asp-validation-for="jobClassModel.jobClassStatus" class="text-danger"></span>
             </div>
             <div class="form-group d-flex justify-content-end m-2">
                 <input type="submit" value="Update" class="btn btn-success" />

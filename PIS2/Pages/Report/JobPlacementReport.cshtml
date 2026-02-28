@@ -111,7 +111,7 @@
                     <option value="" selected>All</option>
                     @foreach (var jc in Model.JobClasses)
                     {
-                        <option value="@jc.JobClassId">@jc.JobClassName</option>
+                        <option value="@jc.jobClassId">@jc.jobClassName</option>
                     }
                 </select>
             </div>
@@ -200,7 +200,7 @@
                                     <tr data-id="@p.jobPlacementID" style="cursor:pointer" onclick="location.href='@Url.Page("/JobPlacement/Details", new { id = p.jobPlacementID })'">
                                         <td>@p.employmentModel?.givenID</td>
                                         <td>@p.jobModel?.jobTitle</td>
-                                        <td>@p.jobModel?.jobClassModel?.JobClassName</td>
+                                        <td>@p.jobModel?.jobClassModel?.jobClassName</td>
                                         <td>@p.jobPlacementSalary.ToString("N2")</td>
                                         <td>@p.jobPlacementDate.ToString("yyyy-MM-dd")</td>
                                         <td>

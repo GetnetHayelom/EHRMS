@@ -2,46 +2,47 @@
 @model PIS2.Pages.TrainingSessionAttendance.EditModel
 @{
 }
+<h2 class="fw-bold">Training</h2>
 <div class="container mt-4">
     <div class="row justify-content-center">
         <div class="col-md-6">
             <div class="card shadow-sm">
                 <div class="card-body">
-                    <h3 class="card-title mb-4">Update Attendance</h3>
+                    <h4 class="fw-bold card-title mb-4">Update Attendance</h4>
                     <form method="post">
                         <input type="hidden" asp-for="Attendance.trainingAttendanceID" />
                         <input type="hidden" asp-for="Attendance.trainingSessionID" />
                         <input type="hidden" asp-for="Attendance.employmentID" />
 
                         <div class="mb-3">
-                            <label asp-for="Attendance.result" class="form-label font-weight-bold"></label>
+                            <label asp-for="Attendance.result" class="form-label font-weight-bold">Result</label>
                             <select asp-for="Attendance.result" class="form-select" asp-items="Html.GetEnumSelectList<PIS2.Models.trainingResult>()"></select>
                         </div>
 
                         <div class="row">
                             <div class="col-md-6 mb-3">
-                                <label asp-for="Attendance.score" class="form-label"></label>
+                                <label asp-for="Attendance.score" class="form-label">Score</label>
                                 <input asp-for="Attendance.score" class="form-control" type="number" step="0.01" />
                             </div>
                             <div class="col-md-6 mb-3">
-                                <label asp-for="Attendance.completionDate" class="form-label"></label>
+                                <label asp-for="Attendance.completionDate" class="form-label">Completion Date</label>
                                 <input asp-for="Attendance.completionDate" class="form-control" type="date" />
                             </div>
                         </div>
 
                         <div class="mb-3">
-                            <label asp-for="Attendance.certificateNumber" class="form-label"></label>
+                            <label asp-for="Attendance.certificateNumber" class="form-label">Certificate No.</label>
                             <input asp-for="Attendance.certificateNumber" class="form-control" />
                         </div>
 
                         <div class="mb-3">
-                            <label asp-for="Attendance.remarks" class="form-label"></label>
+                            <label asp-for="Attendance.remarks" class="form-label">Remarks</label>
                             <textarea asp-for="Attendance.remarks" class="form-control" rows="3"></textarea>
                         </div>
 
                         <div class="d-grid gap-2">
                             <button type="submit" class="btn btn-primary">Save Changes</button>
-                            <a asp-page="/Trainings/Details" asp-route-id="@Model.Attendance.trainingSessionID" class="btn btn-outline-secondary">Cancel</a>
+                            <a asp-page="/TrainingSessionAttendance/Details" asp-route-id="@Model.Attendance.trainingSessionID" class="btn btn-outline-secondary">Cancel</a>
                         </div>
                     </form>
                 </div>

@@ -1,0 +1,87 @@
+﻿@page
+@model PIS2.Pages.Training.TrainingCenter
+@{
+    ViewData["Title"] = "Training Analytics Dashboard";
+}
+
+<h3 class="mb-4 fw-bold">📚 Training Analytics</h3>
+
+<div class="row g-3">
+
+    <div class="col-md-3">
+        <div class="card shadow-sm p-3 text-center">
+            <h6>Total Trainings</h6>
+            <h2>@Model.TotalTrainings</h2>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card shadow-sm p-3 text-center">
+            <h6>Sessions</h6>
+            <h2>@Model.TotalSessions</h2>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card shadow-sm p-3 text-center">
+            <h6>Completed</h6>
+            <h2 class="text-success">@Model.CompletedSessions</h2>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card shadow-sm p-3 text-center">
+            <h6>Total Cost</h6>
+            <h2>@Model.TotalCost.ToString("N2")</h2>
+        </div>
+    </div>
+
+</div>
+
+<hr />
+
+<div class="row g-4 mt-2">
+
+    <div class="col-md-4">
+        <div class="card p-3 shadow-sm">
+            <h6>Session Status</h6>
+            <ul class="list-group list-group-flush">
+                @foreach (var s in Model.SessionStatusStats)
+                {
+                    <li class="list-group-item d-flex justify-content-between">
+                        @s.Key <span class="fw-bold">@s.Value</span>
+                    </li>
+                }
+            </ul>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card p-3 shadow-sm">
+            <h6>Attendance Results</h6>
+            <ul class="list-group list-group-flush">
+                @foreach (var r in Model.ResultStats)
+                {
+                    <li class="list-group-item d-flex justify-content-between">
+                        @r.Key <span class="fw-bold">@r.Value</span>
+                    </li>
+                }
+            </ul>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card p-3 shadow-sm">
+            <h6>Training Categories</h6>
+            <ul class="list-group list-group-flush">
+                @foreach (var c in Model.CategoryStats)
+                {
+                    <li class="list-group-item d-flex justify-content-between">
+                        @c.Key <span class="fw-bold">@c.Value</span>
+                    </li>
+                }
+            </ul>
+        </div>
+    </div>
+
+</div>

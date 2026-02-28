@@ -27,7 +27,7 @@ namespace PIS2.Pages.EarningRecord
 
         public async Task<IActionResult> OnGetAsync(int id)
         {
-            Earning = await _db.Earnings.FindAsync(id);
+            Earning = await _db.Earnings.Include(e => e.earningType).FirstOrDefaultAsync(e => e.earningID == id);
 
             if (Earning == null)
                 return NotFound();
@@ -42,7 +42,16 @@ namespace PIS2.Pages.EarningRecord
         {
             if (!(User.IsInRole("MIE\\PMS_HRCLERCK") || User.IsInRole("MIE\\PMS_HRMANAGER"))) { return RedirectToPage("/Shared/AccessDenied");}
             ModelState.Clear();
-            Earning.modifiedBy = User.Identity?.Name ?? "System";
+            Earning.modifiedBy = User.Identity?.Name;
+            if (!Earning.earningType.isPayroll) 
+            {
+                
+                Earning.IsPercentage = false;
+                Earning.earningIteration = 1;
+                Earning.earningBase = earningBase.NONE;
+            }
+            
+            
             if (!ModelState.IsValid)
             {
                 foreach (var kv in ModelState)

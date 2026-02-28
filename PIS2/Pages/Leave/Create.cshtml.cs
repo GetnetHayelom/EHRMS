@@ -75,22 +75,27 @@ namespace PIS2.Pages.Leave
             
 
             var leaveTypes = new List<leaveTypeModel>();
-            
+            leaveTypes = await _context.LeaveTypes.Where(lt => lt.leaveAvailability == "Everyone" && lt.leaveTypeStatus == mainStatus.Active).ToListAsync();
+
             if (User.IsInRole("MIE\\PMS_CLINIC"))
             {
-                leaveTypes = await _context.LeaveTypes.Where(lt => (lt.leaveAvailability == "Clinic" || lt.leaveAvailability == "Everyone") && lt.leaveTypeStatus == mainStatus.Active).ToListAsync();
+                leaveTypes.AddRange(await _context.LeaveTypes.Where(lt => (lt.leaveAvailability == "Clinic" || lt.leaveAvailability == "Everyone") && lt.leaveTypeStatus == mainStatus.Active).ToListAsync());
             }
-            else if (User.IsInRole("MIE\\PMS_HRCLERK"))
-            {
-                leaveTypes = await _context.LeaveTypes.Where(lt => (lt.leaveAvailability == "HR" || lt.leaveAvailability == "Everyone") && lt.leaveTypeStatus == mainStatus.Active).ToListAsync();
+
+            if (User.IsInRole("MIE\\PMS_HRCLERK"))
+            { 
+                var hrLeaves = await _context.LeaveTypes.Where(lt => lt.leaveAvailability == "HR" && lt.leaveTypeStatus == mainStatus.Active).ToListAsync();    
+                leaveTypes.AddRange(hrLeaves);
             }
             else
             {
-                leaveTypes = await _context.LeaveTypes.Where(lt => lt.leaveAvailability == "Everyone" && lt.leaveTypeStatus == mainStatus.Active).ToListAsync();
+                
             }
-            leaveTypes = leaveTypes.Where(lt => lt.leaveTypeStatus == mainStatus.Active).ToList();
-            AllowedLeaveTypes = leaveTypes;
-            ViewData["leaveTypeID"] = new SelectList(AllowedLeaveTypes, "leaveTypeID", "leaveTypeName");
+            //leaveTypes = leaveTypes.Where(lt => lt.leaveTypeStatus == mainStatus.Active).ToList();
+            var isLeaveProhibited = await _core.CheckProhibition(Employment.employmentID, ProhibitionType.Leave);
+            AllowedLeaveTypes = isLeaveProhibited? leaveTypes.Where(l => l.leaveGroup != leaveGroup.AnnualLeave).ToList() : leaveTypes;
+            
+            ViewData["leaveTypeID"] = new SelectList(AllowedLeaveTypes.Distinct().OrderBy(l => l.leaveTypeName), "leaveTypeID", "leaveTypeName");
             var empsList = await _context.Employments.Include(e => e.personModel).Where(e => e.employmentStatus == mainStatus.Active).ToListAsync();
             ViewData["employmentID"] = new SelectList(empsList, "employmentID", "givenID");
 
@@ -111,9 +116,9 @@ namespace PIS2.Pages.Leave
         // For more information, see https://aka.ms/RazorPagesCRUD.
         public async Task<IActionResult> OnPostAsync()
         {
-            var prohibition= await _context.Prohibitions.Where(p => p.employmentID == Leave.employmentID && p.prohibitionStatus == mainStatus.Active).ToListAsync();
-
-            if(prohibition.Any(p => p.prohibitionType == ProhibitionType.Leave))
+            var isLeaveProhibited = await _core.CheckProhibition(Leave.employmentID, ProhibitionType.Leave);
+            var lvGroup = await _context.LeaveTypes.FirstOrDefaultAsync(l => l.leaveTypeID == Leave.leaveTypeID);
+            if (isLeaveProhibited && lvGroup.leaveGroup == leaveGroup.AnnualLeave)
             {
                 TempData["message"] = ("Error", $"Employee is prohibited from requesting a annual leave request!");
                 return Page();
@@ -121,8 +126,9 @@ namespace PIS2.Pages.Leave
            
             ModelState.Clear();
             decimal maxWorkingDays =_core.GetWorkingDays(Leave.leaveStartDate, Leave.leaveEndDate);
+            var ltype = await _context.LeaveTypes.FirstAsync(l => l.leaveTypeID == Leave.leaveTypeID);
 
-            if (maxWorkingDays > (Leave.leaveEndDate - Leave.leaveStartDate).Days) 
+            if (maxWorkingDays < Leave.leaveDays && ltype.leaveAvailability != "HR") 
             {
                 TempData["message"] = ("Error", $"Requested date must be less than or equal to maximum working days. Possible working days={maxWorkingDays}");
                 return Page();
@@ -138,15 +144,11 @@ namespace PIS2.Pages.Leave
             Leave.departmentID = jobPlacement?.departmentID ?? 0;
 
             Employment =await _context.Employments.FirstOrDefaultAsync(e => e.employmentID == Leave.employmentID)?? new employmentModel();
-
-            if(await _core.CheckProhibition(Leave.employmentID, ProhibitionType.Leave)) return Page();
           
             if (!ModelState.IsValid)
             {
                 return Page();
             }
-
-            
 
             _context.Leaves.Add(Leave);
             await _context.SaveChangesAsync();

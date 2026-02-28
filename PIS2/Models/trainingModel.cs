@@ -19,6 +19,7 @@ namespace PIS2.Models
         public int? validityMonths { get; set; }  // e.g. Safety training valid for 12 months
 
         public bool isActive { get; set; } = true;
+        public trainingStatus trainingStatus { get; set; }
         public string modifiedBy { get; set; }
         public DateTime modifiedDate { get; set; }
 

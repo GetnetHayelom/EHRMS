@@ -19,6 +19,7 @@ namespace PIS2.Pages.delegation
         }
 
         public delegationModel delegationModel { get; set; } = default!;
+        public List<delegationHistoryModel> DelegationHistory { get; set; } = default!;
 
         public async Task<IActionResult> OnGetAsync(int? id)
         {
@@ -38,6 +39,7 @@ namespace PIS2.Pages.delegation
             else
             {
                 delegationModel = delegationmodel;
+                DelegationHistory = await _context.DelegationHistories.Where(d => d.delegationID == id).ToListAsync(); 
             }
             return Page();
         }

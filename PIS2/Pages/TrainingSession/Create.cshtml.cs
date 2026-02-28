@@ -23,17 +23,19 @@ namespace PIS2.Pages.TrainingSession
 
             //var person = await _context.Persons()
             TrainerList = new SelectList(_context.Persons, "personID", "personFullName");
-            Session = new trainingSessionModel { startDate = DateTime.Now, endDate = DateTime.Now.AddHours(2) };
+            //Session = new trainingSessionModel { startDate = DateTime.Now, endDate = DateTime.Now.AddHours(2) };
             return Page();
         }
 
         public async Task<IActionResult> OnPostAsync()
         {
+            ModelState.Clear();
             Session.modifiedBy = User.Identity.Name;
             Session.modifiedDate = DateTime.Now;
 
             if (!ModelState.IsValid)
             {
+                TrainerList = new SelectList(_context.Persons, "personID", "personFullName");
                 TrainingList = new SelectList(_context.Trainings, "trainingID", "trainingTitle");
                 return Page();
             }

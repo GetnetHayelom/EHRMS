@@ -1,11 +1,13 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
+using PIS2.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using PIS2.Models;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace PIS2.Pages.Employment
 {
@@ -42,8 +44,14 @@ namespace PIS2.Pages.Employment
             }
             
             ViewData["employmentTypeID"] = new SelectList(_context.EmploymentTypes, "employmentTypeID", "employmentTypeName");
-            ViewData["employmentMethod"] = new SelectList(_context.EmploymentMethods, "employmentMethodID", "employmentMethodName");
-            ViewData["employmentRequest"] = new SelectList(_context.EmploymentRequests.Where(er => er.requestStatus != employmentRequestStatus.Completed), "employmentRequestID", "employmentRequestID");
+            ViewData["employmentMethod"] = new SelectList(_context.EmploymentMethods.Where(e => e.employmentMethodStatus == mainStatus.Active), "employmentMethodID", "employmentMethodName");
+            var req = _context.JobRequirements.Include(e => e.JobModel).Where(er => er.jobRequirementStatus != jobReqStatus.Hold || er.jobRequirementStatus != jobReqStatus.Declined).Select(r =>new
+            {
+                reqID = r.jobRequirementID,
+                reqName = r.JobModel.jobTitle
+            });
+
+            ViewData["employmentRequest"] = new SelectList(req, "reqID", "reqName");
             return Page();
         }
 
@@ -56,7 +64,14 @@ namespace PIS2.Pages.Employment
             if (!User.IsInRole("MIE\\PMS_HRCLERK"))
             {
                 return RedirectToPage("/Shared/AccessDenied");
-            } 
+            }
+
+            var empMethod = await _context.EmploymentMethods.AsNoTracking().FirstAsync(e => e.employmentMethodID == employmentModel.employmentMethodID);
+            if (empMethod.employmentMethodStatus != mainStatus.Active)
+            {
+                TempData["message"] = ("Error", $"Employment Method Is Not Active!");
+                return Page();
+            }
             ViewData["personID"] = new SelectList(_context.Persons, "personID", "personFullName");
             ViewData["employmentTypeID"] = new SelectList(_context.EmploymentTypes, "employmentTypeID", "employmentTypeName");
             ModelState.Remove("employmentModel.modifiedBy");
@@ -64,21 +79,38 @@ namespace PIS2.Pages.Employment
 
             if (!ModelState.IsValid)
             {
-                
                 // Log or display errors for debugging
                 foreach (var error in ModelState)
                 {
                     Console.WriteLine($"{error.Key}: {string.Join(", ", error.Value.Errors.Select(e => e.ErrorMessage))}");
+                    TempData["message"] =("Error",$"{error.Key}: {string.Join(", ", error.Value.Errors.Select(e => e.ErrorMessage))}");
                 }
-                // Optionally pass errors to the view for display
-                TempData["successMessage"] = ModelState.Values.SelectMany(v=>v.Errors).Select(e =>e.ErrorMessage).ToList();
                 return Page();
             }
 
             _context.Employments.Add(employmentModel);
             await _context.SaveChangesAsync();
 
-            return RedirectToPage("/JobPlacement/Create", new {id= employmentModel.employmentID});
+            // ✅ Get probation days
+            var employmentType = await _context.EmploymentTypes
+                .FirstOrDefaultAsync(e => e.employmentTypeID == employmentModel.employmentTypeID);
+
+            int probationDays = employmentType?.probationDays ?? 0;
+            var probation = new prohibitionModel
+            {
+                prohibitionDate = DateTime.Now,
+                prohibitionStart = employmentModel.employmentDate,
+                prohibitionEnd = employmentModel.employmentDate.AddDays(probationDays),
+                employmentID = employmentModel.employmentID,
+                prohibitionReason = "Probation Period",
+                prohibitionStatus = mainStatus.Active,
+                prohibitionType = ProhibitionType.Leave,
+                prohibitionRemark = "",
+                modifiedBy = User.Identity?.Name
+            };
+            _context.Prohibitions.Add(probation);
+            await _context.SaveChangesAsync();
+            return RedirectToPage("/JobPlacement/Create", new {id = employmentModel.employmentID});
         }
     }
 }

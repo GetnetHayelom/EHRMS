@@ -200,8 +200,7 @@
                                     </thead>
 
                                     <tbody>
-                                        @foreach (var h in Model.JobPlacementHistory
-                                                                            .OrderByDescending(x => x.modifiedDate))
+                                        @foreach (var h in Model.JobPlacementHistory.OrderByDescending(x => x.modifiedDate))
                                         {
                                             <tr>
                                                 <td class="text-nowrap">
@@ -223,13 +222,12 @@
                                                 </td>
 
                                                 <td>
-                                                    <span class="badge
-                                                @(h.jobPlacementStatus == Models.mainStatus.Active
+                                                    <span class="badge @(h.jobPlacementStatus == Models.mainStatus.Active
                                                                                                       ? "bg-success"
                                                                                                       : "bg-secondary")">
-                                                @h.jobPlacementStatus
-                                            </span>
-                                        </td>
+                                                        @h.jobPlacementStatus
+                                                    </span>
+                                                </td>
 
                                                 <td>
                                                     @h.jobPlacementReference
@@ -239,7 +237,7 @@
                                                     @h.modifiedBy
                                                 </td>
                                             </tr>
-                                                                        }
+                                        }
                                     </tbody>
                                 </table>
 
@@ -257,6 +255,12 @@
     </div>
 
 </div>
+@await Html.PartialAsync("_AttachmentPartial",
+new Pages.Shared.AttachmentPartialModel
+{
+    tableName = "JobPlacement",
+    recordId = Model.jobPlacementModel.jobPlacementID
+})
 
 @section Scripts {
     @{

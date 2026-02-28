@@ -2,51 +2,70 @@
 @model PIS2.Pages.Experience._OfficialPrintModel
 @{
     Layout = "headerFull";
+    
 }
 
 @section LetterBody
 {
     <p><strong>To Whom It May Concern</strong></p>
+    <div id="lbody">
+        <p>
+            This letter is written upon the request of
+            <strong>@(Model.personName.personGender == Models.Gender.Male ? "Mr" : "Ms") <u>@Model.personName?.personFullName</u> </strong>,
+            who has served the company (Mesfin Metals and Engineering Plc).During @(Model.personName.personGender == Models.Gender.Male ? "his" : "her") stay in the company @(Model.personName.personGender == Models.Gender.Male ? "he" : "she")  has assigned to the following post:-
+        </p>
 
-    <p>
-        This letter is written upon the request of
-        <strong>@(Model.personName.personGender == Models.Gender.Male? "Mr" : "Ms") <u>@Model.personName?.personFullName</u> </strong>,
-        who has served the company (Mesfin Metals and Engineering Plc).During @(Model.personName.personGender == Models.Gender.Male ? "his" : "her") stay in the company @(Model.personName.personGender == Models.Gender.Male ? "he" : "she")  has assigned to the following post:-
-    </p>
-
-    <table class="table print-full-width">
-        <thead>
-            <tr>
-                <th>S\N</th>
-                <th>From</th>
-                <th>To</th>
-                <th>Position</th>
-            </tr>
-        </thead>
-        <tbody>
-        @{
-                int sn = 1;
-            }
-            @foreach (var i in Model.Experiences)
-            {
+        <table class="table print-full-width">
+            <thead>
                 <tr>
-                    <td>@sn</td>
-                    <td>@i.experienceStartDate.ToString("MM/dd/yyyy")</td>
-                    <td>@i.experienceEndDate.ToString("MM/dd/yyyy")</td>
-                    <td>@i.jobTitle</td>
+                    <th>S\N</th>
+                    <th>From</th>
+                    <th>To</th>
+                    <th>Position</th>
                 </tr>
-                sn++;
-            }
-            
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                @{
+                    int sn = 1;
+                }
+                @foreach (var i in Model.Experiences)
+                {
+                    <tr>
+                        <td>@sn</td>
+                        <td>@i.experienceStartDate.ToString("MM/dd/yyyy")</td>
+                        <td>@i.experienceEndDate.ToString("MM/dd/yyyy")</td>
+                        <td>@i.jobTitle</td>
+                    </tr>
+                    sn++;
+                }
 
-    <p>
-        Earning Basic monthly salary of Birr @Model.Salary.ToString("N2") (Birr @Models.NumberToWordConverter.Convert(Model.Salary)).
-        All the required income Tax been deducted since date of hired from his monthly salary and paid to the concerned Government Body.
-        This work experience is given up on his request; it will not serve as official release.
-    </p>
+            </tbody>
+        </table>
 
-    <p class="mt-4"><strong>With Regards</strong></p>
+        <p>
+            Earning Basic monthly salary of Birr @Model.Salary.ToString("N2") (Birr @Models.NumberToWordConverter.Convert(Model.Salary)).
+            All the required income Tax been deducted since date of hired from his monthly salary and paid to the concerned Government Body.
+            This work experience is given up on his request; it will not serve as official release.
+        </p>
 
+        <p class="mt-4"><strong>With Regards</strong></p>
+    </div>
+   
+    <div class="d-flex justify-content-end">
+        
+        @await Html.PartialAsync("back")
+        <form method="POST" id="approveForm">
+            <input name="LBody" id="linput" hidden/>
+            <button type="submit" class="btn btn-success m-2">Approve</button>
+        </form>
+        @await Html.PartialAsync("print")
+    </div>
+
+    <script>
+        document.getElementById("approveForm").addEventListener("submit", function () {
+            var content = document.getElementById("lbody").innerHTML;
+            document.getElementById("linput").value = content;
+        });
+    </script>
  }   
+ 

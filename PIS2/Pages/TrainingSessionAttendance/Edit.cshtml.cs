@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using PIS2.Models;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace PIS2.Pages.TrainingSessionAttendance
 {
@@ -28,10 +29,25 @@ namespace PIS2.Pages.TrainingSessionAttendance
 
         public async Task<IActionResult> OnPostAsync()
         {
+            ModelState.Remove("Attendance.modifiedBy");
             Attendance.modifiedBy = User.Identity.Name;
             Attendance.modifiedDate = DateTime.Now;
 
-            if (!ModelState.IsValid) return Page();
+            if (!ModelState.IsValid)
+            {
+                var ms = "";
+                foreach (var kv in ModelState)
+                {
+                    foreach (var error in kv.Value.Errors)
+                    {
+                        Console.WriteLine($"{kv.Key} --> {error.ErrorMessage}");
+                        ms += $"{kv.Key},";
+                    }
+                }
+                TempData["message"] = ("Error", $"{ms} --> Invalid Filed!");
+
+                return Page();
+            }
 
             _context.Attach(Attendance).State = EntityState.Modified;
             try

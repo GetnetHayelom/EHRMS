@@ -1,0 +1,70 @@
+﻿@page
+@model PIS2.Pages.Archive.IndexModel
+@{
+}
+@await Html.PartialAsync("headerSimple", "")
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-end mb-3">
+        <div>
+            <h2 class="fw-bold">Letters</h2>
+            <h6 class="text-muted">Approved letters ready for archive</h6>
+        </div>
+        <a asp-page="Archived">View Archive</a>
+    </div>
+
+    <table class="table table-striped table-hover">
+        <thead class="table-dark">
+            <tr>
+                <th>S/No</th>
+                <th>Number</th>
+                <th>Subject</th>
+                <th>Type</th>
+                <th>Group</th>
+                <th>Date</th>
+                <th class="d-print-none">Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (!Model.Letters.Any())
+            {
+                <tr>
+                    <td colspan="7" class="text-center text-muted">
+                        No apptoved letter found.
+                    </td>
+                </tr>
+            }
+            @{
+                int index = 1;}
+            @foreach (var l in Model.Letters)
+            {
+                <tr>
+                    <td>@(index++)</td>
+                    <td>@l.letterNumber</td>
+                    <td>@l.letterSubject</td>
+                    <td>@l.LetterType?.letterTypeName</td>
+                    <td>@l.letterGroup</td>
+                    <td>@l.letterDate.ToShortDateString()</td>
+                    
+                    <td class="d-print-none">
+                        <div class="btn-group" role="group">
+                            <a asp-page="/Letter/Details" asp-route-id="@l.letterID" class="btn btn-sm btn-outline-primary" title="View Details">
+                                <i class="bi bi-eye"></i>
+                            </a>
+                            <a asp-page="Create" asp-route-id="@l.letterID" class="btn btn-sm btn-outline-success" title="Archive">
+                                <i class="bi bi-archive"></i>
+                            </a>
+                        </div>
+                    
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+   
+</div>
+<div class="d-flex justify-content-end m-2">
+    @await Html.PartialAsync("back")
+    @await Html.PartialAsync("print")
+</div>
+

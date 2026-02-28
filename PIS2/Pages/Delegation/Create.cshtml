@@ -6,36 +6,44 @@
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
 
-<h1 class="fw-bold">Delegation</h1>
+<h2 class="fw-bold">Delegations</h2>
 
-<h4 class="fw-bold">New Delegation</h4>
+<h6 class="text-muted">New Delegation</h6>
 <hr />
-<div class="row">
-    <div class="col-md-4">
+<div class="row g-2">
+    <div class="card shadow-sm p-2 col-md-4">
         <form method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="delegationModel.delegationFrom" class="control-label">Delegator</label>
-                <select asp-for="delegationModel.delegationFrom" class ="form-control select2">
-                    <option value="">Select Delegator</option>
-                    @foreach(var item in Model.Employments)
+            <!-- Selector -->
+            <div class="mb-3">
+                <label asp-for="delegationModel.delegationFrom" class="form-label fw-semibold">
+                    <span class="text-danger">*</span> Delegator
+                </label>
+                <input type="text" class="form-control" list="personList1" placeholder="Type to search..." oninput="selector(this, 'delegateFrom')" value="@Model.delegationModel?.FromEmployment?.personModel?.personFullName" />
+                <input type="hidden" asp-for="delegationModel.delegationFrom" id="delegateFrom" value="@Model.delegationModel?.delegationFrom"/>
+                <datalist id="personList1">
+                    @foreach (var person in Model.Employments)
                     {
-                        <option value="@item.employmentID">@item.personModel?.personFullName</option>
+                        <option data-id="@person.Value" value="@person.Text"></option>
                     }
-                </select>
-               
+                </datalist>
+                <span asp-validation-for="delegationModel.delegationFrom" class="text-danger"></span>
             </div>
 
-            <div class="form-group">
-                <label asp-for="delegationModel.delegationTo" class="control-label">Delegatee</label>
-                <select asp-for="delegationModel.delegationTo" class ="form-control select2">
-                    <option value="">Select Delegatee</option>
-                    @foreach (var item in Model.Employments)
+            <!-- Selector -->
+            <div class="mb-3">
+                <label asp-for="delegationModel.delegationTo" class="form-label fw-semibold">
+                    <span class="text-danger">*</span> Delegatee
+                </label>
+                <input type="text" class="form-control" list="personList2" placeholder="Type to search..." oninput="selector(this, 'delegateTo')" />
+                <input type="hidden" asp-for="delegationModel.delegationTo" id="delegateTo" />
+                <datalist id="personList2">
+                    @foreach (var person in Model.Employments)
                     {
-                        <option value="@item.employmentID">@item.personModel?.personFullName</option>
+                        <option data-id="@person.Value" value="@person.Text"></option>
                     }
-                </select>
-                
+                </datalist>
+                <span asp-validation-for="delegationModel.delegationTo" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="delegationModel.delegationStartDate" class="control-label">Start</label>
@@ -52,12 +60,105 @@
                 <select asp-for="delegationModel.delegationScope" class="form-control" asp-items="@Html.GetEnumSelectList<Models.delegationScopes>()"></select>
                 <span asp-validation-for="delegationModel.delegationScope" class="text-danger"></span>
             </div>
-           
             
             <div class="form-group d-flex justify-content-end">
                 <input type="submit" value="Save" class="btn btn-success m-2" />
             </div>
         </form>
+    </div>
+
+    <div class="card shadow-sm p-2 col-md-8">
+        <h6 class="fw-bold">My Delegations</h6>
+        <table class="table table-striped table-hover" id="dataTable">
+            <thead class="bg-dark text-white">
+                <tr>
+                    <th>S/No</th>
+                    <th>
+                        Deligator
+                    </th>
+                    <th>
+                        Deligate
+                    </th>
+                    <th>
+                        Duration
+                    </th>
+
+                    <th>
+                        Scope
+                    </th>
+                    <th>
+                        Status
+                    </th>
+                    <th>
+                        Last Modified
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (!Model.myDelegations.Any())
+                {
+                    <tr>
+                        <td colspan="7" class="text-center text-muted">
+                            No delegations found.
+                        </td>
+                    </tr>
+                }
+                @{
+                    int index = 1;
+                }
+                @foreach (var item in Model.myDelegations)
+                {
+                    <tr onclick="location.href='@Url.Page("Details", new { id = item.delegationID })'" style="cursor:pointer;">
+                        <td>@(index++)</td>
+                        <td>
+                            <div>
+                                @item.FromEmployment?.givenID
+                                <p class="text-muted">@item.FromEmployment?.personModel?.personFullName</p>
+                            </div>
+
+                        </td>
+                        <td>
+                            <div>
+                                @item.ToEmployment?.givenID
+                                <p class="text-muted">@item.ToEmployment?.personModel?.personFullName</p>
+                            </div>
+
+                        </td>
+                        <td>
+                            @item.delegationStartDate.ToString("MM/dd/yyyy") - @item.delegationEndDate.ToString("MM/dd/yyyy")
+                        </td>
+
+                        <td>
+                            @item.delegationScope.ToString()
+                        </td>
+                        <td>
+
+                            @if (item.delegationStatus == Models.mainStatus.Active)
+                            {
+                                <span class="badge bg-success">@Html.DisplayFor(modelItem => item.delegationStatus)</span>
+
+                            }
+                            else if (item.delegationStatus == Models.mainStatus.Suspended)
+                            {
+                                <span class="badge bg-warning">@Html.DisplayFor(modelItem => item.delegationStatus)</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-secondary">@Html.DisplayFor(modelItem => item.delegationStatus)</span>
+                            }
+                        </td>
+                        <td>
+                            <div>
+                                @item.modifiedBy
+                                <p class="text-muted">@item.modifiedDate</p>
+                            </div>
+
+                        </td>
+
+                    </tr>
+                }
+            </tbody>
+        </table>
     </div>
 </div>
 

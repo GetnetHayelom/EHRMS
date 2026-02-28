@@ -3,62 +3,88 @@
 @{
     ViewData["Title"] = "Evaluation Types";
 }
+<div class="d-flex justify-content-between">
+    <h2 class="fw-bold">Evaluation Management</h2>
 
-<h1 class="fw-bold">Evaluation Management</h1>
+    <a asp-page="Create" class="btn btn-primary mb-3 d-print-none">
+        Add Evaluation Type
+    </a>
+</div>
 
-<a asp-page="Create" class="btn btn-primary mb-3">
-    Add Evaluation Type
-</a>
+<div class="card shadow-sm p-2">
+    <table class="table table-bordered table-hover">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Weight (%)</th>
+                <th>Fixed</th>
+                <th>Position</th>
+                <th>Job Class</th>
+                <th>Status</th>
+                <th>Modified</th>
+                <th class="d-print-none">Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.EvaluationTypes)
+            {
+                <tr>
+                    <td>@item.evaluationTypeName</td>
+                    <td>@item.evaluationTypeWeight</td>
+                    <td>
+                        @if (item.isFixed)
+                        {
+                            <span class="badge bg-info">Yes</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-secondary">No</span>
+                        }
+                    </td>
+                    <td>
+                        @if (item.Position==null)
+                        {
+                            <span class="badge bg-info">All</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-secondary">@item.Position</span>
+                        }
+                    </td>
+                    <td>
+                        @if (item.jobClassID == null)
+                        {
+                            <span class="badge bg-info">All</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-secondary">@item.jobClassModel.jobClassName</span>
+                        }
+                    </td>
+                    <td>
+                        @if (item.evaluationTypeStatus == Models.mainStatus.Active)
+                        {
+                            <span class="badge bg-success">@Html.DisplayFor(modelItem => item.evaluationTypeStatus)</span>
 
-<table class="table table-bordered table-hover">
-    <thead>
-        <tr>
-            <th>Name</th>
-            <th>Weight (%)</th>
-            <th>Fixed</th>
-            <th>Status</th>
-            <th>Modified</th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model.EvaluationTypes)
-{
-        <tr>
-            <td>@item.evaluationTypeName</td>
-            <td>@item.evaluationTypeWeight</td>
-            <td>
-                @if (item.isFixed)
-                {
-                    <span class="badge bg-info">Yes</span>
-                }
-                else
-                {
-                    <span class="badge bg-secondary">No</span>
-                }
-            </td>
-            <td>
-                    @if (item.evaluationTypeStatus == Models.mainStatus.Active)
-                    {
-                        <span class="badge bg-success">@Html.DisplayFor(modelItem => item.evaluationTypeStatus)</span>
+                        }
+                        else if (item.evaluationTypeStatus == Models.mainStatus.Suspended)
+                        {
+                            <span class="badge bg-warning">@Html.DisplayFor(modelItem => item.evaluationTypeStatus)</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-secondary">@Html.DisplayFor(modelItem => item.evaluationTypeStatus)</span>
+                        }
+                    </td>
+                    <td>@item.modifiedDate.ToShortDateString()</td>
+                    <td class="d-print-none">
+                        <a asp-page="Edit" asp-route-id="@item.evaluationTypeID"
+                           class="btn btn-sm btn-warning">Edit</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
 
-                    }
-                    else if (item.evaluationTypeStatus == Models.mainStatus.Suspended)
-                    {
-                        <span class="badge bg-warning">@Html.DisplayFor(modelItem => item.evaluationTypeStatus)</span>
-                    }
-                    else
-                    {
-                        <span class="badge bg-secondary">@Html.DisplayFor(modelItem => item.evaluationTypeStatus)</span>
-                    }
-                </td>
-            <td>@item.modifiedDate.ToShortDateString()</td>
-            <td>
-                <a asp-page="Edit" asp-route-id="@item.evaluationTypeID"
-                   class="btn btn-sm btn-warning">Edit</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
 

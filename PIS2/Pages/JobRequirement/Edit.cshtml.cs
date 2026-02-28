@@ -46,20 +46,31 @@ namespace PIS2.Pages.JobRequirement
         // For more information, see https://aka.ms/RazorPagesCRUD.
         public async Task<IActionResult> OnPostAsync()
         {
-            if (!ModelState.IsValid)
+            ModelState.Clear();
+
+            jobReqStatus newStatsus = jobRequirementModel.jobRequirementStatus;
+
+            var exRow = await _context.JobRequirements.FirstOrDefaultAsync(j => j.jobRequirementID == jobRequirementModel.jobRequirementID);
+            if (exRow == null)
             {
-                return Page();
+                return NotFound();
             }
 
-            _context.Attach(jobRequirementModel).State = EntityState.Modified;
+            int reqID = exRow.jobRequirementID;
+            jobReqStatus oldStatus = exRow.jobRequirementStatus;
 
+            exRow.modifiedBy = User.Identity.Name;
+            exRow.modifiedDate = DateTime.Now;
+            exRow.jobRequirementStatus = jobRequirementModel.jobRequirementStatus;
+            exRow.requiredNumber = jobRequirementModel.requiredNumber;
+  
             try
             {
                 await _context.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!jobRequirementModelExists(jobRequirementModel.jobRequirementID))
+                if (!jobRequirementModelExists(reqID))
                 {
                     return NotFound();
                 }
@@ -68,8 +79,13 @@ namespace PIS2.Pages.JobRequirement
                     throw;
                 }
             }
-
-            return RedirectToPage("./Index");
+            
+            var isPublished = await _context.Vacancies.AnyAsync(v => v.jobRequirementID == reqID);
+            if(!isPublished && (oldStatus == jobReqStatus.Hold && newStatsus == jobReqStatus.Approved))
+            {
+                return RedirectToPage("/Vacancy/Create", new { id = reqID });
+            }
+            return RedirectToPage("./Details", new {id = reqID });
         }
 
         private bool jobRequirementModelExists(int id)

@@ -32,11 +32,13 @@ namespace PIS2.Pages.Guaranty
         {
             var activeEmps = await _context.Employments.Where(e => e.employmentStatus == mainStatus.Active).Select(e => e.personID).ToListAsync();
 
-            ViewData["employmentID"] = new SelectList(_context.Employments, "employmentID", "givenID");
+            ViewData["employmentID"] = new SelectList(activeEmps, "employmentID", "givenID");
             
             if(id != null) {
-                Person = new SelectList(_context.Persons.Where(p => activeEmps.Contains(p.personID)), "personID", "personFullName", id);
-                givenID = _context.Employments.FirstOrDefault(e => e.personID == id && e.employmentStatus == mainStatus.Active)?.givenID ?? "";
+                var prsn = await _context.Persons.Where(p => activeEmps.Contains(p.personID)).ToListAsync();
+                Person = new SelectList(prsn, "personID", "personFullName", id);
+                var gvnID = await _context.Employments.FirstOrDefaultAsync(e => e.personID == id && e.employmentStatus == mainStatus.Active);
+                givenID = gvnID?.givenID ?? "";
                 GuarantyStatus = await _context.Guaranties.Include(e => e.Employment).Where(e => e.Employment.personID == id).ToListAsync();
             }
             else if(!String.IsNullOrEmpty(givenID))
@@ -48,10 +50,10 @@ namespace PIS2.Pages.Guaranty
                 }
                 else
                 {
-                    Person = new SelectList(_context.Persons.OrderBy(p => new {p.personFirstName, p.personFatherName, p.personLastName}).Where(p => activeEmps.Contains(p.personID)), "personID", "personFullName");
+                    var prsn2 = await _context.Persons.OrderBy(p => new { p.personFirstName, p.personFatherName, p.personLastName }).Where(p => activeEmps.Contains(p.personID)).ToListAsync();
+                    Person = new SelectList(prsn2, "personID", "personFullName");
                 }
                 
-                givenID = _context.Employments.FirstOrDefault(e => e.personID == id && e.employmentStatus == mainStatus.Active)?.givenID ?? "";
             }
             
             
@@ -66,12 +68,23 @@ namespace PIS2.Pages.Guaranty
             ModelState.Remove("guarantyModel.modifiedBy");
             guarantyModel.modifiedBy = User.Identity.Name;
             var currentUserName = User.Identity?.Name;
+
             if (string.IsNullOrEmpty(givenID))
-            {                
-                guarantyModel.employmentID = _context.Employments
-                    .Where(e => e.personID == _context.Users
-                    .FirstOrDefault(u => u.userName == currentUserName).personID && e.employmentStatus == mainStatus.Active)
-                    .FirstOrDefault().employmentID;
+            {
+                var prsnID = await _context.Users.FirstOrDefaultAsync(u => u.userName == currentUserName);
+                if(prsnID == null)
+                {
+                    TempData["message"] = ("Error", $"Unknown Person!"); 
+                    return Page();
+                }
+                var emp = await _context.Employments.Where(e => e.personID == prsnID.personID && e.employmentStatus == mainStatus.Active).FirstOrDefaultAsync();
+                if (emp == null)
+                {
+                    TempData["message"] = ("Error", $"Eo Employment Found!");
+                    return Page();
+                }
+                guarantyModel.employmentID = emp.employmentID;
+
             }
             else
             {
@@ -88,12 +101,8 @@ namespace PIS2.Pages.Guaranty
                 }
                 
                 guarantyModel.employmentID = Employment.employmentID;
-            }
-            ModelState.Remove("guarantyModel.modifiedBy");
+            }            
             guarantyModel.guarantyStatus = mainStatus.Suspended;
-            guarantyModel.modifiedBy = currentUserName;
-            Console.WriteLine("##### "+ guarantyModel.modifiedBy);
-            Console.WriteLine("##### " + User.Identity.Name);
             if (!ModelState.IsValid)
             {
                 foreach (var kv in ModelState)
@@ -108,9 +117,7 @@ namespace PIS2.Pages.Guaranty
             try
             {
                 serviceRequestModel serReq = new serviceRequestModel();
-                
-                var employmentID = guarantyModel.employmentID ;
-                    
+                var employmentID = guarantyModel.employmentID ;                    
 
                 serReq = new serviceRequestModel
                 {

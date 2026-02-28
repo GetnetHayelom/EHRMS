@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace PIS2.Models
 {
@@ -18,19 +19,18 @@ namespace PIS2.Models
 
         [Required]
         [Display(Name = "Notice Content")]
+        [Column(TypeName = "nvarchar(max)")]
         public string noticeContent { get; set; }
 
-        [Display(Name = "Posted By")]
-        [StringLength(100)]
-        public string noticePostedBy { get; set; }
-
-        [Display(Name = "Approved By")]
-        [StringLength(100)]
-        public string noticeApprovedBy { get; set; }
+        [Display(Name = "Notice Status")]
+        public NoticeStatus noticeStatus { get; set; }
 
         [Display(Name = "Notice From")]
         [StringLength(100)]
         public string? noticeFrom { get; set; }
+        [Display(Name = "Notice To")]
+        [StringLength(100)]
+        public string? noticeTo { get; set; }
         [Display(Name = "Notice Priority")]
         public Priority noticePriority { get; set; }
         [Display(Name = "Date Posted")]
@@ -44,9 +44,10 @@ namespace PIS2.Models
         [Display(Name = "Is Active")]
         public bool IsActive { get; set; } = true;
 
-        [Display(Name = "Attachment (Optional)")]
-        public string? AttachmentPath { get; set; }
-
+        [Display(Name = "Signed By")]
+        public string? noticeSignedBy { get; set; }
+        public string modifiedBy { get; set; }
+        public DateTime modifiedDate { get; set; }
         public NoticeModel() { }
     }
 
@@ -56,5 +57,14 @@ namespace PIS2.Models
         Medium,
         High,
         Urgent
+    }
+
+    public enum NoticeStatus
+    {
+        Pending,
+        Approved,
+        Posted,
+        Expired,
+        Void
     }
 }

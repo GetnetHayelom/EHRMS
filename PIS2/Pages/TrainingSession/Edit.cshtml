@@ -1,5 +1,6 @@
 ﻿@page
 @model PIS2.Pages.TrainingSession.EditModel
+<h2 class="fw-bold ">Training</h2>
 <div class="container mt-4">
     <div class="row justify-content-center">
         <div class="col-lg-9">
@@ -9,6 +10,7 @@
                 </div>
                 <div class="card-body p-4">
                     <form method="post">
+                        <input asp-for="Session.trainingSessionID" value="@Model.Session.trainingSessionID" type="hidden"/>
                         <div class="row g-3">
                             <div class="col-md-12">
                                 <label class="form-label fw-bold">Select Training Program</label>
@@ -16,7 +18,11 @@
                                     <option value="">-- Select Training --</option>
                                 </select>
                             </div>
+                            <div class="col-md-12">
+                                <label class="form-label fw-bold">Session Title</label>
+                                <input asp-for="Session.trainingSessionTitle" class="form-control" type="text" />
 
+                            </div>
                             <div class="col-md-6">
                                 <label asp-for="Session.startDate" class="form-label fw-bold">Start Date & Time</label>
                                 <input asp-for="Session.startDate" class="form-control" type="datetime-local" />
@@ -28,11 +34,11 @@
 
                             <!-- Selector -->
                             <div class="col-md-6">
-                                <label asp-for="Session.personID" class="form-label fw-semibold">
+                                <label asp-for="Session.personID" class="form-label fw-bold">
                                     <span class="text-danger">*</span> Person
                                 </label>
-                                <input type="text" class="form-control" list="personList" placeholder="Type to select..." oninput="selector(this, 'personIDHidden')" />
-                                <input type="hidden" asp-for="Session.personID" id="personIDHidden" />
+                                <input type="text" class="form-control" list="personList" placeholder="Type to select..." oninput="selector(this, 'personIDHidden')" value="@Model.Session?.PersonModel?.personFullName"/>
+                                <input type="hidden" asp-for="Session.personID" id="personIDHidden" value="@Model.Session.personID"/>
                                 <datalist id="personList">
                                     @foreach (var person in Model.TrainerList)
                                     {
@@ -58,7 +64,7 @@
                                 </div>
                             </div>
                             <div class="col-md-4">
-                                <label asp-for="Session.sessionStatus" class="form-label fw-bold">Initial Status</label>
+                                <label asp-for="Session.sessionStatus" class="form-label fw-bold">Status</label>
                                 <select asp-for="Session.sessionStatus" asp-items="Html.GetEnumSelectList<Models.trainingStatus>()" class="form-select"></select>
                             </div>
                         </div>

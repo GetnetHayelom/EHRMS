@@ -40,7 +40,7 @@ namespace PIS2.Pages.Evaluation
 
             var departments = _context.Departments.AsQueryable();
             if (company.HasValue) departments = departments.Where(d => d.companyID == company);
-            DepartmentList = new SelectList(await departments.OrderBy(d => d.departmentName).ToListAsync(), "departmentID", "departmentName");
+            DepartmentList = new SelectList(await departments.Distinct().OrderBy(d => d.departmentName).ToListAsync(), "departmentID", "departmentName");
 
             var evals = _context.EvalGrandView
                 .OrderByDescending(e => e.endDate) // Show newest first

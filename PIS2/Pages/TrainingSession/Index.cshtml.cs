@@ -15,6 +15,7 @@ namespace PIS2.Pages.TrainingSession
         {
             Sessions = await _context.TrainingSessions
                 .Include(s => s.Training)
+                .Include(s => s.PersonModel)
                 .OrderByDescending(s => s.startDate)
                 .ToListAsync();
         }

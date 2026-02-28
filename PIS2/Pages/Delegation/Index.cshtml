@@ -5,15 +5,21 @@
     ViewData["Title"] = "Index";
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
-
-<h1 class="fw-bold">Delegations</h1>
-
-<p>
-    <a asp-page="Create" class="btn btn-primary">New Delegation</a>
-</p>
-<table class="table table-striped table-hover">
-    <thead class="d-flex text-white">
+@await Html.PartialAsync("headerSimple", "")
+<div class="d-flex justify-content-between">
+    <div>
+        <h2 class="fw-bold">Delegations</h2>
+        <h6 class="text-muted">Delegations Catalogue</h6>
+    </div>
+    <p class="d-print-none">
+        <a asp-page="Create" class="btn btn-primary m-2">New Delegation</a>
+    </p>
+</div>
+@await Html.PartialAsync("filter")
+<table class="table table-striped table-hover" id="dataTable">
+    <thead class="bg-dark text-white">
         <tr>
+            <th>S/No</th>
             <th>
                 Deligator
             </th>
@@ -21,11 +27,9 @@
                 Deligate
             </th>
             <th>
-                Start
+                Duration
             </th>
-            <th>
-                End
-            </th>
+           
             <th>
                 Scope
             </th>
@@ -33,43 +37,77 @@
                 Status
             </th>
             <th>
-                Modified Date
+                Last Modified
             </th>
-            <th>
-                Modified User
-            </th>
-            
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model.delegationModel) {
+        @if (!Model.delegationModel.Any())
+        {
+            <tr>
+                <td colspan="7" class="text-center text-muted">
+                    No delegations found.
+                </td>
+            </tr>
+        }
+        @{
+            int index = 1;
+        }
+        @foreach (var item in Model.delegationModel) {
         <tr onclick="location.href='@Url.Page("Details", new {id = item.delegationID})'" style="cursor:pointer;">
+            <td>@(index++)</td>
             <td>
-                @Html.DisplayFor(modelItem => item.FromEmployment.givenID)
+                    <div>
+                        @item.FromEmployment?.givenID
+                        <p class="text-muted">@item.FromEmployment?.personModel?.personFullName</p>
+                    </div>
+                
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.ToEmployment.givenID)
+                    <div>
+                        @item.ToEmployment?.givenID
+                        <p class="text-muted">@item.ToEmployment?.personModel?.personFullName</p>
+                    </div>
+                
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.delegationStartDate.ToString("yyyy-MM-dd"))
+                    @item.delegationStartDate.ToString("MM/dd/yyyy") - @item.delegationEndDate.ToString("MM/dd/yyyy")
+            </td>
+            
+            <td>
+                @item.delegationScope.ToString()
             </td>
             <td>
-                    @Html.DisplayFor(modelItem => item.delegationEndDate.ToString("yyyy-MM-dd"))
+
+                    @if (item.delegationStatus == Models.mainStatus.Active)
+                    {
+                        <span class="badge bg-success">@Html.DisplayFor(modelItem => item.delegationStatus)</span>
+
+                    }
+                    else if (item.delegationStatus == Models.mainStatus.Suspended)
+                    {
+                        <span class="badge bg-warning">@Html.DisplayFor(modelItem => item.delegationStatus)</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-secondary">@Html.DisplayFor(modelItem => item.delegationStatus)</span>
+                    }
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.delegationScope)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.delegationStatus)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.modifiedDate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.modifiedBy)
+                    <div>
+                        @item.modifiedBy
+                        <p class="text-muted">@item.modifiedDate</p>
+                    </div>
+              
             </td>
             
         </tr>
     }
     </tbody>
 </table>
+
+<div class="d-flex d-print-none justify-content-end m-2 gap-2">
+    @await Html.PartialAsync("print")
+    @await Html.PartialAsync("back")
+</div>
+<a href="/Delegation/OldDelegations">Archived Delegations</a>

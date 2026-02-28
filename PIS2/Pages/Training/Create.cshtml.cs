@@ -23,8 +23,10 @@ namespace PIS2.Pages.Training
 
         public async Task<IActionResult> OnPostAsync()
         {
+            ModelState.Clear();
             Training.modifiedBy = User.Identity.Name;
             Training.modifiedDate = DateTime.Now;
+            Training.trainingStatus = trainingStatus.Planned;
 
             if (!ModelState.IsValid || _context.Trainings == null || Training == null)
             {

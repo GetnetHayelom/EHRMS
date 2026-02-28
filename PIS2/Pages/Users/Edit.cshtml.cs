@@ -40,7 +40,7 @@ namespace PIS2.Pages.Users
                 .Where(a => a.userID == id)
                 .ToListAsync() ?? new List<accessModel>();
 
-            var companies = await _context.Companies.Where(c => c.companyStatus == mainStatus.Active).ToListAsync() ?? new List<companyModel>();
+            var companies = await _context.Companies.Where(c => c.companyStatus == mainStatus.Active).OrderBy(c => c.companyName).ToListAsync() ?? new List<companyModel>();
             CompanySelectList = await _context.Companies.Where(c => c.companyStatus == mainStatus.Active)
                 .ToListAsync();
 
@@ -51,25 +51,24 @@ namespace PIS2.Pages.Users
         public async Task<IActionResult> OnPostAsync()
         {
             if (!User.IsInRole("MIE\\PMS_ADMIN")) return RedirectToPage("/Shared/AccessDenied");
-            userModel.modifiedBy=User.Identity?.Name ?? "SYSTEM";
+
+            ModelState.Remove("userModel.modifiedBy");
 
             var userInDb = await _context.Users.FindAsync(userModel.userID);
             if (userInDb == null) return NotFound();
 
-            
+ 
             userInDb.userName = userModel.userName;
             userInDb.userStatus = userModel.userStatus;
-            userInDb.modifiedBy = userModel.modifiedBy;
+            userInDb.modifiedBy = User.Identity.Name;
 
-            ModelState.Clear();
-            
             if (!ModelState.IsValid)
             {
                 foreach (var kv in ModelState)
                 {
                     foreach (var error in kv.Value.Errors)
                     {
-                        Console.WriteLine($"{kv.Key} --> {error.ErrorMessage}");
+                        Console.WriteLine($"{kv.Key} --> {error.ErrorMessage}"); TempData["message"] = ("Error", $"{kv.Key} --> {error.ErrorMessage}");
                     }
                     Console.WriteLine(kv.ToString());
                 }
@@ -105,7 +104,6 @@ namespace PIS2.Pages.Users
         [ValidateAntiForgeryToken]
         public IActionResult OnPostSaveAccess()
         {
-
             try
             {
                 // Update existing
@@ -122,6 +120,9 @@ namespace PIS2.Pages.Users
                 }
                 else
                 {
+                    var check = _context.Accesses
+                        .Where(a => a.userID == AccessInput.userID && a.userGroups == AccessInput.userGroups && a.companyID == AccessInput.companyID).Any();
+                    if (check) { return new JsonResult(new { success = false, message = "Access exists!"}); }
                     // Create new
                     var newAccess = new accessModel
                     {
@@ -129,7 +130,7 @@ namespace PIS2.Pages.Users
                         userGroups = (UserGroups) AccessInput.userGroups,
                         companyID = AccessInput.companyID >0? AccessInput.companyID : null,
                         accessStatus = (mainStatus) AccessInput.accessStatus,
-                        modifiedBy = User.Identity?.Name ?? "SYSTEM"
+                        modifiedBy = User.Identity?.Name
                     };
 
                     _context.Accesses.Add(newAccess);

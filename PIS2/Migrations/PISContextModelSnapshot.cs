@@ -63,39 +63,46 @@ namespace PIS2.Migrations
                     b.HasAnnotation("SqlServer:UseSqlOutputClause", false);
                 });
 
-            modelBuilder.Entity("PIS2.Models.Attachements", b =>
+            modelBuilder.Entity("PIS2.Models.AttachmentModel", b =>
                 {
-                    b.Property<int>("attachmentID")
+                    b.Property<int>("AttachmentID")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("attachmentID"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("AttachmentID"));
 
-                    b.Property<string>("fileName")
+                    b.Property<string>("FileName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("filePath")
+                    b.Property<string>("FilePath")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<long>("fileSize")
+                    b.Property<long>("FileSize")
                         .HasColumnType("bigint");
 
-                    b.Property<string>("fileType")
+                    b.Property<string>("FileType")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("uploadedBy")
+                    b.Property<int>("RecordId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("TableName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("uploadedDate")
+                    b.Property<string>("UploadedBy")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("UploadedDate")
                         .HasColumnType("datetime2");
 
-                    b.HasKey("attachmentID");
+                    b.HasKey("AttachmentID");
 
-                    b.ToTable("Attachements");
+                    b.ToTable("Attachments");
                 });
 
             modelBuilder.Entity("PIS2.Models.AuditLog", b =>
@@ -133,6 +140,36 @@ namespace PIS2.Migrations
                     b.ToTable("AuditLogs");
                 });
 
+            modelBuilder.Entity("PIS2.Models.LetterSequence", b =>
+                {
+                    b.Property<int>("letterSequenceId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("letterSequenceId"));
+
+                    b.Property<int>("Year")
+                        .HasColumnType("int");
+
+                    b.Property<int>("lastNumber")
+                        .HasColumnType("int");
+
+                    b.Property<int>("letterGroup")
+                        .HasColumnType("int");
+
+                    b.Property<string>("letterTypeCode")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("letterTypePrefix")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("letterSequenceId");
+
+                    b.ToTable("LetterSequences");
+                });
+
             modelBuilder.Entity("PIS2.Models.NoticeModel", b =>
                 {
                     b.Property<int>("noticeID")
@@ -141,11 +178,6 @@ namespace PIS2.Migrations
                         .HasColumnName("noticeID");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("noticeID"));
-
-                    b.Property<string>("AttachmentPath")
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)")
-                        .HasColumnName("AttachmentPath");
 
                     b.Property<DateTime>("DatePosted")
                         .ValueGeneratedOnAdd()
@@ -163,11 +195,12 @@ namespace PIS2.Migrations
                         .HasDefaultValue(true)
                         .HasColumnName("IsActive");
 
-                    b.Property<string>("noticeApprovedBy")
+                    b.Property<string>("modifiedBy")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)")
-                        .HasColumnName("noticeApprovedBy");
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("modifiedDate")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("noticeContent")
                         .IsRequired()
@@ -178,14 +211,17 @@ namespace PIS2.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<string>("noticePostedBy")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)")
-                        .HasColumnName("noticePostedBy");
-
                     b.Property<int>("noticePriority")
                         .HasColumnType("int");
+
+                    b.Property<string>("noticeSignedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)")
+                        .HasColumnName("noticeSignedBy");
+
+                    b.Property<int>("noticeStatus")
+                        .HasColumnType("int")
+                        .HasColumnName("noticeStatus");
 
                     b.Property<string>("noticeSubTitle")
                         .IsRequired()
@@ -198,9 +234,15 @@ namespace PIS2.Migrations
                         .HasColumnType("nvarchar(200)")
                         .HasColumnName("noticeTitle");
 
+                    b.Property<string>("noticeTo")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
                     b.HasKey("noticeID");
 
                     b.ToTable("Notices", (string)null);
+
+                    b.HasAnnotation("SqlServer:UseSqlOutputClause", false);
                 });
 
             modelBuilder.Entity("PIS2.Models.VacancyModel", b =>
@@ -230,6 +272,9 @@ namespace PIS2.Migrations
                     b.Property<int>("VacancyRequiredNumber")
                         .HasColumnType("int");
 
+                    b.Property<int>("VacancyStage")
+                        .HasColumnType("int");
+
                     b.Property<string>("VacancyTitle")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -237,7 +282,8 @@ namespace PIS2.Migrations
                     b.Property<int>("VacancyType")
                         .HasColumnType("int");
 
-                    b.Property<int>("departmentID")
+                    b.Property<int?>("departmentID")
+                        .IsRequired()
                         .HasColumnType("int");
 
                     b.Property<int>("employmentMethodID")
@@ -563,6 +609,41 @@ namespace PIS2.Migrations
                     b.ToTable("Allowances");
 
                     b.HasAnnotation("SqlServer:UseSqlOutputClause", false);
+                });
+
+            modelBuilder.Entity("PIS2.Models.archiveModel", b =>
+                {
+                    b.Property<int>("archiveID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("archiveID"));
+
+                    b.Property<DateTime>("archivedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("letterID")
+                        .HasColumnType("int");
+
+                    b.Property<string>("modifiedBy")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("modifiedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("recievedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("remark")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("archiveID");
+
+                    b.HasIndex("letterID")
+                        .IsUnique();
+
+                    b.ToTable("Archives");
                 });
 
             modelBuilder.Entity("PIS2.Models.bankInfoModel", b =>
@@ -1089,6 +1170,8 @@ namespace PIS2.Migrations
                     b.HasIndex("delegationTo");
 
                     b.ToTable("Delegations");
+
+                    b.HasAnnotation("SqlServer:UseSqlOutputClause", false);
                 });
 
             modelBuilder.Entity("PIS2.Models.departmentHistoryModel", b =>
@@ -1604,10 +1687,6 @@ namespace PIS2.Migrations
                         .HasColumnType("nvarchar(max)")
                         .HasColumnName("employmentReference");
 
-                    b.Property<int?>("employmentRequestID")
-                        .HasColumnType("int")
-                        .HasColumnName("employmentRequestID");
-
                     b.Property<int>("employmentStatus")
                         .HasColumnType("int")
                         .HasColumnName("employmentStatus");
@@ -1623,6 +1702,10 @@ namespace PIS2.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)")
                         .HasColumnName("givenID");
+
+                    b.Property<int?>("jobRequirementID")
+                        .HasColumnType("int")
+                        .HasColumnName("jobRequirementID");
 
                     b.Property<string>("modifiedBy")
                         .IsRequired()
@@ -1641,116 +1724,15 @@ namespace PIS2.Migrations
 
                     b.HasIndex("employmentMethodID");
 
-                    b.HasIndex("employmentRequestID");
-
                     b.HasIndex("employmentTypeID");
+
+                    b.HasIndex("jobRequirementID");
 
                     b.HasIndex("personID")
                         .IsUnique()
                         .HasFilter("[employmentStatus] = 1");
 
                     b.ToTable("Employments");
-
-                    b.HasAnnotation("SqlServer:UseSqlOutputClause", false);
-                });
-
-            modelBuilder.Entity("PIS2.Models.employmentRequestHistoryModel", b =>
-                {
-                    b.Property<int>("employmentRequestHistoryID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasColumnName("employmentRequestHistoryID");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("employmentRequestHistoryID"));
-
-                    b.Property<int>("employmentRequestID")
-                        .HasColumnType("int")
-                        .HasColumnName("employmentRequestID");
-
-                    b.Property<int>("employmentType")
-                        .HasColumnType("int")
-                        .HasColumnName("employmentType");
-
-                    b.Property<int?>("employmentTypeModelemploymentTypeID")
-                        .HasColumnType("int");
-
-                    b.Property<int>("jobID")
-                        .HasColumnType("int")
-                        .HasColumnName("jobID");
-
-                    b.Property<int?>("jobModeljobID")
-                        .HasColumnType("int");
-
-                    b.Property<string>("modifiedBy")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("modifiedBy");
-
-                    b.Property<DateTime>("modifiedDate")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("modifiedDate");
-
-                    b.Property<int>("requestStatus")
-                        .HasColumnType("int")
-                        .HasColumnName("requestStatus");
-
-                    b.HasKey("employmentRequestHistoryID");
-
-                    b.HasIndex("employmentRequestID");
-
-                    b.HasIndex("employmentTypeModelemploymentTypeID");
-
-                    b.HasIndex("jobModeljobID");
-
-                    b.ToTable("EmploymentRequestHistories");
-                });
-
-            modelBuilder.Entity("PIS2.Models.employmentRequestModel", b =>
-                {
-                    b.Property<int>("employmentRequestID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasColumnName("employmentRequestID");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("employmentRequestID"));
-
-                    b.Property<int?>("employmentModelemploymentID")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("employmentRequestDate")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("employmentRequestDate");
-
-                    b.Property<int>("employmentTypeID")
-                        .HasColumnType("int")
-                        .HasColumnName("employmentTypeID");
-
-                    b.Property<int>("jobID")
-                        .HasColumnType("int")
-                        .HasColumnName("jobID");
-
-                    b.Property<string>("modifiedBy")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("modifiedBy");
-
-                    b.Property<int>("requestStatus")
-                        .HasColumnType("int")
-                        .HasColumnName("requestStatus");
-
-                    b.Property<int>("requiredNo")
-                        .HasColumnType("int")
-                        .HasColumnName("requiredNo");
-
-                    b.HasKey("employmentRequestID");
-
-                    b.HasIndex("employmentModelemploymentID");
-
-                    b.HasIndex("employmentTypeID");
-
-                    b.HasIndex("jobID");
-
-                    b.ToTable("EmploymentRequests");
 
                     b.HasAnnotation("SqlServer:UseSqlOutputClause", false);
                 });
@@ -1857,6 +1839,9 @@ namespace PIS2.Migrations
 
                     b.Property<int>("evaluationStatus")
                         .HasColumnType("int");
+
+                    b.Property<string>("evaluationTypes")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("jobPlacementID")
                         .HasColumnType("int");
@@ -1965,6 +1950,12 @@ namespace PIS2.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("evaluationTypeID"));
 
+                    b.Property<int?>("Position")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Remark")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("evaluationTypeName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -1978,6 +1969,9 @@ namespace PIS2.Migrations
                     b.Property<bool>("isFixed")
                         .HasColumnType("bit");
 
+                    b.Property<int?>("jobClassID")
+                        .HasColumnType("int");
+
                     b.Property<string>("modifiedBy")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -1986,6 +1980,8 @@ namespace PIS2.Migrations
                         .HasColumnType("datetime2");
 
                     b.HasKey("evaluationTypeID");
+
+                    b.HasIndex("jobClassID");
 
                     b.ToTable("EvaluationTypes");
 
@@ -2311,22 +2307,22 @@ namespace PIS2.Migrations
 
             modelBuilder.Entity("PIS2.Models.jobClassModel", b =>
                 {
-                    b.Property<int>("JobClassId")
+                    b.Property<int>("jobClassId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("JobClassId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("jobClassId"));
 
-                    b.Property<int>("JobClasStatus")
+                    b.Property<string>("jobClassDescription")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("jobClassName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("jobClassStatus")
                         .HasColumnType("int");
-
-                    b.Property<string>("JobClassDescription")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("JobClassName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("modifiedBy")
                         .IsRequired()
@@ -2335,7 +2331,7 @@ namespace PIS2.Migrations
                     b.Property<DateTime>("modifiedDate")
                         .HasColumnType("datetime2");
 
-                    b.HasKey("JobClassId");
+                    b.HasKey("jobClassId");
 
                     b.ToTable("JobClasses");
                 });
@@ -2409,6 +2405,9 @@ namespace PIS2.Migrations
 
                     b.Property<int>("jobGradeID")
                         .HasColumnType("int");
+
+                    b.Property<string>("jobPurpose")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("jobQualifications")
                         .HasColumnType("nvarchar(max)");
@@ -2632,6 +2631,12 @@ namespace PIS2.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("jobRequirementHistoryID"));
 
+                    b.Property<int?>("JobModeljobID")
+                        .HasColumnType("int");
+
+                    b.Property<int>("jobID")
+                        .HasColumnType("int");
+
                     b.Property<int>("jobRequirementID")
                         .HasColumnType("int")
                         .HasColumnName("jobRequirementID");
@@ -2655,6 +2660,8 @@ namespace PIS2.Migrations
 
                     b.HasKey("jobRequirementHistoryID");
 
+                    b.HasIndex("JobModeljobID");
+
                     b.HasIndex("jobRequirementID");
 
                     b.ToTable("JobRequirementHistories");
@@ -2676,6 +2683,9 @@ namespace PIS2.Migrations
                     b.Property<int>("departmentID")
                         .HasColumnType("int")
                         .HasColumnName("departmentID");
+
+                    b.Property<int>("employmentTypeID")
+                        .HasColumnType("int");
 
                     b.Property<int?>("hiredNumber")
                         .HasColumnType("int")
@@ -2701,9 +2711,15 @@ namespace PIS2.Migrations
                         .HasColumnType("int")
                         .HasColumnName("requiredNumber");
 
+                    b.Property<string>("requiredReason")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasKey("jobRequirementID");
 
                     b.HasIndex("departmentID");
+
+                    b.HasIndex("employmentTypeID");
 
                     b.HasIndex("jobID");
 
@@ -2951,6 +2967,119 @@ namespace PIS2.Migrations
                         .IsUnique();
 
                     b.ToTable("LeaveTypes");
+
+                    b.HasAnnotation("SqlServer:UseSqlOutputClause", false);
+                });
+
+            modelBuilder.Entity("PIS2.Models.letterModel", b =>
+                {
+                    b.Property<int>("letterID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("letterID"));
+
+                    b.Property<string>("letterBody")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("letterDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("letterGroup")
+                        .HasColumnType("int");
+
+                    b.Property<string>("letterNumber")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int?>("letterParent")
+                        .HasColumnType("int");
+
+                    b.Property<string>("letterReceiver")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("letterSender")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("letterSignedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("letterStatus")
+                        .HasColumnType("int");
+
+                    b.Property<string>("letterSubject")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("letterTitle")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("letterTypeID")
+                        .HasColumnType("int");
+
+                    b.Property<string>("modifiedBy")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("modifiedDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("letterID");
+
+                    b.HasIndex("letterParent");
+
+                    b.HasIndex("letterTypeID");
+
+                    b.HasIndex("letterNumber", "letterGroup")
+                        .IsUnique()
+                        .HasFilter("[letterNumber] IS NOT NULL");
+
+                    b.ToTable("Letters");
+
+                    b.HasAnnotation("SqlServer:UseSqlOutputClause", false);
+                });
+
+            modelBuilder.Entity("PIS2.Models.letterTypeModel", b =>
+                {
+                    b.Property<int>("letterTypeID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("letterTypeID"));
+
+                    b.Property<string>("letterTypeCode")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("letterTypeDescription")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("letterTypeName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("letterTypePrefix")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("modifiedBy")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("modifiedDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("letterTypeID");
+
+                    b.HasIndex("letterTypeCode")
+                        .IsUnique();
+
+                    b.HasIndex("letterTypeName")
+                        .IsUnique();
+
+                    b.ToTable("LetterTypes");
 
                     b.HasAnnotation("SqlServer:UseSqlOutputClause", false);
                 });
@@ -3517,7 +3646,6 @@ namespace PIS2.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("educationLevelMark")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("educationLevelNumber")
@@ -4341,6 +4469,9 @@ namespace PIS2.Migrations
 
                     b.Property<DateTime>("modifiedDate")
                         .HasColumnType("datetime2");
+
+                    b.Property<int>("trainingStatus")
+                        .HasColumnType("int");
 
                     b.Property<string>("trainingTitle")
                         .IsRequired()
@@ -5560,6 +5691,17 @@ namespace PIS2.Migrations
                     b.Navigation("employmentModel");
                 });
 
+            modelBuilder.Entity("PIS2.Models.archiveModel", b =>
+                {
+                    b.HasOne("PIS2.Models.letterModel", "Letter")
+                        .WithOne("Archive")
+                        .HasForeignKey("PIS2.Models.archiveModel", "letterID")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Letter");
+                });
+
             modelBuilder.Entity("PIS2.Models.bankInfoModel", b =>
                 {
                     b.HasOne("PIS2.Models.personModel", "personModel")
@@ -5854,16 +5996,16 @@ namespace PIS2.Migrations
                         .HasForeignKey("employmentMethodID")
                         .OnDelete(DeleteBehavior.NoAction);
 
-                    b.HasOne("PIS2.Models.employmentRequestModel", "employmentRequestModel")
-                        .WithMany("Employments")
-                        .HasForeignKey("employmentRequestID")
-                        .OnDelete(DeleteBehavior.NoAction);
-
                     b.HasOne("PIS2.Models.employmentTypeModel", "employmentTypeModel")
                         .WithMany("Employments")
                         .HasForeignKey("employmentTypeID")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
+
+                    b.HasOne("PIS2.Models.jobRequirementModel", "JobRequirementModel")
+                        .WithMany("Employments")
+                        .HasForeignKey("jobRequirementID")
+                        .OnDelete(DeleteBehavior.NoAction);
 
                     b.HasOne("PIS2.Models.personModel", "personModel")
                         .WithMany("Employments")
@@ -5871,59 +6013,13 @@ namespace PIS2.Migrations
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.Navigation("employmentMethodModel");
+                    b.Navigation("JobRequirementModel");
 
-                    b.Navigation("employmentRequestModel");
+                    b.Navigation("employmentMethodModel");
 
                     b.Navigation("employmentTypeModel");
 
                     b.Navigation("personModel");
-                });
-
-            modelBuilder.Entity("PIS2.Models.employmentRequestHistoryModel", b =>
-                {
-                    b.HasOne("PIS2.Models.employmentRequestModel", "employmentRequestModel")
-                        .WithMany("EmploymentRequestHistories")
-                        .HasForeignKey("employmentRequestID")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.HasOne("PIS2.Models.employmentTypeModel", "employmentTypeModel")
-                        .WithMany()
-                        .HasForeignKey("employmentTypeModelemploymentTypeID");
-
-                    b.HasOne("PIS2.Models.jobModel", "jobModel")
-                        .WithMany()
-                        .HasForeignKey("jobModeljobID");
-
-                    b.Navigation("employmentRequestModel");
-
-                    b.Navigation("employmentTypeModel");
-
-                    b.Navigation("jobModel");
-                });
-
-            modelBuilder.Entity("PIS2.Models.employmentRequestModel", b =>
-                {
-                    b.HasOne("PIS2.Models.employmentModel", null)
-                        .WithMany("EmploymentRequests")
-                        .HasForeignKey("employmentModelemploymentID");
-
-                    b.HasOne("PIS2.Models.employmentTypeModel", "employmentTypeModel")
-                        .WithMany("EmploymentRequests")
-                        .HasForeignKey("employmentTypeID")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.HasOne("PIS2.Models.jobModel", "jobModel")
-                        .WithMany("EmploymentRequests")
-                        .HasForeignKey("jobID")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.Navigation("employmentTypeModel");
-
-                    b.Navigation("jobModel");
                 });
 
             modelBuilder.Entity("PIS2.Models.evaluationModel", b =>
@@ -5964,6 +6060,16 @@ namespace PIS2.Migrations
                         .IsRequired();
 
                     b.Navigation("EvaluationTypeModel");
+                });
+
+            modelBuilder.Entity("PIS2.Models.evaluationTypeModel", b =>
+                {
+                    b.HasOne("PIS2.Models.jobClassModel", "jobClassModel")
+                        .WithMany("EvaluationTypes")
+                        .HasForeignKey("jobClassID")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.Navigation("jobClassModel");
                 });
 
             modelBuilder.Entity("PIS2.Models.evaluationValuationModel", b =>
@@ -6140,11 +6246,17 @@ namespace PIS2.Migrations
 
             modelBuilder.Entity("PIS2.Models.jobRequirementHistoryModel", b =>
                 {
+                    b.HasOne("PIS2.Models.jobModel", "JobModel")
+                        .WithMany()
+                        .HasForeignKey("JobModeljobID");
+
                     b.HasOne("PIS2.Models.jobRequirementModel", "JobRequirementModel")
                         .WithMany("JobRequirementHistories")
                         .HasForeignKey("jobRequirementID")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
+
+                    b.Navigation("JobModel");
 
                     b.Navigation("JobRequirementModel");
                 });
@@ -6157,6 +6269,12 @@ namespace PIS2.Migrations
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
+                    b.HasOne("PIS2.Models.employmentTypeModel", "employmentTypeModel")
+                        .WithMany("JobRequirements")
+                        .HasForeignKey("employmentTypeID")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
                     b.HasOne("PIS2.Models.jobModel", "JobModel")
                         .WithMany("JobRequirements")
                         .HasForeignKey("jobID")
@@ -6166,6 +6284,8 @@ namespace PIS2.Migrations
                     b.Navigation("DepartmentModel");
 
                     b.Navigation("JobModel");
+
+                    b.Navigation("employmentTypeModel");
                 });
 
             modelBuilder.Entity("PIS2.Models.jobStepHistoryModel", b =>
@@ -6224,6 +6344,24 @@ namespace PIS2.Migrations
                     b.Navigation("employmentModel");
 
                     b.Navigation("leaveTypeModel");
+                });
+
+            modelBuilder.Entity("PIS2.Models.letterModel", b =>
+                {
+                    b.HasOne("PIS2.Models.letterModel", "LetterParent")
+                        .WithMany("ChildLetters")
+                        .HasForeignKey("letterParent")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("PIS2.Models.letterTypeModel", "LetterType")
+                        .WithMany("Letters")
+                        .HasForeignKey("letterTypeID")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("LetterParent");
+
+                    b.Navigation("LetterType");
                 });
 
             modelBuilder.Entity("PIS2.Models.loyaltyHistoryModel", b =>
@@ -6827,8 +6965,6 @@ namespace PIS2.Migrations
 
                     b.Navigation("EmploymentHistories");
 
-                    b.Navigation("EmploymentRequests");
-
                     b.Navigation("Evaluations");
 
                     b.Navigation("Guaranties");
@@ -6870,20 +7006,13 @@ namespace PIS2.Migrations
                     b.Navigation("departmentModel");
                 });
 
-            modelBuilder.Entity("PIS2.Models.employmentRequestModel", b =>
-                {
-                    b.Navigation("EmploymentRequestHistories");
-
-                    b.Navigation("Employments");
-                });
-
             modelBuilder.Entity("PIS2.Models.employmentTypeModel", b =>
                 {
                     b.Navigation("EmploymentHistories");
 
-                    b.Navigation("EmploymentRequests");
-
                     b.Navigation("Employments");
+
+                    b.Navigation("JobRequirements");
 
                     b.Navigation("Vacancies");
                 });
@@ -6920,6 +7049,8 @@ namespace PIS2.Migrations
 
             modelBuilder.Entity("PIS2.Models.jobClassModel", b =>
                 {
+                    b.Navigation("EvaluationTypes");
+
                     b.Navigation("Jobs");
                 });
 
@@ -6932,8 +7063,6 @@ namespace PIS2.Migrations
 
             modelBuilder.Entity("PIS2.Models.jobModel", b =>
                 {
-                    b.Navigation("EmploymentRequests");
-
                     b.Navigation("JobPlacements");
 
                     b.Navigation("JobRequirements");
@@ -6952,6 +7081,8 @@ namespace PIS2.Migrations
 
             modelBuilder.Entity("PIS2.Models.jobRequirementModel", b =>
                 {
+                    b.Navigation("Employments");
+
                     b.Navigation("JobRequirementHistories");
 
                     b.Navigation("Vacancies");
@@ -6974,6 +7105,18 @@ namespace PIS2.Migrations
             modelBuilder.Entity("PIS2.Models.leaveTypeModel", b =>
                 {
                     b.Navigation("Leaves");
+                });
+
+            modelBuilder.Entity("PIS2.Models.letterModel", b =>
+                {
+                    b.Navigation("Archive");
+
+                    b.Navigation("ChildLetters");
+                });
+
+            modelBuilder.Entity("PIS2.Models.letterTypeModel", b =>
+                {
+                    b.Navigation("Letters");
                 });
 
             modelBuilder.Entity("PIS2.Models.loyaltyModel", b =>

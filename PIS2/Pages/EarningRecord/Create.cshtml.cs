@@ -22,7 +22,7 @@ namespace PIS2.Pages.EarningRecord
         [BindProperty]
         public earningModel Earning { get; set; }
 
-        public SelectList EarningTypes { get; set; }
+        public List<earningType> EarningTypes { get; set; }
 
     
 
@@ -30,7 +30,7 @@ namespace PIS2.Pages.EarningRecord
         {
             Earning = new earningModel();
 
-            EarningTypes = new SelectList(await _db.EarningTypes.Where(e => !new[] { "salary", "allowance","overtime" }.Contains(e.earningTypeName.ToLower()) ).ToListAsync(), "earningTypeID", "earningTypeName");
+            EarningTypes = await _db.EarningTypes.Where(e => !new[] { "salary", "allowance","overtime" }.Contains(e.earningTypeName.ToLower())).ToListAsync();
 
             // If id is passed, auto-load employee
             if (id.HasValue)
@@ -54,6 +54,13 @@ namespace PIS2.Pages.EarningRecord
             ModelState.Clear();
 
             Earning.modifiedBy = User.Identity.Name;
+            var earninType = await _db.EarningTypes.FirstOrDefaultAsync(e => e.earningTypeID == Earning.earningTypeID);
+            if (!earninType.isPayroll)
+            {
+                Earning.IsPercentage = false;
+                Earning.earningIteration = 1;
+                Earning.earningBase = earningBase.NONE;
+            }
             Earning.remainingIteration = Earning.earningIteration;
 
             if (!ModelState.IsValid)

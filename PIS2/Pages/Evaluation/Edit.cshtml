@@ -5,8 +5,8 @@
 }
 @await Html.PartialAsync("headersimple", "")
 <h1 class="fw-bold ">Evaluation</h1>
-<h4 class="fw-bold text-muted">Update Evaluation</h4>
-<div class="container-fluid py-4">
+<h6 class="fw-bold text-muted">Update Evaluation</h6>
+<div class="container-fluid">
     @Html.AntiForgeryToken()
     <input type="hidden" id="currentEvalID" value="@Model.Evaluation.evaluationID" />
 
@@ -19,15 +19,15 @@
             </div>
             <div class="col-md-2">
                 <label class="form-label fw-bold">Employee</label>
-                <input type="text" class="form-control bg-light" value="@Model.Evaluation.EmploymentModel?.personModel.personFullName" readonly />
+                <input type="text" class="form-control bg-light" value="@Model.Evaluation.EmploymentModel?.personModel?.personFullName" readonly />
             </div>
             <div class="col-md-2">
                 <label class="form-label fw-bold">Start Date</label>
-                <input type="date" id="startDate" class="form-control" value="@Model.Evaluation.evaluationStartDate.ToString("yyyy-MM-dd")" />
+                <input type="date" id="startDate" class="form-control" value="@Model.Evaluation.evaluationStartDate.ToString("yyyy-MM-dd")" onchange="updateMinDate()"/>
             </div>
             <div class="col-md-2">
                 <label class="form-label fw-bold">End Date</label>
-                <input type="date" id="endDate" class="form-control" value="@Model.Evaluation.evaluationEndDate.ToString("yyyy-MM-dd")" />
+                <input type="date" id="endDate" class="form-control" value="@Model.Evaluation.evaluationEndDate.ToString("yyyy-MM-dd")" onchange="updateMinDate()"/>
             </div>
             <div class="col-md-1">
                 <label class="form-label fw-bold">Status</label>
@@ -122,32 +122,32 @@
                                                     <td><input type="number" class="v-weight form-control form-control-sm" value="@sub.evaluationSubTaskWeight" @(type.isFixed ? "readonly" : "") onchange="updateSubTask(@sub.evaluationSubTaskID, this)" /></td>
                                                     <td>
                                                         <select class="form-select form-select-sm v-time" onchange="saveValuation(this)">
-                                                            <option value="0">0.0</option>
+                                                            <option value="">--Select--</option>
                                                             @foreach (var level in Enum.GetValues<Models.ProficiencyLevel>().Cast<Models.ProficiencyLevel>().OrderByDescending(x => x))
                                                             {
-                                                                <option value="@((int)level)" selected="@((int)level == (int)((valuation?.timeValuation ?? 0) * 10))">@level.ToString()</option>
+                                                                <option value="@((int)level)" selected="@(valuation?.timeValuation != null?(int)level == (int)((valuation.timeValuation) * 10):"")">@level.ToString()</option>
                                                             }
                                                         </select>
                                                     </td>
                                                     <td>
                                                         <select class="form-select form-select-sm v-res" onchange="saveValuation(this)">
-                                                            <option value="0">0.0</option>
+                                                            <option value="">--Select--</option>
                                                             @foreach (var level in Enum.GetValues<Models.ProficiencyLevel>().Cast<Models.ProficiencyLevel>().OrderByDescending(x => x))
                                                             {
-                                                                <option value="@((int)level)" selected="@((int)level == (int)((valuation?.resourceValuation ?? 0) * 10))">@level.ToString()</option>
+                                                                <option value="@((int)level)" selected="@(valuation?.resourceValuation != null ? (int)level == (int)((valuation.resourceValuation) * 10) : "")">@level.ToString()</option>
                                                             }
                                                         </select>
                                                     </td>
                                                     <td>
                                                         <select class="form-select form-select-sm v-perf" onchange="saveValuation(this)">
-                                                            <option value="0">0.0</option>
+                                                            <option value="">--Select--</option>
                                                             @foreach (var level in Enum.GetValues<Models.ProficiencyLevel>().Cast<Models.ProficiencyLevel>().OrderByDescending(x => x))
                                                             {
-                                                                <option value="@((int)level)" selected="@((int)level == (int)((valuation?.performanceValuation ?? 0) * 10))">@level.ToString()</option>
+                                                                <option value="@((int)level)" selected="@(valuation?.performanceValuation != null ? (int)level == (int)((valuation.performanceValuation) * 10) : "")">@level.ToString()</option>
                                                             }
                                                         </select>
                                                     </td>
-                                                    <td class="text-end fw-bold row-sum">0.00</td>
+                                                    <td class="text-end fw-bold row-sum">-</td>
                                                     <td>
                                                         @if (!type.isFixed)
                                                         {
@@ -252,8 +252,9 @@
 </template>
 @section Scripts {
     <script>
-    const EVAL_ID = document.getElementById('currentEvalID').value;
-
+            
+        const EVAL_ID = document.getElementById('currentEvalID').value;
+        
         document.addEventListener('DOMContentLoaded', () => {
             recalcAll();
         });
@@ -468,8 +469,8 @@
                 
                 
                 });
-                grandSubPercent += grandSubScore *(taskTypeWeight/grandSubWeight);
-                
+                if(grandSubWeight >0){grandSubPercent += grandSubScore *(taskTypeWeight/grandSubWeight);}
+
                 grandPercent += grandSubPercent;
             });
    

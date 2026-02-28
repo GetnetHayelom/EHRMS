@@ -9,7 +9,7 @@
 
 <h1 class="fw-bold">Employment</h1>
 
-<h4 class="fw-bold">Add New Employment</h4>
+<h6 class="fw-bold text-muted">Maintain New Employment</h6>
 <hr />
 @if (!string.IsNullOrEmpty(successMessage))
 {
@@ -21,11 +21,21 @@
     <form method="post" class="d-flex justify-content-between">
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
         <div class="col-md-4">
-        
-            
-            <div class="form-group">
-                <label asp-for="employmentModel.personID" class="control-label">Full Name</label>
-                <select asp-for="employmentModel.personID" class="form-control" asp-items="ViewBag.personID"></select>
+
+
+            <div class="mb-3">
+                <label asp-for="employmentModel.personID" class="form-label fw-semibold">
+                    <span class="text-danger">*</span> Person
+                </label>
+                <input type="text" class="form-control" list="personList" placeholder="Type to search..." oninput="selector(this, 'personIDHidden')" value="@Model.Person?.personFullName"/>
+                <input type="hidden" asp-for="employmentModel.personID" id="personIDHidden" value="@Model.Person?.personID"/>
+                <datalist id="personList">
+                    @foreach (var person in (SelectList)ViewData["personID"])
+                    {
+                        <option data-id="@person.Value" value="@person.Text"></option>
+                    }
+                </datalist>
+                <span asp-validation-for="employmentModel.personID" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <span class="text-danger">*</span>
@@ -82,15 +92,21 @@
             <h4 class="fw-bold">Aditional Info</h4>
             <div class="form-group">
                 <label asp-for="employmentModel.employmentCarriedOverLeave" class="control-label">Carried Over Leave</label>
-                <input asp-for="employmentModel.employmentCarriedOverLeave" class="form-control" type="number"/>
+                <input asp-for="employmentModel.employmentCarriedOverLeave" class="form-control" type="number" value="0"/>
                 <span asp-validation-for="employmentModel.employmentCarriedOverLeave" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="employmentModel.employmentRequestID" class="control-label">Employment Request ID</label>
-                <select asp-for="employmentModel.employmentRequestID" class="form-control" asp-items="ViewBag.employmentRequest" >
-                    <option value="">None</option>
-                </select>
-                <span asp-validation-for="employmentModel.employmentRequestID" class="text-danger"></span>
+
+            <div class="mb-3">
+                <label asp-for="employmentModel.jobRequirementID" class="form-label fw-semibold">Assocciated Employment Request</label>
+                <input type="text" class="form-control" list="requestList" placeholder="Type to search..." oninput="selector(this, 'requestIDHidden')"/>
+                <input type="hidden" asp-for="employmentModel.jobRequirementID" id="requestIDHidden" />
+                <datalist id="requestList">
+                    @foreach (var req in (SelectList)ViewData["employmentRequest"])
+                    {
+                        <option data-id="@req.Value" value="@req.Text"></option>
+                    }
+                </datalist>
+                <span asp-validation-for="employmentModel.jobRequirementID" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="employmentModel.employmentMethodID" class="control-label">Employment Method</label>
@@ -106,7 +122,8 @@
                 <input type="submit" value="Save" class="btn btn-success m-2" />
             </div>
         </div>
-        
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
     </form>
 </div>
 

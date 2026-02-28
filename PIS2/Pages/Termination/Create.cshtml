@@ -6,18 +6,24 @@
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
 
-<h1 class="fw-bold">Employment</h1>
+<h2 class="fw-bold">Employment Management</h2>
 
-<h6 class="fw-bold text-muted">Employment Termination</h6>
+<h6 class="text-muted">Employment Termination</h6>
 <hr />
 
 <!--EMPLOYEE LOOKUP-->
 <div class="card shadow-sm border-0 px-3 py-2">
-    <form method="get" class="d-flex align-items-center justify-content-end gap-2">
-        <label for="givenID" class="text-nowrap small fw-bold text-uppercase text-muted mb-0">Find Employee:</label>
-        <input asp-for="employmentModel.givenID" id="givenID" class="form-control form-control-sm" placeholder="Enter ID..." name="givenID" style="width: 150px;" />
-        <button type="submit" class="btn btn-sm btn-primary px-3" id="goButton">Go</button>
-    </form>
+    <div class="d-flex justify-content-between align-items-center">
+        <div class ="d-flex align-items-center">
+            <h6 class="fw-bold">Termination Details</h6>
+        </div>
+        <form method="get" class="d-flex align-items-center justify-content-end gap-2">
+            <label for="givenID" class="text-nowrap small fw-bold text-uppercase text-muted mb-0">Find Employee:</label>
+            <input asp-for="employmentModel.givenID" id="givenID" class="form-control form-control-sm" placeholder="Enter ID..." name="givenID" style="width: 150px;" />
+            <button type="submit" class="btn btn-sm btn-primary px-3" id="goButton">Go</button>
+        </form>
+    </div>
+    
 </div>
 
 @if(Model.employmentModel != null && Model.employmentModel.employmentID !=0)
@@ -26,9 +32,9 @@
     {
         <div class="d-flex gap-4">
 
-        <div class="card shadow-sm p-2 flex-fill">        
- 
-            <form method="post">
+            <div class="card shadow-sm p-2 flex-fill mt-3">
+
+                <form method="post">
                 <div asp-validation-summary="ModelOnly" class="text-danger"></div> 
                 <input asp-for="terminationModel.employmentID" value= "@Model.employmentModel.employmentID" type="hidden"/>
             
@@ -53,38 +59,45 @@
                 </div>
             </form>
             
-
-        </div>
-        <div class="card shadow-sm text-center mt-3">
+            </div>
+            <div class="card shadow-sm text-center mt-3">
                 <div class="card-header bg-success text-white"><h4 class="fw-bold"><u>@Model.employmentModel.personModel?.personFullName</u></h4></div>
-            <div class="card-body text-start">
-                <strong>Position:</strong> <span>@Model.employmentModel.employmentPosition</span><br />
-                <strong>Job Title:</strong> <span>@Model.jobPlacement?.jobModel?.jobTitle</span><br />
-                <strong>Salary:</strong> <span>@Model.jobPlacement?.jobPlacementSalary.ToString("N2")</span><br />
-                <strong>Department:</strong> <span>@Model.jobPlacement?.departmentModel?.departmentName</span><br />
-                <strong>Company:</strong> <span>@Model.jobPlacement?.departmentModel?.companyModel?.companyName</span>
-            </div>
-            
-        </div>
-        <div class="flex-fill d-flex gap-3">
-            <div class="card shadow-sm text-center mt-3">
-                <div class="card-header bg-warning text-white">
-                    <h6 class="fw-bold mb-1"> Severance Pay</h6></div>
-                    <div class="card-body p-4 ">
-                    <h4 class="card-body fw-bold">@Model.SeverancePay.ToString("N2")</h4>
-                    <button class="btn btn-primary"><i class="bi bi-plus-circle"></i> Prepare Leave Benefit</button>
+                <div class="card-body text-start">
+                    <strong>Position:</strong> <span>@Model.employmentModel.employmentPosition</span><br />
+                    <strong>Job Title:</strong> <span>@Model.jobPlacement?.jobModel?.jobTitle</span><br />
+                    <strong>Salary:</strong> <span>@Model.jobPlacement?.jobPlacementSalary.ToString("N2")</span><br />
+                    <strong>Department:</strong> <span>@Model.jobPlacement?.departmentModel?.departmentName</span><br />
+                    <strong>Company:</strong> <span>@Model.jobPlacement?.departmentModel?.companyModel?.companyName</span>
                 </div>
-                <div class="card-footer text-muted"><p class="fw-bold">Year of Service: @Model.YearsOfService.ToString("N2")</p></div>
+            
             </div>
-
-            <div class="card shadow-sm text-center mt-3">
-                <div class="card-header bg-info text-white"><h6 class="fw-bold mb-1">Leave Payable</h6></div>
-                    <div class="card-body p-4"><h4 class="card-body fw-bold">@Model.LeaveSummary?.adjustedLeaveBalanceCost.ToString("N2")</h4>
-                        <button class="btn btn-primary"><i class="bi bi-plus-circle"></i> Prepare Leave Benefit</button>
+            <div class="flex-fill d-flex gap-3">
+                <div class="card shadow-sm text-center mt-3">
+                    <div class="card-header bg-warning text-white">
+                        <h6 class="fw-bold mb-1"> Severance Pay</h6>
                     </div>
-                <div class="card-footer  text-muted"><p class="fw-bold">Leave Balance: @Model.LeaveSummary?.adjustedLeaveBalance.ToString("N2")</p></div>
+                    <div class="card-body p-4 ">
+                        <h4 class="card-body fw-bold">@Model.SeverancePay.ToString("N2") </h4>
+                        @if ((User.IsInRole("MIE\\PMS_HRCLERCK") || User.IsInRole("MIE\\PMS_HRMANAGER"))&& Model.SeverancePay >0)
+                        {
+                            <a class="btn btn-primary"><i class="bi bi-plus-circle"></i> Prepare Severance Benefit</a>
+                        }
+                    </div>
+                    <div class="card-footer text-muted"><p class="fw-bold">Year of Service: @Model.YearsOfService.ToString("N2")</p></div>
+                </div>
+
+                <div class="card shadow-sm text-center mt-3">
+                    <div class="card-header bg-info text-white"><h6 class="fw-bold mb-1">Leave Payable</h6></div>
+                        <div class="card-body p-4">
+                            <h4 class="card-body fw-bold">@(Model.LeaveSummary?.adjustedLeaveBalanceCost.ToString("N2")??"0.00")</h4>
+                        @if ((User.IsInRole("MIE\\PMS_HRCLERCK") || User.IsInRole("MIE\\PMS_HRMANAGER")) && Model.LeaveSummary?.adjustedLeaveBalanceCost > 0)
+                            {
+                                <a class="btn btn-primary"><i class="bi bi-plus-circle"></i> Prepare Leave Benefit</a>
+                            }
+                        </div>
+                    <div class="card-footer  text-muted"><p class="fw-bold">Leave Balance: @(Model.LeaveSummary?.adjustedLeaveBalance.ToString("N2")??"0")</p></div>
+                </div>
             </div>
-        </div>
         </div>
     }
     else

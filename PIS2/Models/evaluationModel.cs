@@ -13,6 +13,7 @@ namespace PIS2.Models
         public DateTime evaluationStartDate { get; set; }
         public DateTime evaluationEndDate { get; set; }
         public evaluationStatus evaluationStatus { get; set; }
+        public List<string>? evaluationTypes { get; set; }
         public int? jobPlacementID { get; set; }
         public virtual jobPlacementModel? JobPlacementModel { get; set; }
         public string modifiedBy { get; set; } = "";
@@ -29,6 +30,10 @@ namespace PIS2.Models
         public decimal evaluationTypeWeight { get; set; } //30%, 70%
         public mainStatus evaluationTypeStatus { get; set; }
         public bool isFixed { get; set; }
+        public string? Remark { get; set; }
+        public int? jobClassID { get; set; }
+        public virtual jobClassModel? jobClassModel { get; set; }
+        public EmploymentPositions? Position { get; set; }
         public string modifiedBy { get; set; } = "";
         public DateTime modifiedDate { get; set; } = DateTime.Now;
 
@@ -77,6 +82,7 @@ namespace PIS2.Models
         public DateTime modifiedDate { get; set; } = DateTime.Now;
 
     }
+
 
     public enum evaluationStatus 
     {

@@ -53,8 +53,11 @@
             @* --- BODY CONTENT --- *@
             <div class="row mb-5">
                 <div class="col-12">
-                    <label class="form-label fw-bold d-print-none">Memo Body:</label>
-                    <textarea asp-for="Memo.MemoBody" class="form-control border-dark" rows="15" placeholder="Write the detailed memo content here..." id="textArea"></textarea>
+                    <label for="editor">Content</label>
+
+                    @await Html.PartialAsync("_EditorHeader")
+                    <!-- Hidden input for form -->
+                    <input type="hidden" id="letterBody" asp-for="Memo.MemoBody" />
                 </div>
             </div>
 
@@ -82,7 +85,7 @@
             </div>
 
             @* --- ACTION BUTTONS (Hidden when printing) --- *@
-            <div class="d-flex justify-content-center gap-3 mt-4 d-print-none">
+            <div class="d-flex justify-content-center gap-1 mt-2 d-print-none">
                 @* Use your existing print partial *@
                 @await Html.PartialAsync("print")
                 @await Html.PartialAsync("back")
@@ -92,6 +95,16 @@
     </div>
 </div>
 
-<script>   
-    initializeTinyMCE('#textArea', 400);
-</script>
+@section Scripts {
+    <script src="/lib/quill/quill.min.js"></script>
+    <script src="/js/quill-editor.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            window.initQuillEditor({
+                editorId: 'editor',
+                hiddenInputId: 'letterBody',
+                initialContent: '@Html.Raw(Model.Memo.MemoBody)'
+            });
+        });
+    </script>
+}

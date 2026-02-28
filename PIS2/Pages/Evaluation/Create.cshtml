@@ -5,40 +5,67 @@
     ViewData["Title"] = "Dynamic Evaluation";
 }
 <h1 class="fw-bold ">Evaluation</h1>
-<h4 class="fw-bold text-muted">New Evaluation</h4>
-<div class="container-fluid py-4">
+<h6 class="fw-bold text-muted">New Evaluation</h6>
+<div class="container-fluid">
     @Html.AntiForgeryToken()
 
     <div class="header-section p-4 bg-white border rounded shadow-sm mb-4">
+        
         <div class="row align-items-center">
-            <div class="col-md-3">
-                <label class="form-label fw-bold">Evaluation Name</label>
-                <input type="text" id="evalName" class="form-control" placeholder="e.g. Q1 Performance" />
-            </div>
-            <div class="col-md-2">
-                <label class="form-label fw-bold"><span class="text-danger">*</span>Employee ID</label>
-                <input id="empID" class="form-control" type="hidden" />
-                <input type="text" class="form-control" list="employmentList" placeholder="Type to search..." oninput="selector(this, 'empID')" />
+            <div class="col-md-10">
+                <div class="d-flex gap-1 justify-content-between">
+                    <div class="col-md-3">
+                        <label class="form-label fw-bold">Evaluation Name</label>
+                        <input type="text" id="evalName" class="form-control" placeholder="e.g. Q1 Performance" oninput="checkFormComplete()" />
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label fw-bold"><span class="text-danger">*</span>Employee ID</label>
+                        <input id="empID" class="form-control" type="hidden" oninput="checkFormComplete()" />
+                        <input type="text" class="form-control" list="employmentList" placeholder="Type to search..." oninput="selector(this, 'empID')" />
 
-                <datalist id="employmentList">
-                    @foreach (var emp in Model.Employee)
-                    {
-                        <option data-id="@emp.Value" value="@emp.Text"></option>
-                    }
-                </datalist>
+                        <datalist id="employmentList">
+                            @foreach (var emp in Model.Employee)
+                            {
+                                <option data-id="@emp.Value" value="@emp.Text"></option>
+                            }
+                        </datalist>
 
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label fw-bold">Start Date</label>
+                        <input type="date" id="startDate" class="form-control" onchange="updateMinDate(); checkFormComplete();" />
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label fw-bold">End Date</label>
+                        <input type="date" id="endDate" class="form-control" onchange="updateMinDate(); checkFormComplete();" />
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label fw-bold">Evaluation Types</label>
+                        <div class="dropdown">
+                            <button class="btn btn-outline-secondary dropdown-toggle w-100 text-start" type="button" id="typeDropdown" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
+                                Select Types...
+                            </button>
+                            <div class="dropdown-menu p-3 shadow-sm w-100" aria-labelledby="typeDropdown">
+                                @foreach (var type in Model.EvTypes)
+                                {
+                                    <div class="form-check">
+                                        <input class="form-check-input eval-type-checkbox" type="checkbox" value="@type.Value" id="chk_@type.Value" onchange="updateSelectedTypesDisplay(); checkFormComplete();">
+                                        <label class="form-check-label" for="chk_@type.Value">
+                                            @type.Text
+                                        </label>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                        
+                    </div>
+                </div>
+                <div id="selectedTypesPills" class="mt-1 d-flex flex-wrap gap-1"></div>
+                <div class="d-flex justify-content-end">
+                    <button class="btn btn-success d-none" onclick="initializeEvaluation()" id="saveEvaluation">Save</button>
+                </div>
             </div>
-            <div class="col-md-2">
-                <label class="form-label fw-bold">Start Date</label>
-                <input type="date" id="startDate" class="form-control" />
-            </div>
-            <div class="col-md-2">
-                <label class="form-label fw-bold">End Date</label>
-                <input type="date" id="endDate" class="form-control" />
-            </div>
-            <div class="col-md-1 text-end">
-                <button class="btn btn-success" onclick="initializeEvaluation()">Save</button>
-            </div>
+            
             <div class="col-md-2 text-end border-start">
                 <h6 id="evalIdDisplay" class="badge bg-secondary mb-1">Drafting...</h6>
                 <div class="text-muted small">Current Total Score</div>
@@ -55,8 +82,8 @@
         <ul class="nav nav-pills mb-3" id="evalTabs" role="tablist">
             @foreach (var type in Model.EvaluationTypes)
             {
-                <li class="nav-item">
-                    <button class="nav-link @(Model.EvaluationTypes.First() == type ? "active" : "")"
+                <li class="nav-item" data-type-id="@type.evaluationTypeID">
+                    <button class="nav-link "
                             data-bs-toggle="tab"
                             data-bs-target="#panel-@type.evaluationTypeID"
                             type="button">
@@ -64,13 +91,12 @@
                     </button>
                 </li>
             }
-
         </ul>
 
         <div class="tab-content bg-white border rounded p-4 shadow-sm">
             @foreach (var type in Model.EvaluationTypes)
             {
-                <div class="tab-pane fade @(Model.EvaluationTypes.First() == type ? "show active" : "")" id="panel-@type.evaluationTypeID">
+                <div class="tab-pane fade" id="panel-@type.evaluationTypeID" data-type-id="@type.evaluationTypeID">
                     <div class="d-flex justify-content-between align-items-center mb-3">
                         <h4>@type.evaluationTypeName <small class="text-muted">(@type.evaluationTypeWeight%)</small></h4>
                         @if (!type.isFixed)
@@ -155,15 +181,13 @@
                     </div>
                 </div>
             }
-        
 
             <div class="col-12 text-end">
                 <a asp-page="/Evaluation/Create" class="btn btn-primary">New Evaluation</a>
-                <a id="previewLink" data-base-url="@Url.Page("/Evaluations/Edit")" class="btn btn-outline-primary">Preview</a>
+                <a id="previewLink" data-base-url="/Evaluation/Details/" href="" class="btn btn-outline-primary">Preview</a>
                 <button class="btn btn-outline-success" onclick="updateHeader()">Update Eval. Info</button>
                 <button class="btn btn-success" onclick="submitFinal()">Submit</button>
             </div>
-           
         </div>
     </div>
     
@@ -241,9 +265,69 @@
     </tr>
 </template>
 
+<script>
+    function getSelectedEvaluationTypes() {
+        const selected = [];
+        document.querySelectorAll('.eval-type-checkbox:checked').forEach(cb => {
+            selected.push(cb.value);
+        });
+        return selected;
+    }
+
+    function updateSelectedTypesDisplay() {
+        const container = document.getElementById('selectedTypesPills');
+        const checkboxes = document.querySelectorAll('.eval-type-checkbox:checked');
+        const dropdownBtn = document.getElementById('typeDropdown');
+
+        // Clear current pills
+        container.innerHTML = '';
+
+        if (checkboxes.length === 0) {
+            dropdownBtn.innerText = 'Select Types...';
+            return;
+        }
+
+        // Update button text to show count
+        dropdownBtn.innerText = `${checkboxes.length} Type(s) Selected`;
+
+        // Add pill badges for visual feedback
+        checkboxes.forEach(cb => {
+            const label = cb.nextElementSibling.innerText;
+            const pill = document.createElement('span');
+            pill.className = 'badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill small';
+            pill.style.fontSize = '0.7rem';
+            pill.innerText = label;
+            container.appendChild(pill);
+        });
+    }
+
+    function checkFormComplete() {
+        const evalName = document.getElementById('evalName').value.trim();
+        const empID = document.getElementById('empID').value;
+        const startDate = document.getElementById('startDate').value;
+        const endDate = document.getElementById('endDate').value;
+
+        const checkedTypes = document.querySelectorAll('.eval-type-checkbox:checked');
+
+        const saveBtn = document.getElementById('saveEvaluation');
+
+        const isComplete =
+            evalName !== "" &&
+            empID !== "" &&
+            startDate !== "" &&
+            endDate !== "" &&
+            checkedTypes.length > 0;
+
+        if (isComplete) {
+            saveBtn.classList.remove('d-none');   // show
+        } else {
+            saveBtn.classList.add('d-none');      // hide
+        }
+    }
+    
+</script>
  <script>
         let currentEvalID = null;
-
 
         async function postData(handler, data) {
             const response = await fetch(`?handler=${handler}`, {
@@ -259,13 +343,14 @@
 
         // 1. Initialize Evaluation Record
         async function initializeEvaluation() {
-            if (currentEvalID) return;
+            if (currentEvalID){ showToast("Error", "Evaluation Header Saved"); return;}
 
             const data = {
                 evaluationName: document.getElementById('evalName').value,
                 employmentID: parseInt(document.getElementById('empID').value),
                 evaluationStartDate: document.getElementById('startDate').value,
-                evaluationEndDate: document.getElementById('endDate').value
+                evaluationEndDate: document.getElementById('endDate').value,
+                evaluationTypes: getSelectedEvaluationTypes()
             };
 
             if (!data.evaluationName || !data.employmentID) return;
@@ -277,11 +362,37 @@
                 document.getElementById('evalIdDisplay').innerText = `ID: ${currentEvalID}`;
                 document.getElementById('evalIdDisplay').className = "badge bg-success mb-1";
 
-                    const link = document.getElementById('editLink');
-                    link.href = `${link.dataset.baseUrl}?id=${result.id}`;
+                    const link = document.getElementById('previewLink');
+                    link.href = `${link.dataset.baseUrl}${result.id}`;
                 // Unlock UI
+
+                const selectedTypes = getSelectedEvaluationTypes();
+                const allTabItems = document.querySelectorAll('#evalTabs .nav-item');
+                allTabItems.forEach(li => {
+                    if(!selectedTypes.includes(li.dataset.typeId.toString())){
+                        li.remove();
+                    }
+                });
+
+                const allTabPanes =document.querySelectorAll(".tab-content .tab-pane");
+                allTabPanes.forEach(tb => {
+                    if(!selectedTypes.includes(tb.dataset.typeId.toString())){
+                        tb.remove();
+                    }
+                });
+
+                const firstRemainingTab = document.querySelector('#evalTabs .nav-link');
+                if (firstRemainingTab) {
+                    firstRemainingTab.click();
+                }
+
                 document.getElementById('detailPanel').className = "d-block";
                 document.querySelectorAll('.action-input, .action-btn').forEach(el => el.disabled = false);
+                const saveBtn =document.getElementById('saveEvaluation');
+                saveBtn.disabled =true;
+                saveBtn.innerHTML = 'Saved';
+            }else{
+                showToast("Error", result.message);
             }
         }
 
@@ -316,14 +427,14 @@
             recalcAll();
         }
 
-                        // 2.1. Delete Task
+        // 2.1. Delete Task
         async function deleteTask(btn) {
             const card = btn.closest('.task-card');
             id = card.dataset.taskId;
 
 
             if(!confirm("Delete this task and all subtasks?")) return;
-            if(id ==={TASK_ID} || !id){card.remove(); return;}
+            if(!id){card.remove(); return;}
 
             const res = await postData('DeleteTask', { id, EVAL_ID });
 
@@ -364,7 +475,7 @@
             const tr = btn.closest('tr');
             const id = tr.dataset.valuationId;
 
-            if(id === "{VAL_ID}" || !id){ tr.remove(); return;}
+            if(!id){ tr.remove(); return;}
 
             if(!confirm("Delete subtask?")) return;
 
@@ -384,7 +495,6 @@
             const row = tableCell.closest('tr');
             if (!currentEvalID) return;
             if (!row.dataset.subtaskId) return;
-
 
             const subId = parseInt(row.dataset.subtaskId) || 0;
 
@@ -406,6 +516,7 @@
             row.dataset.valuationId = result.id;
             recalcAll();
         }
+
         function recalcAll() {
             let grandScore = 0;
             let grandWeight = 0;
@@ -444,14 +555,13 @@
                     grandSubScore += taskResult;
                     grandSubWeight += tWeight;
 
-
                     grandWeight += tWeight;
-
-
-                });grandSubPercent += grandSubScore *(taskTypeWeight/grandSubWeight);
-                    console.log(grandSubScore);
-                    console.log(grandSubWeight);
-                    console.log(grandSubPercent);
+                });
+                if(grandSubWeight > 0){grandSubPercent += grandSubScore *(taskTypeWeight/grandSubWeight);}
+                
+                console.log(grandSubScore);
+                console.log(grandSubWeight);
+                console.log("GSUBPER"+ grandSubPercent);
                 grandPercent += grandSubPercent;
             });
 
@@ -459,9 +569,9 @@
             document.getElementById('totalTaskWeight').innerText = grandWeight.toFixed(2);
             document.getElementById('grandTotal').innerText = grandPercent.toFixed(2);
         }
+ </script>
 
-    </script>
-    <script>
+<script>
         let taskCounter = 0;
 
         function addTaskRow(typeId) {
@@ -490,10 +600,11 @@
             tr.innerHTML = html;
             container.appendChild(tr);
         }
-    async function submitFinal() {
+        
+        async function submitFinal() {
         if(confirm("Once posted, you cannot edit. Proceed?")) {
             const res = await postData('PostEvaluation', { id: currentEvalID });
             if(res.success) window.location.href = "/Evaluation/Index";
         }
     }
-    </script>
+</script>
