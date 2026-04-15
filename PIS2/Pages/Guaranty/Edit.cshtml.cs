@@ -3,7 +3,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using PIS2.Data;
 using PIS2.Models;
+using PIS2.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,10 +16,10 @@ namespace PIS2.Pages.Guaranty
     [Authorize(Roles = "MIE\\PMS_HRCLERK")]
     public class EditModel : PageModel
     {
-        private readonly PIS2.Models.PISContext _context;
-        private readonly PIS2.Models.Core _core;
+        private readonly PISContext _context;
+        private readonly Core _core;
 
-        public EditModel(PIS2.Models.PISContext context, Core core)
+        public EditModel(PISContext context, Core core)
         {
             _context = context;
             _core = core;

@@ -17,15 +17,11 @@
             <form method="post" class="needs-validation" novalidate>
                 <div class="row mb-3">
                     <div class="col-md-6">
-                        <label asp-for="TaxRate.from" class="form-label fw-semibold">From Amount</label>
-                        <input asp-for="TaxRate.from" class="form-control" placeholder="Enter minimum range" />
-                        <span asp-validation-for="TaxRate.from" class="text-danger"></span>
+                        <label asp-for="TaxRate.amount" class="form-label fw-semibold">Amount</label>
+                        <input asp-for="TaxRate.amount" class="form-control" placeholder="Enter max range" />
+                        <span asp-validation-for="TaxRate.amount" class="text-danger"></span>
                     </div>
-                    <div class="col-md-6">
-                        <label asp-for="TaxRate.ceiling" class="form-label fw-semibold">Ceiling</label>
-                        <input asp-for="TaxRate.ceiling" class="form-control" placeholder="Enter maximum range" />
-                        <span asp-validation-for="TaxRate.ceiling" class="text-danger"></span>
-                    </div>
+                   
                 </div>
 
                 <div class="row mb-3">

@@ -1,7 +1,10 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using PIS2.Data;
 using PIS2.Models;
+using System.Threading.Tasks;
 
 namespace PIS2.Pages.Earning
 {
@@ -15,14 +18,15 @@ namespace PIS2.Pages.Earning
             _context = context;
         }
 
+        public SelectList Accounts { get; set; }
         [BindProperty]
         public earningType EarningType { get; set; } = new earningType();
 
-        public void OnGet()
+        public async Task OnGet()
         {
-            
+            getOptions();
         }
-
+       
         public async Task<IActionResult> OnPostAsync()
         {
             if (!User.IsInRole("MIE\\PMS_HRADMIN"))
@@ -32,13 +36,22 @@ namespace PIS2.Pages.Earning
             ModelState.Remove("EarningType.modifiedBy");
             EarningType.modifiedBy = User.Identity.Name;
             EarningType.modifiedDate = DateTime.Now;
-            if (!ModelState.IsValid)
-                return Page();
+            if (!ModelState.IsValid) {
+                getOptions(); return Page();}
+                
 
             _context.EarningTypes.Add(EarningType);
             await _context.SaveChangesAsync();
 
             return RedirectToPage("Index");
+        }
+        private void getOptions()
+        {
+            var accounts = _context.Accounts
+                .Where(a => a.accountStatus == mainStatus.Active)
+                .OrderBy(a => a.accountName)
+                .ToList();
+            Accounts = new SelectList(accounts, "accountID", "accountName");
         }
     }
 }

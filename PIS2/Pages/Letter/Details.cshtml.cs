@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
+using PIS2.Data;
 using PIS2.Models;
 
 namespace PIS2.Pages.Letter
@@ -22,7 +23,7 @@ namespace PIS2.Pages.Letter
                 .Include(l => l.LetterType)
                 .FirstOrDefaultAsync(l => l.letterID == id);
 
-            ViewData["RefNo"] = Letter.letterNumber;
+            ViewData["RefNo"] = Letter?.letterNumber;
             if (Letter == null)
                 return NotFound();
 

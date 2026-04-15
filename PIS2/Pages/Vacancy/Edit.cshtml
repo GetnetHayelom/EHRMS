@@ -48,7 +48,7 @@
                     <div class="col-md-6">
                         <label asp-for="VacancyModel.jobID" class="form-label fw-semibold small"><span class="text-danger">*</span> Job Position</label>
                         <input type="text" class="form-control" list="jobList" id="jobSearch" value="@Model.VacancyModel.jobModel?.jobTitle" placeholder="Search position..." oninput="selector(this, 'jobIDHidden')" />
-                        <input type="hidden" asp-for="VacancyModel.jobID" id="jobIDHidden" />
+                        <input type="hidden" asp-for="VacancyModel.jobID" id="jobIDHidden" value="@Model.VacancyModel.jobID" />
                         <datalist id="jobList">
                             @foreach (var job in Model.JobList)
                             {
@@ -60,11 +60,16 @@
                     </div>
                     <div class="col-md-3">
                         <label class="form-label fw-semibold small">Company</label>
-                        <select class="form-select bg-light" id="filter-company" asp-items="Model.CompanyList"></select>
+                        <select class="form-select bg-light" id="filter-company" asp-items="Model.CompanyList">
+                            <option value="@Model.VacancyModel?.departmentModel?.companyID" selected>@Model.VacancyModel.departmentModel?.companyModel?.companyName</option>
+                        </select>
                     </div>
                     <div class="col-md-3">
                         <label asp-for="VacancyModel.departmentID" class="form-label fw-semibold small"><span class="text-danger">*</span> Department</label>
-                        <select asp-for="VacancyModel.departmentID" class="form-select" id="filter-department" asp-items="Model.DepartmentList"></select>
+                        <select asp-for="VacancyModel.departmentID" class="form-select" id="filter-department" asp-items="Model.DepartmentList">
+                            <option value="@Model.VacancyModel.departmentID" selected>@Model.VacancyModel.departmentModel?.departmentName</option>
+                        </select>
+
                     </div>
 
                     <div class="col-md-4">
@@ -126,5 +131,10 @@
     </div>
 </div>
 
-<script src="~/lib/jquery/dist/jquery.min.js"></script>
-<script src="~/js/filter-department.js"></script>
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/js/filter-department.js"></script>
+}

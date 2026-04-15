@@ -6,9 +6,8 @@
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
 
-<h1 class="fw-bold">Companies</h1>
-
-<h4 class="fw-bold">Update Company Details</h4>
+<h2 class="fw-bold mb-0">Companies</h2>
+<p class="text-muted mb-0">Update Company Details #@Model.companyModel.companyID</p>
 <hr />
 <div class="row">
     <div class="col-md-4">
@@ -27,12 +26,19 @@
                 <span asp-validation-for="companyModel.companyAlias" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="companyModel.employmentID" class="control-label">Manager</label>
-                <select asp-for="companyModel.employmentID" asp-items="@(ViewData["employmentID"] as SelectList)" class="form-control">
-                    <option value="">-- Select Manager --</option>
-                </select>
-
+                <label asp-for="companyModel.employmentID" class="form-label fw-semibold">
+                    <span class="text-danger">*</span> Manager
+                </label>
+                <input type="text" class="form-control" list="personList" placeholder="Type to search..." oninput="selector(this, 'personIDHidden')" value="@Model.companyModel?.employmentModel?.personModel?.personFullName"/>
+                <input type="hidden" asp-for="companyModel.employmentID" id="personIDHidden" value="@Model.companyModel?.employmentID"/>
+                <datalist id="personList">
+                    @foreach (var person in Model.Manager)
+                    {
+                        <option data-id="@person.Value" value="@person.Text"></option>
+                    }
+                </datalist>
                 <span asp-validation-for="companyModel.employmentID" class="text-danger"></span>
+
             </div>
             <div class="form-group">
                 <label asp-for="companyModel.addressID" class="control-label">Address</label>
@@ -45,10 +51,58 @@
                 <span asp-validation-for="companyModel.companyStatus" class="text-danger"></span>
             </div>
             <div class="form-group d-flex justify-content-end">
-                <input type="submit" value="Save" class="btn btn-success m-2" />
                 @await Html.PartialAsync("back")
+                <button type="submit" class="btn btn-success m-2" ><i class="bi bi-save-fill me-2"></i>Save</button>                
             </div>
         </form>
+    </div>
+    <div class="col-md-7">
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-dark text-white d-flex align-items-center">
+                <i class="bi bi-clock-history me-2"></i> Audit Trail
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive" style="max-height: 500px; overflow-y: auto;">
+                    <table class="table table-sm table-hover mb-0">
+                        <thead class="table-light">
+                            <tr class="small text-uppercase">
+                                <th>Date</th>
+                                <th>User</th>
+                                <th>Field</th>
+                                <th>Old Value</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model.History.Any())
+                            {
+                                @foreach (var log in Model.History)
+                                {
+                                    <tr>
+                                        <td class="small">@log.ModifiedDate.ToString("MM/dd/yyyy HH:mm")</td>
+                                        <td class="small fw-bold">@log.ModifiedBy</td>
+                                        <td><span class="badge bg-light text-dark">@Model.GetFriendlyColumnName(log.ColumnName)</span></td>
+                                        <td class="text-muted italic small">
+                                            <span class="text-danger text-decoration-line-through small">
+                                                @Model.FormatAuditValue(log.ColumnName, log.OldValue)
+                                            </span>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td colspan="4" class="text-center py-4 text-muted">No change history found for this record.</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="card-footer bg-white small text-muted">
+                Total changes tracked: @Model.History.Count
+            </div>
+        </div>
     </div>
 </div>
 

@@ -20,7 +20,7 @@
                 <div class="input-group">
                     <input type="text" class="form-control" id="EmployeeID" required placeholder="Enter ID" />
                     <button class="btn btn-outline-secondary d-print-none" type="button" id="lookupButton"
-                            onclick="fetchEmployeeData($('#EmployeeID').val(), '#EmployeeName','#JobTitle', '#Department', '#Company')">
+                            onclick="fetchEmployeeData($('#EmployeeID').val(), 'EmployeeName','JobTitle', 'Department', 'Company')">
                         <i class="bi bi-search"></i>
                     </button>
                 </div>
@@ -117,11 +117,11 @@
 
         <div class="card p-3 mb-4">
             <p class="font-italic">
-                **Department Manager Declaration:** "I hereby would like to inform the above user has taken all the necessary trainings and important informations to enable him\her work on his own, so we request all the above access rights be given to the user."
+                <strong>Department Manager Declaration:</strong>**** "I hereby would like to inform the above user has taken all the necessary trainings and important informations to enable him\her work on his own, so we request all the above access rights be given to the user."
             </p>
             <div class="row g-3">
                 <div class="d-print-flex col-md-8">
-                    <label class="form-label">Name:</label>
+                    <label class="form-label me-4">Name:</label>
                     <input type="text" class="form-control" asp-for="ManagerName" required />
                 </div>
                 <div class="d-print-flex col-md-4">
@@ -184,7 +184,7 @@
         <div class="row g-3">
             <div class="d-print-flex col-md-4">
                 <label for="TerminationDate" class="form-label">Termination Date:</label>
-                <input class="form-control" id="TerminationDate" asp-for="TerminationDate" />
+                <input class="form-control" id="TerminationDate" value="" />
             </div>
             <div class="d-print-flex col-md-8">
                 <label for="ReasonForTermination" class="form-label">Reason for Termination:</label>
@@ -196,6 +196,8 @@
     <div class="d-flex justify-content-center">
         @await Html.PartialAsync("print")
         @await Html.PartialAsync("back")
+        <div><button type="reset" class="btn btn-outline-secondary px-4 m-2 d-print-none">Reset</button></div>
+        <a href="/Index" class="btn btn-outline-primary"><i class="bi bi-house me-2"></i>Home</a>
     </div>
 </form>
 

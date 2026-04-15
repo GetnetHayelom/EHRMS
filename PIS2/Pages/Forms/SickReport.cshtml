@@ -21,7 +21,7 @@
                     <div class="input-group">
                         <input type="text" class="form-control" id="EmployeeID" required placeholder="Enter ID" />
                         <button class="btn btn-outline-secondary d-print-none" type="button" id="lookupButton"
-                                onclick="fetchEmployeeData($('#EmployeeID').val(), '#EmployeeName', '#Department', '#JobTitle')">
+                                onclick="fetchEmployeeData($('#EmployeeID').val(), 'EmployeeName','JobTitle','Department' )">
                             <i class="bi bi-search"></i>
                         </button>
                     </div>
@@ -89,11 +89,12 @@
                 </div>
             </div>
 
-            <div class="d-flex justify-content-center gap-3">
+            <div class="d-flex justify-content-center gap-1">
                 @* Use your existing print partial and ensure it includes the d-print-none class *@
                 @await Html.PartialAsync("print")
                 @await Html.PartialAsync("back")
                 <div><button type="reset" class="btn btn-outline-secondary px-4 m-2 d-print-none">Reset</button></div>
+                <a href="/Index" class="btn btn-outline-primary m-2"><i class="bi bi-house-fill me-2"></i>Home</a>
             </div>
 
             <hr />

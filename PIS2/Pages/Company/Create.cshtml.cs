@@ -1,36 +1,46 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
+using PIS2.Data;
+using PIS2.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using PIS2.Models;
 
 namespace PIS2.Pages.Company
 {
     public class CreateModel : PageModel
     {
-        private readonly PIS2.Models.PISContext _context;
+        private readonly PISContext _context;
 
-        public CreateModel(PIS2.Models.PISContext context)
+        public CreateModel(PISContext context)
         {
             _context = context;
         }
-
-        public IActionResult OnGet()
+        public SelectList Manager { get; set; }
+        public async Task<IActionResult> OnGetAsync()
         {
             if (!User.IsInRole("MIE\\PMS_HRADMIN"))
             {
                 return RedirectToPage("/Shared/AccessDenied");
             }
+            // 1. Get the data from the database first
+            var managerData = await _context.Employments
+                .Include(e => e.personModel)
+                .Where(e => e.employmentStatus == mainStatus.Active)
+                .Select(e => new
+                {
+                    EmpID = e.employmentID,
+                    // Combine ID and Name for the dropdown display
+                    FullName = e.givenID + " - " + e.personModel.personFullName
+                })
+                .ToListAsync();
 
-            ViewData["employmentID"] = new SelectList(
-                _context.Employments.OrderBy(e => e.personModel.personFirstName).ThenBy(e => e.personModel.personFatherName).ThenBy(e => e.personModel.personLastName)
-                .Select(e => new { e.employmentID, FullName = e.personModel.personFullName }),
-                "employmentID",
-                "FullName"
-            );
+            // 2. Assign it to the SelectList
+            // Parameters: (Items, DataValueField, DataTextField)
+            Manager = new SelectList(managerData, "EmpID", "FullName");
             ViewData["addressID"] = new SelectList(_context.Addresses, "addressID", "addressFormatted");
             return Page();
         }

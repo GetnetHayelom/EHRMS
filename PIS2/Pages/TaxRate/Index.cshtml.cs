@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
+using PIS2.Data;
 using PIS2.Models;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -20,7 +21,7 @@ namespace PIS2.Pages.TaxRate
         public async Task OnGetAsync()
         {
             TaxRates = await _context.TaxRates
-                .OrderBy(t => t.from)
+                .OrderBy(t => t.amount)
                 .ToListAsync();
         }
     }

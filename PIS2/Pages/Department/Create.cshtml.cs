@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using PIS2.Data;
 using PIS2.Models;
 using System;
 using System.Collections.Generic;
@@ -12,14 +13,14 @@ namespace PIS2.Pages.Department
 {
     public class CreateModel : PageModel
     {
-        private readonly PIS2.Models.PISContext _context;
+        private readonly PISContext _context;
 
-        public CreateModel(PIS2.Models.PISContext context)
+        public CreateModel(PISContext context)
         {
             _context = context;
         }
-
-        public IActionResult OnGet(int? id)
+        public SelectList Manager { get; set; }
+        public async Task<IActionResult> OnGetAsync(int? id)
         {
 
             if (!User.IsInRole("MIE\\PMS_HRADMIN"))
@@ -39,6 +40,21 @@ namespace PIS2.Pages.Department
             }
                 
             ViewData["subAccountID"] = new SelectList(_context.SubAccounts, "subAccountID", "subAccountDescription");
+            // 1. Get the data from the database first
+            var managerData = await _context.Employments
+                .Include(e => e.personModel)
+                .Where(e => e.employmentStatus == mainStatus.Active)
+                .Select(e => new
+                {
+                    EmpID = e.employmentID,
+                    // Combine ID and Name for the dropdown display
+                    FullName = e.givenID + " - " + e.personModel.personFullName
+                })
+                .ToListAsync();
+
+            // 2. Assign it to the SelectList
+            // Parameters: (Items, DataValueField, DataTextField)
+            Manager = new SelectList(managerData, "EmpID", "FullName");
             return Page();
         }
 

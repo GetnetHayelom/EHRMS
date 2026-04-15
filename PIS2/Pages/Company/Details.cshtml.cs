@@ -5,21 +5,24 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
+using PIS2.Data;
 using PIS2.Models;
 
 namespace PIS2.Pages.Company
 {
     public class DetailsModel : PageModel
     {
-        private readonly PIS2.Models.PISContext _context;
+        private readonly PISContext _context;
 
-        public DetailsModel(PIS2.Models.PISContext context)
+        public DetailsModel(PISContext context)
         {
             _context = context;
         }
 
         public companyModel companyModel { get; set; } = default!;
         public List<departmentModel> Departments { get; set; }
+        [BindProperty(SupportsGet = true)]
+        public mainStatus? DepartmentStatus { get; set; }
         public async Task<IActionResult> OnGetAsync(int? id)
         {
             if (id == null)
@@ -40,7 +43,15 @@ namespace PIS2.Pages.Company
             else
             {
                 companyModel = companymodel;
-                Departments = companyModel.Departments?.OrderBy(d =>d.departmentName).ToList() ?? new List<departmentModel>();
+                if (DepartmentStatus != null)
+                {
+                    Departments = companyModel.Departments?.Where(d => d.departmentStatus == DepartmentStatus).OrderBy(d => d.departmentName).ToList() ?? new List<departmentModel>();
+                }
+                else 
+                { 
+                    Departments = companyModel.Departments?.OrderBy(d => d.departmentName).ToList() ?? new List<departmentModel>();
+                }
+                
             }
             return Page();
         }

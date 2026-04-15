@@ -8,23 +8,41 @@
 @await Html.PartialAsync("headerSimple", "")
 <div class="d-flex justify-content-between align-items-end">
     <div>
-        <h2 class="fw-bold">Accounts</h2>
-
+        <h2 class="fw-bold mb-0">Accounts</h2>
+        <p class="text-muted mb-0">Accounts catalog</p>
+    </div>
+    <div class="d-flex justify-content-end gap-2 align-items-end">
         <p>
-            <a asp-page="Create" class="btn btn-primary">Add New Account</a>
+            <a asp-page="ChartOfAccounts" class="btn btn-outline-primary">COA</a>
+        </p>
+        <p>
+            <a asp-page="GeneralLedger" class="btn btn-outline-primary">GL</a>
+        </p>
+        <p>
+            <a asp-page="BalanceSheet" class="btn btn-outline-primary">BS</a>
+        </p>
+        <p>
+            <a asp-page="Create" class="btn btn-primary"><i class="bi bi-plus-circle me-1"></i>New Account</a>
         </p>
     </div>
-    <div class="d-flex justify-content-end">
-        <div class="me-2">@await Html.PartialAsync("filter")</div>
-        @await Html.PartialAsync("print")
-    </div>
+    
 </div>
 
 
-
+<div class="card shadow-sm m-1 p-0">
+    <div class="d-flex justify-content-end align-items-end m-0">
+        @await Html.PartialAsync("filter")
+        @await Html.PartialAsync("back")
+        @await Html.PartialAsync("print")
+    </div>
+</div>
+<div class="card shadow-sm">
 <table class="table table-striped table-hover" id="dataTable">
     <thead>
         <tr class="bg-dark text-white">
+                <th>
+                    S/No
+                </th>
             <th>
                 Account Number
             </th>
@@ -34,57 +52,74 @@
             <th>
                 Description
             </th>
+                <th>
+                    Type
+                </th>
             <th>
                 Status
             </th>
-            <th>Actions</th>
+            <th class="text-end px-2 d-print-none">Actions</th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model.accountModel) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.accountNumber)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.accountName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.accountDescription)
-            </td>
-            <td>
-                
-                    @if (item.accountStatus == Models.mainStatus.Active)
-                    {
-                        <span class="badge bg-success">@Html.DisplayFor(modelItem => item.accountStatus)</span>
-
-                    }
-                    else if (item.accountStatus == Models.mainStatus.Suspended)
-                    {
-                        <span class="badge bg-warning">@Html.DisplayFor(modelItem => item.accountStatus)</span>
-                    }
-                    else
-                    {
-                        <span class="badge bg-secondary">@Html.DisplayFor(modelItem => item.accountStatus)</span>
-                    }
-            </td>
-            <td>
-                    <div class="btn-group" role="group">
-                        <a asp-page="./Details" asp-route-id="@item.accountID" class="btn btn-sm btn-outline-primary" title="View Details">
-                            <i class="bi bi-eye"></i>
-                        </a>
-                        <a asp-page="./Edit" asp-route-id="@item.accountID" class="btn btn-sm btn-outline-success" title="Edit">
-                            <i class="bi bi-pencil-square"></i>
-                        </a>
-                    </div>
-            </td>
-        </tr>
-}
+            @if (Model.accountModel == null || !Model.accountModel.Any())
+            {
+                <tr>
+                    <td colspan="10" class="text-center text-muted">
+                        No accounts found.
+                    </td>
+                </tr>
+            }
+            @{
+                int index = 1;
+            }
+            @foreach (var item in Model.accountModel) 
+            {
+                <tr>
+                    <td>@(index++)</td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.accountNumber)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.accountName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.accountDescription)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.accountType)
+                    </td>
+                    <td>
+                        @if (item.accountStatus == Models.mainStatus.Active)
+                            {
+                                <span class="badge bg-success">@Html.DisplayFor(modelItem => item.accountStatus)</span>
+                            }
+                            else if (item.accountStatus == Models.mainStatus.Suspended)
+                            {
+                                <span class="badge bg-warning">@Html.DisplayFor(modelItem => item.accountStatus)</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-secondary">@Html.DisplayFor(modelItem => item.accountStatus)</span>
+                            }
+                    </td>
+                    <td class="text-end px-2 d-print-none">
+                            <div class="btn-group" role="group">
+                                <a asp-page="./Details" asp-route-id="@item.accountID" class="btn btn-sm btn-outline-primary" title="View Details">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                                <a asp-page="./Edit" asp-route-id="@item.accountID" class="btn btn-sm btn-outline-success" title="Edit">
+                                    <i class="bi bi-pencil-square"></i>
+                                </a>
+                            </div>
+                    </td>
+                </tr>
+            }
     </tbody>
 </table>
-<div class="d-flex justify-content-end">
-    
-
+                            </div>
+<div class="d-flex justify-content-end align-items-center m-0">
+    @await Html.PartialAsync("back")
     @await Html.PartialAsync("print")
 </div>
 

@@ -4,7 +4,7 @@
         theme: 'snow',
         modules: {
             toolbar: '#editor-toolbar',
-            table: {}   // 🔥 THIS is what was missing
+            table: {}   
         }
     });
 
@@ -37,7 +37,7 @@
             const rows = parseInt(this.dataset.rows);
             const cols = parseInt(this.dataset.cols);
 
-            editor.focus();   // 🔥 REQUIRED
+            editor.focus();   // REQUIRED
 
             const tableModule = editor.getModule('table');
 

@@ -6,9 +6,8 @@
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
 
-<h1 class="fw-bold">Accounts</h1>
-
-<h4 class="fw-bold">Update Account</h4>
+<h2 class="fw-bold mb-0">Accounts</h2>
+<p class="text-muted mb-0">Update Account Details #@Model.accountModel.accountID</p>
 <hr />
 <div class="row">
     <div class="col-md-4">
@@ -30,6 +29,11 @@
                 <label asp-for="accountModel.accountDescription" class="control-label">Description</label>
                 <input asp-for="accountModel.accountDescription" class="form-control" />
                 <span asp-validation-for="accountModel.accountDescription" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="accountModel.accountType" class="control-label">Type</label>
+                <select asp-for="accountModel.accountType" class="form-control" asp-items="Html.GetEnumSelectList<Models.AccountType>()"></select>
+                <span asp-validation-for="accountModel.accountType" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="accountModel.accountStatus" class="control-label">Status</label>

@@ -29,6 +29,7 @@ namespace PIS2.Models
         public virtual ICollection<VacancyModel>? Vacancies { get; set; }
         public virtual ICollection<leaveModel>? Leaves { get; set; }
         public virtual ICollection<penaltyModel>? Penalties { get; set; }
+        public virtual ICollection<payrollPay>? PayrollPays { get; set; }
         public string modifiedBy { get; set; }
         public departmentModel() { }
     }

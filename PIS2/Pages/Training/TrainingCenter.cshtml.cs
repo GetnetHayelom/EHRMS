@@ -1,9 +1,12 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
+using PIS2.Data;
 using PIS2.Models;
 namespace PIS2.Pages.Training
 {
-public class TrainingCenter : PageModel
+    [Authorize(Roles = "MIE\\PMS_HRCLERK, MIE\\PMS_HRMANAGER, MIE\\PMS_MANAGEMENT")]
+    public class TrainingCenter : PageModel
 {
     private readonly PISContext _context;
 

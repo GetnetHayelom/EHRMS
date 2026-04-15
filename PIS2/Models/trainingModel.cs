@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
 
 namespace PIS2.Models
 {
@@ -44,6 +45,7 @@ namespace PIS2.Models
         public int? personID { get; set; }
         public virtual personModel? PersonModel { get; set; }
         public string? provider { get; set; }
+        [Precision(18, 2)]
         public decimal? cost { get; set; }
 
         public trainingStatus sessionStatus { get; set; } // Planned, Ongoing, Completed, Cancelled
@@ -70,7 +72,7 @@ namespace PIS2.Models
         public trainingResult result { get; set; } // Passed, Failed, InProgress, Absent
 
         public DateTime? completionDate { get; set; }
-
+        [Precision(18, 2)]
         public decimal? score { get; set; }
 
         public string? certificateNumber { get; set; }
@@ -91,6 +93,7 @@ namespace PIS2.Models
         public int trainingAttendanceID { get; set; }
         public virtual trainingAttendanceModel? Attendance { get; set; }
         public string? remarks { get; set; }
+        [Precision(18, 2)]
         public decimal allocatedCost { get; set; } = 0;
         public string modifiedBy { get; set; }
         public DateTime modifiedDate { get; set; }

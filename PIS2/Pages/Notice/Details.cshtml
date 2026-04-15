@@ -3,6 +3,18 @@
 @{
     ViewData["Title"] = "Notice Details";
 }
+<div class="d-flex justify-content-between align-items-end">
+    <div>
+        <h2 class="fw-bold mb-0">Notice & Anouncements</h2>
+        <p class="text-muted mb-0">Notice details #@Model.Notice.noticeID</p>
+    </div>
+    <div class="btn-group">
+        <a class="btn btn-outline-secondary" asp-page="Index"><i class="bi bi-arrow-left me-2"></i> Back</a>
+        <a class="btn btn-primary" asp-page="./Edit" asp-route-id="@Model.Notice.noticeID"><i class="bi bi-save me-2"></i> Edit</a>
+        <a class="btn btn-outline-primary" asp-page="Create"><i class="bi bi-plus-circle me-2"></i> Add New</a>
+    </div>
+    
+</div>
 
 <div class="container py-4">
     <div class="card shadow-sm border-0">
@@ -78,7 +90,7 @@
                 {
                     <form method="post" asp-page-handler="Approve">
                         <input type="hidden" asp-for="Notice.noticeID" />
-                        <button type="submit" class="btn btn-success m-2">
+                        <button type="submit" class="btn btn-success m-2"><i class="bi bi-check-circle me-2"></i>
                             Approve
                         </button>
                     </form>
@@ -87,8 +99,17 @@
                 {
                     <form method="post" asp-page-handler="Expire">
                         <input type="hidden" asp-for="Notice.noticeID" />
-                        <button type="submit" class="btn btn-danger m-2">
+                        <button type="submit" class="btn btn-secondary m-2"><i class="bi bi-x-circle me-2"></i>
                             Expire
+                        </button>
+                    </form>
+                }
+                @if (User.IsInRole("MIE\\PMS_HRCLERK") && Model.Notice.noticeStatus == Models.NoticeStatus.Approved)
+                {
+                    <form method="post" asp-page-handler="Post">
+                        <input type="hidden" asp-for="Notice.noticeID" />
+                        <button type="submit" class="btn btn-warning m-2">
+                            Post Notice
                         </button>
                     </form>
                 }
@@ -97,7 +118,7 @@
                     @if (User.IsInRole("MIE\\PMS_HRCLERK") && Model.Notice.noticeStatus == Models.NoticeStatus.Pending)
                     {
                         <a asp-page="/Notice/Edit" asp-route-id="@Model.Notice.noticeID" class="btn btn-primary d-print-none m-2">
-                            <i class="bi bi-pencil"></i> Edit Notice
+                            <i class="bi bi-pencil-square me-2"></i> Edit Notice
                         </a>
                     }
                     

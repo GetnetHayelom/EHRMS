@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using PIS2.Data;
 using PIS2.Models;
 
 namespace PIS2.Pages.Letter
@@ -42,7 +43,7 @@ namespace PIS2.Pages.Letter
         public async Task<IActionResult> OnPostAsync()
         {
             ModelState.Remove("Letter.modifiedBy");
-            
+            PersonList = new SelectList(_db.Persons, "personFullName", "personFullName");
             var existing = await _db.Letters.FirstOrDefaultAsync(l => l.letterID == Letter.letterID);
             if (existing == null) { return NotFound(); }
 
@@ -92,6 +93,7 @@ namespace PIS2.Pages.Letter
         public SelectList PersonList { get; set; }
         public async Task<IActionResult> OnPostApproveAsync()
         {
+            PersonList = new SelectList(_db.Persons, "personFullName", "personFullName");
             if (!User.IsInRole("MIE\\PMS_HRMANAGER"))
             {
                 TempData["message"] = ("Error", "Access Denied!");

@@ -4,7 +4,9 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Hosting;
+using PIS2.Data;
 using PIS2.Models;
+using PIS2.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,15 +18,19 @@ namespace PIS2.Pages.Person
     [Authorize(Roles = "MIE\\PMS_HRCLERK")]
     public class CreateModel : PageModel
     {
-        private readonly PIS2.Models.PISContext _context;
-        private readonly PIS2.Models.Core _core;
+        private readonly PISContext _context;
+        private readonly Core _core;
         private readonly IWebHostEnvironment _environment;
+        private readonly ILogger<CreateModel> _logger;
 
-        public CreateModel(PIS2.Models.PISContext context, IWebHostEnvironment environment, PIS2.Models.Core core)
+        private readonly string _sharePath = @"\\192.168.4.7\Attachments";
+
+        public CreateModel(PISContext context, IWebHostEnvironment environment, Core core, ILogger<CreateModel> logger)
         {
             _context = context;
             _environment = environment;
             _core = core;
+            _logger = logger;
         }
 
         public IActionResult OnGet()
@@ -77,11 +83,19 @@ namespace PIS2.Pages.Person
             {
                 var fileExt = Path.GetExtension(Photo.FileName);
                 var fileName = $"{personModel.personID}{fileExt}";
-                var imagesFolder = Path.Combine(_environment.WebRootPath, "images");
+                var imagesFolder = Path.Combine(_sharePath, "Profiles");
 
                 if (!Directory.Exists(imagesFolder))
                     Directory.CreateDirectory(imagesFolder);
 
+                
+                var existingFiles = Directory.GetFiles(imagesFolder, $"{personModel.personID}.*");
+                foreach (var existingFile in existingFiles)
+                {
+                    System.IO.File.Delete(existingFile);
+                    _logger.LogInformation("Deleted existing profile picture: {FileName}", existingFile);
+                }
+                
                 var filePath = Path.Combine(imagesFolder, fileName);
 
                 using (var stream = new FileStream(filePath, FileMode.Create))

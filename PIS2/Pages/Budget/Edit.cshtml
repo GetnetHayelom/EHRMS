@@ -1,0 +1,138 @@
+﻿@page
+@model PIS2.Pages.Budget.EditModel
+
+@{
+    ViewData["Title"] = "Edit Budget Plan";
+}
+<div class="d-flex justify-content-between align-items-end">
+    <div>
+        <h2 class="fw-bold mb-0">Budget Plan</h2>
+        <p class="text-muted mb-0">Update budget plan details #@Model.BudgetPlan.BudgetPlanID</p>
+    </div>
+</div>
+<div class="container mt-2">
+    <div class="row">
+        <div class="col-md-6 offset-md-3">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <div class="d-flex justify-content-between">
+                        <h4 class="mb-0"><i class="bi bi-pencil-square me-2"></i>Edit Budget Plan</h4>
+                        @if (Model.BudgetPlan.Status == Models.BudgetStatus.HOLD && User.IsInRole("MIE\\PMS_HRMANAGER"))
+                        {
+                            <div class="btn-group">
+                                <form method="post" asp-page-handler="Approve">
+                                    <input type="hidden" asp-for="BudgetPlan.BudgetPlanID" />
+                                    <button type="submit" class="btn btn-warning"><i class="bi bi-check-circle me-2"></i>Approve</button>
+                                </form>
+                                <form method="post" asp-page-handler="Decline">
+                                    <input type="hidden" asp-for="BudgetPlan.BudgetPlanID" />
+                                    <button type="submit" class="btn btn-danger"><i class="bi bi-x-circle me-2"></i>Decline</button>
+                                </form>
+                            </div>
+
+                        }
+                        else if (Model.BudgetPlan.Status == Models.BudgetStatus.APPROVED && User.IsInRole("MIE\\PMS_HRMANAGER"))
+                        {
+                            if (Model.BudgetPlan.StartDate <= DateTime.Now)
+                            {
+                                <form method="post" asp-page-handler="Activate">
+                                    <input type="hidden" asp-for="BudgetPlan.BudgetPlanID" />
+                                    <button type="submit" class="btn btn-success"><i class="bi bi-activity me-2"></i>Activate</button>
+                                </form>
+                            }
+                        }
+                        else if (Model.BudgetPlan.Status == Models.BudgetStatus.ACTIVE && User.IsInRole("MIE\\PMS_HRMANAGER"))
+                        {
+                            if(Model.BudgetPlan.EndDate <= DateTime.Now)
+                            {
+                                <form method="post" asp-page-handler="Close">
+                                    <input type="hidden" asp-for="BudgetPlan.BudgetPlanID" />
+                                    <button type="submit" class="btn btn-secondary"><i class="bi bi-check-circle me-2"></i>Close</button>
+                                </form>
+                            }
+                            
+                        }
+                    </div>
+                </div>
+                <div class="card-body">
+                    <form method="post" id="createForm">
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                        <input type="hidden" asp-for="BudgetPlan.BudgetPlanID" />
+
+                        <div class="form-group mb-3">
+                            <label asp-for="BudgetPlan.BudgetName" class="control-label font-weight-bold">Plan Name</label>
+                            <input asp-for="BudgetPlan.BudgetName" class="form-control"/>
+                            <span asp-validation-for="BudgetPlan.BudgetName" class="text-danger"></span>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 form-group mb-3">
+                                <label asp-for="BudgetPlan.StartDate" class="control-label font-weight-bold">Start Date</label>
+                                <input asp-for="BudgetPlan.StartDate" type="date" class="form-control" />
+                                <span asp-validation-for="BudgetPlan.StartDate" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 form-group mb-3">
+                                <label asp-for="BudgetPlan.EndDate" class="control-label font-weight-bold">End Date</label>
+                                <input asp-for="BudgetPlan.EndDate" type="date" class="form-control" />
+                                <span asp-validation-for="BudgetPlan.EndDate" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 form-group mb-3">
+                                <div>
+                                    <label asp-for="BudgetPlan.Status" class="control-label font-weight-bold">Status</label>
+                                    <select asp-for="BudgetPlan.Status" asp-items="Model.StatusList" class="form-control" readonly hidden></select>
+                                    @{
+                                        var badgeClass = Model.BudgetPlan.Status switch
+                                        {
+                                            Models.BudgetStatus.APPROVED => "bg-success",
+                                            Models.BudgetStatus.ACTIVE => "bg-success",
+                                            Models.BudgetStatus.HOLD => "bg-warning",
+                                            Models.BudgetStatus.CLOSED => "bg-secondary",
+                                            Models.BudgetStatus.DECLINED => "bg-danger",
+                                            _ => "badge-info"
+                                        };
+                                    }
+                                    <span class="badge badge-pill @badgeClass px-3 py-2">@Model.BudgetPlan.Status</span>
+                                </div>
+                                
+                            </div>
+                            <div class="col-md-6 form-group mb-3">
+                                <label asp-for="BudgetPlan.BudgetPeriod" class="control-label font-weight-bold">Period Label</label>
+                                <input asp-for="BudgetPlan.BudgetPeriod" class="form-control" placeholder="e.g. Q1, Annual" />
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 form-group mb-3">
+                                <label asp-for="BudgetPlan.TotalAmount" class="control-label font-weight-bold">Planned Ammount</label>
+                                <input asp-for="BudgetPlan.TotalAmount" class="form-control" />
+                            </div>
+                            <div class="col-md-6 form-group mb-3">
+                                <label asp-for="BudgetPlan.FiscalYear" class="control-label font-weight-bold">Fiscal Year</label>
+                                <input asp-for="BudgetPlan.FiscalYear" class="form-control" />
+                            </div>
+                        </div>
+
+                        <div class="form-group mb-4">
+                            <label asp-for="BudgetPlan.Description" class="control-label font-weight-bold">Description / Objectives</label>
+                            <textarea asp-for="BudgetPlan.Description" class="form-control" rows="3"></textarea>
+                        </div>
+
+                        <hr />
+                        <div class="d-flex justify-content-end gap-2">
+                            <button type="reset" class="btn btn-outline-danger">Reset</button>
+                            <a asp-page="Index" class="btn btn-outline-secondary"><i class="bi bi-arrow-left me-2"></i>Back to List</a>
+                            <button type="submit" class="btn btn-success"><i class="bi bi-save me-2"></i>Save</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

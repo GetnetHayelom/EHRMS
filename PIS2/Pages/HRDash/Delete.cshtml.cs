@@ -5,15 +5,16 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
+using PIS2.Data;
 using PIS2.Models;
 
 namespace PIS2.Pages.HRDash
 {
     public class DeleteModel : PageModel
     {
-        private readonly PIS2.Models.PISContext _context;
+        private readonly PISContext _context;
 
-        public DeleteModel(PIS2.Models.PISContext context)
+        public DeleteModel(PISContext context)
         {
             _context = context;
         }

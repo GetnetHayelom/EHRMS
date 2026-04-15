@@ -1,22 +1,25 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using PIS2.Data;
 using PIS2.Models;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace PIS2.Pages.delegation
 {
     public class EditModel : PageModel
     {
-        private readonly PIS2.Models.PISContext _context;
-
-        public EditModel(PIS2.Models.PISContext context)
+        private readonly PISContext _context;
+        private readonly ILogger<EditModel> _logger;
+        public EditModel(PISContext context, ILogger<EditModel> logger)
         {
             _context = context;
+            _logger = logger;
         }
 
         [BindProperty]
@@ -66,6 +69,9 @@ namespace PIS2.Pages.delegation
                     {
                         Console.WriteLine($"{kv.Key} --> {error.ErrorMessage}");
                         TempData["message"] = ("Error", $"{kv.Key} --> {error.ErrorMessage}");
+                        _logger.LogError($"Validation Error for{kv.Key} --> {error.ErrorMessage}", User.Identity.Name, DateTime.Now);
+                        var msg = new { success = false, message = $"Validation Error for {kv.Key}!" };
+                        return new JsonResult(msg);
                     }
                 }
 
@@ -79,17 +85,15 @@ namespace PIS2.Pages.delegation
             try
             {
                 await _context.SaveChangesAsync();
+                var msg = new { success = true, message = $"Updated Successfuly!" };
+                return new JsonResult(msg);
             }
-            catch (DbUpdateConcurrencyException)
+            catch (Exception ex)
             {
-                if (!delegationModelExists(delegationModel.delegationID))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                _logger.LogError(ex, $"Error updating delegation!", User.Identity.Name, DateTime.Now);
+                var msg = new { success = false, message = $"Error updating delegation!" };
+                return new JsonResult(msg);
+                
             }
 
             return RedirectToPage("./Index");

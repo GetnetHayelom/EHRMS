@@ -5,7 +5,9 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
+using PIS2.Data;
 using PIS2.Models;
+using PIS2.Services;
 using static System.Formats.Asn1.AsnWriter;
 using static PIS2.Pages.Leave.IndexModel;
 
@@ -13,9 +15,9 @@ namespace PIS2.Pages.AllowanceAssignment
 {
     public class IndexModel : PageModel
     {
-        private readonly PIS2.Models.PISContext _context;
-        private readonly PIS2.Models.Core _core;
-        public IndexModel(PIS2.Models.PISContext context, Models.Core core)
+        private readonly PISContext _context;
+        private readonly Core _core;
+        public IndexModel(PISContext context, Core core)
         {
             _context = context;
             _core = core;

@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using PIS2.Data;
 using PIS2.Models;
 using PIS2.Views;
 
@@ -16,9 +17,9 @@ namespace PIS2.Pages.Report
 {
     public class EmploymentReportModel : PageModel
     {
-        private readonly PIS2.Models.PISContext _context;
+        private readonly PISContext _context;
 
-        public EmploymentReportModel(PIS2.Models.PISContext context)
+        public EmploymentReportModel(PISContext context)
         {
             _context = context;
         }

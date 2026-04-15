@@ -4,8 +4,8 @@
     Layout = "headerFull";
     ViewData["RefNo"] = Model.Letter?.letterNumber ?? "";
 }
-<h2 class="fw-bold d-print-none">Letters</h2>
-<h6 class="text-muted d-print-none">Letter Details</h6>
+<h2 class="fw-bold d-print-none mb-0">Letters</h2>
+<p class="text-muted d-print-none mb-0">Letter Details #@Model.Letter?.letterID</p>
 <div class="container mt-4">
     @section LetterBody
     {
@@ -49,7 +49,7 @@
         
     </div>
 
-    <div class="card p-4">
+        <div class="ql-editor card p-4 ">
         @Html.Raw(Model.Letter?.letterBody)
     </div>
         <div class="d-flex mt-6">

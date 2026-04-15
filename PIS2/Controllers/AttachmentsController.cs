@@ -2,12 +2,12 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.StaticFiles;
-using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.EntityFrameworkCore;
-using OfficeOpenXml.Drawing;
-using System;
-using System.Net.Mail;
-using System.Runtime.Intrinsics.X86;
+using Microsoft.EntityFrameworkCore.Metadata.Conventions;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using PIS2.Data;
+using PIS2.Models;
+using System.IO;
 
 namespace PIS2.Controllers
 {
@@ -15,155 +15,340 @@ namespace PIS2.Controllers
     [Route("api/attachments")]
     public class AttachmentsController : ControllerBase
     {
-        private readonly Models.PISContext _db;
-        private readonly string _sharePath = @"\\192.168.4.7\Attachments"; // network path
+        private readonly PISContext _db;
+        private readonly ILogger<AttachmentsController> _logger;
+        private readonly string _sharePath = @"\\192.168.4.7\Attachments";
 
-        public AttachmentsController(Models.PISContext db)
+        public AttachmentsController(
+            PISContext db,
+            ILogger<AttachmentsController> logger)
         {
             _db = db;
+            _logger = logger;
         }
 
         // GET attachments
         [HttpGet("{table}/{recordId}")]
         public async Task<IActionResult> Get(string table, int recordId)
         {
+            _logger.LogInformation("Fetching attachments for Table:{Table} RecordId:{RecordId}", table, recordId);
+
             var files = await _db.Attachments
                 .Where(a => a.TableName == table && a.RecordId == recordId)
                 .OrderByDescending(a => a.UploadedDate)
                 .ToListAsync();
 
+            _logger.LogInformation("{Count} attachments returned for Table:{Table} RecordId:{RecordId}",
+                files.Count, table, recordId);
+
             return Ok(files);
         }
 
+        //UPLOAD ATTACHMENTS
         [HttpPost("upload")]
-        [RequestSizeLimit(10_485_760)] // Hard limit at the server level (e.g., 10MB)
+        [RequestSizeLimit(10_485_760)]
         public async Task<IActionResult> Upload(
-    [FromForm] IFormFile file,
-    [FromForm] string tableName,
-    [FromForm] int recordId,
-    [FromForm] string fileTitle)
+            [FromForm] IFormFile file,
+            [FromForm] string tableName,
+            [FromForm] int recordId,
+            [FromForm] string fileTitle)
         {
-            // 1. Initial Validation
-            if (file == null || file.Length == 0)
-                return BadRequest("No file provided.");
+            _logger.LogInformation("Upload attempt started by {User} for Table:{Table} RecordId:{RecordId}",
+                User.Identity?.Name, tableName, recordId);
 
-            // Validate inputs to prevent DB errors or script injection
+            if (file == null || file.Length == 0)
+            {
+                _logger.LogWarning("Upload failed: No file provided.");
+                return BadRequest("No file provided.");
+            }
+
             if (string.IsNullOrWhiteSpace(tableName) || string.IsNullOrWhiteSpace(fileTitle))
+            {
+                _logger.LogWarning("Upload validation failed: Missing table name or file title.");
                 return BadRequest("Table name and File title are required.");
+            }
 
             var extension = Path.GetExtension(file.FileName).ToLowerInvariant();
             string[] allowed = { ".pdf", ".jpg", ".jpeg", ".png", ".webp" };
 
             if (!allowed.Contains(extension))
+            {
+                _logger.LogWarning("Upload rejected: Unsupported file type {Extension}", extension);
                 return BadRequest("Unsupported file type.");
+            }
 
-            // 2. Transaction Management
-            // We use a transaction so if the physical save fails, the DB record doesn't stay behind (Orphaned Records)
             using var transaction = await _db.Database.BeginTransactionAsync();
 
             try
             {
-                // 3. Create DB Record
                 var attachment = new Models.AttachmentModel
                 {
                     TableName = tableName,
                     RecordId = recordId,
                     FileName = fileTitle,
-                    FilePath = "PENDING", // Placeholder
+                    FilePath = "PENDING",
                     FileType = extension,
                     FileSize = file.Length,
-                    UploadedBy = User.Identity?.Name ?? "System",
-                    UploadedDate = DateTime.UtcNow // Always track time in production
+                    UploadedBy = User.Identity?.Name,
+                    UploadedDate = DateTime.UtcNow
                 };
 
                 _db.Attachments.Add(attachment);
                 await _db.SaveChangesAsync();
 
-                // 4. Physical Save
-                // Sanitize filename to prevent path traversal attacks
+                _logger.LogInformation("Attachment record created with ID:{AttachmentID}", attachment.AttachmentID);
+
                 var storedFileName = $"{attachment.AttachmentID}{extension}";
                 var fullPath = Path.Combine(_sharePath, storedFileName);
 
-                // Ensure directory exists
                 var directory = Path.GetDirectoryName(fullPath);
-                if (!Directory.Exists(directory)) Directory.CreateDirectory(directory);
+                if (!Directory.Exists(directory))
+                {
+                    Directory.CreateDirectory(directory);
+                    _logger.LogInformation("Created attachment directory {Directory}", directory);
+                }
 
                 using (var stream = new FileStream(fullPath, FileMode.Create, FileAccess.Write, FileShare.None))
                 {
                     await file.CopyToAsync(stream);
                 }
 
-                // 5. Update Path and Commit
                 attachment.FilePath = fullPath;
                 await _db.SaveChangesAsync();
 
                 await transaction.CommitAsync();
 
+                _logger.LogInformation(
+                    "File uploaded successfully. AttachmentID:{AttachmentID} Size:{Size} UploadedBy:{User}",
+                    attachment.AttachmentID,
+                    file.Length.Bytes(),
+                    User.Identity?.Name);
+
                 return Ok(new { id = attachment.AttachmentID, name = fileTitle });
             }
             catch (IOException ioEx)
             {
-                // Log: "Disk full or network share unreachable"
                 await transaction.RollbackAsync();
+
+                _logger.LogError(ioEx,
+                    "Storage error during file upload. Table:{Table} RecordId:{RecordId}",
+                    tableName, recordId);
+
                 return StatusCode(503, "Storage service unavailable. Please try again later.");
             }
             catch (Exception ex)
             {
-                // Log: ex.Message
                 await transaction.RollbackAsync();
+
+                _logger.LogError(ex,
+                    "Unexpected error during file upload for Table:{Table} RecordId:{RecordId}",
+                    tableName, recordId);
+
                 return StatusCode(500, "An internal error occurred during upload.");
             }
         }
 
-
+        
+        //VIEW ATTACHMENTS
         [Authorize(Roles = "MIE\\PMS_HRCLERK, MIE\\PMS_HRMANAGER")]
         [HttpGet("view/{id}")]
-        [ResponseCache(Duration = 86400, Location = ResponseCacheLocation.Client)] // Cache for 24 hours
+        [ResponseCache(Duration = 86400, Location = ResponseCacheLocation.Client)]        
         public async Task<IActionResult> View(int id)
         {
-            // 1. Fetch metadata
-            var att = await _db.Attachments.AsNoTracking().FirstOrDefaultAsync(x => x.AttachmentID == id);
+            _logger.LogInformation("Attachment view request for ID:{AttachmentID} by {User}",
+                id, User.Identity?.Name);
+
+            var att = await _db.Attachments
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x => x.AttachmentID == id);
 
             if (att == null)
+            {
+                _logger.LogWarning("Attachment {AttachmentID} not found in database.", id);
                 return NotFound("Record not found in database.");
+            }
 
-            // 2. Resolve Path (Ensure it matches your upload logic)
             var storedFileName = $"{att.AttachmentID}{att.FileType}";
             var fullPath = Path.Combine(_sharePath, storedFileName);
 
-            // 3. Check physical existence
             if (!System.IO.File.Exists(fullPath))
             {
-                // Log: $"File missing on disk: {fullPath} for AttachmentID: {id}"
+                _logger.LogError("Physical file missing. AttachmentID:{AttachmentID} Path:{Path}",
+                    id, fullPath);
+
                 return NotFound("The physical file is missing from storage.");
             }
 
             try
             {
-                // 4. Determine Content Type
                 var provider = new FileExtensionContentTypeProvider();
+
                 if (!provider.TryGetContentType(fullPath, out var contentType))
-                {
                     contentType = "application/octet-stream";
-                }
 
-                // 5. STREAM the file instead of reading all bytes
-                // 'FileStream' is better for memory because it chunks the data
-                var fileStream = new FileStream(fullPath, FileMode.Open, FileAccess.Read, FileShare.Read, 4096, useAsync: true);
+                var fileStream = new FileStream(
+                    fullPath,
+                    FileMode.Open,
+                    FileAccess.Read,
+                    FileShare.Read,
+                    4096,
+                    useAsync: true);
 
-                // Use this to OPEN in browser (Inline)
+                _logger.LogInformation("Streaming attachment {AttachmentID} to user {User}",
+                    id, User.Identity?.Name);
+
                 return File(fileStream, contentType);
-                // This overload handles the disposal of the stream automatically
-                // Use this to FORCE DOWNLOAD(Attachment)
-                //return File(fileStream, contentType, att.FileName ?? "document" + att.FileType);
             }
             catch (IOException ex)
             {
-                // Log: ex (e.g., Network share timeout)
+                _logger.LogError(ex,
+                    "Error accessing storage while reading attachment {AttachmentID}",
+                    id);
+
                 return StatusCode(503, "Error accessing storage.");
             }
         }
 
-    }
+        
+        //UPLOAD PROFILE PICTURE
+        [Authorize(Roles = "MIE\\PMS_HRCLERK, MIE\\PMS_HRMANAGER")]
+        [HttpPost("uploadprofile")]
+        [RequestSizeLimit(10_485_760)]
+        public async Task<IActionResult> UploadProfile(
+            [FromForm] IFormFile file,
+            [FromForm] int personId)
+        {
+            _logger.LogInformation($"Person profile picture upload attempt started by {User} for  PersonId:{personId}",
+                User.Identity?.Name, personId);
 
+            if (file == null || file.Length == 0)
+            {
+                _logger.LogError("Upload failed: No file provided.");
+                return BadRequest("No file provided.");
+            }
+
+            var extension = Path.GetExtension(file.FileName).ToLowerInvariant();
+            string[] allowed = { ".jpg", ".jpeg", ".png", ".webp" };
+
+            if (!allowed.Contains(extension))
+            {
+                _logger.LogError("Upload rejected: Unsupported file type {Extension}", extension);
+                return BadRequest("Unsupported file type.");
+            }
+            
+            try
+            {
+                var profilePath =Path.Combine(_sharePath, "Profile");
+                if (!Directory.Exists(profilePath))
+                {
+                    Directory.CreateDirectory(profilePath);
+                    _logger.LogInformation("Created profile directory {Directory}", profilePath);
+                }
+
+                var existingFiles = Directory.GetFiles(profilePath, $"{personId}.*");
+                foreach (var existingFile in existingFiles)
+                {
+                    System.IO.File.Delete(existingFile);
+                    _logger.LogWarning("Deleted existing profile picture: {FileName}", existingFile);
+                }
+
+                _logger.LogWarning("Profile record accepted with ID:{PersonID}", personId);
+
+                var storedFileName = $"{personId}{extension}";
+                var fullPath = Path.Combine(profilePath, storedFileName);
+
+                using (var stream = new FileStream(fullPath, FileMode.Create, FileAccess.Write, FileShare.None))
+                {
+                    await file.CopyToAsync(stream);
+                }
+
+                _logger.LogWarning(
+                    "File uploaded successfully. PersonID:{AttachmentID} Size:{Size} UploadedBy:{User}",
+                    personId,
+                    file.Length.Bytes(),
+                    User.Identity?.Name);
+
+                var Audit = new AuditLog 
+                {
+                    TableName = "Persons",
+                     RecordID = personId,
+                     ColumnName = "Profile Picture",
+                     OldValue = "Photo Uploaded",
+                     ModifiedBy = User.Identity.Name,
+                     ModifiedDate = DateTime.Now
+                };
+
+                _db.AuditLogs.Add(Audit);
+
+                await _db.SaveChangesAsync();
+
+
+                return new JsonResult(new { success = true, message="Profile picture change successfully!"});
+            }
+            catch (IOException ioEx)
+            {
+                _logger.LogError(ioEx,
+                    "Storage error during file upload. Table:{Table} RecordId:{RecordId}",
+                    personId, User.Identity.Name);
+
+                return StatusCode(503, "Storage service unavailable. Please try again later.");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex,
+                    "Unexpected error during file upload for Table:{Table} RecordId:{RecordId}",
+                    personId, User.Identity.Name);
+
+                return StatusCode(500, "An internal error occurred during upload.");
+            }
+        }
+
+
+        //VIEW PROFILE
+        [HttpGet("viewprofile/{id}")]
+        [ResponseCache(Duration = 86400, Location = ResponseCacheLocation.Client)]
+        public async Task<IActionResult> ViewProfile(int id)
+        {
+            var storedFileName = id;
+            var fullPath = Path.Combine(_sharePath + "\\Profile");
+
+            var file = Directory.GetFiles(fullPath, id + ".*").FirstOrDefault();
+
+            if (file == null)
+            {
+                _logger.LogError("Physical file missing. PersonID:{PersonID}", id);
+                return NotFound("The physical file is missing from storage.");
+            }
+            
+
+            try
+            {
+                var provider = new FileExtensionContentTypeProvider();
+
+                if (!provider.TryGetContentType(file, out var contentType))
+                    contentType = "application/octet-stream";
+
+                var fileStream = new FileStream(
+                    file,
+                    FileMode.Open,
+                    FileAccess.Read,
+                    FileShare.Read,
+                    4096,
+                    useAsync: true);
+
+                _logger.LogInformation("Streaming profile {PersonID} to user {User}",
+                    id, User.Identity?.Name);
+
+                return File(fileStream, contentType);
+            }
+            catch (IOException ex)
+            {
+                _logger.LogError(ex,
+                    "Error accessing storage while reading profile picture {PersonID}",
+                    id);
+
+                return StatusCode(503, "Error accessing storage.");
+            }
+        }
+    }
 }

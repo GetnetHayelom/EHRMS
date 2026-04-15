@@ -1,0 +1,151 @@
+﻿@page "{id:int}"
+@model PIS2.Pages.Payroll.PayDetailsModel
+@{
+    ViewData["Title"] = "Payroll Pay Details";
+}
+
+<div class="mt-2">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h4 class="fw-bold">Pay Details: @Model.PayrollPay.EmploymentModel?.personModel?.personFullName</h4>
+        <div>
+            <button onclick="window.print()" class="btn btn-outline-secondary d-print-none">
+                <i class="bi bi-printer"></i> Print Payslip
+            </button>
+            <a asp-page="./Index" class="btn btn-secondary d-print-none">Back to List</a>
+        </div>
+    </div>
+
+    <div class="card mb-2 shadow-sm">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">Summary - @Model.PayrollPay.payrollModel?.payrollName (@Model.PayrollPay.payrollModel?.payrollMonth)</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-2">
+                    <label class="text-muted d-block">Employment ID</label>
+                    <strong>@Model.PayrollPay.EmploymentModel?.givenID</strong>
+                </div>
+                <div class="col-md-2">
+                    <label class="text-muted d-block">Salary</label>
+                    <strong class="text-success">@Model.jobp.jobPlacementSalary.ToString("N2")</strong>
+                </div>
+                
+                <div class="col-md-2">
+                    <label class="text-muted d-block">Hourly Rate</label>
+                    <strong class="text-danger">@Model.PayrollPay.hourlyRate.ToString("N2")</strong>
+                </div>
+                <div class="col-md-2">
+                    <label class="text-muted d-block">Worked Hours</label>
+                    <strong class="text-danger">@Model.PayrollPay.workedHours.ToString("N2")</strong>
+                </div>
+                <div class="col-md-2">
+                    <label class="text-muted d-block">Gross Pay</label>
+                    <strong class="text-success">@Model.PayrollPay.GrossPay.ToString("N2")</strong>
+                </div>
+                <div class="col-md-2">
+                    <label class="text-muted d-block">Total Deductions</label>
+                    <strong class="text-danger">@Model.PayrollPay.TotalDeduction.ToString("N2")</strong>
+                </div>
+                <div class="col-md-2">
+                    <label class="text-muted d-block">Net Pay</label>
+                    <strong class="h4">@Model.PayrollPay.NetPay.ToString("N2")</strong>
+                </div>
+            </div>
+            <hr />
+            <div class="row small">
+                <div class="col-md-6">
+                    <span class="text-muted">Debit Account:</span><a asp-page="/SubAccount/Details" asp-route-id="@Model.PayrollPay.DebitAccountID"> @Model.PayrollPay.DebitAccount?.subAccountName</a>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <span class="text-muted">Credit Account:</span> <a asp-page="/SubAccount/Details" asp-route-id="@Model.PayrollPay.CreditAccountID">@Model.PayrollPay.CreditAccount?.subAccountName </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card h-100 shadow-sm">
+                <div class="card-header bg-light">
+                    <h6 class="mb-0">Earnings</h6>
+                </div>
+                <div class="card-body p-0">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Type</th>
+                                <th>Reference</th>
+                                <th class="text-end">Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var earning in Model.PayrollPay.EarningRecords)
+                            {
+                                <tr>
+                                    <td>@earning.earningType?.earningTypeName</td>
+                                    <td><small class="text-muted">@earning.earningReference</small></td>
+                                    <td class="text-end font-monospace">@earning.earningAmount.ToString("N2")</td>
+                                </tr>
+                            }
+                        </tbody>
+                        <tfoot>
+                            <tr class="table-info fw-bold">
+                                <td colspan="2">Total Earnings</td>
+                                <td class="text-end">@Model.PayrollPay.TotalEarning.ToString("N2")</td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card h-100 shadow-sm">
+                <div class="card-header bg-light text-danger">
+                    <h6 class="mb-0 text-dark">Deductions</h6>
+                </div>
+                <div class="card-body p-0">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Type</th>
+                                <th>Reference</th>
+                                <th class="text-end">Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var deduction in Model.PayrollPay.DeductionRecords)
+                            {
+                                <tr>
+                                    <td>@deduction.DeductionType?.deductionName</td>
+                                    <td><small class="text-muted">@deduction.deductionReference</small></td>
+                                    <td class="text-end font-monospace text-danger">(@deduction.deductionAmount?.ToString("N2"))</td>
+                                </tr>
+                            }
+                        </tbody>
+                        <tfoot>
+                            <tr class="table-warning fw-bold text-danger">
+                                <td colspan="2">Total Deductions</td>
+                                <td class="text-end">@Model.PayrollPay.TotalDeduction.ToString("N2")</td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="mt-4 p-3 bg-light rounded d-flex justify-content-between small text-muted">
+        <span>Processed By: @Model.PayrollPay.modifiedBy</span>
+        <span>Period: @Model.PayrollPay.payrollModel?.StartDate.ToShortDateString() - @Model.PayrollPay.payrollModel?.EndDate.ToShortDateString()</span>
+    </div>
+</div>
+
+<style>
+    @@media print {
+        .d-print-none { display: none !important; }
+        .card { border: 1px solid #ddd !important; shadow: none !important; }
+        .container { width: 100%; max-width: 100%; }
+    }
+    .font-monospace { font-family: 'Courier New', Courier, monospace; }
+</style>

@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
+using PIS2.Data;
 using PIS2.Models;
 using PIS2.Views;
 using System;
@@ -15,9 +16,9 @@ namespace PIS2.Pages.Report
 {
     public class AllowanceAssignmentReportModel : PageModel
     {
-        private readonly PIS2.Models.PISContext _context;
+        private readonly PISContext _context;
 
-        public AllowanceAssignmentReportModel(PIS2.Models.PISContext context)
+        public AllowanceAssignmentReportModel(PISContext context)
         {
             _context = context;
         }

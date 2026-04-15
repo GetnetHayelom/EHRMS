@@ -1,49 +1,67 @@
-﻿@page
-@model PIS2.Pages.Management.IndexModel
-@{
-}
-<h4 class="fw-bold">Annual Leave Summary</h4>
-<table class="table table-bordered table-striped table-hover">
-    <thead>
+﻿@model List<Views.LeaveBalanceDepartmentView>
+<table class="table table-bordered table-striped table-hover print-full-width">
+    <thead class="bg-dark text-white">
         <tr>
-            <td>Company</td>
-            <td>LeaveBalance</td>
-            <td>Allowed Leave</td>
-            <td>Payable</td>
+            <th>S/No</th>
+            <th colspan="2">Company</th>
+            <th>LeaveBalance</th>
+            <th>Allowed Leave</th>
+            <th>Payable</th>
         </tr>
     </thead>
     <tbody>
         @{
-            int index = 0;
+            int index = 1;
         }
-        @if (Model.AnnualLeaveSummaries !=null && Model.AnnualLeaveSummaries.Any())
+        @if (Model != null && Model.Any())
         {
-            @foreach(var item in Model.AnnualLeaveSummaries)
+            @foreach (var item in Model.GroupBy(l => l.CompanyID))
             {
                 var collapseId = $"collapse{index}";
-                <tr class="fw-bold" data-bs-toggle="collapse" data-bs-target="#@collapseId">
-                    <td>@item.Company ?? ""</td>
-                    <td>@item.LeaveBalance ?? 0</td>
-                    <td>@item.AllowedLeave ?? 0</td>
-                    <td>@item.PayableLeave ?? 0</td>
+                <tr class="fw-bold table-primary">
+                    <td>@index</td>
+                    <td colspan="2">
+                        <div class="d-flex justify-content-between">
+                            <span data-bs-toggle="collapse" data-bs-target="#@collapseId" style="cursor:pointer;">@item.FirstOrDefault().Company</span>
+                            <a asp-page="/Management/AnnualLeaveCompanySummary" asp-route-id="@item.Key" class="btn btn-sm btn-outline-primary" title="View Details">
+                                <i class="bi bi-eye"></i>
+                            </a>
+                        </div>
+                    </td>
+
+
+                    <td>@item.Sum(l => l.LeaveBalance).ToString("N2")</td>
+                    <td>@item.Sum(l => l.AllowedLeave).ToString("N2")</td>
+                    <td>@Math.Round(item.Sum(l => l.PayableLeave), 2).ToString("N2")</td>
                 </tr>
-                @if (item.DepartmentList != null && item.DepartmentList.Any())
+                int index2 = 1;
+
+
+                @foreach (var item2 in item)
                 {
-                     @foreach(var item2 in item.DepartmentList)
-                    {
-                        <tr class="accordion-collapse collapse" id="@collapseId" data-bs-toggle="collapse">
-                            <td>@item2.Department ?? ""</td>
-                            <td>@item2.LeaveBalance ?? 0</td>
-                            <td>@item2.AllowedLeave ?? 0</td>
-                            <td>@item2.PayableLeave ?? 0</td>
-                        </tr>
-                    }
+                    <tr class="accordion-collapse collapse" id="@collapseId">
+                        <td>@index.@index2</td>
+
+                        <td colspan="2">@item2.Department
+                            <a asp-page="/Management/AnnualLeaveDepartmentSummary" asp-route-id="@item2.DepartmentID" class="btn btn-sm btn-outline-primary" title="View Details">
+                                <i class="bi bi-eye"></i>
+                            </a>
+                        </td>
+                        <td>@item2.LeaveBalance.ToString("N2")</td>
+                        <td>@item2.AllowedLeave.ToString("N2")</td>
+                        <td>@Math.Round(item2.PayableLeave, 2).ToString("N2")</td>
+                    </tr>
+                    index2++;
                 }
-               
-            
                 index++;
             }
+            <tr class="bg-secondary text-dark fw-bold">
+                <td colspan="3">Total</td>
+                <td>@Model.Sum(als => als.LeaveBalance).ToString("N2") (Days)</td>
+                <td>@Model.Sum(als => als.AllowedLeave).ToString("N2") (Days)</td>
+                <td>@Math.Round(Model.Sum(als => als.PayableLeave), 2).ToString("N2") Br</td>
+            </tr>
         }
-        
+
     </tbody>
 </table>

@@ -6,7 +6,7 @@ console.log("Function invoked for employeeId:");
  * @param {string} employeeId - The ID of the employee to look up.
  * 
  */
-function fetchEmployeeData(employeeId, empName, comp, dep) {
+function fetchEmployeeData(employeeId, empName, jobTitle, dep, comp) {
     const $status = $('#statusMessage');
     $status.addClass('d-none').removeClass('alert-success alert-danger');
 
@@ -32,6 +32,9 @@ function fetchEmployeeData(employeeId, empName, comp, dep) {
 
                 if (key === 'employeeName' && empName) {
                     targetId = empName;   // e.g. employeeName2
+                }
+                if (key === 'jobTitle' && jobTitle) {
+                    targetId = jobTitle;
                 }
                 if (key === 'company' && comp) {
                     targetId = comp;

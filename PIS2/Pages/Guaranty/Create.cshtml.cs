@@ -8,55 +8,41 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using PIS2.Data;
 using PIS2.Models;
+using PIS2.Services;
 
 namespace PIS2.Pages.Guaranty
 {
     [Authorize(Roles = "MIE\\PMS_HRCLERK")]
     public class CreateModel : PageModel
     {
-        private readonly PIS2.Models.PISContext _context;
-        private readonly PIS2.Models.Core _core;
+        private readonly PISContext _context;
+        private readonly Core _core;
 
-        public CreateModel(PIS2.Models.PISContext context, Models.Core core)
+        public CreateModel(PISContext context, Core core)
         {
             _context = context;
             _core = core;
         }
-        [BindProperty(SupportsGet = true)]
-        public string givenID { get; set; }
-         public SelectList Person { get; set; }
+        
+        
         public string modifiedBy { get; set; }
         public List<guarantyModel> GuarantyStatus { get; set; } = new List<guarantyModel>();
+        public SelectList Employments { get; set; } 
+        public employmentModel Employee { get; set; } = new employmentModel();
         public async Task OnGetAsync(int? id)
         {
-            var activeEmps = await _context.Employments.Where(e => e.employmentStatus == mainStatus.Active).Select(e => e.personID).ToListAsync();
+            var activeEmps = await _context.Employments.AsNoTracking()
+                .Where(e => e.employmentStatus == mainStatus.Active)
+                .Select(e => new { Value =e.employmentID, Text=$"{e.givenID}-{e.personModel.personFullName}"}).ToListAsync();
 
-            ViewData["employmentID"] = new SelectList(activeEmps, "employmentID", "givenID");
+            Employments = new SelectList(activeEmps, "Value", "Text");
             
             if(id != null) {
-                var prsn = await _context.Persons.Where(p => activeEmps.Contains(p.personID)).ToListAsync();
-                Person = new SelectList(prsn, "personID", "personFullName", id);
-                var gvnID = await _context.Employments.FirstOrDefaultAsync(e => e.personID == id && e.employmentStatus == mainStatus.Active);
-                givenID = gvnID?.givenID ?? "";
-                GuarantyStatus = await _context.Guaranties.Include(e => e.Employment).Where(e => e.Employment.personID == id).ToListAsync();
+                Employee = await _context.Employments.Include(e => e.personModel).FirstOrDefaultAsync(e => e.employmentID==id);
+                GuarantyStatus = await _context.Guaranties.Where(e => e.employmentID == id).ToListAsync();
             }
-            else if(!String.IsNullOrEmpty(givenID))
-            {
-                var employment = await _context.Employments.FirstAsync(e => e.employmentStatus == mainStatus.Active && e.givenID == givenID);
-                if (employment == null)
-                {
-                    TempData["message"] = ("Error", "No active employment found for the given employee ID!");
-                }
-                else
-                {
-                    var prsn2 = await _context.Persons.OrderBy(p => new { p.personFirstName, p.personFatherName, p.personLastName }).Where(p => activeEmps.Contains(p.personID)).ToListAsync();
-                    Person = new SelectList(prsn2, "personID", "personFullName");
-                }
-                
-            }
-            
-            
         }
 
         [BindProperty]
@@ -68,40 +54,7 @@ namespace PIS2.Pages.Guaranty
             ModelState.Remove("guarantyModel.modifiedBy");
             guarantyModel.modifiedBy = User.Identity.Name;
             var currentUserName = User.Identity?.Name;
-
-            if (string.IsNullOrEmpty(givenID))
-            {
-                var prsnID = await _context.Users.FirstOrDefaultAsync(u => u.userName == currentUserName);
-                if(prsnID == null)
-                {
-                    TempData["message"] = ("Error", $"Unknown Person!"); 
-                    return Page();
-                }
-                var emp = await _context.Employments.Where(e => e.personID == prsnID.personID && e.employmentStatus == mainStatus.Active).FirstOrDefaultAsync();
-                if (emp == null)
-                {
-                    TempData["message"] = ("Error", $"Eo Employment Found!");
-                    return Page();
-                }
-                guarantyModel.employmentID = emp.employmentID;
-
-            }
-            else
-            {
-                var Employment = _core.empByID(givenID);
-                if(Employment == null)
-                {
-                    TempData["message"] = ("Error",$"No employment found with employment ID {givenID}!");
-                    return Page();
-                }
-                if (Employment.employmentStatus == mainStatus.Inactive)
-                {
-                    TempData["message"] =("Error",$"Employment selected is not active!. {givenID}");
-                    return Page();
-                }
-                
-                guarantyModel.employmentID = Employment.employmentID;
-            }            
+                        
             guarantyModel.guarantyStatus = mainStatus.Suspended;
             if (!ModelState.IsValid)
             {
@@ -116,22 +69,6 @@ namespace PIS2.Pages.Guaranty
             }
             try
             {
-                serviceRequestModel serReq = new serviceRequestModel();
-                var employmentID = guarantyModel.employmentID ;                    
-
-                serReq = new serviceRequestModel
-                {
-                    employmentID = employmentID,
-                    serviceRequestDate = DateTime.Now,
-                    serviceRequestStatus = ServiceRequestStatus.Hold,
-                    requestedService = ServiceRequestTypes.Guaranty,
-                    modifiedBy = currentUserName
-                };
-                _context.ServiceRequests.Add( serReq );
-                await _context.SaveChangesAsync();
-
-                guarantyModel.serviceRequestID = serReq.serviceRequestID;
-
                 _context.Guaranties.Add(guarantyModel);
                 await _context.SaveChangesAsync();
                 
@@ -140,7 +77,7 @@ namespace PIS2.Pages.Guaranty
             {
                 Console.WriteLine(ex.Message.ToString());
             }
-            return RedirectToPage("./Index");
+            return RedirectToPage("./Details", new { id =guarantyModel.guarantyID});
         }
     }
 }

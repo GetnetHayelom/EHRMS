@@ -6,49 +6,144 @@
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
 
-<h1 class="fw-bold">Termination</h1>
-<h6 class="fw-bold text-muted">Termination Details</h6>
+<h2 class="fw-bold mb-0">Termination</h2>
+<p class="text-muted mb-0">Termination Details #@Model.terminationModel.terminationID</p>
 <div>
-    
+
     <hr />
-    <dl class="row">
-        <dt class="col-sm-2">
-            Employee ID:
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.terminationModel.EmploymentModel.givenID)
-        </dd>
-        <dt class="col-sm-2">
-            Termination Date:
-        </dt>
-        <dd class="col-sm-10">
-            @Model.terminationModel.terminationDate.ToString("yyyy-MM-dd")
-        </dd>
-        <dt class="col-sm-2">
-            Termination Reason:
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.terminationModel.terminationReason)
-        </dd>
-        <dt class="col-sm-2">
-            Termination Remark:
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.terminationModel.terminationRemark)
-        </dd>
-        <dt class="col-sm-2">
-            Status:
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.terminationModel.terminationStatus)
-        </dd>
-        <dt class="col-sm-2">
-            Modified By:
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.terminationModel.modifiedBy)
-        </dd>
-    </dl>
+    <div class="row">
+        <div class="col-sm-12 col-md-5 card shadow-sm p-2">
+            <dl class="row">
+                <dt class="col-sm-5">
+                    Employee ID:
+                </dt>
+                <dd class="col-sm-7">
+                    @Html.DisplayFor(model => model.terminationModel.EmploymentModel.givenID)
+                </dd>
+                <dt class="col-sm-5">
+                    Termination Date:
+                </dt>
+                <dd class="col-sm-7">
+                    @Model.terminationModel.terminationDate.ToString("MM/dd/yyyy")
+                </dd>
+                <dt class="col-sm-5">
+                    Termination Reason:
+                </dt>
+                <dd class="col-sm-7">
+                    @Html.DisplayFor(model => model.terminationModel.terminationReason)
+                </dd>
+                <dt class="col-sm-5">
+                    Termination Remark:
+                </dt>
+                <dd class="col-sm-7">
+                    @Html.DisplayFor(model => model.terminationModel.terminationRemark)
+                </dd>
+                <dt class="col-sm-5">
+                    Status:
+                </dt>
+                @{
+                    string bgColor = Model.terminationModel.terminationStatus switch
+                    {
+                        Models.terminationStatus.Hold => "bg-warning",
+                        Models.terminationStatus.Approved => "bg-success",
+                        Models.terminationStatus.Posted => "bg-primary",
+                        _ => "bg-secondary"
+                    };
+                }
+
+                <dd class="col-sm-7">
+                    
+                    <span class="badge @bgColor">@Model.terminationModel.terminationStatus</span>
+                </dd>
+                <dt class="col-sm-5">
+                    Modified By:
+                </dt>
+                <dd class="col-sm-7">
+                    @Html.DisplayFor(model => model.terminationModel.modifiedBy)
+                </dd>
+            </dl>
+        </div>
+        <div class="col-sm-12 col-md-7 p-2">
+            <button class="btn btn-primary d-md-none" type="button" data-bs-toggle="collapse" data-bs-target="#auditDiv">
+                Show Record History
+            </button>
+            <div class="card shadow-sm border-0 collapse d-md-block" id="auditDiv">
+                <div class="card-header bg-dark text-white d-flex align-items-center">
+                    <i class="bi bi-clock-history me-2"></i> Audit Trail
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive" style="max-height: 500px; overflow-y: auto;">
+                        <table class="table table-sm table-hover mb-0">
+                            <thead class="table-light">
+                                <tr class="small text-uppercase">
+                                    <th>Date</th>
+                                    <th>User</th>
+                                    <th>Field</th>
+                                    <th>Old Value</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (Model.History.Any())
+                                {
+                                    @foreach (var log in Model.History)
+                                    {
+                                        <tr>
+                                            <td class="small">@log.ModifiedDate.ToString("MM/dd/yyyy HH:mm")</td>
+                                            <td class="small fw-bold">@log.ModifiedBy</td>
+                                            <td><span class="badge bg-light text-dark">@Model.GetFriendlyColumnName(log.ColumnName)</span></td>
+                                            <td class="text-muted italic small">
+                                                <span class="text-danger text-decoration-line-through small">
+                                                    @Model.FormatAuditValue(log.ColumnName, log.OldValue)
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                                else
+                                {
+                                    <tr>
+                                        <td colspan="4" class="text-center py-4 text-muted">No change history found for this record.</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="card-footer bg-white small text-muted">
+                    Total changes tracked: @Model.History.Count
+                </div>
+            </div>
+        </div>
+        <div class="d-flex gap-3">
+            <div class="card shadow-sm text-center mt-3">
+                <div class="card-header bg-warning text-white">
+                    <h6 class="fw-bold mb-1"> Severance Pay</h6>
+                </div>
+                <div class="card-body p-4 ">
+                    <h4 class="card-body fw-bold">@Model.SeverancePay.ToString("N2") </h4>
+                    @if ((User.IsInRole("MIE\\PMS_HRCLERCK") || User.IsInRole("MIE\\PMS_HRMANAGER")) && Model.SeverancePay > 0 && Model.terminationModel.terminationStatus == Models.terminationStatus.Posted)
+                    {
+                        <a class="btn btn-primary"><i class="bi bi-plus-circle"></i> Prepare Severance Benefit</a>
+                    }
+                </div>
+                <div class="card-footer text-muted"><p class="fw-bold">Year of Service: @Model.YearsOfService.ToString("N2")</p></div>
+            </div>
+
+            <div class="card shadow-sm text-center mt-3">
+                <div class="card-header bg-info text-white"><h6 class="fw-bold mb-1">Leave Payable</h6></div>
+                <div class="card-body p-4">
+                    <h4 class="card-body fw-bold">@(Model.LeaveSummary?.adjustedLeaveBalanceCost.ToString("N2") ?? "0.00")</h4>
+                    @if ((User.IsInRole("MIE\\PMS_HRCLERCK") || User.IsInRole("MIE\\PMS_HRMANAGER")) && Model.LeaveSummary?.adjustedLeaveBalanceCost > 0 && Model.terminationModel.terminationStatus == Models.terminationStatus.Posted)
+                    {
+                        <a class="btn btn-primary"><i class="bi bi-plus-circle"></i> Prepare Leave Benefit</a>
+                    }
+                </div>
+                <div class="card-footer  text-muted"><p class="fw-bold">Leave Balance: @(Model.LeaveSummary?.adjustedLeaveBalance.ToString("N2") ?? "0")</p></div>
+            </div>
+        </div>
+    </div>
+    
+    
 </div>
 <div class="d-flex justify-content-end">
     @if ((Model.terminationModel.terminationStatus == Models.terminationStatus.Hold || Model.terminationModel.terminationStatus == Models.terminationStatus.Approved)

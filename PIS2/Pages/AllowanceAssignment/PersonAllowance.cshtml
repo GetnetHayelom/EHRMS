@@ -1,0 +1,174 @@
+﻿@page
+@model PIS2.Pages.AllowanceAssignment.PersonAllowanceModel
+@{
+}
+
+<div class="d-flex justify-content-between align-content-end">
+    <div>
+        <h2 class="fw-bold flex-grow">Allowance Assignments</h2>
+        <p class="fw-bold mb-0">@Model.employmentModel?.personModel?.personFullName - @Model.employmentModel?.givenID</p>
+    </div>
+    <div>
+        <a asp-page="Create" class="btn btn-primary m-2 d-print-none"><i class="bi bi-plus-circle me-2"></i>Add Allowance Assignment</a>
+    </div>
+</div>
+
+<hr class="m-2"/>
+
+    <!--List View-->
+    <div class="card shadow-sm m-1 p-0">
+        <div class="d-flex justify-content-end align-items-end m-0">
+            @await Html.PartialAsync("filter")
+            @await Html.PartialAsync("back")
+            @await Html.PartialAsync("print")
+            <excel-export table="dataTable" filename="PersonAllowance_@(DateTime.UtcNow).xlsx"></excel-export>
+        </div>
+    </div>
+    <div class="card shadow-sm p-2">
+        <div class="card-header-pills p-2">
+            <h5 class="text-success mb-0"><strong>Active Allowance Assignments</strong></h5>
+        </div>
+        <div class="card-body p-0">
+            <table class="table table-striped table-hover" id="dataTable">
+            <thead class="bg-dark text-white">
+                <tr>
+                    <th>
+                        S/No
+                    </th>
+
+                    <th>
+                        Allowance Type
+                    </th>
+                    <th>
+                        Allowance Amount
+                    </th>
+                    <th>
+                        Allowance Assignment Date
+                    </th>
+                    <th class="d-print-none text-end px-2">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.allowanceAssignmentModel == null || !Model.allowanceAssignmentModel.Any())
+                {
+                    <tr>
+                        <td colspan="10" class="text-center text-muted">
+                            No allowance assignments found.
+                        </td>
+                    </tr>
+                }
+                @{
+                    int index = 1;
+                }
+                @foreach (var item in Model.allowanceAssignmentModel)
+                {
+                    <tr onclick="location.href='@Url.Page("Details", new { id = item.allowanceAssignmentID })'" style="cursor:pointer">
+                        <td>
+                            @(index++)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.allowanceModel.allowanceName)
+                        </td>
+                        <td>
+                            @item.allowanceAssignmentAmount
+                        </td>
+                        <td>
+                            @item.allowanceAssignmentDate?.ToString("MM/dd/yyyy")
+                        </td>
+                        <td class="d-print-none text-end px-2">
+                            <div class="btn-group" role="group">
+                                <a asp-page="./Details" asp-route-id="@item.allowanceAssignmentID" class="btn btn-sm btn-outline-primary" title="View Details">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                                <a asp-page="./Edit" asp-route-id="@item.allowanceAssignmentID" class="btn btn-sm btn-outline-success" title="Edit">
+                                    <i class="bi bi-pencil-square"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+        </div>   
+    </div>
+    <div class="d-flex justify-content-between m-2">
+        <p class="fw-bold">Total No of Allowance:<u>@Model.allowanceCount</u></p>
+        <p class="fw-bold">Total Sum of Allowance:<u>@Math.Round(Model.allowanceSum, 2).ToString("N2")</u></p>
+    </div>
+
+@if (Model.oldAssignmentModel != null && Model.oldAssignmentModel.Any())
+{
+    <div class="card shadow-sm p-2 mt-4">
+    <div class="card-header card-header-pills p-2">
+            <h5 class="text-secondary mb-0"><strong>Inactive Allowance Assignments</strong></h5>
+    </div>
+    <div class="card-body p-0">
+        <table class="table table-striped table-hover" id="dataTable">
+            <thead class="bg-dark text-white">
+                <tr>
+                    <th>
+                        S/No
+                    </th>
+
+                    <th>
+                        Allowance Type
+                    </th>
+                    <th>
+                        Allowance Amount
+                    </th>
+                    <th>
+                        Allowance Assignment Date
+                    </th>
+                    <th class="d-print-none text-end px-2">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.oldAssignmentModel == null || !Model.oldAssignmentModel.Any())
+                {
+                    <tr>
+                        <td colspan="10" class="text-center text-muted">
+                            No old allowance assignments found.
+                        </td>
+                    </tr>
+                }
+                
+                @{
+                    int oldindex = 1;
+                }
+                @foreach (var item in Model.oldAssignmentModel)
+                {
+                    <tr onclick="location.href='@Url.Page("Details", new { id = item.allowanceAssignmentID })'" style="cursor:pointer">
+                        <td>
+                            @(oldindex++)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.allowanceModel.allowanceName)
+                        </td>
+                        <td>
+                            @item.allowanceAssignmentAmount
+                        </td>
+                        <td>
+                            @item.allowanceAssignmentDate?.ToString("MM/dd/yyyy")
+                        </td>
+                        <td class="d-print-none text-end px-2">
+                            <div class="btn-group" role="group">
+                                <a asp-page="./Details" asp-route-id="@item.allowanceAssignmentID" class="btn btn-sm btn-outline-primary" title="View Details">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                                <a asp-page="./Edit" asp-route-id="@item.allowanceAssignmentID" class="btn btn-sm btn-outline-success" title="Edit">
+                                    <i class="bi bi-pencil-square"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    
+</div> }
+
+
+<div class="d-flex justify-content-end">
+    @await Html.PartialAsync("print")
+</div>

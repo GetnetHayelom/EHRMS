@@ -2,9 +2,9 @@
 @model PIS2.Pages.Report.CostAnalysisReportModel
 @{
 }
-<div class="container-fluid py-4">
+<div class="container-fluid ">
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="fw-bold">Organizational Cost Analysis</h2>
+        <h2 class="fw-bold">HR Cost Analysis</h2>
         <form method="get" class="d-flex gap-2">
             <input type="date" name="start" class="form-control form-control-sm">
             <input type="date" name="end" class="form-control form-control-sm">
@@ -77,6 +77,11 @@
                                 <td class="text-end fw-bold">@Model.TotalPayrollCost.ToString("N2")</td>
                             </tr>
                             <tr>
+                                <td>Pension Contributions</td>
+                                <td class="text-end text-muted">@((Model.TotalPensionContribution / Model.GrandTotal * 100).ToString("N1"))%</td>
+                                <td class="text-end fw-bold">@Model.TotalPensionContribution.ToString("N2")</td>
+                            </tr>
+                            <tr>
                                 <td>Other Benefits</td>
                                 <td class="text-end text-muted">@((Model.TotalOtherPayments / Model.GrandTotal * 100).ToString("N1"))%</td>
                                 <td class="text-end fw-bold">@Model.TotalOtherPayments.ToString("N2")</td>
@@ -100,10 +105,10 @@
     new Chart(ctx, {
         type: 'doughnut',
         data: {
-            labels: ['Payroll', 'Other Payments', 'Leave Cost'],
+            labels: ['Payroll', 'Other Payments', 'Leave Cost','Pension Contributions'],
             datasets: [{
-                data: [@Model.TotalPayrollCost, @Model.TotalOtherPayments, @Model.TotalLeaveProductivityLoss],
-                backgroundColor: ['#0d6efd', '#198754', '#dc3545'],
+                data: [@Model.TotalPayrollCost, @Model.TotalOtherPayments, @Model.TotalLeaveProductivityLoss, @Model.TotalPensionContribution],
+                backgroundColor: ['#0d6efd', '#198754', '#dc3545','#1035dc'],
                 hoverOffset: 4
             }]
         },

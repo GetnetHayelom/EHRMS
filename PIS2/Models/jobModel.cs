@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Drawing;
 
@@ -12,6 +13,8 @@ namespace PIS2.Models
         public string jobTitle { get; set; }
         public int jobGradeID { get; set; } 
         public virtual jobGradeModel? jobGradeModel { get; set; }
+        public int? jobGradeIDMax { get; set; }
+        public virtual jobGradeModel? jobGradeModelMax { get; set; }
         public int jobCategoryID { get; set; }
         public virtual jobCategoryModel? jobCategoryModel { get; set; }
         public int jobClassID { get; set; }
@@ -20,6 +23,7 @@ namespace PIS2.Models
         public string? jobDescription { get; set; }
         public mainStatus jobStatus { get; set; }
         public string? jobQualifications { get; set; }
+        [Precision(18, 2)]
         public decimal? jobExperience { get; set; }
 
         public virtual ICollection<educationLevelModel>? EducationLevels {get; set; }
@@ -40,7 +44,16 @@ namespace PIS2.Models
         public double jobGradeMidSalary { get; set; }
         public double jobGradeMaxSalary { get; set; }
         public mainStatus jobGradeStatus { get; set; }
+        public int? NextJobGradeID { get; set; }
+        [ForeignKey("NextJobGradeID")]
+        public virtual jobGradeModel? NextJobGrade { get; set; }
+
+        public int? PreviousJobGradeID { get; set; }
+        [ForeignKey("PreviousJobGradeID")]
+        public virtual jobGradeModel? PreviousJobGrade { get; set; }
+
         public virtual ICollection<jobModel>? Jobs { get; set; }
+        public virtual ICollection<jobModel>? JobsMax { get; set; }
         public virtual ICollection<jobStepModel>? JobSteps { get; set; }
         public string modifiedBy { get; set; }
         public DateTime modifiedDate { get; set; } = DateTime.Now;

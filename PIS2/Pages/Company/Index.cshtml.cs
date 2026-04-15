@@ -5,15 +5,16 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
+using PIS2.Data;
 using PIS2.Models;
 
 namespace PIS2.Pages.Company
 {
     public class IndexModel : PageModel
     {
-        private readonly PIS2.Models.PISContext _context;
+        private readonly PISContext _context;
 
-        public IndexModel(PIS2.Models.PISContext context)
+        public IndexModel(PISContext context)
         {
             _context = context;
         }
@@ -26,7 +27,9 @@ namespace PIS2.Pages.Company
         public async Task OnGetAsync()
         {
           
-            var query = _context.Companies.Include(c => c.addressModel).OrderBy(c => c.companyName).AsQueryable();
+            var query = _context.Companies
+                .Include(c => c.employmentModel).ThenInclude(e => e.personModel)
+                .Include(c => c.addressModel).OrderBy(c => c.companyName).AsQueryable();
 
             // Apply filter only if selected
             if (CompanyStatus != null)

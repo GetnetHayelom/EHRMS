@@ -6,22 +6,24 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using PIS2.Data;
 using PIS2.Models;
 
 namespace PIS2.Pages.Company
 {
     public class EditModel : PageModel
     {
-        private readonly PIS2.Models.PISContext _context;
+        private readonly PISContext _context;
 
-        public EditModel(PIS2.Models.PISContext context)
+        public EditModel(PISContext context)
         {
             _context = context;
         }
 
         [BindProperty]
         public companyModel companyModel { get; set; } = default!;
-
+        public SelectList Manager { get; set; }
+        public List<Models.AuditLog> History { get; set; } = new();
         public async Task<IActionResult> OnGetAsync(int? id)
         {
             if (!User.IsInRole("MIE\\PMS_HRADMIN"))
@@ -34,20 +36,37 @@ namespace PIS2.Pages.Company
                 return NotFound();
             }
 
-            var companymodel =  await _context.Companies.FirstOrDefaultAsync(m => m.companyID == id);
+            var companymodel =  await _context.Companies
+                .Include(c => c.employmentModel).ThenInclude(e => e.personModel).FirstOrDefaultAsync(m => m.companyID == id);
             if (companymodel == null)
             {
                 return NotFound();
             }
             companyModel = companymodel;
-            ViewData["employmentID"] = new SelectList(
-                _context.Employments.OrderBy(e => e.personModel.personFirstName).ThenBy(e => e.personModel.personFatherName).ThenBy(e => e.personModel.personLastName)
-                .Select(e => new { e.employmentID, FullName = e.personModel.personFullName }),
-                "employmentID",
-                "FullName"
-            );
+            // 1. Get the data from the database first
+            var managerData = await _context.Employments
+                .Include(e => e.personModel)
+                .Where(e => e.employmentStatus == mainStatus.Active)
+                .Select(e => new
+                {
+                    EmpID = e.employmentID,
+                    // Combine ID and Name for the dropdown display
+                    FullName = e.givenID + " - " + e.personModel.personFullName
+                })
+                .ToListAsync();
+
+            // 2. Assign it to the SelectList
+            // Parameters: (Items, DataValueField, DataTextField)
+            Manager = new SelectList(managerData, "EmpID", "FullName", companyModel.employmentID);
 
             ViewData["addressID"] = new SelectList(_context.Addresses, "addressID", "addressFormatted");
+
+            
+            // Fetch Audit Logs for this specific record
+            History = await _context.AuditLogs
+            .Where(a => a.TableName == "OtherPayments" && a.RecordID == id)
+            .OrderByDescending(a => a.ModifiedDate)
+            .ToListAsync();
             return Page();
         }
 
@@ -114,6 +133,41 @@ namespace PIS2.Pages.Company
         private bool companyModelExists(int id)
         {
             return _context.Companies.Any(e => e.companyID == id);
+        }
+        public string FormatAuditValue(string columnName, string value)
+        {
+            if (string.IsNullOrEmpty(value)) return "None";
+
+            // Handle Booleans
+            if (columnName.StartsWith("is"))
+            {
+                return value.ToLower() == "true" ? "Yes" : "No";
+            }
+
+            // Handle Enums (assuming mainStatus is 0=Active, 1=Inactive, etc.)
+            if (columnName == "companyStatus")
+            {
+                if (int.TryParse(value, out int enumValue))
+                {
+                    // Cast the integer back to the Enum to get the name (e.g., 0 -> "Active")
+                    return ((mainStatus)enumValue).ToString();
+                }
+                return value;
+            }
+
+            return value;
+        }
+        public string GetFriendlyColumnName(string columnName)
+        {
+            return columnName switch
+            {
+                "comapnyName" => "Name",
+                "companyAlias" => "Code",
+                "employmentID" => "Manager ID",
+                "addressID" => "Address ID",
+                "companyStatus" => "Status",
+                _ => columnName
+            };
         }
     }
 }

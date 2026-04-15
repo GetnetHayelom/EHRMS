@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
+using PIS2.Data;
 using PIS2.Models;
 using static System.Formats.Asn1.AsnWriter;
 
@@ -8,7 +9,7 @@ namespace PIS2.Pages.AJAX
 {
     public class CallMe : PageModel
     {
-        private readonly PIS2.Models.PISContext _context;
+        private readonly PISContext _context;
         public CallMe(PISContext ctx)
         {
             _context = ctx;

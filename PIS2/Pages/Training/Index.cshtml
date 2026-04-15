@@ -3,10 +3,14 @@
 @{
     ViewData["Title"] = "Training Catalog";
 }
-
+@await Html.PartialAsync("headerSimple","")
 <div class="container-fluid px-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="fw-bold h3 mb-0 text-gray-800">Training Catalog</h2>
+    <div class="d-flex justify-content-between align-items-center mb-2">
+        <div>
+            <h2 class="fw-bold mb-0">Training</h2>
+            <h6 class="text-muted">Training Catalog</h6>
+        </div>
+        
         <a asp-page="Create" class="btn btn-primary shadow-sm">
             <i class="fas fa-plus fa-sm text-white-50 mr-2"></i>New Training
         </a>
@@ -18,18 +22,31 @@
                 <table class="table table-hover align-middle">
                     <thead class="table-dark">
                         <tr>
+                            <th>S/No</th>
                             <th>Title</th>
                             <th>Category</th>
                             <th>Mandatory</th>
                             <th>Validity</th>
                             <th>Status</th>
-                            <th class="text-end">Actions</th>
+                            <th class="d-print-none text-end">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
+                        @if (!Model.Trainings.Any())
+                        {
+                            <tr>
+                                <td colspan="6" class="text-center text-muted">
+                                    No trainings found.
+                                </td>
+                            </tr>
+                        }
+                        @{
+                            int index = 1;
+                        }
                         @foreach (var item in Model.Trainings)
                         {
                             <tr>
+                                <td>@(index++)</td>
                                 <td><strong>@item.trainingTitle</strong></td>
                                 <td><span class="badge bg-info text-dark">@item.category</span></td>
                                 <td>
@@ -46,18 +63,25 @@
                                 <td>
                                     @if (item.isActive)
                                     {
-                                        <i class="fas fa-circle text-success small"></i>
-                                        <span>Active</span>
+                                        <span class="badge bg-success">Active</span>
+
                                     }
                                     else
                                     {
-                                        <i class="fas fa-circle text-muted small"></i>
-                                        <span>Inactive</span>
+                                        <span class="badge bg-secondary">Inactive</span>
                                     }
+                                    
                                 </td>
-                                <td class="text-end">
-                                    <a asp-page="./Edit" asp-route-id="@item.trainingID" class="btn btn-sm btn-outline-primary">Edit</a>
-                                    <a asp-page="./Details" asp-route-id="@item.trainingID" class="btn btn-sm btn-outline-info">Details</a>
+                                <td class="d-print-none text-end">
+                                    <div class="btn-group" role="group">
+                                        <a asp-page="./Details" asp-route-id="@item.trainingID" class="btn btn-sm btn-outline-primary" title="View Details">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                        <a asp-page="./Edit" asp-route-id="@item.trainingID" class="btn btn-sm btn-outline-success" title="Edit">
+                                            <i class="bi bi-pencil-square"></i>
+                                        </a>
+                                    </div>
+                                    
                                 </td>
                             </tr>
                         }
@@ -65,5 +89,10 @@
                 </table>
             </div>
         </div>
+    </div>
+
+    <div class="d-flex justify-content-end m-2">
+        @await Html.PartialAsync("back")
+        @await Html.PartialAsync("print")
     </div>
 </div>

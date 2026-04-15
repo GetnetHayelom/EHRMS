@@ -1,8 +1,10 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Hosting;
+using PIS2.Data;
 using PIS2.Models;
 using System;
 using System.Collections.Generic;
@@ -14,10 +16,10 @@ namespace PIS2.Pages.Person
     
     public class DetailsModel : PageModel
     {
-        private readonly PIS2.Models.PISContext _context;
+        private readonly PISContext _context;
         private readonly IWebHostEnvironment _environment;
 
-        public DetailsModel(PIS2.Models.PISContext context, IWebHostEnvironment environment)
+        public DetailsModel(PISContext context, IWebHostEnvironment environment)
         {
             _context = context;
             _environment= environment;
@@ -34,10 +36,14 @@ namespace PIS2.Pages.Person
         public List<personEducationLevelModel>? personCertifications { get; set; } = default!;
         public List<familyModel>? familyRelations { get; set; } = default!;
         public bool isSelf { get; set; }
-
+        public SelectList PersonList
+        {
+            get; set;
+        }
 
         public async Task<IActionResult> OnGetAsync(int? id)
         {
+            PersonList = new SelectList(_context.Persons.OrderBy(p => p.personFirstName).ToList(), "personID", "personFullName", id);
             var username = await _context.Users.FirstOrDefaultAsync(p => p.personID == id);
             var un=username?.userName;
             
@@ -84,6 +90,13 @@ namespace PIS2.Pages.Person
                 PhotoExists = System.IO.File.Exists(filePath);
             }
             return Page();
+        }
+
+        [BindProperty]
+        public int personID { get; set; }
+        public async Task<IActionResult> OnGetPersonAsync() {
+
+            return RedirectToPage("/Person/Details", new { id = personID });
         }
     }
 }

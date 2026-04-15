@@ -1,0 +1,53 @@
+﻿@page
+@model PIS2.Pages.ServiceRequestType.DetailsModel
+
+@{
+    ViewData["Title"] = "Details";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<h2 class="fw-bold">Service Type</h2>
+<h6 class="text-muted">Service Request Type Details #@Model.serviceRequestTypeModel.serviceRequestTypeID</h6>
+<hr />
+<div class="d-flex gap-4">
+  
+    <dl class="card shadow-sm p-2 col-md-4 row">
+        <dt class="col-sm-6">
+            Name:
+        </dt>
+        <dd class="col-sm-6">
+            @Html.DisplayFor(model => model.serviceRequestTypeModel.serviceRequestTypeName)
+        </dd>
+        <dt class="col-sm-6">
+            Description:
+        </dt>
+        <dd class="col-sm-6">
+            @Html.DisplayFor(model => model.serviceRequestTypeModel.serviceRequestTypeDescription)
+        </dd>
+        <dt class="col-sm-6">
+            Status:
+        </dt>
+        <dd class="col-sm-6">
+            @Html.DisplayFor(model => model.serviceRequestTypeModel.serviceRequestTypeStatus)
+        </dd>
+        <dt class="col-sm-6">
+            Modified By:
+        </dt>
+        <dd class="col-sm-6">
+            @Html.DisplayFor(model => model.serviceRequestTypeModel.modifiedBy)
+        </dd>
+        <dt class="col-sm-6">
+            Modified Date:
+        </dt>
+        <dd class="col-sm-6">
+            @Html.DisplayFor(model => model.serviceRequestTypeModel.modifiedDate)
+        </dd>
+        <div class="d-flex justify-content-end m-2 gap-2 d-print-none">
+            <a class="btn btn-secondary m-2" asp-page="./Index">Back</a>
+            <a class="btn btn-primary m-2" asp-page="./Edit" asp-route-id="@Model.serviceRequestTypeModel.serviceRequestTypeID">Edit</a>
+            
+        </div>
+    </dl>
+    
+</div>
+

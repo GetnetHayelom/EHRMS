@@ -1,8 +1,11 @@
 using Microsoft.AspNetCore.Authentication.Negotiate;
 using Microsoft.AspNetCore.Server.IISIntegration;
 using Microsoft.EntityFrameworkCore;
+using PIS2.Data;
 using PIS2.Middleware;
-using PIS2.Models;
+using PIS2.Services;
+using Serilog;
+using Serilog.Events;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,23 +20,40 @@ builder.Services.AddAuthentication(IISDefaults.AuthenticationScheme);
 //builder.Services.AddAuthorization();
 
 
+Log.Logger = new LoggerConfiguration()
+    .MinimumLevel.Warning()               // Capture everything Debug and above
+    .MinimumLevel.Override("Microsoft", LogEventLevel.Warning) // optional
+    .Enrich.FromLogContext()
+    .WriteTo.File(
+        "logs/system-.log",
+        rollingInterval: RollingInterval.Day,
+        retainedFileCountLimit: 30,
+        shared: true)
+    .CreateLogger();
+
+builder.Host.UseSerilog();
+
 // Global authorization policy — all requests require authorization by default
 builder.Services.AddAuthorization(options =>
 {
     options.FallbackPolicy = options.DefaultPolicy;
 });
 
-//Add Payroll Service
+// Add Payroll Service
 builder.Services.AddScoped<PayrollService>();
 
 // Add Razor Pages and Controllers
 builder.Services.AddRazorPages();
 builder.Services.AddControllers();
 
-// Register your application services
+// Add core application services
 builder.Services.AddScoped<Core>();
+builder.Services.AddScoped<PaymentServices>();
+builder.Services.AddScoped<LeaveService>();
+builder.Services.AddScoped<HRDashboardService>();
+builder.Services.AddScoped<Globals>();
 
-// Configure your database context
+// Configure database context
 builder.Services.AddDbContext<PISContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("Default")));
 
@@ -80,5 +100,6 @@ app.Use(async (context, next) =>
 // Map Razor Pages and API Controllers
 app.MapRazorPages();
 app.MapControllers();
+
 
 app.Run();

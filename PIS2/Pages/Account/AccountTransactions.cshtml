@@ -1,0 +1,42 @@
+﻿@page
+@model PIS2.Pages.Account.AccountTransactionsModel
+@{
+}
+<div class="card shadow">
+    <div class="card-header">
+        <h5 class="m-0">Transactions for: @Model.Account?.accountName (@Model.Account?.accountNumber)</h5>
+    </div>
+    <div class="card-body">
+        <table class="table table-striped table-sm">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Reference</th>
+                    <th>Sub-Account (Dept)</th>
+                    <th>Description</th>
+                    <th class="text-right">Debit</th>
+                    <th class="text-right">Credit</th>
+                    <th class="text-right">Running Balance</th>
+                </tr>
+            </thead>
+            <tbody>
+                @{
+                    decimal runningBal = 0;
+                }
+                @foreach (var line in Model.Transactions.OrderBy(t => t.JournalEntry.EntryDate))
+                {
+                    runningBal += (line.Debit - line.Credit);
+                    <tr>
+                        <td>@line.JournalEntry.EntryDate.ToShortDateString()</td>
+                        <td><span class="badge badge-light">@line.JournalEntry.Reference</span></td>
+                        <td>@(line.SubAccount?.subAccountName ?? "N/A")</td>
+                        <td>@line.JournalEntry.Description</td>
+                        <td class="text-right text-success">@(line.Debit > 0 ? line.Debit.ToString("N2") : "-")</td>
+                        <td class="text-right text-danger">@(line.Credit > 0 ? line.Credit.ToString("N2") : "-")</td>
+                        <td class="text-right font-weight-bold">@runningBal.ToString("N2")</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

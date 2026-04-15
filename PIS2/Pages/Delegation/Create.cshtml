@@ -6,13 +6,12 @@
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
 
-<h2 class="fw-bold">Delegations</h2>
-
-<h6 class="text-muted">New Delegation</h6>
+<h2 class="fw-bold mb-0">Delegations</h2>
+<p class="text-muted mb-0">New Delegation form</p>
 <hr />
 <div class="row g-2">
     <div class="card shadow-sm p-2 col-md-4">
-        <form method="post">
+        <form method="post" class="ajax-form">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <!-- Selector -->
             <div class="mb-3">
@@ -20,7 +19,7 @@
                     <span class="text-danger">*</span> Delegator
                 </label>
                 <input type="text" class="form-control" list="personList1" placeholder="Type to search..." oninput="selector(this, 'delegateFrom')" value="@Model.delegationModel?.FromEmployment?.personModel?.personFullName" />
-                <input type="hidden" asp-for="delegationModel.delegationFrom" id="delegateFrom" value="@Model.delegationModel?.delegationFrom"/>
+                <input type="hidden" asp-for="delegationModel.delegationFrom" id="delegateFrom" value="@Model.delegationModel?.delegationFrom" required />
                 <datalist id="personList1">
                     @foreach (var person in Model.Employments)
                     {
@@ -36,7 +35,7 @@
                     <span class="text-danger">*</span> Delegatee
                 </label>
                 <input type="text" class="form-control" list="personList2" placeholder="Type to search..." oninput="selector(this, 'delegateTo')" />
-                <input type="hidden" asp-for="delegationModel.delegationTo" id="delegateTo" />
+                <input type="hidden" asp-for="delegationModel.delegationTo" id="delegateTo" required/>
                 <datalist id="personList2">
                     @foreach (var person in Model.Employments)
                     {
@@ -169,11 +168,4 @@
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 }
-<script>
-    $(document).ready(function () {
-        $('.select2').select2({
-            placeholder: "Select Delegator",
-            allowClear: true
-        });
-    });
-</script>
+

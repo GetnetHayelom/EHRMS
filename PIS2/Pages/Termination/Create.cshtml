@@ -99,6 +99,78 @@
                 </div>
             </div>
         </div>
+
+        <div class="row mt-3">
+            <div class="col-md-6">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-header bg-light">
+                        <h6 class="mb-0">Earnings</h6>
+                    </div>
+                    <div class="card-body p-0">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Type</th>
+                                    <th>Reference</th>
+                                    <th class="text-end">Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var earning in Model.PayrollPay.EarningRecords)
+                                {
+                                    <tr>
+                                        <td>@earning.earningType?.earningTypeName</td>
+                                        <td><small class="text-muted">@earning.earningReference</small></td>
+                                        <td class="text-end font-monospace">@earning.earningAmount.ToString("N2")</td>
+                                    </tr>
+                                }
+                            </tbody>
+                            <tfoot>
+                                <tr class="table-info fw-bold">
+                                    <td colspan="2">Total Earnings</td>
+                                    <td class="text-end">@Model.PayrollPay.TotalEarning.ToString("N2")</td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-header bg-light text-danger">
+                        <h6 class="mb-0 text-dark">Deductions</h6>
+                    </div>
+                    <div class="card-body p-0">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Type</th>
+                                    <th>Reference</th>
+                                    <th class="text-end">Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var deduction in Model.PayrollPay.DeductionRecords)
+                                {
+                                    <tr>
+                                        <td>@deduction.DeductionType?.deductionName</td>
+                                        <td><small class="text-muted">@deduction.deductionReference</small></td>
+                                        <td class="text-end font-monospace text-danger">(@deduction.deductionAmount?.ToString("N2"))</td>
+                                    </tr>
+                                }
+                            </tbody>
+                            <tfoot>
+                                <tr class="table-warning fw-bold text-danger">
+                                    <td colspan="2">Total Deductions</td>
+                                    <td class="text-end">@Model.PayrollPay.TotalDeduction.ToString("N2")</td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
     }
     else
     {

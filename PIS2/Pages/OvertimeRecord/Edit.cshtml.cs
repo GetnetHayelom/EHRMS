@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
+using PIS2.Data;
 using PIS2.Models;
 using System;
 using System.Collections.Generic;
@@ -15,9 +16,9 @@ namespace PIS2.Pages.OvertimeRecord
     
     public class EditModel : PageModel
     {
-        private readonly PIS2.Models.PISContext _context;
+        private readonly PISContext _context;
 
-        public EditModel(PIS2.Models.PISContext context)
+        public EditModel(PISContext context)
         {
             _context = context;
         }

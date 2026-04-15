@@ -8,12 +8,13 @@
     int num2 = 0;
 }
 
-<h1 class="fw-bold">Leaves</h1>
+<h2 class="fw-bold m-0">Leaves</h2>
+<p class="text-muted mb-0">Leave request form</p>
 
 <hr />
 
 <div class="d-flex">
-    <div class="flex-grow-1 m-4 card shadow-sm p-2">
+    <div class="flex-grow-1 m-2 card shadow-sm p-2">
         <div class="">
             <form method="get" class="d-print-none">
                 <div class="d-flex flex-column">
@@ -21,7 +22,6 @@
                     <div class="d-flex">
                         <input asp-for="Employment.givenID" id="givenID" class="form-control me-2" placeholder="Enter ID" name="givenID" />
                         <button type="submit" class="btn btn-primary" id="goButton">Go</button>
-                        
                     </div>
                     <h6 class="mt-2 mb-2"><u>@Model.Person.personFullName</u></h6>
                 </div>

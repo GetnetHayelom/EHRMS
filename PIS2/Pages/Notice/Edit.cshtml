@@ -1,12 +1,10 @@
 ﻿@page
 @model PIS2.Pages.Notice.EditModel
 @{
-}
-@{
     ViewData["Title"] = $"Edit Notice ID: {Model.Notice.noticeID}";
 }
-<h2 class="fw-bold">Announcements</h2>
-<h6 class="text-muted">Update Existing Announcement / Notice (#: @Model.Notice.noticeID)</h6>
+<h2 class="fw-bold">Notice and Announcements</h2>
+<p class="text-muted mb-0">Update Existing Announcement / Notice #@Model.Notice.noticeID</p>
 
 <div class="container mt-2">
     <div class="card shadow-lg border-0">

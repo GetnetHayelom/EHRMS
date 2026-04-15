@@ -1,15 +1,16 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
+using PIS2.Data;
 using PIS2.Models;
 
 namespace PIS2.Pages.Delegation
 {
     public class OldDelegationsModel : PageModel
     {
-        private readonly PIS2.Models.PISContext _context;
+        private readonly PISContext _context;
 
-        public OldDelegationsModel(PIS2.Models.PISContext context)
+        public OldDelegationsModel(PISContext context)
         {
             _context = context;
         }

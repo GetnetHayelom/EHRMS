@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization.Infrastructure;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using PIS2.Data;
 using PIS2.Models;
 
 namespace PIS2.Pages.Account
@@ -14,9 +15,9 @@ namespace PIS2.Pages.Account
    [Authorize(Roles ="MIE\\PMS_HRADMIN")]
     public class CreateModel : PageModel
     {
-        private readonly PIS2.Models.PISContext _context;
+        private readonly PISContext _context;
 
-        public CreateModel(PIS2.Models.PISContext context)
+        public CreateModel(PISContext context)
         {
             _context = context;
         }

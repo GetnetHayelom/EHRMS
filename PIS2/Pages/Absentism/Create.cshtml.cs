@@ -9,14 +9,16 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
+using PIS2.Data;
 using PIS2.Models;
+using PIS2.Services;
 using static System.Formats.Asn1.AsnWriter;
 
 namespace PIS2.Pages.Absentism
 {
     public class CreateModel : PageModel
     {
-        private readonly PIS2.Models.PISContext _context;
+        private readonly PISContext _context;
         private readonly Core _core;
         public CreateModel(PISContext ctx, Core methods)
         {

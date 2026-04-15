@@ -1,0 +1,110 @@
+﻿@page
+@model PIS2.Pages.Account.Budgeting.IndexModel
+
+<div class="container-fluid ">
+    <div class="d-flex justify-content-between align-items-center mb-2">
+        <div>
+            <h2 class="font-weight-bold">Budget Management</h2>
+            <p class="text-muted">Overview of organizational financial plans and performance</p>
+        </div>
+        <a asp-page="./Create" class="btn btn-primary">
+            <i class="bi bi-plus-circle me-2"></i>New Plan
+        </a>
+    </div>
+
+    <div class="row mb-2">
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm bg-primary text-white">
+                <div class="card-body">
+                    <h6 class="text-uppercase small">Active Plans</h6>
+                    <h2 class="mb-0">@Model.Stats.ActivePlansCount</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm bg-white">
+                <div class="card-body">
+                    <h6 class="text-uppercase text-muted small">Global Budgeted</h6>
+                    <h2 class="mb-0 text-dark">@Model.Stats.TotalGlobalBudget.ToString("N0")</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm bg-white">
+                <div class="card-body">
+                    <h6 class="text-uppercase text-muted small">Global Actuals</h6>
+                    <h2 class="mb-0 text-info">@Model.Stats.TotalGlobalSpent.ToString("N0")</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm @(Model.Stats.GlobalRemaining < 0 ? "bg-danger" : "bg-success") text-white">
+                <div class="card-body">
+                    <h6 class="text-uppercase small">Available Balance</h6>
+                    <h2 class="mb-0">@Model.Stats.GlobalRemaining.ToString("N0")</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-white py-3">
+            <h5 class="mb-0">Financial Plans</h5>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="bg-light">
+                    <tr>
+                        <th>Budget Plan & Period</th>
+                        <th>Status</th>
+                        <th class="text-right">Budgeted</th>
+                        <th class="text-right">Actual</th>
+                        <th style="width: 200px;">Utilization</th>
+                        <th class="text-center">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.Plans)
+                    {
+                        <tr>
+                            <td>
+                                <span class="font-weight-bold d-block">@item.Plan.BudgetName</span>
+                                <small class="text-muted">@item.Plan.StartDate.ToString("MMM yyyy") - @item.Plan.EndDate.ToString("MMM yyyy")</small>
+                            </td>
+                            <td>
+                                @{
+                                    var badgeClass = item.Plan.Status switch
+                                    {
+                                        Models.BudgetStatus.ACTIVE => "bg-success",
+                                        Models.BudgetStatus.HOLD => "bg-warning",
+                                        Models.BudgetStatus.CLOSED => "bg-secondary",
+                                        Models.BudgetStatus.DECLINED => "bg-danger",
+                                        _ => "badge-info"
+                                    };
+                                }
+                                <span class="badge badge-pill @badgeClass px-3 py-2">@item.Plan.Status</span>
+                            </td>
+                            <td class="text-right font-weight-bold text-dark">@item.TotalAllocated.ToString("N2")</td>
+                            <td class="text-right text-muted">@item.TotalSpent.ToString("N2")</td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <div class="progress flex-grow-1" style="height: 6px;">
+                                        <div class="progress-bar @(item.Utilization > 95 ? "bg-danger" : "bg-primary")"
+                                             role="progressbar" style="width: @(item.Utilization > 100 ? 100 : item.Utilization)%"></div>
+                                    </div>
+                                    <span class="ml-2 small font-weight-bold">@item.Utilization.ToString("N0")%</span>
+                                </div>
+                            </td>
+                            <td class="text-center">
+                                <div class="btn-group">
+                                    
+                                    @await Html.PartialAsync("_Actions", item.Plan.BudgetPlanID)
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

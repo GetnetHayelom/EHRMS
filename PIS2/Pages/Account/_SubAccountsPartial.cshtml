@@ -1,0 +1,14 @@
+﻿@model List<Models.subAccountModel>
+
+<table class="table">
+    @foreach (var sub in Model)
+    {
+        <tr>
+            <td></td>
+            <td class="pl-4 text-muted small">@sub.accountModel?.accountNumber - @sub.subAccountID</td>
+            <td class="pl-5">↳ @sub.subAccountName</td>
+            <td colspan="2" class="small text-muted italic">@sub.subAccountDescription</td>
+            <td><span class="badge badge-light">Sub</span></td>
+        </tr>
+    }
+</table>

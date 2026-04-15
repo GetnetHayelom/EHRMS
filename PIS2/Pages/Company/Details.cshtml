@@ -6,54 +6,71 @@
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
 
-<h1 class="fw-bold">Companies</h1>
-
+<div class="d-flex justify-content-end align-items-end m-2"></div>
 <div>
-    <h4 class="fw-bold">Company Details</h4>
+    <h2 class="fw-bold mb-0">Companies</h2>
+    <p class="text-muted mb-0">Company details #@Model.companyModel.companyID</p>
+</div>
+
+<div class="card shadow-sm m-1 p-0">
+    <div class="d-flex justify-content-end align-items-end m-0">
+        <form method="get" class="d-flex">
+            <label class="form-label"> Filter by Status</label>
+            <select asp-for="DepartmentStatus" class="form-control m-2" asp-items="@Html.GetEnumSelectList<Models.mainStatus>()" onchange="this.form.submit()">
+                <option value="" selected> All</option>
+            </select>
+        </form>
+        @await Html.PartialAsync("filter")
+        @await Html.PartialAsync("back")
+        @await Html.PartialAsync("print")
+        <excel-export table="dataTable" filename="JobCategories_@(DateTime.UtcNow).xlsx"></excel-export>
+    </div>
+</div>
+<div>
     <hr />
-    <dl class="d-flex">
-        <div class="d-flex m-2">
-            <dt class="m-2">
+    <dl class="d-flex justify-content-between">
+        <div class="d-flex ">
+            <dt class="me-2">
                 Company Name:
             </dt>
-            <dd class=" m-2">
+            <dd class=" ">
                 <u>@Html.DisplayFor(model => model.companyModel.companyName)</u>
             </dd>
         </div>
         
-        <div class="d-flex m-2">
-            <dt class="m-2">
+        <div class="d-flex ">
+            <dt class="me-2">
                 Company Alias:
             </dt>
-            <dd class=" m-2">
+            <dd class=" ">
                 <u>@Html.DisplayFor(model => model.companyModel.companyAlias)</u>
             </dd>
         </div>
         
-        <div class="d-flex m-2">
-            <dt class="m-2">
+        <div class="d-flex ">
+            <dt class="me-2">
                 Manager:
             </dt>
-            <dd class=" m-2">
-                <u>@Html.DisplayFor(model => model.companyModel.employmentID)</u>
+            <dd class=" ">
+                <u>@Html.DisplayFor(model => model.companyModel.employmentModel.personModel.personFullName)</u>
             </dd>
         </div>
         
         
-        <div class="d-flex m-2">
-            <dt class="m-2">
+        <div class="d-flex ">
+            <dt class="me-2">
                 Address:
             </dt>
-            <dd class=" m-2">
+            <dd class=" ">
                 <u>@Html.DisplayFor(model => model.companyModel.addressModel.addressFormatted)</u>
             </dd>
         </div>
    
-        <div class="d-flex m-2">
-            <dt class="m-2">
+        <div class="d-flex ">
+            <dt class="me-2">
                 Status:
             </dt>
-            <dd class=" m-2">
+            <dd class=" ">
                 <u>@Html.DisplayFor(model => model.companyModel.companyStatus)</u>
             </dd>
         </div>
@@ -87,18 +104,20 @@
                         <td>@item.employmentModel?.personModel?.personFullName</td>
                         <td>@item.JobPlacements.Where(jp => jp.jobPlacementStatus == Models.mainStatus.Active).Count()</td>
                         <td>
-                            @if (item.departmentStatus != Models.mainStatus.Active)
+                            @if (item.departmentStatus == Models.mainStatus.Active)
                             {
-                                <p class="fw-bold text-danger">
-                                    @Html.DisplayFor(modelItem => item.departmentStatus)
-                                </p>
+                                <span class="badge bg-success">@Html.DisplayFor(modelItem => item.departmentStatus)</span>
+
+                            }
+                            else if (item.departmentStatus == Models.mainStatus.Suspended)
+                            {
+                                <span class="badge bg-warning">@Html.DisplayFor(modelItem => item.departmentStatus)</span>
                             }
                             else
                             {
-                                <p class="fw-bold text-success">
-                                    @Html.DisplayFor(modelItem => item.departmentStatus)
-                                </p>
+                                <span class="badge bg-secondary">@Html.DisplayFor(modelItem => item.departmentStatus)</span>
                             }
+                            
                         </td>
                     </tr>
                     index++;
@@ -126,6 +145,7 @@
     }
     
     <a class="btn btn-primary m-2" asp-page="./Edit" asp-route-id="@Model.companyModel.companyID">Edit</a>
+    @await Html.PartialAsync("back")
     @await Html.PartialAsync("print")
 </div>
 <a asp-page="./Index">View All Companies</a>

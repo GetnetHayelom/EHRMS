@@ -2,7 +2,9 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
+using PIS2.Data;
 using PIS2.Models;
+using PIS2.Services;
 using PIS2.Views;
 using System;
 using System.Collections.Generic;
@@ -14,9 +16,9 @@ namespace PIS2.Pages.Department
     [Authorize(Roles = "MIE\\PMS_HRMANAGER,MIE\\PMS_HRCLERK,MIE\\PMS_MANAGEMENT")]
     public class DetailsModel : PageModel
     {
-        private readonly PIS2.Models.PISContext _context;
-        private readonly PIS2.Models.Core _core;
-        public DetailsModel(PIS2.Models.PISContext context, Core core)
+        private readonly PISContext _context;
+        private readonly Core _core;
+        public DetailsModel(PISContext context, Core core)
         {
             _context = context;
             _core = core;
@@ -52,22 +54,23 @@ namespace PIS2.Pages.Department
 
 
         public async Task<IActionResult> OnGetAsync(int? id)
-
         {
-          
-            Shifts =await _context.Shifts.Where(s => s.shiftStatus == mainStatus.Active).ToListAsync();
-            WorkSites = await _context.WorkSites.Where(s => s.workSiteStatus == mainStatus.Active).ToListAsync();
-
-            var prsn = await _context.Users.FirstOrDefaultAsync(u => u.userName == User.Identity.Name);
-            int personID = prsn.personID;
-
-            var emp = await _context.Employments.FirstOrDefaultAsync(e => e.personID == personID && e.employmentStatus == mainStatus.Active);
-            int empID = emp.employmentID;
-            UserEmpID = empID;
-
-            var dep = await _context.JobPlacements.FirstOrDefaultAsync(jp => jp.employmentID == empID && jp.jobPlacementStatus == mainStatus.Active);
-            int depID = dep.departmentID;
+            int empID =0;
+            int depID = 0;
             
+            
+            var prsn = await _context.Users.Include(u => u.personModel).FirstOrDefaultAsync(u => u.userName == User.Identity.Name);
+            
+            if(prsn != null) {
+                var emp = await _context.Employments.FirstOrDefaultAsync(e => e.personID == prsn.personModel.personID && e.employmentStatus == mainStatus.Active) ?? new employmentModel();
+                empID = emp.employmentID;
+                UserEmpID = empID;
+
+                var dep = await _context.JobPlacements.FirstOrDefaultAsync(jp => jp.employmentID == empID && jp.jobPlacementStatus == mainStatus.Active) ?? new jobPlacementModel();
+                
+                depID = dep.departmentID;
+            }
+
             if (id == null || id==0)
             {
                 if (depID != 0)
@@ -76,32 +79,36 @@ namespace PIS2.Pages.Department
                 }
                 else {return NotFound(); }
             }
-            
+
+            Shifts =await _context.Shifts.Where(s => s.shiftStatus == mainStatus.Active).ToListAsync();
+            WorkSites = await _context.WorkSites.Where(s => s.workSiteStatus == mainStatus.Active).ToListAsync();          
+
             var departmentmodel = await _context.Departments.Include(d => d.companyModel)
                 .Include(d => d.employmentModel).ThenInclude(e => e.personModel)
                 .Include(d => d.subAccountModel)
                 .OrderBy(d => d.departmentName).FirstOrDefaultAsync(m => m.departmentID == id);
-            
-            departmentModel = departmentmodel;
+
+            if (departmentmodel == null) { return NotFound(); }
+            departmentModel = departmentmodel ?? new departmentModel();
                 isMember = User.IsInRole("MIE\\PMS_MANAGEMENT") ? true: false;
                 isManager= empID == departmentModel?.employmentID? true: false;
 
-            var delegation =await _context.Delegations
-                .FirstOrDefaultAsync(d =>
-                    d.delegationFrom == departmentModel.employmentID &&
-                    d.delegationStatus == mainStatus.Active);
+            var delegations = await _context.Delegations
+                .Where(d =>
+                    d.delegationFrom == departmentModel.employmentID && d.delegationTo == empID &&
+                    d.delegationStatus == mainStatus.Active).ToListAsync();
 
-            var delg = await _context.Delegations.Where(d => d.delegationTo == empID && d.delegationStatus == mainStatus.Active).ToListAsync();
-            Delegations =delg.Select(d => d.delegationScope).ToList();
+            //var delg = await _context.Delegations.Where(d => d.delegationTo == empID && d.delegationStatus == mainStatus.Active).ToListAsync();
+            Delegations = delegations.Select(d => d.delegationScope).ToList();
 
-            if (!(isManager || isMember || Delegations.Any())) return RedirectToPage("/Shared/AccessDenied");
+            if (!(isManager || isMember || delegations.Any())) return RedirectToPage("/Shared/AccessDenied");
 
             Jobs = await _context.JobPlacements.Where(j => j.departmentID ==departmentModel.departmentID && j.jobPlacementStatus == mainStatus.Active)
-                .Include(j => j.employmentModel)?.ThenInclude(e => e.personModel)
-                .Include(j => j.employmentModel)?.ThenInclude(e => e.employmentTypeModel)
-                .Include(j=> j.jobModel).ToListAsync() ?? new List<jobPlacementModel>();
+                .Include(j => j.employmentModel)?.ThenInclude(e => e.personModel)?
+                .Include(j => j.employmentModel)?.ThenInclude(e => e.employmentTypeModel)?
+                .Include(j=> j.jobModel)?.ToListAsync() ?? new List<jobPlacementModel>();
 
-            Employments =Jobs.Select(j => j.employmentModel).Distinct().ToList();
+            Employments =Jobs.Select(j => j.employmentModel)?.Distinct().ToList() ?? new List<employmentModel?>();
 
             var reqNo = await _context.StructureView.Where(s => s.DepartmentID == departmentModel.departmentID && s.StructureStatus == (int)mainStatus.Active).ToListAsync();
             RequiredEmployee =reqNo.Sum(s => s.RequiredNumber ?? 0);

@@ -6,14 +6,13 @@
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
 @await Html.PartialAsync("headerSimple", "")
-<h1 class="fw-bold">Allowance Assignments</h1>
-<hr />
+<h2 class="fw-bold mb-0">Allowance Assignments</h2>
+<p class="text-muted mb-0">Allowance Assignment Details #@Model.allowanceAssignmentModel.allowanceAssignmentID</p>
+<hr class="m-2"/>
 <div>
-    <h4 class="fw-bold">Allowance Assignment Details(#@Model.allowanceAssignmentModel.allowanceAssignmentID)</h4>
-    <hr />
-    <div class="">
-        <div class="card shadow-sm p-4 print-full-width mb-4">
-            <dl class="d-flex flex-wrap">
+    <div class="d-flex gap-2">
+        <div class="col-md-5 card shadow-sm p-4 print-full-width mb-4">
+            <dl class="row">
                 <dt class="">
                     Employment ID:
                 </dt>
@@ -149,12 +148,11 @@
             </div>
         </div>
     </div>
+    <div class="d-flex justify-content-end d-print-none align-items-end">
+        <a asp-page="/EmployeeService/Earning" asp-route-id="@Model.allowanceAssignmentModel.employmentID" class="btn btn-outline-primary m-2">View All Earning</a>
+        <a asp-page="./Index" class="btn btn-outline-secondary m-2"><i class="bi bi-arrow-left me-2"></i>Back to catalog</a>
+        @await Html.PartialAsync("print")
+        <a asp-page="./Edit" asp-route-id="@Model.allowanceAssignmentModel.allowanceAssignmentID" class="btn btn-primary m-2 d-print-none"><i class="bi bi-pencil-square me-2"></i>Edit</a>
+    </div>
 </div>
-<div class="d-flex justify-content-end">
-    @await Html.PartialAsync("print")
-    <a asp-page="./Edit" asp-route-id="@Model.allowanceAssignmentModel.allowanceAssignmentID" class="btn btn-primary m-2 d-print-none">Edit</a> 
-</div>
-<div class="d-print-none">
-    <a asp-page="/EmployeeService/Earning" asp-route-id="@Model.allowanceAssignmentModel.employmentID">View All Earning</a>
-    <a asp-page="./Index">View All Allowance Assignments</a>
-</div>
+

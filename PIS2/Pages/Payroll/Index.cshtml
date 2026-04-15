@@ -1,49 +1,95 @@
 ﻿@page
 @model PIS2.Pages.Payroll.IndexModel
 @using PIS2.Models
+@using PIS2.Services
 @inject PayrollService PayrollService
 
-<h1 class="fw-bold">Payrolls</h1>
-<a class="btn btn-primary" asp-page="Create">Prepare New Payroll</a>
+<div class="d-flex justify-content-between align-items-end mb-2">
+    <div>
+        <h2 class="fw-bold mb-0">Payrolls</h2>
+        <p class="text-muted mb-0">Maintain payroll</p>
+    </div>
+    <div class="d-flex justify-content-end">
+        @await Html.PartialAsync("back")
+        <a class="btn btn-primary m-2" asp-page="Create"><i class="bi bi-plus-circle"></i> New Payroll</a>
+    </div>
+</div>
 
-<table class="table table-bordered table-hover table-striped">
-    <thead class="bg-dark text-white">
-        <tr>
-            <th>Name</th>
-            <th>Company</th>
-            <th>Period</th>
-            <th>Status</th>
-            <th>Total Gross</th>
-            <th>Total Net</th>
-            <th>Actions</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var payroll in Model.Payrolls)
-        {
-            <tr onclick="location.href='@Url.Page("Details", new{id=payroll.payrollID})'" style="cursor:pointer;">
-                <td>@payroll.payrollName</td>
-                <td>@(payroll.companyModel?.companyName ?? "All")</td>
-                <td>@payroll.StartDate.ToShortDateString() - @payroll.EndDate.ToShortDateString()</td>
-                <td>@payroll.payrollStatus</td>
-                <td>@payroll.totalGross?.ToString("C")</td>
-                <td>@payroll.totalNet?.ToString("C")</td>
-                <td>
-                    <a asp-page="./Details" asp-route-id="@payroll.payrollID">Details</a> |
-                    @if (payroll.payrollStatus == payrollStatus.APPROVED)
-                    {
-                        <form method="post" asp-page-handler="Generate" asp-route-id="@payroll.payrollID" style="display:inline">
-                            <button class="btn btn-sm btn-primary">Generate</button>
-                        </form>
-                    }
-                    @if (payroll.payrollStatus == payrollStatus.POSTED)
-                    {
-                        <form method="post" asp-page-handler="Complete" asp-route-id="@payroll.payrollID" style="display:inline">
-                            <button class="btn btn-sm btn-success">Complete</button>
-                        </form>
-                    }
-                </td>
+<div class="card shadow-sm p-2">
+    <div class="d-flex justify-content-end align-items-end">
+        <div class="me-2">@await Html.PartialAsync("filter")</div>
+        <excel-export table="dataTable" filename="Payrolls_List_@DateTime.Now"></excel-export>
+        @await Html.PartialAsync("print")
+    </div>
+    <table class="table table-bordered table-hover table-striped">
+        <thead class="bg-dark text-white">
+            <tr>
+                <th>S/No</th>
+                <th>Name</th>
+                <th>Company</th>
+                <th>Period</th>
+                <th>Status</th>
+                <th>Total Gross</th>
+                <th>Total Net</th>
+                <th class="d-print-none text-end px-2">Actions</th>
             </tr>
-        }
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+            @{
+                int index = 1;
+            }
+            @foreach (var payroll in Model.Payrolls)
+            {
+                <tr onclick="location.href='@Url.Page("Details", new { id = payroll.payrollID })'" style="cursor:pointer;">
+                    <td>@(index++)</td>
+                    <td>@payroll.payrollName</td>
+                    <td>@(payroll.companyModel?.companyName ?? "All")</td>
+                    <td>@payroll.StartDate.ToShortDateString() - @payroll.EndDate.ToShortDateString()</td>
+                    <td>@payroll.payrollStatus</td>
+                    <td>@payroll.totalGross?.ToString("C")</td>
+                    <td>@payroll.totalNet?.ToString("C")</td>
+                    <td class="d-print-none text-end px-2">
+                        <div class="btn-group me-2" role="group">
+                            <a asp-page="./Details" asp-route-id="@payroll.payrollID" class="btn btn-outline-success"><i class="bi bi-eye"></i></a>
+                            @if (payroll.payrollStatus == payrollStatus.PENDING)
+                            {
+                                <a asp-page="Edit" asp-route-id="@payroll.payrollID" class="btn btn-outline-primary"><i class="bi bi-pencil-square"></i></a>
+                            }
+                        </div>
+                        @if (payroll.payrollStatus == payrollStatus.PENDING)
+                        {
+                            <form method="post" asp-page-handler="Approve" asp-route-id="@payroll.payrollID" style="display:inline">
+                                <button class="btn btn-sm btn-primary" onclick="return confirm('Are you sure you want to APPROVE this payroll?');"><i class="bi bi-check-circle me-2"></i>Approve</button>
+                            </form>
+                        }
+                        @if (payroll.payrollStatus == payrollStatus.APPROVED)
+                        {
+                            <form method="post" asp-page-handler="Generate" asp-route-id="@payroll.payrollID" style="display:inline">
+                                <button class="btn btn-sm btn-primary" onclick="return confirm('Are you sure you want to PROCCESS this payroll?');"><i class="bi bi-gear-fill me-2"></i>Generate</button>
+                            </form>
+                        }
+                        @if (payroll.payrollStatus == payrollStatus.PROCESSED)
+                        {
+                            <form method="post" asp-page-handler="Generate" asp-route-id="@payroll.payrollID" style="display:inline">
+                                <button class="btn btn-sm btn-primary" onclick="return confirm('Are you sure you want to PROCCESS this payroll?');"><i class="bi bi-gear-fill me-2"></i>Re-Generate</button>
+                            </form>
+                            <form method="post" asp-page-handler="Post" asp-route-id="@payroll.payrollID" style="display:inline">
+                                <button class="btn btn-sm btn-warning" onclick="return confirm('Are you sure you want to POST this payroll?');"><i class="bi bi-airplane me-2"></i>Post</button>
+                            </form>
+                        }
+                        @if (payroll.payrollStatus == payrollStatus.POSTED)
+                        {
+                            <form method="post" asp-page-handler="Complete" asp-route-id="@payroll.payrollID" style="display:inline">
+                                <button class="btn btn-sm btn-success" onclick="return confirm('Are you sure you want to COMPLETE this payroll?');"><i class="bi bi-door-closed me-2"></i>Complete</button>
+                            </form>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+<div class="d-flex justify-content-end m-2 align-items-end">
+    @await Html.PartialAsync("back")
+    @await Html.PartialAsync("print")
+</div>

@@ -6,33 +6,175 @@
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
 
-<h1>Job Classes</h1>
-
-<div>
-    <h4>Job Class Details</h4>
+<h2 class="fw-bold">Job Classes</h2>
+<p class="text-muted">Job Class Details #@Model.jobClassModel.jobClassId</p>
+<div class="d-flex gap-4">
     <hr />
-    <dl class="row">
-        <dt class="col-sm-2">
-            Job Class Name
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.jobClassModel.jobClassName)
-        </dd>
-        <dt class="col-sm-2">
-            Description
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.jobClassModel.jobClassDescription)
-        </dd>
-        <dt class="col-sm-2">
-            Status
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.jobClassModel.jobClassStatus)
-        </dd>
-    </dl>
+    <div class="card shadow-sm p-2 col-md-5">
+        <dl class="row">
+            <dt class="col-6">
+                Job Class Name
+            </dt>
+            <dd class="col-6">
+                @Html.DisplayFor(model => model.jobClassModel.jobClassName)
+            </dd>
+            <dt class="col-6">
+                Description
+            </dt>
+            <dd class="col-6">
+                @Html.DisplayFor(model => model.jobClassModel.jobClassDescription)
+            </dd>
+            <dt class="col-6">
+                Status
+            </dt>
+            <dd class="col-6">
+
+                @if (Model.jobClassModel.jobClassStatus == Models.mainStatus.Active)
+                {
+                    <span class="badge bg-success">@Html.DisplayFor(modelItem => Model.jobClassModel.jobClassStatus)</span>
+
+                }
+                else if (Model.jobClassModel.jobClassStatus == Models.mainStatus.Suspended)
+                {
+                    <span class="badge bg-warning">@Html.DisplayFor(modelItem => Model.jobClassModel.jobClassStatus)</span>
+                }
+                else
+                {
+                    <span class="badge bg-secondary">@Html.DisplayFor(modelItem => Model.jobClassModel.jobClassStatus)</span>
+                }
+            </dd>
+        </dl>
+        <div class="d-flex justify-content-end m-2">
+            @await Html.PartialAsync("back")
+            @if (User.IsInRole("MIE\\PMS_HRADMIN"))
+            {
+                <a asp-page="./Edit" asp-route-id="@Model.jobClassModel.jobClassId" class=" btn btn-primary m-2">Edit</a>
+            }
+
+
+        </div>
+    </div>
+    
+    <div class="flex-fill">
+        
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-dark text-white d-flex align-items-center">
+                <i class="bi bi-clock-history me-2"></i> Audit Trail
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive" style="max-height: 500px; overflow-y: auto;">
+                    <table class="table table-sm table-hover mb-0">
+                        <thead class="table-light">
+                            <tr class="small text-uppercase">
+                                <th>Date</th>
+                                <th>User</th>
+                                <th>Field</th>
+                                <th>Old Value</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model.History.Any())
+                            {
+                                @foreach (var log in Model.History)
+                                {
+                                    <tr>
+                                        <td class="small">@log.ModifiedDate.ToString("yyyy-MM-dd HH:mm")</td>
+                                        <td class="small fw-bold">@log.ModifiedBy</td>
+                                        <td><span class="badge bg-light text-dark">@Model.GetFriendlyColumnName(log.ColumnName)</span></td>
+                                        <td class="text-muted italic small">
+                                            <span class="text-danger text-decoration-line-through small">
+                                                @Model.FormatAuditValue(log.ColumnName, log.OldValue)
+                                            </span>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td colspan="4" class="text-center py-4 text-muted">No change history found for this record.</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="card-footer bg-white small text-muted">
+                Total changes tracked: @Model.History.Count
+            </div>
+        </div>
+
+    </div>
 </div>
-<div>
-    <a asp-page="./Edit" asp-route-id="@Model.jobClassModel.jobClassId">Edit</a> |
-    <a asp-page="./Index">Back to List</a>
+<div class="card shadow-sm mt-3">
+    <div class="card-header bg-dark text-white d-flex align-items-center">
+        <i class="bi bi-list me-2"></i> Jobs in this Class (@Model.jobModel.Count())
+    </div>
+    <div class="card-body p-0">
+    
+        <table class="table table-hover align-middle" id="dataTable">
+            <thead class="table-light">
+                <tr>
+                    <th>Job Title</th>
+                    <th>Job Grade</th>
+                    <th>Job Category</th>
+                    <th>Experience</th>
+                    <th>Status</th>
+                    <th class="no-print text-center">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.jobModel == null || !Model.jobModel.Any())
+                {
+                    <tr>
+                        <td colspan="10" class="text-center text-muted">
+                            No Jobs found.
+                        </td>
+                    </tr>
+                }
+                @foreach (var itemf in Model.jobModel.GroupBy(j => j.jobCategoryID).OrderByDescending(j => j.Count()))
+                {
+                    <tr class="table-primary fw-bold">
+                        <td colspan="5">@itemf.FirstOrDefault().jobCategoryModel?.jobCategoryName</td>
+                        <td> Count= @itemf.Count()</td>
+                    </tr>
+                    @foreach (var item in itemf.OrderBy(j => j.jobTitle))
+                    {
+                    <tr>
+                        <td>@item.jobTitle</td>
+                        <td>@item.jobGradeModel?.jobGradeName</td>
+                        <td>@item.jobCategoryModel?.jobCategoryName</td>
+                        <td>@item.jobExperience</td>
+                        <td>
+                            @if (item.jobStatus.ToString() == "Active")
+                            {
+                                <span class="badge bg-success">Active</span>
+                            }
+                            else if (item.jobStatus.ToString() == "Inactive")
+                            {
+                                <span class="badge bg-secondary">Inactive</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-info">@item.jobStatus</span>
+                            }
+                        </td>
+                        <td class="no-print text-center">
+                            <div class="btn-group" role="group">
+                                <a asp-page="/Job/Details" asp-route-id="@item.jobID" class="btn btn-sm btn-outline-primary" title="View Details">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                                <a asp-page="/Job/Edit" asp-route-id="@item.jobID" class="btn btn-sm btn-outline-success" title="Edit">
+                                    <i class="bi bi-pencil-square"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
 </div>
+
+<a asp-page="./Index">View Catalog</a>

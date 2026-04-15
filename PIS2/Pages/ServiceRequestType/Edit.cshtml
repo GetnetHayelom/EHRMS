@@ -1,0 +1,50 @@
+﻿@page
+@model PIS2.Pages.ServiceRequestType.EditModel
+
+@{
+    ViewData["Title"] = "Edit";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<h2 class="fw-bold">Service Types</h2>
+
+<h6 class="text-muted">Update Service Request Types #@Model.serviceRequestTypeModel.serviceRequestTypeID</h6>
+<hr />
+<div class="d-flex gap-4">
+    <div class="card shadow-sm p-2 col-md-4">
+        <form method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="serviceRequestTypeModel.serviceRequestTypeID" />
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <span class="text-danger">*</span>
+                <label asp-for="serviceRequestTypeModel.serviceRequestTypeName" class="control-label">Service Name</label>
+                <input asp-for="serviceRequestTypeModel.serviceRequestTypeName" class="form-control" />
+                <span asp-validation-for="serviceRequestTypeModel.serviceRequestTypeName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+
+                <label asp-for="serviceRequestTypeModel.serviceRequestTypeDescription" class="control-label">Decription</label>
+                <input asp-for="serviceRequestTypeModel.serviceRequestTypeDescription" class="form-control" />
+            </div>
+            <div class="form-group">
+                <label asp-for="serviceRequestTypeModel.serviceRequestTypeStatus" class="control-label">Status</label>
+                <select asp-for="serviceRequestTypeModel.serviceRequestTypeStatus" class="form-control" asp-items="@Html.GetEnumSelectList<Models.mainStatus>()"></select>
+                <span asp-validation-for="serviceRequestTypeModel.serviceRequestTypeStatus" class="text-danger"></span>
+            </div>
+
+            <div class="form-group d-flex justify-content-end m-2">
+                <input type="submit" value="Save" class="btn btn-success" />
+            </div>
+        </form>
+    </div>
+</div>
+
+    
+<div>
+    <a asp-page="./Index">View Catalog</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

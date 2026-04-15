@@ -1,14 +1,14 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
-using PIS2.Models;
+using PIS2.Data;
 using System.Collections.Generic;
 namespace PIS2.Pages.Forms
 {
     public class SLAccessModel : PageModel
     {
-        private readonly PIS2.Models.PISContext _context;
-        public SLAccessModel(PIS2.Models.PISContext context)
+        private readonly PISContext _context;
+        public SLAccessModel(PISContext context)
         {
             _context = context;
         }

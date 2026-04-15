@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ValueGeneration.Internal;
+using PIS2.Data;
 using PIS2.Models;
 
 namespace PIS2.Pages.Notice
@@ -11,9 +12,9 @@ namespace PIS2.Pages.Notice
     [Authorize(Roles = "MIE\\PMS_HRCLERK,MIE\\PMS_HRMANAGER")]
     public class EditModel : PageModel
     {
-        private readonly PIS2.Models.PISContext _context;
+        private readonly PISContext _context;
 
-        public EditModel(PIS2.Models.PISContext context)
+        public EditModel(PISContext context)
         {
             _context = context;
         }
@@ -38,10 +39,8 @@ namespace PIS2.Pages.Notice
                 return RedirectToPage("/Notice/Index"); 
             }
 
-            
             Notice = _context.Notices.Where(n => n.noticeID == id).FirstOrDefault();
             
-
             if (Notice == null)
             {
                 StatusMessage = $"Error: Notice with ID {id} not found.";

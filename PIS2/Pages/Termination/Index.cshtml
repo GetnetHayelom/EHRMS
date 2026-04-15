@@ -6,19 +6,23 @@
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
 @await Html.PartialAsync("headerSimple", "")
-<div class="d-flex justify-content-between mb-4">
-    <h1 class="fw-bold">Terminations</h1>
-    @if (User.IsInRole("MIE\\PMS_HRCLERK"))
-    {
-        <p>
-            <a asp-page="Create" class="btn btn-primary">New Termination</a>
-        </p>
-    }
+<div class="d-flex justify-content-between mb-2 align-items-end">
+    <div>
+        <h2 class="fw-bold mb-0">Terminations</h2>
+        <p class="text-muted mb-0">Terminations Report</p>
+    </div>
+    <div class="d-flex justify-content-end align-items-end d-print-none">
+        @await Html.PartialAsync("print")
+        @if (User.IsInRole("MIE\\PMS_HRCLERK"))
+        {
+            <a asp-page="Create" class="btn btn-primary m-2"><i class="bi bi-plus-circle"></i> New Termination</a>
+        }
+    </div>
+    
+      
 </div>
 
-@{
-    int others = Model.total - Model.management - Model.professional;
-}
+
 <!-- Summary Cards -->
 <div class="card shadow-sm mb-4 p-2">
     <div class="d-flex gap-3 mb-4 d-print-flex" id="summaryRow">
@@ -69,8 +73,13 @@
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
-                            <small class="text-muted">Management</small>
-                            <h3 class="mb-0">@Model.management</h3>
+                            
+                            <small class="text-muted">Avg. Experience</small>
+                            <h3 class="mb-0">
+                                @((Model.terminationModel
+                                .Select(x => (x.terminationDate - x.employmentDate).TotalDays)
+                                .Average()/365).ToString("N2"))
+                            </h3>
                         </div>
                         <div><i class="bi bi-briefcase fs-2 text-warning"></i></div>
                     </div>
@@ -83,8 +92,12 @@
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
-                            <small class="text-muted">Professional</small>
-                            <h3 class="mb-0">@Model.professional</h3>
+                            <small class="text-muted">Avg. Salary</small>
+                            <h3 class="mb-0">
+                                @((Model.terminationModel
+                                .Select(x => x.jobPlacementSalary)
+                                .Average()).ToString("N2"))
+                            </h3>
                         </div>
                         <div><i class="bi bi-award fs-2 text-info"></i></div>
                     </div>
@@ -97,8 +110,8 @@
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
-                            <small class="text-muted">Others</small>
-                            <h3 class="mb-0"> @others</h3>
+                            <small class="text-muted">TerminationRate</small>
+                            <h3 class="mb-0"> @Model.Rate</h3>
                         </div>
                         <div><i class="bi bi-gear fs-2 text-muted"></i></div>
                     </div>
@@ -108,179 +121,417 @@
 
 
     </div>
+    <div class="d-flex flex-wrap gap-3 mb-3">
+        <span class="fw-bold "><u>Employment Type Distribution:</u></span>
+
+        @foreach (var item in Model.terminationModel
+                .GroupBy(t => t.employmentTypeName)
+                .Select(g => new
+                {
+                    Name = g.First().employmentTypeName,
+                    Count = g.Count()
+                })
+                .OrderByDescending(g => g.Count))
+        {
+            <span class="text-muted me-3"><strong> @item.Name =</strong> @item.Count</span>
+        }
+
+        <span class="fw-bold "><u>Top Job Class Terminations:</u></span>
+
+        @foreach (var item in Model.terminationModel
+                .GroupBy(t => t.jobClassName)
+                .Select(g => new
+                {
+                    Name = g.First().jobClassName,
+                    Count = g.Count()
+                })
+                .OrderByDescending(g => g.Count).Take(3))
+        {
+            <span class="text-muted me-3"><strong> @item.Name =</strong> @item.Count</span>
+        }
+
+        <span class="fw-bold "><u>Job Category Terminations:</u></span>
+
+        @foreach (var item in Model.terminationModel
+                .GroupBy(t => t.jobCategoryName)
+                .Select(g => new
+                {
+                    Name = g.First().jobCategoryName,
+                    Count = g.Count()
+                })
+                .OrderByDescending(g => g.Count).Take(3))
+        {
+            <span class="text-muted me-3"><strong> @item.Name =</strong> @item.Count</span>
+        }
+    </div>
+    
+              
 </div>
 
 <!-- Filter Form -->
 <div class="card p-3 mb-3">
-    <form method="get" id="filterForm" class="row g-3 align-items-end d-print-flex">
-        <div class="col-auto mb-2">
-            <label class="form-label fw-bold">Company</label>
-            <select asp-for="CompanyID" class="form-select" id="filter-company">
-                <option value="">All</option>
-                @foreach (var c in Model.Companies)
-                {
-                    <option value="@c.companyID">@c.companyName</option>
-                }
-            </select>
-        </div>
+    <form method="get" id="filterForm">
+        <div class="d-flex flex-wrap gap-3 align-items-end d-print-flex justify-content-around">
+            <div class="col-auto mb-2">
+                <label class="form-label fw-bold">Company</label>
+                <select asp-for="CompanyID" class="form-select" id="filter-company">
+                    <option value="">All</option>
+                    @foreach (var c in Model.Companies)
+                    {
+                        <option value="@c.companyID">@c.companyName</option>
+                    }
+                </select>
+            </div>
 
-        <div class="col-auto mb-2">
-            <label class="form-label fw-bold">Department</label>
-            <select asp-for="DepartmentID" class="form-select" id="filter-department">
-                <option value="">All</option>
-            </select>
-        </div>
+            <div class="col-auto mb-2">
+                <label class="form-label fw-bold">Department</label>
+                <select asp-for="DepartmentID" class="form-select" id="filter-department">
+                    @if(Model.CompanyID.HasValue)
+                    {
+                        <option value="">All</option>
+                        @foreach(var items in Model.Departments){
+                            <option value="@items.Value">@items.Text</option>
+                        }
+                        
+                    }else{<option value="">All</option>}
+                    
+                </select>
+            </div>
 
-        <div class="col-auto mb-2">
-            <label class="form-label fw-bold">Status</label>
-            <select asp-for="Status" class="form-select">
-                <option value="">All</option>
-                @foreach (var s in Enum.GetValues(typeof(PIS2.Models.terminationStatus)).Cast<PIS2.Models.terminationStatus>())
-                {
-                    <option value="@( (int)s )">@s</option>
-                }
-            </select>
-        </div>
+            <div class="col-auto mb-2">
+                <label class="form-label fw-bold">Status</label>
+                <select asp-for="Status" class="form-select">
+                    <option value="">All</option>
+                    @foreach (var s in Enum.GetValues(typeof(PIS2.Models.terminationStatus)).Cast<PIS2.Models.terminationStatus>())
+                    {
+                        <option value="@( (int)s )">@s</option>
+                    }
+                </select>
+            </div>
 
-        <div class="col-auto mb-2">
-            <label class="form-label fw-bold">Job Class</label>
-            <select asp-for="jClass" class="form-select">
-                <option value="">All</option>
-                @foreach (var jc in Model.JobClasses)
-                {
-                    <option value="@jc.jobClassId">@jc.jobClassName</option>
-                }
-            </select>
-        </div>
+            <div class="col-auto mb-2">
+                <label class="form-label fw-bold">Job Class</label>
+                <select asp-for="jClass" class="form-select">
+                    <option value="">All</option>
+                    @foreach (var jc in Model.JobClasses)
+                    {
+                        <option value="@jc.jobClassId">@jc.jobClassName</option>
+                    }
+                </select>
+            </div>
 
-        <div class="col-auto mb-2">
-            <label class="form-label fw-bold">Reason</label>
-            <select asp-for="Reason" class="form-select">
-                <option value="">All</option>
-                @foreach (var r in Model.Reasons)
-                {
-                    <option value="@r">@r</option>
-                }
-            </select>
-        </div>
+            <div class="col-auto mb-2">
+                <label class="form-label fw-bold">Reason</label>
+                <select asp-for="Reason" class="form-select">
+                    <option value="">All</option>
+                    @foreach (var r in Model.Reasons)
+                    {
+                        <option value="@r">@r</option>
+                    }
+                </select>
+            </div>
 
-        <div class="col-auto mb-2">
-            <label class="form-label fw-bold">Category</label>
-            <select name="Category" class="form-select">
-                <option value="">All</option>
-                @foreach (var jc in Model.JobCategories)
-                {
-                    <option value="@jc.jobCategoryID">@jc.jobCategoryName</option>
-                }
-            </select>
-        </div>
+            <div class="col-auto mb-2">
+                <label class="form-label fw-bold">Category</label>
+                <select name="Category" class="form-select">
+                    <option value="">All</option>
+                    @foreach (var jc in Model.JobCategories)
+                    {
+                        <option value="@jc.jobCategoryID">@jc.jobCategoryName</option>
+                    }
+                </select>
+            </div>
 
-        <div class="col-auto mb-2">
-            <label class="form-label fw-bold">From</label>
-            <input asp-for="From" type="date" class="form-control" />
-        </div>
+            <div class="col-auto mb-2">
+                <label class="form-label fw-bold">From</label>
+                <input asp-for="From" type="date" class="form-control" />
+            </div>
 
-        <div class="col-auto mb-2">
-            <label class="form-label fw-bold">To</label>
-            <input asp-for="To" type="date" class="form-control" />
+            <div class="col-auto mb-2">
+                <label class="form-label fw-bold">To</label>
+                <input asp-for="To" type="date" class="form-control" />
+            </div>
+            <div class="col-auto mb-2">
+                <div class="d-flex justify-content-end gap-3 align-items-end d-print-none">
+                    <button type="submit" class="btn btn-primary">Load</button>
+                    <button type="button" class="btn btn-outline-secondary" id="resetBtn" onclick="this.reset()">Reset</button>
+                    
+                    
+                </div>
+            </div>
         </div>
-
-        <div class="col-auto mb-2 d-print-none">
-            <button type="submit" class="btn btn-primary">Load</button>
-        </div>
-        <div class="col-auto mb-2 d-prtin-none">
-            <button type="button" class="btn btn-outline-secondary" id="resetBtn">Reset</button>
-        </div>
-        <div class="col-auto d-print-none">
-            @await Html.PartialAsync("print")
-        </div>
-        <div class="col-auto d-print-none">
-            <excel-export table="dataTable" filename="Termination_Report_@(DateTime.Now).xlsx"></excel-export>
-        </div>
-        <div class="col-auto">@await Html.PartialAsync("filter")</div>
+ 
     </form>
 </div>
 
-<table class="table table-hover table-striped print-full-width" id="dataTable">
-    <thead class="table-dark">
-        <tr>
-            <th>Employee</th>
-            <th>Gender</th>           
-            <th>Job Category</th>
-            <th>Job Class</th>
-            <th>Reason</th>
-            <th>Status</th>
-            <th>Date</th>
-            <th>Action</th>
-        </tr>
-    </thead>
+<!--TAB CONTROLS-->
+<div class="d-flex d-print-none">
+    <ul class="nav nav-tabs">
 
-    <tbody>
-        @{
-            int index = 0;
-        }
-        @foreach (var comp in Model.terminationModel.GroupBy(t =>
-                t.companyID))
-        {
-            index++;
-            <tr class="table-primary fw-bold">
-                <td colspan="9">@(index). @comp.FirstOrDefault().companyName</td>
-            </tr>
-            int index2 = 0;
-            foreach (var dep in comp.GroupBy(t =>
-            t.departmentID))
-            {
-                index2++;
-                <tr class="table-secondary fw-bold">
-                    <td colspan="9">@(index).@(index2). @dep.FirstOrDefault().departmentName</td>
-                </tr>
-                int index3 = 0;
-                foreach (var t in dep)
-                {
-                    index3++;
-                    <tr>
-                        <td>
-                            @(index3). @t.FullName
-                        </td>
-                        <td>@((Models.Gender) t.personGender)</td>
-                        <td>@t.jobCategoryName</td>
-                        <td>@t.jobClassName</td>
-                        <td>@t.terminationReason</td>
-                        <td>
-                            @{
-                                var badgeClass = t.terminationStatus switch
+        <li class="nav-item">
+            <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#summaryView">Terminations Summary</button>
+        </li>
+        <li class="nav-item">
+            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#detailTerminationView">Detail View</button>
+        </li>
+
+    </ul>
+</div>
+<div class="tab-content mt-3">
+    <!--TERMINATION SUMMARY REPORT-->
+    <div class="tab-pane fade show active" id="summaryView">
+        <h4 class="fw-bold">Turnover Dashboard</h4>
+
+        <div class="row">
+
+            <div class="col-md-4">
+                <div class="card border-0 bg-danger text-white shadow-sm">
+                    <div class="card-body">
+                        <h6>Total Vs Filtered</h6>
+                        <h2>@Model.TotalTerminations/@Model.total (@(Model.total * 100/Model.TotalTerminations)%)</h2>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card border-0 bg-warning text-dark shadow-sm">
+                    <div class="card-body">
+                        <h6>Last Year<small>(@DateTime.Now.AddYears(-1).ToString("MM/dd/yyyy") - @DateTime.Now.ToString("MM/dd/yyyy"))</small></h6>
+                        <h2>@Model.TerminationsThisYear</h2>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card border-0 bg-secondary text-white shadow-sm">
+                    <div class="card-body">
+                        <h6>Average Tenure Years (Total vs Filtered) </h6>
+                        
+                            <h4>
+                                @Model.AvgTenureYears.ToString("0.0")/@((Model.terminationModel
+                                                                .Select(x => (x.terminationDate - x.employmentDate).TotalDays)
+                                                                .Average() / 365).ToString("0.0"))
+                            </h4>
+                            <p><span><strong>Min:</strong> @Model.terminationModel.Min(x => (x.terminationDate - x.employmentDate).TotalDays / 365).ToString("0.0")</span>-<span><strong>Max:</strong> @Model.terminationModel.Max(x => (x.terminationDate - x.employmentDate).TotalDays / 365).ToString("0.0")</span></p>
+ 
+                        
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <hr />
+
+        <div class="row">
+
+            <div class="col-md-6">
+                <div class="card shadow">
+                    <div class="card-header">
+                        Termination Trend
+                    </div>
+                    <div class="card-body">
+                        <canvas id="trendChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="card shadow">
+                    <div class="card-header">
+                        Terminations by Department
+                    </div>
+                    <div class="card-body">
+                        <canvas id="deptChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <br />
+
+        <div class="row">
+
+            <div class="col-md-6">
+                <div class="card shadow">
+                    <div class="card-header">
+                        Termination Reasons
+                    </div>
+                    <div class="card-body">
+                        <canvas id="reasonChart"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card shadow">
+                    <div class="card-header">
+                        Termination Reasons
+                    </div>
+                    <div class="card-body">
+                        <table class="table">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>S/No</th>
+                                    <th>Reason</th>
+                                    <th>Male</th>
+                                    <th>Female</th>
+                                    <th>Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @{
+                                    int indexer = 1;
+                                }
+                                @foreach (var item in Model.terminationModel.GroupBy(x => x.terminationReason).OrderByDescending(g => g.Count()).Select(g => new { Reason = g.Key, Count = g.Count(), Male = g.Count(g => g.personGender == (int)Models.Gender.Male), Female = g.Count(g => g.personGender == (int)Models.Gender.Female) }))
                                 {
-                                    (int) PIS2.Models.terminationStatus.Posted => "bg-success",
-                                    (int) PIS2.Models.terminationStatus.Hold => "bg-warning",
-                                    (int) PIS2.Models.terminationStatus.Complete => "bg-secondary",
-                                    (int )PIS2.Models.terminationStatus.Approved => "bg-info",
-                                    _ => "bg-primary"
-                                };
-                            }
-                            <span class="badge rounded-pill @badgeClass" style="min-width: 80px;">
-                                @((PIS2.Models.terminationStatus)t.terminationStatus)
-                            </span>
-                        </td>
-                        <td>@t.terminationDate.ToString("MM/dd/yyyy")</td>
-                        <td>
-                            <div class="btn-group" role="group">
-                                <a asp-page="./Details" asp-route-id="@t.terminationID" class="btn btn-sm btn-outline-primary" title="View Details">
-                                    <i class="bi bi-eye"></i>
-                                </a>
-                                <a asp-page="./Edit" asp-route-id="@t.terminationID" class="btn btn-sm btn-outline-success" title="Edit">
-                                    <i class="bi bi-pencil-square"></i>
-                                </a>
-                            </div>
-                        </td>
-                    </tr>
-                }
-            }
-        }
-    </tbody>
-</table>
+                                    <tr>
+                                        <td>@(indexer++)</td>
+                                        <td>@item.Reason</td>
+                                        <td>@item.Male</td>
+                                        <td>@item.Female</td>
+                                        <td>@item.Count</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
 
+    </div>
+ 
+    <!--TERMINATION DETAILS REPORT-->
+    <div class="tab-pane fade" id="detailTerminationView">
+        <div class="d-flex justify-content-end align-items-end gap-2">
+            <div>@await Html.PartialAsync("filter")</div>
+            <excel-export table="dataTable" filename="Termination_Report_@(DateTime.Now).xlsx"></excel-export>
+        </div>
+        <table class="table table-hover table-striped print-full-width" id="dataTable">
+            <thead class="table-dark">
+                <tr>
+                    <th>Employee</th>
+                    <th>Gender</th>
+                    <th>Job Category</th>
+                    <th>Job Class</th>
+                    <th>Reason</th>
+                    <th>Status</th>
+                    <th>Date</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                @{
+                    int index = 0;
+                }
+                @foreach (var comp in Model.terminationModel.GroupBy(t =>
+                                t.companyID))
+                {
+                    index++;
+                    <tr class="table-primary fw-bold">
+                        <td colspan="9">@(index). @comp.FirstOrDefault().companyName</td>
+                    </tr>
+                    int index2 = 0;
+                    foreach (var dep in comp.GroupBy(t =>
+                    t.departmentID))
+                    {
+                        index2++;
+                        <tr class="table-secondary fw-bold">
+                            <td colspan="9">@(index).@(index2). @dep.FirstOrDefault().departmentName</td>
+                        </tr>
+                        int index3 = 0;
+                        foreach (var t in dep)
+                        {
+                            index3++;
+                            <tr>
+                                <td>
+                                    @(index3). @t.FullName
+                                </td>
+                                <td>@((Models.Gender)t.personGender)</td>
+                                <td>@t.jobCategoryName</td>
+                                <td>@t.jobClassName</td>
+                                <td>@t.terminationReason</td>
+                                <td>
+                                    @{
+                                        var badgeClass = t.terminationStatus switch
+                                        {
+                                            (int)PIS2.Models.terminationStatus.Posted => "bg-success",
+                                            (int)PIS2.Models.terminationStatus.Hold => "bg-warning",
+                                            (int)PIS2.Models.terminationStatus.Complete => "bg-secondary",
+                                            (int)PIS2.Models.terminationStatus.Approved => "bg-info",
+                                            _ => "bg-primary"
+                                        };
+                                    }
+                                    <span class="badge rounded-pill @badgeClass" style="min-width: 80px;">
+                                        @((PIS2.Models.terminationStatus)t.terminationStatus)
+                                    </span>
+                                </td>
+                                <td>@t.terminationDate.ToString("MM/dd/yyyy")</td>
+                                <td>
+                                    <div class="btn-group" role="group">
+                                        <a asp-page="./Details" asp-route-id="@t.terminationID" class="btn btn-sm btn-outline-primary" title="View Details">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                        <a asp-page="./Edit" asp-route-id="@t.terminationID" class="btn btn-sm btn-outline-success" title="Edit">
+                                            <i class="bi bi-pencil-square"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    }
+                }
+            </tbody>
+        </table>
+
+    </div>
+
+</div>
+<div class="d-flex justify-content-end  align-items-center">
+    @await Html.PartialAsync("back")
+    @await Html.PartialAsync("print")
+</div>
 <script src="~/lib/jquery/dist/jquery.min.js"></script>
 <script src="~/js/filter-department.js"></script>
+<script>
+
+    var trendChart = new Chart(document.getElementById('trendChart'), {
+    type: 'line',
+    data: {
+    labels: @Html.Raw(Model.MonthlyLabels),
+    datasets: [{
+    label: 'Terminations',
+    data: @Html.Raw(Model.MonthlyData),
+    fill: false,
+    tension: 0.1
+    }]
+    }
+    });
+
+    var deptChart = new Chart(document.getElementById('deptChart'), {
+    type: 'bar',
+    data: {
+    labels: @Html.Raw(Model.DeptLabels),
+    datasets: [{
+    label: 'Terminations',
+    data: @Html.Raw(Model.DeptData)
+    }]
+    }
+    });
+
+    var reasonChart = new Chart(document.getElementById('reasonChart'), {
+    type: 'pie',
+    data: {
+    labels: @Html.Raw(Model.ReasonLabels),
+    datasets: [{
+    data: @Html.Raw(Model.ReasonData)
+    }]
+    }
+    });
+
+</script>
 <script>
         $("#resetBtn").click(function () {
         $("#filterForm")[0].reset();

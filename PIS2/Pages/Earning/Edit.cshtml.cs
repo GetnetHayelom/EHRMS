@@ -1,7 +1,9 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using PIS2.Data;
 using PIS2.Models;
 
 namespace PIS2.Pages.Earning
@@ -18,16 +20,21 @@ namespace PIS2.Pages.Earning
 
         [BindProperty]
         public earningType EarningType { get; set; }
-
+      
+        public SelectList Accounts { get; set; }
         public async Task<IActionResult> OnGetAsync(int id)
         {
-            EarningType = await _context.EarningTypes.FindAsync(id);
+            if (!User.IsInRole("MIE\\PMS_HRADMIN"))
+            {
+                return RedirectToPage("/Shared/AccessDenied");
+            }
+            EarningType = await _context.EarningTypes.Include(e => e.Account).FirstOrDefaultAsync(e => e.earningTypeID==id);
 
             if (EarningType == null)
             {
                 return NotFound();
             }
-
+            getOptions(EarningType.accountID);
             return Page();
         }
 
@@ -51,6 +58,7 @@ namespace PIS2.Pages.Earning
                     }
                     Console.WriteLine(kv.ToString());
                 }
+                getOptions(EarningType.accountID);
                 return Page();
             }
 
@@ -58,6 +66,7 @@ namespace PIS2.Pages.Earning
 
             if (earningTypeFromDb == null)
             {
+                getOptions(EarningType.accountID);
                 return NotFound();
             }
 
@@ -68,6 +77,7 @@ namespace PIS2.Pages.Earning
             earningTypeFromDb.isRecurring = EarningType.isRecurring;
             earningTypeFromDb.isPayroll = EarningType.isPayroll;
             earningTypeFromDb.earningTypeStatus = EarningType.earningTypeStatus;
+            earningTypeFromDb.accountID = EarningType.accountID;
             earningTypeFromDb.modifiedBy = User.Identity?.Name ?? "System";
             earningTypeFromDb.modifiedDate = DateTime.Now;
 
@@ -75,6 +85,15 @@ namespace PIS2.Pages.Earning
 
             TempData["SuccessMessage"] = "Earning Type updated successfully!";
             return RedirectToPage("Details", new { id=earningTypeFromDb.earningTypeID});
+        }
+
+        private void getOptions(int? id)
+        {
+            var accounts = _context.Accounts
+                .Where(a => a.accountStatus == mainStatus.Active)
+                .OrderBy(a => a.accountName)
+                .ToList();
+            Accounts = new SelectList(accounts, "accountID", "accountName", id);
         }
     }
 }

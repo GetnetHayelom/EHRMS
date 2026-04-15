@@ -8,230 +8,395 @@
     <link href="~/lib/quill/quill.snow.css" rel="stylesheet" />
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link href="~/icons/bootstrap-icons.css" rel="stylesheet" />
-    <link rel="stylesheet" href="css/select2.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/PIS2.styles.css" asp-append-version="true" />
     <script src="~/js/chart.umd.js"></script>
+    <script src="~/lib/quill/quill.min.js"></script>
+    <script src="~/js/quill-editor.js"></script>
     <style>
-        /* Fullscreen loader */
+        :root {
+            --sb-bg: #1e293b; /* Slate 800 */
+            --sb-width: 280px;
+            --accent: #38bdf8;
+            --text-muted: #94a3b8;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f1f5f9;
+        }
+
+        /* Modern Loader */
         #loader {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            inset: 0;
             background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(5px);
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             z-index: 9999;
         }
+
+        /* Professional Sidebar */
+        .sidebar {
+            width: var(--sb-width);
+            height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            background: var(--sb-bg);
+            color: white;
+            z-index: 1000;
+            overflow-y: auto;
+            transition: all 0.3s;
+        }
+
+        .sidebar-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .sidebar-brand {
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: var(--accent);
+            text-decoration: none;
+        }
+
+        .nav-group-title {
+            padding: 1.25rem 1.5rem 0.5rem;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1rem;
+            color: var(--text-muted);
+        }
+
+        aside .nav-link {
+            color: #cbd5e1;
+            padding: 0.7rem 1.5rem;
+            font-size: 0.875rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: 0.2s;
+        }
+
+        .nav-link:hover {
+            background: rgba(255,255,255,0.05);
+            color: white;
+        }
+
+        .nav-link i {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+        }
+
+        .submenu {
+            background: rgba(0,0,0,0.2);
+            padding-bottom: 0.5rem;
+        }
+
+        .submenu .nav-link {
+            padding-left: 3.5rem;
+            font-size: 0.8rem;
+        }
+
+        /* Layout Main */
+        .main-content {
+            margin-left: var(--sb-width);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .top-bar {
+            height: 64px;
+            background: white;
+            border-bottom: 1px solid #e2e8f0;
+            padding: 0 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .page-body {
+            padding: 2rem;
+            flex: 1;
+        }
+
+        footer {
+            padding: 1rem 2rem;
+            background: white;
+            border-top: 1px solid #e2e8f0;
+            font-size: 0.8rem;
+        }
+
+        @@media (max-width: 992px) {
+            .page-body {
+                padding: 0rem;
+                flex: 1;
+            }
+            .sidebar
+            {
+                transform: translateX(-100%);
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .sidebar.active {
+                transform: translateX(0);
+            }
+
+            }
+            /* Logo Styling */
+            .sidebar-header {
+                border-bottom: 1px solid rgba(255,255,255,0.05);
+                background: rgba(0, 0, 0, 0.1); /* Subtle contrast for logo area */
+            }
+
+            .main-logo {
+                filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+                transition: transform 0.3s ease;
+            }
+
+            .sidebar-brand:hover .main-logo {
+                transform: scale(1.05);
+            }
+
+            /* Sidebar Scrollbar Styling (Modern Thin Look) */
+            .sidebar::-webkit-scrollbar {
+                width: 5px;
+            }
+
+            .sidebar::-webkit-scrollbar-track {
+                background: var(--sb-bg);
+            }
+
+            .sidebar::-webkit-scrollbar-thumb {
+                background: #475569;
+                border-radius: 10px;
+            }
+
+            /* Brand Text spacing */
+            .brand-text {
+                letter-spacing: 2px;
+            }
+
+            /* Ensure Nav Items have space if menus are always open */
+            .nav-link i {
+                width: 20px; /* Fixed width for icons to keep text aligned */
+                text-align: center;
+            }
+        }
     </style>
-    <script src="~/lib/quill/quill.min.js"></script>
-    <script src="~/js/quill-editor.js"></script>
 </head>
-<body class=" app-body">
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-dark border-bottom box-shadow mb-3 d-print-none">
-            <div class="container">
-                <a class="navbar-brand text-white" asp-area="" asp-page="/Index"><b>Mesfin-HRMS</b></a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item ">
-                            <a class="nav-link text-white" asp-area="" asp-page="/Index" style="">Home</a>
-                        </li>
-                        @if (User.IsInRole("mie\\PMS_HRADMIN"))
-                        {
-                            <li class="nav-item dropdown">
-                                <a class="nav-link text-white dropdown-toggle" asp-area="" role="button" data-bs-toggle="dropdown">System Setup</a>
-                                <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                                    <a class="dropdown-item" asp-page="/Address/Index">Addresses</a>
-                                    <a class="dropdown-item" asp-page="/EducationLevel/Index">Education Levels</a>
-                                    <a class="dropdown-item" asp-page="/Holiday/Index">Holidays</a>
-                                    <a class="dropdown-item" asp-page="/Overtime/Index">Overtime</a>
-                                    <a class="dropdown-item" asp-page="/JobCategory/Index">Job Categories</a>
-                                    <a class="dropdown-item" asp-page="/JobClass/Index">Job Classes</a>
-                                    <a class="dropdown-item" asp-page="/TaxRate/Index">Tax Rates</a>
-                                </div>
-                            </li>
+<body>
 
 
-                            <li class="nav-item dropdown">
-                                <a class="nav-link text-white dropdown-toggle" asp-area="" role="button" data-bs-toggle="dropdown">Company Setup</a>
-                                <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                                    <a class="dropdown-item" asp-page="/WorkSite/Index">Worksites</a>
-                                    <a class="dropdown-item" asp-page="/Shift/Index">Shift</a>
-                                    <a class="dropdown-item" asp-page="/Account/Index">Accounts</a>
-                                    <a class="dropdown-item" asp-page="/SubAccount/Index">Sub-Accounts</a>
-                                    <a class="dropdown-item" asp-page="/Company/Index">Companies</a>
-                                    <a class="dropdown-item" asp-page="/Department/Index">Departments</a>
-                                    <a class="dropdown-item" asp-page="/Structure/Index">Structure</a>
-                                    <a class="dropdown-item" asp-page="/Earning/Index">Compensation & Benefits</a>
-                                    <a class="dropdown-item" asp-page="/Deduction/Index">Deduction</a>
-                                    <a class="dropdown-item" asp-page="/EvaluationType/Index">Evaluation</a>
-                                </div>
-                            </li>
-                            <li class="nav-item dropdown">
-                                <a class="nav-link text-white dropdown-toggle" asp-area="" role="button" data-bs-toggle="dropdown">HR Setup</a>
-                                <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                                    <a class="dropdown-item" asp-page="/JobGrade/Index">Job Grades</a>
-                                    <a class="dropdown-item" asp-page="/JobStep/Index">Job Step</a>
-                                    <a class="dropdown-item" asp-page="/Job/Index">Jobs</a>
-                                    <a class="dropdown-item" asp-page="/EmploymentType/Index">Employment Types</a>
-                                    <a class="dropdown-item" asp-page="/Overtime/Index">Overtime Setup</a>
-                                    <a class="dropdown-item" asp-page="/Break/Index">Breaks</a>
-                                    <a class="dropdown-item" asp-page="/LeaveType/Index">Leave Setup</a>
-                                    <a class="dropdown-item" asp-page="/Allowance/Index">Allowance Setup</a>
-                                    <a class="dropdown-item" asp-page="/EmploymentMethod/Index">Employment Methods</a>
-                                    <a class="dropdown-item" asp-page="/PenaltyType/Create">Penalty Setup</a>
-                                    <a class="dropdown-item" asp-page="/Earning/Create">Earning Types</a>
-                                    <a class="dropdown-item" asp-page="/Deduction/Create">Deduction Types</a>
-                                    <a class="dropdown-item" asp-page="/Loyalty/Index">Loyalty Setup</a>
-                                    <a class="dropdown-item" asp-page="/LetterType/Index">Letter Types</a>
-                                </div>
-                            </li>
-                        }
-                        @if (User.IsInRole("mie\\PMS_HRCLERK"))
-                        {
-                            <li class="nav-item dropdown">
-                                <a class="nav-link text-white dropdown-toggle" asp-area="" role="button" data-bs-toggle="dropdown">HR Personnel</a>
-                                <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                                    <a class="dropdown-item" asp-page="/Person/Index">Person</a>
-                                    <a class="dropdown-item" asp-page="/Employment/Index">Employments</a>
-                                    <a class="dropdown-item" asp-page="/JobPlacement/Index">Job Placements</a>
-                                    <a class="dropdown-item" asp-page="/AllowanceAssignment/Create">Allowance Assignment</a>
-                                    <a class="dropdown-item" asp-page="/Leave/Index">Leave Requests</a>
-                                    <a class="dropdown-item" asp-page="/Absentism/Create">Absenteeism</a>
-                                    <a class="dropdown-item" asp-page="/OvertimeRecord/Index">Overtime Records</a>
-                                    <a class="dropdown-item" asp-page="/EmployeeService/Index">Earnings</a>
-                                    <a class="dropdown-item" asp-page="/Penalty/Create">Penalties</a>
-                                    <a class="dropdown-item" asp-page="/BankInfo/Index">Bank Information</a>
-                                    <a class="dropdown-item" asp-page="/Notice/Index">Notice Board</a>
-                                    <a class="dropdown-item" asp-page="/Prohibition/Create">Prohibition</a>
-                                    <a class="dropdown-item" asp-page="/Experience/Index">Experience</a>
-                                    <a class="dropdown-item" asp-page="/ServiceRequest/Index">Employee Requests</a>
-                                    <a class="dropdown-item" asp-page="/Letter/Index">Letter & Correspondance</a>
-                                    <a class="dropdown-item" asp-page="/Delegation/Index">Delegations</a>
-                                </div>
-                            </li>
-                        }
-                        @if (User.IsInRole("mie\\PMS_HRMANAGER") || User.IsInRole("mie\\PMS_HRCLERK"))
-                        {
-                            <li class="nav-item dropdown">
-                                <a class="nav-link text-white dropdown-toggle" asp-area="" role="button" data-bs-toggle="dropdown">Talent Aquisition</a>
-                                <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-
-                                    <a class="dropdown-item" asp-page="/Employment/Create">New Employment</a>
-
-                                    <a class="dropdown-item" asp-page="/JobRequirement/Index">Employment Requests</a>
-                                    <a class="dropdown-item" asp-page="/Vacancy/Index">Vacancy</a>
-                                    <a class="dropdown-item" asp-page="/Applications/Index">Applicants</a>
-                                    <a class="dropdown-item" asp-page="/JobReqCost/Index">Aquisition Cost</a>
-
-                                </div>
-                            </li>
-                        }
-                        @if (User.IsInRole("mie\\PMS_HRMANAGER") || User.IsInRole("mie\\PMS_HRCLERK"))
-                        {
-                            <li class="nav-item dropdown">
-                                <a class="nav-link text-white dropdown-toggle" asp-area="" role="button" data-bs-toggle="dropdown">Training</a>
-                                <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-
-                                    <a class="dropdown-item" asp-page="/Training/TrainingCenter">Training Center</a>
-
-                                    <a class="dropdown-item" asp-page="/Training/Index">View Training</a>
-                                    <a class="dropdown-item" asp-page="/TrainingSession/Index">Sessions</a>
+    <aside class="sidebar d-print-none" id="sidebar">
+        <div class="sidebar-header d-flex align-items-center justify-content-center py-4">
+            <a href="/" class="sidebar-brand d-flex flex-column align-items-center text-decoration-none">
+                <img src="~/assets/logo_full.png" alt="MMEC Logo" class="main-logo mb-2" style="max-width: 150px; height: auto;">
+                <span class="brand-text text-uppercase tracking-wider mt-1" style="font-size: 0.85rem; color: var(--accent); font-weight: 700;">
+                    Mesfin-HRMS
+                </span>
+            </a>
+        </div>
 
 
-                                </div>
-                            </li>
-                        }
-                        @if (User.IsInRole("mie\\PMS_ADMIN"))
-                        {
-                            <li class="nav-item dropdown">
-                                <a class="nav-link text-white dropdown-toggle" role="button" data-bs-toggle="dropdown">Sys Admin</a>
-                                <div class="dropdown-menu">
-                                    <a class="dropdown-item" asp-page="/Users/Index">Users</a>
-                                    <a class="dropdown-item" asp-page="/SysAdmin/BackupDatabase">Backup</a>
-                                    <a class="dropdown-item" asp-page="/SysAdmin/RestoreDatabase">Restore</a>
-                                </div>
-                            </li>
-                        }
+        <nav class="flex-column mt-2">
+            <a class="nav-link" asp-page="/Index"><i class="bi bi-house"></i> Home</a>
 
-                        @if (User.IsInRole("mie\\PMS_HRMANAGER"))
-                        {
-                            <li class="nav-item">
-                                <a class="nav-link text-white" asp-area="" asp-page="/HRClerk/Index">HR Dashboard</a>
-                            </li>
-                        }
-
-                        @if (User.IsInRole("mie\\PMS_HRCLERK") || User.IsInRole("MIE\\PMS_HRMANAGER") || User.IsInRole("MIE\\PMS_MANAGEMENT"))
-                        {
-                            <li class="nav-item dropdown">
-                                <a class="nav-link text-white dropdown-toggle" asp-area="" role="button" data-bs-toggle="dropdown">Reporting</a>
-                                <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                                    <a class="dropdown-item" asp-page="/Management/Index">Management</a>
-                                    <a class="dropdown-item" asp-page="/Report/LeaveReport">Leave and Attendance</a>
-                                    <a class="dropdown-item" asp-page="/Report/OvertimeRecordReport">Overtime</a>
-                                    <a class="dropdown-item" asp-page="/Report/AllowanceAssignmentReport">Allowance</a>
-                                    <a class="dropdown-item" asp-page="/Report/EmploymentReport">Employment</a>
-                                    <a class="dropdown-item" asp-page="/Termination/Index">Termination</a>
-                                    <a class="dropdown-item" asp-page="/Report/JobPlacementReport">Job Placements</a>
-                                    <a class="dropdown-item" asp-page="/PersonEducationLevel/Index">Training & Certification</a>
-                                    <a class="dropdown-item" asp-page="/Structure/Index">Structure and Job Maping</a>
-                                    <a class="dropdown-item" asp-page="/Report/PenaltyReport">Penalties</a>
-                                    <a class="dropdown-item" asp-page="/Report/CostAnalysisReport">Cost Analytics</a>
-                                    <a class="dropdown-item" asp-page="/Report/EvaluationReport">Performance Analytics</a>
-                                </div>
-                            </li>
-                        }
-                        @if (User.IsInRole("MIE\\PMS_MANAGEMENT"))
-                        {
-                            <li class="nav-item">
-                                <a class="nav-link text-white" asp-area="" asp-page="/Department/Details">Department</a>
-                            </li>
-                        }
-                        @if (User.IsInRole("MIE\\PMS_HRMANAGER") || User.IsInRole("MIE\\PMS_HRMANAGER") || User.IsInRole("MIE\\PMS_PAYROLL") || User.IsInRole("MIE\\PMS_FINANCE"))
-                        {
-                            <li class="nav-item dropdown">
-                                <a class="nav-link text-white dropdown-toggle" asp-area="" role="button" data-bs-toggle="dropdown">Payroll</a>
-                                <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                                    <a class="dropdown-item" asp-page="/Payroll/Index">Payrolls</a>
-                                    <a class="dropdown-item" asp-page="/EarningRecord/Create">Add Earning</a>
-                                    <a class="dropdown-item" asp-page="/DeductionRecord/Create">Add Deduction</a>
-                                    <a class="dropdown-item" asp-page="/Benefits/Index">Other Payments</a>
-                                </div>
-                            </li>
-                        }
-
-                        <li class="nav-item">
-                            <a class="nav-link text-white" asp-area="" asp-page="/Privacy">Help</a>
-                        </li>
-                    </ul>
-                    <p class="nav navbar-text text-white">Hello, @User.Identity?.Name!</p>
+            @if (User.IsInRole("mie\\PMS_HRADMIN"))
+            {
+                <div class="nav-group-title">System Infrastructure</div>
+                <a class="nav-link" data-bs-toggle="collapse" href="#sysSetup"><i class="bi bi-gear-wide-connected"></i> System Setup</a>
+                <div class="collapse submenu" id="sysSetup">
+                    <a class="nav-link" asp-page="/Address/Index">Addresses</a>
+                    <a class="nav-link" asp-page="/EducationLevel/Index">Education Levels</a>
+                    <a class="nav-link" asp-page="/Holiday/Index">Holidays</a>
+                    <a class="nav-link" asp-page="/Overtime/Index">Overtime Definitions</a>
+                    <a class="nav-link" asp-page="/JobCategory/Index">Job Categories</a>
+                    <a class="nav-link" asp-page="/JobClass/Index">Job Classes</a>
+                    <a class="nav-link" asp-page="/TaxRate/Index">Tax Rates</a>
                 </div>
+
+                <a class="nav-link" data-bs-toggle="collapse" href="#compSetup"><i class="bi bi-building"></i> Company Setup</a>
+                <div class="collapse submenu" id="compSetup">
+                    <a class="nav-link" asp-page="/Company/Index">Companies</a>
+                    <a class="nav-link" asp-page="/WorkSite/Index">Worksites</a>
+                    <a class="nav-link" asp-page="/Department/Index">Departments</a>
+                    <a class="nav-link" asp-page="/Structure/Index">Org Structure</a>
+                    <a class="nav-link" asp-page="/Shift/Index">Shifts</a>
+                    <a class="nav-link" asp-page="/Account/Index">Chart of Accounts</a>
+                    <a class="nav-link" asp-page="/SubAccount/Index">Sub-Accounts</a>
+                    <a class="nav-link" asp-page="/Earning/Index">Comp & Benefits</a>
+                    <a class="nav-link" asp-page="/Deduction/Index">Deductions</a>
+                    <a class="nav-link" asp-page="/EvaluationType/Index">Evaluation Types</a>
+                </div>
+
+                <a class="nav-link" data-bs-toggle="collapse" href="#hrSetup"><i class="bi bi-person-lines-fill"></i> HR Setup</a>
+                <div class="collapse submenu" id="hrSetup">
+                    <a class="nav-link" asp-page="/Job/Index">Jobs Catalog</a>
+                    <a class="nav-link" asp-page="/JobGrade/Index">Job Grades</a>
+                    <a class="nav-link" asp-page="/JobStep/Index">Job Steps</a>
+                    <a class="nav-link" asp-page="/EmploymentType/Index">Employment Types</a>
+                    <a class="nav-link" asp-page="/EmploymentMethod/Index">Employment Methods</a>
+                    <a class="nav-link" asp-page="/LeaveType/Index">Leave Setup</a>
+                    <a class="nav-link" asp-page="/Allowance/Index">Allowance Setup</a>
+                    <a class="nav-link" asp-page="/Overtime/Index">Overtime Setup</a>
+                    <a class="nav-link" asp-page="/Break/Index">Break Rules</a>
+                    <a class="nav-link" asp-page="/PenaltyType/Create">Penalty Types</a>
+                    <a class="nav-link" asp-page="/Loyalty/Index">Loyalty Programs</a>
+                    <a class="nav-link" asp-page="/LetterType/Index">Letter Templates</a>
+                    <a class="nav-link" asp-page="/ServiceRequestType/Index">Service Types</a>
+                </div>
+            }
+
+            @if (User.IsInRole("mie\\PMS_HRCLERK"))
+            {
+                <div class="nav-group-title">Operations</div>
+                <a class="nav-link" data-bs-toggle="collapse" href="#hrPersonnel"><i class="bi bi-people"></i> HR Personnel</a>
+                <div class="collapse submenu" id="hrPersonnel">
+                    <a class="nav-link" asp-page="/Person/Index">Master Person List</a>
+                    <a class="nav-link" asp-page="/Employment/Index">Active Employments</a>
+                    <a class="nav-link" asp-page="/JobPlacement/Index">Job Placements</a>
+                    <a class="nav-link" asp-page="/AllowanceAssignment/Create">Allowance Assignment</a>
+                    <a class="nav-link" asp-page="/Leave/Index">Leave Requests</a>
+                    <a class="nav-link" asp-page="/Absentism/Create">Absenteeism</a>
+                    <a class="nav-link" asp-page="/OvertimeRecord/Index">Overtime Records</a>
+                    <a class="nav-link" asp-page="/EmployeeService/Index">Earnings Record</a>
+                    <a class="nav-link" asp-page="/Penalty/Create">Penalties</a>
+                    <a class="nav-link" asp-page="/BankInfo/Index">Bank Details</a>
+                    <a class="nav-link" asp-page="/Notice/Index">Notice Board</a>
+                    <a class="nav-link" asp-page="/Prohibition/Create">Prohibitions</a>
+                    <a class="nav-link" asp-page="/Experience/Index">Work Experience</a>
+                    <a class="nav-link" asp-page="/ServiceRequest/Index">Service Requests</a>
+                    <a class="nav-link" asp-page="/Letter/Index">Letters & Corresp.</a>
+                    <a class="nav-link" asp-page="/Delegation/Index">Delegations</a>
+                    <a class="nav-link" asp-page="/Budget/Index">Budget</a>
+                    <a class="nav-link" asp-page="/Termination/Create">Termination</a>
+                </div>
+            }
+
+            @if (User.IsInRole("mie\\PMS_HRMANAGER") || User.IsInRole("mie\\PMS_HRCLERK"))
+            {
+                <div class="nav-group-title">Talent & Training</div>
+                <a class="nav-link" data-bs-toggle="collapse" href="#talent"><i class="bi bi-award"></i> Recruitment</a>
+                <div class="collapse submenu" id="talent">
+                    <a class="nav-link" asp-page="/Employment/Create">Hire New</a>
+                    <a class="nav-link" asp-page="/JobRequirement/Index">Employment Requests</a>
+                    <a class="nav-link" asp-page="/Vacancy/Index">Job Vacancies</a>
+                    <a class="nav-link" asp-page="/Applications/Index">Applicant Pool</a>
+                    <a class="nav-link" asp-page="/JobReqCost/Index">Acquisition Costs</a>
+                </div>
+
+                <a class="nav-link" data-bs-toggle="collapse" href="#training"><i class="bi bi-book"></i> Training</a>
+                <div class="collapse submenu" id="training">
+                    <a class="nav-link" asp-page="/Training/TrainingCenter">Training Centers</a>
+                    <a class="nav-link" asp-page="/Training/Index">Training Catalog</a>
+                    <a class="nav-link" asp-page="/TrainingSession/Index">Manage Sessions</a>
+                </div>
+            }
+
+            @if (User.IsInRole("mie\\PMS_PAYROLL") || User.IsInRole("MIE\\PMS_FINANCE"))
+            {
+                <div class="nav-group-title">Finance</div>
+                <a class="nav-link" data-bs-toggle="collapse" href="#payroll"><i class="bi bi-cash-coin"></i> Payroll Management</a>
+                <div class="collapse submenu" id="payroll">
+                    <a class="nav-link" asp-page="/Payroll/Index">Process Payroll</a>
+                    <a class="nav-link" asp-page="/EarningRecord/Create">Manual Earnings</a>
+                    <a class="nav-link" asp-page="/DeductionRecord/Create">Manual Deductions</a>
+                    <a class="nav-link" asp-page="/Benefits/Index">Other Payments</a>
+                </div>
+            }
+
+            <div class="nav-group-title">Reporting & Intelligence</div>
+            <a class="nav-link" data-bs-toggle="collapse" href="#reporting"><i class="bi bi-bar-chart"></i> Reports Hub</a>
+            <div class="collapse submenu" id="reporting">
+                <a class="nav-link" asp-page="/Management/Index">Management Overview</a>
+                <a class="nav-link" asp-page="/Report/LeaveReport">Attendance Reports</a>
+                <a class="nav-link" asp-page="/Report/OvertimeRecordReport">Overtime Analysis</a>
+                <a class="nav-link" asp-page="/Report/EmploymentReport">Employment Stats</a>
+                <a class="nav-link" asp-page="/Termination/Index">Terminations</a>
+                <a class="nav-link" asp-page="/Report/AllowanceAssignmentReport">Allowance</a>
+                <a class="nav-link" asp-page="/Report/CostAnalysisReport">Cost Analytics</a>
+                <a class="nav-link" asp-page="/Report/EvaluationReport">Performance Analytics</a>
+                <a class="nav-link" asp-page="/Report/PenaltyReport">Penalty Summary</a>
+                <a class="nav-link" asp-page="/Report/JobPlacementReport">Job Placements</a>
+                <a class="nav-link" asp-page="/PersonEducationLevel/Index">Training & Certification</a>
+                <a class="nav-link" asp-page="/Structure/Index">Structure and Job Maping</a>
+                <a class="nav-link" asp-page="/Structure/JobPlacementAnalysis">Job Gap Analysis</a>
             </div>
+
+            @if (User.IsInRole("mie\\PMS_ADMIN"))
+            {
+                <div class="nav-group-title">Governance</div>
+                <a class="nav-link" data-bs-toggle="collapse" href="#sysAdmin"><i class="bi bi-shield-lock"></i> Sys Admin</a>
+                <div class="collapse submenu" id="sysAdmin">
+                    <a class="nav-link" asp-page="/Users/Index">User Management</a>
+                    <a class="nav-link" asp-page="/SysAdmin/BackupDatabase">Database Backup</a>
+                    <a class="nav-link" asp-page="/SysAdmin/RestoreDatabase">Database Restore</a>
+                    <a class="nav-link" asp-page="/SystemLogs/Index">Security Logs</a>
+                </div>
+                <a class="nav-link" asp-page="/Auditing/Index"><i class="bi bi-clock-history"></i> Audit</a>
+            }
         </nav>
-    </header>
-    <div class="d-print-flex container print-full-width">
-        <main role="main" class="pb-3">
-            <!-- Loader (visible on page load / AJAX / navigation) -->
+    </aside>
+
+    <div class="main-content">
+        <header class="top-bar d-print-none">
+            <div>
+                <button class="btn btn-sm d-lg-none" onclick="document.getElementById('sidebar').classList.toggle('active')">
+                    <i class="bi bi-list fs-4"></i>
+                </button>
+                <img src="~/assets/logo_full.png" alt="Logo" class="d-lg-none" style="height: 30px;">
+            </div>
+            
+            <div class="search-wrapper d-none d-md-block">
+                <span class="text-muted fw-medium"><i class="bi bi-calendar3 me-2"></i> @DateTime.Now.ToString("D")</span>
+            </div>
+
+            <div class="user-profile d-flex align-items-center gap-3">
+                @if (User.IsInRole("MIE\\PMS_MANAGEMENT"))
+                {
+                    <a class="btn btn-outline-primary btn-sm rounded-pill px-3" asp-page="/Department/Details">My Department</a>
+                }
+                @if (User.IsInRole("mie\\PMS_HRMANAGER"))
+                {
+                    <a asp-page="/HRClerk/Index" class="btn btn-outline-primary btn-sm rounded-pill px-3">Dashboard</a>
+                }
+                <span class="small fw-semibold text-dark">@User.Identity?.Name</span>
+                <form method="post" asp-page="/Shared/Logout" class="m-0">
+                    <button type="submit" class="btn btn-light btn-sm text-danger border"><i class="bi bi-box-arrow-right"></i></button>
+                </form>
+            </div>
+        </header>
+
+        <main class="page-body">
+            <!--LOADER BODY-->
             <div id="loader">
-                <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
-                    <span class="visually-hidden">Loading...</span>
-                </div>
-                <div class="mt-3 fw-semibold text-dark">
-                    Please wait a moment while the page loads...
-                </div>
+                <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;"></div>
+                <div class="mt-3 fw-bold">MMEC-HRMS Loading...</div>
             </div>
             @RenderBody()
         </main>
+
+        <footer class="d-print-none">
+            <div class="d-flex justify-content-between align-items-center">
+                <span>&copy; 2025 <strong>Mesfin-HRMS</strong> | Developed by Getnet Hayelom</span>
+                <div class="gap-3 d-flex">
+                    <a asp-page="/Privacy" class="text-decoration-none text-muted">Help & Documentation</a>
+                </div>
+            </div>
+        </footer>
     </div>
+
 
     <!--MESSAGE ALERT-->
     @if (TempData["message"] is ValueTuple<string, string> message)
@@ -243,19 +408,12 @@
         var icon = type == "Success" ? "✔" : "⚠";
 
         <div class="toast-container position-fixed top-50 start-50 translate-middle" style="z-index: 1100;">
-            <div id="actionToast"
-                 class="toast text-white @bgClass border-0 shadow"
-                 role="alert"
-                 aria-live="assertive"
-                 aria-atomic="true"
-                 data-bs-delay="4000">
+            <div id="actionToast1" class="toast text-white @bgClass border-0 shadow" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="4000">
 
                 <div class="toast-header text-white @bgClass border-0">
                     <strong class="me-auto">@icon @type</strong>
                     <small>System</small>
-                    <button type="button"
-                            class="btn-close btn-close-white"
-                            data-bs-dismiss="toast"></button>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast"></button>
                 </div>
 
                 <div class="toast-body fw-semibold">
@@ -266,7 +424,7 @@
 
         <script>
             document.addEventListener('DOMContentLoaded', function () {
-                var toastEl = document.getElementById('actionToast');
+                var toastEl = document.getElementById('actionToast1');
                 if (toastEl) {
                     new bootstrap.Toast(toastEl).show();
                 }
@@ -276,7 +434,7 @@
 
 
     <!--AJAX MESSAGE ALERT-->
-    <div class="toast-container position-fixed top-50 start-50 translate-middle" style="z-index:1100;">
+    <div class="toast-container position-fixed top-50 start-50 translate-middle d-none" style="z-index:1100;">
         <div id="actionToast" class="toast text-white border-0 shadow" data-bs-delay="4000">
             <div class="toast-header text-white border-0">
                 <strong class="me-auto" id="toastTitle"></strong>
@@ -287,61 +445,134 @@
         </div>
     </div>
 
-    <footer class="border-top footer text-muted d-print-none">
-        <div class="container justify-content-center">
-            Developed By Getnet Hayelom &copy; 2025 Mesfin-HRMS
-        </div>
 
-    </footer>
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js"></script>
     <script src="~/js/funcs.js"></script>
     <script src="~/js/print.js"></script>
-    <script src="~/js/select2/select2.js"></script>
     <script src="~/js/site.js?v=@DateTime.UtcNow.Ticks"></script>
     <script src="/lib/xlsx/xlsx.full.min.js"></script>
 
-    @await RenderSectionAsync("Scripts", required: false)
-
+    <!--LOADER CONTROLLER-->
     <script>
-        // Show loader
-        function showLoader() {
-            document.getElementById("loader").style.display = "flex";
-        }
+        const hideLoader = () => document.getElementById("loader").style.display = "none";
+        const showLoader = () => document.getElementById("loader").style.display = "flex";
 
-        // Hide loader
-        function hideLoader() {
-            document.getElementById("loader").style.display = "none";
-        }
-
-        // Hide loader once page finishes loading
         window.addEventListener("load", hideLoader);
-
-        // Show loader before navigating away
         window.addEventListener("beforeunload", showLoader);
 
-        // Handle browser back/forward navigation (bfcache restore)
-        window.addEventListener("pageshow", function (event) {
-            // If loaded from cache, make sure loader is hidden
-            if (event.persisted) {
-                hideLoader();
+        $(document).ajaxStart(showLoader).ajaxStop(hideLoader);
+
+        // Auto-show toast if exists
+        const tEl = document.getElementById('actionToast');
+        if (tEl) new bootstrap.Toast(tEl).show();
+    </script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            // 1. Identify current URL
+            const currentPath = window.location.pathname;
+
+            // 2. Find the active link
+            const activeLink = document.querySelector(`.sidebar .nav-link[href="${currentPath}"]`);
+
+            if (activeLink) {
+                // Add active styling
+                activeLink.classList.add('text-white', 'fw-bold');
+
+                // 3. Find the parent collapse and ensure it has 'show'
+                const parentCollapse = activeLink.closest('.collapse');
+                if (parentCollapse) {
+                    parentCollapse.classList.add('show');
+
+                    // Update the chevron/aria-expanded state of the toggle button
+                    const toggleBtn = document.querySelector(`[href="#${parentCollapse.id}"]`);
+                    if (toggleBtn) {
+                        toggleBtn.setAttribute('aria-expanded', 'true');
+                    }
+                }
             }
         });
 
-        // Show loader before navigating away
-        window.addEventListener("beforeunload", showLoader);
-
+        // Optional: Prevent menus from closing when clicked if you want them TRULY permanent
+        $('.sidebar .nav-link[data-bs-toggle="collapse"]').on('click', function(e) {
+            // Uncomment the line below if you want to DISABLE clicking to close
+            // e.preventDefault(); e.stopPropagation();
+        });
     </script>
+    <!--FILTER CUSTOM-->
     <script>
-        $(document).ajaxStart(function () {
-            showLoader();
-        }).ajaxStop(function () {
-            hideLoader();
+        document.addEventListener("input", function (e) {
+        // 1. Check if the element that triggered the event has the 'searchBox' class
+            if (e.target.classList.contains("searchBox")) {
+                let input = e.target.value.toLowerCase();
+
+                // 2. Get the target table ID from the data-target attribute
+                let targetSelector = e.target.getAttribute("data-target");
+                if (!targetSelector) return;
+
+                // 3. Find the rows within that specific table
+                let table = document.querySelector(targetSelector);
+                if (!table) return;
+
+                let rows = table.querySelectorAll("tbody tr");
+
+                // 4. Filter the rows
+                rows.forEach(row => {
+                    let text = row.textContent.toLowerCase();
+                    row.style.display = text.includes(input) ? "" : "none";
+                });
+            }
         });
     </script>
 
+    <!--SUBMIT FORM-->
+    <script>
+        $(document).on("submit", "form.ajax-form", function (e) {
+            e.preventDefault(); // stop normal submit
 
+            const form = $(this);
+            const url = form.attr("action");
+            const method = form.attr("method") || "POST";
+
+            $.ajax({
+                url: url,
+                type: method,
+                data: form.serialize(),
+
+                success: function (response) {
+                    // handled globally (your toast handler)
+                },
+
+                error: function (xhr) {
+                    console.error("Error:", xhr.responseText);
+                }
+            });
+        });
+    </script>
+
+    <!--JSON RESPONSE HANDLER-->
+    <script id="r6qavz">
+        $(document).ajaxSuccess(function (event, xhr, settings) {
+            try {
+                var response = xhr.responseJSON;
+
+                if (response) {
+                    console.log("Global JSON handler:", response);
+
+                    showToast(response.success, response.message);
+                }
+            } catch (e) {
+                console.log("Not JSON response");
+            }
+        });
+
+        $(document).ajaxError(function (event, xhr) {
+            console.error("AJAX error:", xhr.responseText);
+        });
+    </script>
+    @await RenderSectionAsync("Scripts", required: false)
 </body>
-
 </html>

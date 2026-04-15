@@ -5,12 +5,16 @@
 }
 @await Html.PartialAsync("headerSimple","")
 <div class="container">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="fw-bold text-dark mb-0">
-            <i class="bi bi-cash-stack me-2 text-secondary"></i> Compensation and Benefits
-        </h2>
+    <div class="d-flex justify-content-between align-items-end mb-2">
+        <div>
+            <h2 class="fw-bold text-dark mb-0">
+                <i class="bi bi-cash-stack me-2 text-secondary"></i> Earning Types
+            </h2>
+            <p class="text-muted mb-0">Earning Types Catalog</p>
+        </div>
+        
         <a asp-page="Create" class="btn btn-primary m-2">
-            <i class="bi bi-plus-lg me-1"></i> Add New Earning Type
+            <i class="bi bi-plus-circle me-1"></i> Add New Earning Type
         </a>
         
         
@@ -18,8 +22,12 @@
 
     @if (Model.EarningTypes.Any())
     {
-        <div class="d-flex justify-content-end">
-            @await Html.PartialAsync("filter")           
+        <div class="card shadow-sm m-1 p-0">
+            <div class="d-flex justify-content-end align-items-end m-0">
+                @await Html.PartialAsync("filter")
+                @await Html.PartialAsync("back")
+                @await Html.PartialAsync("print")
+            </div>
         </div>
         
         <div class="card shadow-sm border-0">
@@ -27,7 +35,7 @@
                 <table class="table table-hover mb-0 align-middle table-striped print-full-width" id="dataTable">
                     <thead class="bg-dark text-white">
                         <tr>
-                            <th>S/N</th>
+                            <th>S/No</th>
                             <th>Name</th>
                             <th>Recurring</th>
                             <th>Taxable</th>
@@ -44,7 +52,8 @@
                         {
                             <tr>
                                 <td>@i</td>
-                                <td>@earning.earningTypeName</td>
+                                <td>@earning.earningTypeName
+                                <p class="text-muted m-0">@earning.Account?.accountName</p></td>
                                 <td><i class="bi @(earning.isRecurring ? "bi-check-circle-fill text-success" : "bi-x-circle text-danger") fs-4 me-2"></i></td>
                                 <td><i class="bi @(earning.isTaxable ? "bi-check-circle-fill text-success" : "bi-x-circle text-danger") fs-4 me-2"></i></td>
                                 <td><i class="bi @(earning.isPayroll ? "bi-check-circle-fill text-success" : "bi-x-circle text-danger") fs-4 me-2"></i></td>
@@ -54,12 +63,15 @@
                                     </span>
                                 </td>
                                 <td class="text-end d-print-none">
-                                    <a asp-page="Edit" asp-route-id="@earning.earningTypeID" class="btn btn-sm btn-outline-primary me-1">
-                                        <i class="bi bi-pencil-square"></i>
-                                    </a>
-                                    <a asp-page="Details" asp-route-id="@earning.earningTypeID" class="btn btn-sm btn-outline-danger">
-                                        <i class="bi bi-eye"></i>
-                                    </a>
+                                    <div class="btn-group" role="group">
+                                        <a asp-page="Details" asp-route-id="@earning.earningTypeID" class="btn btn-sm btn-outline-primary" title="View Details">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                        <a asp-page="Edit" asp-route-id="@earning.earningTypeID" class="btn btn-sm btn-outline-success" title="Edit">
+                                            <i class="bi bi-pencil-square"></i>
+                                        </a>
+                                    </div>
+                                    
                                 </td>
                             </tr>
                             i++;
@@ -76,6 +88,7 @@
         </div>
     }
 </div>
-<div class="d-flex justify-content-end m-2">
+<div class="d-flex justify-content-end align-items-center m-0">
+    @await Html.PartialAsync("back")
     @await Html.PartialAsync("print")
 </div>

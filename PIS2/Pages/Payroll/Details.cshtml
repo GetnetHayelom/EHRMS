@@ -5,7 +5,58 @@
 }
 
 @await Html.PartialAsync("headerSimple", "")
-<h2 class="mb-4 fw-bold">Payroll Details</h2>
+<div class="d-flex justify-content-between align-items-end">
+    <div>
+        <h2 class="mb-0 fw-bold">Payroll</h2>
+        <p class="text-muted mb-0">Payrol details view</p>
+    </div>
+    <div class="d-flex justify-content-end gap-2 align-items-end">
+        <!-- ============================= Status Buttons ============================= -->
+        <div>
+            @if (Model.Payroll.payrollStatus == PIS2.Models.payrollStatus.PENDING)
+            {
+                <form method="post" asp-page-handler="Approve">
+                    <input type="hidden" name="id" value="@Model.Payroll.payrollID" />
+                    <a asp-page="Edit" asp-route-id="@Model.Payroll.payrollID" class="btn btn-primary"><i class="bi bi-pencil-square me-2"></i>Edit</a>
+                    <button class="btn btn-success" onclick="return confirm('Are you sure you want to APPROVE this payroll?');"><i class="bi bi-check-circle me-2"></i>Approve Payroll</button>
+                </form>
+            }
+            else if (Model.Payroll.payrollStatus == PIS2.Models.payrollStatus.APPROVED)
+            {
+                <form method="post" asp-page-handler="Process">
+                    <input type="hidden" name="id" value="@Model.Payroll.payrollID" />
+                    <button class="btn btn-warning" onclick="return confirm('Are you sure you want to PROCCESS this payroll?');"><i class="bi bi-gear-fill me-2"></i>Generate Payroll</button>
+                </form>
+            }
+            else if (Model.Payroll.payrollStatus == PIS2.Models.payrollStatus.PROCESSED)
+            {
+                <div class="d-flex justify-content-end gap-2">
+                    <form method="post" asp-page-handler="Post">
+                        <input type="hidden" name="id" value="@Model.Payroll.payrollID" />
+                        <button class="btn btn-success" onclick="return confirm('Are you sure you want to POST this payroll?');"><i class="bi bi-airplane me-2"></i>Post</button>
+                    </form>
+                    <form method="post" asp-page-handler="Process">
+                        <input type="hidden" name="id" value="@Model.Payroll.payrollID" />
+                        <button class="btn btn-warning" onclick="return confirm('Are you sure you want to PROCCESS this payroll?');"><i class="bi bi-gear-fill me-2"></i>Re-Generate</button>
+                    </form>
+                </div>
+                
+            }
+            else if (Model.Payroll.payrollStatus == PIS2.Models.payrollStatus.POSTED)
+            {
+                <form method="post" asp-page-handler="Complete">
+                    <input type="hidden" name="id" value="@Model.Payroll.payrollID" />
+                    <button class="btn btn-warning text-danger" onclick="return confirm('Are you sure you want to COMPLETE this payroll?');"><i class="bi bi-door-closed me-2"></i>Complete Payroll</button>
+                </form>
+            }
+        
+        </div>
+        <a asp-page="Index" class="btn btn-outline-secondary d-print-none m-2"><i class="bi bi-arrow-left me-2"></i>Back to Catalog</a>
+        @await Html.PartialAsync("print")
+    </div>
+    
+</div>
+
 
 <!-- ============================= Payroll Header ============================= -->
 <div class="card mb-4">
@@ -27,7 +78,7 @@
                 </span>
             </p>
 
-            <p><strong>Total Employees:</strong> <u>@Model.Payroll.totalEmployees?.ToString("N0")</u></p>
+            <p><strong>Active Head Count:</strong> <u>@Model.Payroll.totalEmployees?.ToString("N0")</u></p>
             <p><strong>Total Gross:</strong> <u>@Model.Payroll.totalGross?.ToString("N2")</u></p>
             <p><strong>Total Net:</strong> <u>@Model.Payroll.totalNet?.ToString("N2")</u></p>
             <p><strong>Total Tax:</strong> <u>@Model.Payroll.totalTax?.ToString("N2")</u></p>
@@ -37,30 +88,6 @@
     </div>
 </div>
 
-<!-- ============================= Status Buttons ============================= -->
-<div class="mb-4">
-    @if (Model.Payroll.payrollStatus == PIS2.Models.payrollStatus.PENDING)
-    {
-        <form method="post" asp-page-handler="Approve" class="d-inline">
-            <input type="hidden" name="id" value="@Model.Payroll.payrollID" />
-            <button class="btn btn-primary">Approve Payroll</button>
-        </form>
-    }
-    else if (Model.Payroll.payrollStatus == PIS2.Models.payrollStatus.APPROVED)
-    {
-        <form method="post" asp-page-handler="Post" class="d-inline">
-            <input type="hidden" name="id" value="@Model.Payroll.payrollID" />
-            <button class="btn btn-success">Post & Generate Payroll</button>
-        </form>
-    }
-    else if (Model.Payroll.payrollStatus == PIS2.Models.payrollStatus.POSTED)
-    {
-        <form method="post" asp-page-handler="Post" class="d-inline">
-            <input type="hidden" name="id" value="@Model.Payroll.payrollID" />
-            <button class="btn btn-success">Re-Generate Payroll</button>
-        </form>
-    }
-</div>
 
 <!-- ============================= Tabs ============================= -->
 @if (Model.PayrollPays.Any())
@@ -75,21 +102,27 @@
         <li class="nav-item">
             <button class="nav-link" data-bs-toggle="tab" data-bs-target="#workTimeView">Work Time View</button>
         </li>
+        <li class="nav-item">
+            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#overTimeView">Overtime Time View</button>
+        </li>
+        <li class="nav-item">
+            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#allowanceView">Allowance View</button>
+        </li>
+        <li class="nav-item">
+            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#costCenterView">Cost Center</button>
+        </li>
     </ul>
 
-    <div class="tab-content mt-3">
-
+    <div class="tab-content mt-0">
+        
         <!-- ============================= TAB 1 : DETAIL VIEW ============================= -->
-        <div id="detailView" class="tab-pane fade show active">
-            <div class="d-flex justify-content-between">
-                <h3 class="m-2 fw-bold">Payroll Pays</h3>
+        <div id="detailView" class="card shadow-sm p-2 tab-pane fade show active">
+            <div class="d-flex justify-content-between align-items-end">
+                <h4 class="fw-bold">Payroll Details</h4>
 
-                <div class="d-flex d-print-none gap-3">
-                    <div>
+                <div class="d-flex d-print-none">
+                    <div class="me-2">
                         @await Html.PartialAsync("filter")
-                        <script>
-                            document.getElementById("searchBox")?.setAttribute("data-target", "#dataTable");
-                        </script>
                     </div>
 
                     <excel-export table="dataTable" filename="Payroll_Detail_@(Model.Payroll.payrollName)_@(DateTime.Now).xlsx"></excel-export>
@@ -101,56 +134,78 @@
                 <table class="table table-bordered table-striped table-hover print-full-width" id="dataTable">
                     <thead class="table-dark">
                         <tr>
+                            <th>S/No</th>
                             <th>Employee ID</th>
                             <th>Full Name</th>
                             <th>Gross Pay</th>
                             <th>Net Pay</th>
                             <th>Earnings Breakdown</th>
                             <th>Deductions Breakdown</th>
+                            <th class="d-print-none">Action</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach (var pay in Model.PayrollPays.OrderBy(p => p.EmploymentModel?.givenID))
+                        @if (Model.PayrollPays == null || !Model.PayrollPays.Any())
                         {
                             <tr>
-                                <td onclick="location.href='@Url.Page("/EmployeeService/Earning", new { id = pay.EmploymentModel?.employmentID })'">
-                                    @pay.EmploymentModel?.givenID
-                                </td>
-                                <td>@pay.EmploymentModel?.personModel?.personFullName</td>
-                                <td>@pay.GrossPay.ToString("N2")</td>
-                                <td>@pay.NetPay.ToString("N2")</td>
-                                <td>
-                                    @foreach (var earn in pay.EarningRecords)
-                                    {
-                                        <div>
-                                            @(Model.EarningTypes.First(e => e.earningTypeID == earn.earningTypeID).earningTypeName)
-                                            = <u>@(earn.earningAmount.ToString("N2"))</u>
-                                        </div>
-                                    }
-                                </td>
-                                <td>
-                                    @foreach (var ded in pay.DeductionRecords)
-                                    {
-                                        <div>
-                                            @(Model.DeductionTypes.First(e => e.deductionTypeID == ded.deductionTypeID).deductionName)
-                                            = <u>@(ded.deductionAmount?.ToString("N2"))</u>
-                                        </div>
-                                    }
+                                <td colspan="10" class="text-center text-muted">
+                                    No payroll pay detail found.
                                 </td>
                             </tr>
                         }
+
+                        else 
+                        {
+                            int detIndex = 1;
+                            @foreach (var pay in Model.PayrollPays.OrderBy(p => p.EmploymentModel?.givenID))
+                            {
+                                <tr>
+                                    <td>@(detIndex++)</td>
+                                    <td onclick="location.href='@Url.Page("/EmployeeService/Earning", new { id = pay.EmploymentModel?.employmentID })'">
+                                        @pay.EmploymentModel?.givenID
+                                    </td>
+                                    <td>@pay.EmploymentModel?.personModel?.personFullName</td>
+                                    <td>@pay.GrossPay.ToString("N2")</td>
+                                    <td>@pay.NetPay.ToString("N2")</td>
+                                    <td>
+                                        @foreach (var earn in pay.EarningRecords)
+                                        {
+                                            <div>
+                                                @(Model.EarningTypes.First(e => e.earningTypeID == earn.earningTypeID).earningTypeName)
+                                                = <u>@(earn.earningAmount.ToString("N2"))</u>
+                                            </div>
+                                        }
+                                    </td>
+                                    <td>
+                                        @foreach (var ded in pay.DeductionRecords)
+                                        {
+                                            <div>
+                                                @(Model.DeductionTypes.First(e => e.deductionTypeID == ded.deductionTypeID).deductionName)
+                                                = <u>@(ded.deductionAmount?.ToString("N2"))</u>
+                                            </div>
+                                        }
+                                    </td>
+                                    <td class="d-print-none">
+                                        <a asp-page="./PayDetails" asp-route-id="@pay.payrollPayID" class="btn btn-sm btn-outline-primary" title="View Details">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                                       
                     </tbody>
                 </table>
             </div>
         </div>
 
         <!-- ============================= TAB 2 : PAYROLL VIEW ============================= -->
-        <div id="payrollView" class="tab-pane fade">
-            <div class="d-flex justify-content-between">
-                <h3 class="fw-bold">Payroll Summary</h3>
-                <div class="d-flex justify-content-end d-print-none gap-3">
-                    <div class="me-2">
-                        <input type="text" id="searchBox1" class="form-control m-2 filter-input" placeholder="finder..." data-target="#dataTable1">
+        <div id="payrollView" class="card shadow-sm p-2 tab-pane fade">
+            <div class="d-flex justify-content-between align-items-end">
+                <h4 class="fw-bold">Payroll Summary</h4>
+                <div class="d-flex justify-content-end d-print-none">
+                    <div class="me-3">
+                        <input type="text" id="searchBox1" class="searchBox form-control m-2 filter-input" placeholder="finder..." data-target="#summaryTable" oninput="filterTable1(this)"> 
                     </div>
                     <div class="me-2">
                     <excel-export table="summaryTable" filename="PayrollView_@(Model.Payroll.payrollName)_@(DateTime.Now).xlsx"></excel-export></div>
@@ -165,6 +220,7 @@
                 <table class="table table-bordered table-striped" id="summaryTable">
                     <thead class="table-dark">
                         <tr>
+                            <th>S/No</th>
                             <th>Given ID</th>
                             <th>Full Name</th>
                             <th>Basic Salary</th>
@@ -187,60 +243,74 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach (var pay in Model.PayrollPays.OrderBy(p => p.EmploymentModel?.givenID))
+                        
+                        @if (Model.PayrollPays == null || !Model.PayrollPays.Any())
                         {
-                            var earnings = pay.EarningRecords;
-                            var deductions = pay.DeductionRecords;
-
-                            decimal basic = earnings.Where(e => e.earningType?.earningTypeName == "Salary").Sum(e => e.earningAmount);
-                            decimal overtime = earnings.Where(e => e.earningType?.earningTypeName == "Overtime").Sum(e => e.earningAmount);
-                            decimal allowance = earnings.Where(e => e.earningType?.earningTypeName == "Allowance").Sum(e => e.earningAmount);
-                            string[] exclude= { "salary", "overtime", "allowance" };
-                            decimal otherEarnings = earnings
-                            .Where(e => e.earningType != null && !exclude 
-                            .Contains(e.earningType.earningTypeName.ToLower()))
-                            .Sum(e => e.earningAmount);
-
-                            decimal totalEarnings = earnings.Sum(e => e.earningAmount);
-
-                            decimal incomeTax = deductions.Where(d => d.DeductionType?.deductionName == "Income Tax").Sum(d => d.deductionAmount) ?? 0;
-                            decimal pension = deductions.Where(d => d.DeductionType?.deductionName == "Pension").Sum(d => d.deductionAmount) ?? 0;
-                            decimal advance = deductions.Where(d => d.DeductionType?.deductionName == "Advance").Sum(d => d.deductionAmount) ?? 0;
-                            decimal loan = deductions.Where(d => d.DeductionType?.deductionName == "Loan").Sum(d => d.deductionAmount) ?? 0;
-                            decimal court = deductions.Where(d => d.DeductionType?.deductionName == "Court").Sum(d => d.deductionAmount) ?? 0;
-                            decimal fine = deductions.Where(d => d.DeductionType?.deductionName == "Fine").Sum(d => d.deductionAmount) ?? 0;
-                            decimal union = deductions.Where(d => d.DeductionType?.deductionName == "Union").Sum(d => d.deductionAmount) ?? 0;
-                            decimal social = deductions.Where(d => d.DeductionType?.deductionName == "Social").Sum(d => d.deductionAmount) ?? 0;
-
-                            decimal otherDeductions = deductions
-                            .Where(d => d.DeductionType != null && !new[] { "income tax", "pension", "advance", "loan", "court", "fine", "union", "social" }
-                            .Contains(d.DeductionType.deductionName.ToLower()))
-                            .Sum(d => d.deductionAmount) ?? 0m;
-
-                            decimal totalDeductions = deductions.Sum(d => d.deductionAmount) ?? 0;
                             <tr>
-                                <td>@pay.EmploymentModel?.givenID</td>
-                                <td>@pay.EmploymentModel?.personModel?.personFullName</td>
-
-                                <td>@basic.ToString("N2")</td>
-                                <td>@overtime.ToString("N2")</td>
-                                <td>@allowance.ToString("N2")</td>
-                                <td>@otherEarnings.ToString("N2")</td>
-                                <td class="fw-bold">@totalEarnings.ToString("N2")</td>
-
-                                <td>@incomeTax.ToString("N2")</td>
-                                <td>@pension.ToString("N2")</td>
-                                <td>@advance.ToString("N2")</td>
-                                <td>@loan.ToString("N2")</td>
-                                <td>@court.ToString("N2")</td>
-                                <td>@fine.ToString("N2")</td>
-                                <td>@union.ToString("N2")</td>
-                                <td>@social.ToString("N2")</td>
-                                <td class="fw-bold">@totalDeductions.ToString("N2")</td>
-
-                                <td class="fw-bold">@pay.NetPay.ToString("N2")</td>
+                                <td colspan="10" class="text-center text-muted">
+                                    No payroll pay detail found.
+                                </td>
                             </tr>
+                        }else
+                        {
+                            int sumIndex = 1;
+                            @foreach (var pay in Model.PayrollPays.OrderBy(p => p.EmploymentModel?.givenID))
+                            {
+                                var earnings = pay.EarningRecords;
+                                var deductions = pay.DeductionRecords;
+
+                                decimal basic = earnings.Where(e => e.earningReference == "salary").Sum(e => e.earningAmount);
+                                decimal overtime = earnings.Where(e => e.earningReference == "overtime").Sum(e => e.earningAmount);
+                                decimal allowance = earnings.Where(e => e.earningReference == "allowance").Sum(e => e.earningAmount);
+                                string[] exclude= { "salary", "overtime", "allowance" };
+                                decimal otherEarnings = earnings
+                                .Where(e => e.earningType != null && !exclude
+                                .Contains(e.earningReference.ToLower()))
+                                .Sum(e => e.earningAmount);
+
+                                decimal totalEarnings = earnings.Sum(e => e.earningAmount);
+
+                                decimal incomeTax = deductions.Where(d => d.deductionReference == "tax").Sum(d => d.deductionAmount) ?? 0;
+                                decimal pension = deductions.Where(d => d.deductionReference == "pension").Sum(d => d.deductionAmount) ?? 0;
+                                decimal advance = deductions.Where(d => d.DeductionType.deductionName.ToLower().Contains("advance")).Sum(d => d.deductionAmount) ?? 0;
+                                decimal loan = deductions.Where(d => d.DeductionType.deductionName.ToLower().Contains("loan")).Sum(d => d.deductionAmount) ?? 0;
+                                decimal court = deductions.Where(d => d.DeductionType.deductionName.ToLower().Contains("court")).Sum(d => d.deductionAmount) ?? 0;
+                                decimal fine = deductions.Where(d => d.DeductionType.deductionName.ToLower().Contains("fine")).Sum(d => d.deductionAmount) ?? 0;
+                                decimal union = deductions.Where(d => d.DeductionType.deductionName.ToLower().Contains("union")).Sum(d => d.deductionAmount) ?? 0;
+                                decimal social = deductions.Where(d => d.DeductionType.deductionName.ToLower().Contains("social")).Sum(d => d.deductionAmount) ?? 0;
+
+                                decimal otherDeductions = deductions
+                                .Where(d => d.DeductionType != null && !new[] { "tax", "pension", "advance", "loan", "court", "fine", "union", "social" }
+                                .Contains(d.DeductionType.deductionName.ToLower()))
+                                .Sum(d => d.deductionAmount) ?? 0m;
+
+                                decimal totalDeductions = deductions.Sum(d => d.deductionAmount) ?? 0;
+                                <tr>
+                                    <td>@(sumIndex++)</td>
+                                    <td>@pay.EmploymentModel?.givenID</td>
+                                    <td>@pay.EmploymentModel?.personModel?.personFullName</td>
+
+                                    <td>@basic.ToString("N2")</td>
+                                    <td>@overtime.ToString("N2")</td>
+                                    <td>@allowance.ToString("N2")</td>
+                                    <td>@otherEarnings.ToString("N2")</td>
+                                    <td class="fw-bold">@totalEarnings.ToString("N2")</td>
+
+                                    <td>@incomeTax.ToString("N2")</td>
+                                    <td>@pension.ToString("N2")</td>
+                                    <td>@advance.ToString("N2")</td>
+                                    <td>@loan.ToString("N2")</td>
+                                    <td>@court.ToString("N2")</td>
+                                    <td>@fine.ToString("N2")</td>
+                                    <td>@union.ToString("N2")</td>
+                                    <td>@social.ToString("N2")</td>
+                                    <td class="fw-bold">@totalDeductions.ToString("N2")</td>
+
+                                    <td class="fw-bold">@pay.NetPay.ToString("N2")</td>
+                                </tr>
+                            }
                         }
+                                           
                     </tbody>
                 </table>
             </div>
@@ -248,49 +318,288 @@
         </div>
 
         <!-- ============================= TAB 3 : WORK TIME VIEW ============================= -->
-        <div id="workTimeView" class="tab-pane fade">
-            <div class="d-flex justify-content-end d-print-none gap-3">
-                <div class="me-2"><input type="text" id="searchBox2" class="form-control m-2 filter-input" placeholder="finder..." data-target="#dataTable2"></div>
-                <excel-export table="dataTable2" filename="WorkTime_@(Model.Payroll.payrollName)_@(DateTime.Now).xlsx"></excel-export>
-                <div>@await Html.PartialAsync("print")</div>
+        <div id="workTimeView" class="card shadow-sm p-2 tab-pane fade">
+            <div class="d-flex justify-content-between align-items-end">
+                <h4 class="fw-bold">Worked Hours Summary</h4>
+                <div class="d-flex justify-content-between d-print-none">
+                    <div class="me-2">
+                        <input type="text" id="searchBox2" class="searchBox form-control m-2 filter-input" placeholder="finder..." data-target="#dataTable2" oninput="filterTable1(this)">
+                    </div>
+                        <excel-export table="dataTable2" filename="WorkTime_@(Model.Payroll.payrollName)_@(DateTime.Now).xlsx"></excel-export>
+                    <div>@await Html.PartialAsync("print")</div>
+                </div>
             </div>
+            
 
             <div class="table-responsive">
                 <table class="table table-bordered table-striped" id="dataTable2">
                     <thead class="table-dark">
                         <tr>
-                            <th>Employee</th>
+                            <th>S\No</th>
+                            <th>Employee ID</th>
+                            <th>Name</th>
+                            <th>Department</th>
                             <th>Hours</th>
                             <th>Rate</th>
                             <th>Total</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <!-- Load with JS or server later -->
+                    <tbody>
+                        @if (Model.PayrollPays == null || !Model.PayrollPays.Any())
+                        {
+                            <tr>
+                                <td colspan="10" class="text-center text-muted">
+                                    No payroll pay detail found.
+                                </td>
+                            </tr>
+                        }else{
+                            int whIndex = 1;
+                            
+                            @foreach (var wh in Model.PayrollPays.OrderBy(p => p.EmploymentModel?.givenID))
+                            {
+                                <tr>
+                                    <td>@(whIndex++)</td>
+                                    <td>@wh.EmploymentModel?.givenID</td>
+                                    <td>@wh.EmploymentModel?.personModel?.personFullName</td>
+                                    <td>@wh.Department?.departmentShort</td>
+                                    <td>@wh.workedHours</td>
+                                    <td>@wh.hourlyRate.ToString("N2")</td>
+                                    <td>@((wh.hourlyRate * wh.workedHours).ToString("N2"))</td>
+                                </tr>
+                            }
+                        }
+                            
+                                
+                        </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- ============================= TAB 4 : OVERTIME VIEW ============================= -->
+        <div id="overTimeView" class="card shadow-sm p-2 tab-pane fade">
+            <div class="d-flex justify-content-between align-items-end">
+                <h4 class="fw-bold">Overtime Pays</h4>
+                <div class="d-flex justify-content-between d-print-none">
+                    <div class="me-2">
+                        <input type="text" id="searchBox4" class="searchBox form-control m-2 filter-input" placeholder="finder..." data-target="#dataTable4" oninput="filterTable1(this)">
+                    </div>
+                    <excel-export table="dataTable4" filename="WorkTime_@(Model.Payroll.payrollName)_@(DateTime.Now).xlsx"></excel-export>
+                    <div>@await Html.PartialAsync("print")</div>
+                </div>
+            </div>
+
+
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped" id="dataTable4">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>S/No</th>
+                            <th>Employee ID</th>
+                            <th>Name</th>
+                            <th>Department</th>
+                            <th>Total</th>
+                            <th class="d-print-none text-end px-2">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.PayrollPays == null || !Model.PayrollPays.Any())
+                        {
+                            <tr>
+                                <td colspan="10" class="text-center text-muted">
+                                    No payroll pay detail found.
+                                </td>
+                            </tr>
+                        }else{
+                            int otIndex = 1;
+                        
+                            @foreach(var p in Model.PayrollPays.OrderBy(p => p.EmploymentModel.givenID))
+                            {
+                                if (@p.EarningRecords?.Where(e => e.earningReference == "overtime").Sum(e => e.earningAmount) > 0)
+                                {
+                                    <tr>
+                                        <td>@(otIndex++)</td>
+                                        <td>@p.EmploymentModel?.givenID</td>
+                                        <td>@p.EmploymentModel?.personModel?.personFullName</td>
+                                        <td>@p.Department?.departmentShort</td>
+                                        <td>@p.EarningRecords?.Where(e => e.earningReference == "overtime").Sum(e => e.earningAmount)</td>
+                                        <td class="d-print-none text-end px-2">
+                                            <a asp-page="/OvertimeRecord/PersonOTR" asp-route-empID="@p.employmentID" target="_blank" class="btn btn-sm btn-outline-primary" title="View Details">
+                                                <i class="bi bi-eye"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                        }
+                                        
                     </tbody>
                 </table>
             </div>
         </div>
 
+        <!-- ============================= TAB 5 : OVERTIME VIEW ============================= -->
+        <div id="allowanceView" class="card shadow-sm p-2 tab-pane fade">
+            <div class="d-flex justify-content-between align-items-end">
+                <h4 class="fw-bold">Allowance Pays</h4>
+                <div class="d-flex justify-content-between d-print-none">
+                    <div class="me-2">
+                        <input type="text" id="searchBox5" class="searchBox form-control m-2 filter-input" placeholder="finder..." data-target="#dataTable5" oninput="filterTable1(this)">
+                    </div>
+                    <excel-export table="dataTable5" filename="WorkTime_@(Model.Payroll.payrollName)_@(DateTime.Now).xlsx"></excel-export>
+                    <div>@await Html.PartialAsync("print")</div>
+                </div>
+            </div>
+
+
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped" id="dataTable5">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>S/No</th>
+                            <th>Employee ID</th>
+                            <th>Name</th>
+                            <th>Department</th>
+                            <th>Total</th>
+                            <th class="d-print-none text-end px-2">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.PayrollPays == null || !Model.PayrollPays.Any())
+                        {
+                            <tr>
+                                <td colspan="10" class="text-center text-muted">
+                                    No payroll pay detail found.
+                                </td>
+                            </tr>
+                        }else{
+
+                            int alIndex = 1;
+                           
+                            foreach (var p in Model.PayrollPays.OrderBy(p => p.EmploymentModel?.givenID))
+                            {
+                                if (@p.EarningRecords?.Where(e => e.earningReference == "allowance").Sum(e => e.earningAmount) > 0)
+                                {
+                                    <tr>
+                                        <td>@(alIndex++)</td>
+                                        <td>@p.EmploymentModel?.givenID</td>
+                                        <td>@p.EmploymentModel?.personModel?.personFullName</td>
+                                        <td>@p.Department?.departmentShort</td>
+                                        <td>@p.EarningRecords?.Where(e => e.earningReference == "allowance").Sum(e => e.earningAmount)</td>
+                                        <td class="d-print-none text-end px-2">
+                                            <a asp-page="/AllowanceAssignment/PersonAllowance" asp-route-id="@p.employmentID" target="_blank" class="btn btn-sm btn-outline-primary" title="View Details">
+                                                <i class="bi bi-eye"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                        }
+                        
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <!-- ============================= TAB 6 : COST CENTER VIEW ============================= -->
+        <div id="costCenterView" class="card shadow-sm p-2 tab-pane fade">
+            <div class="row mb-4">
+                <div class="col-md-3">
+                    <div class="card border-0 bg-danger text-white shadow-sm">
+                        <div class="card-body">
+                            <div class="text-xs font-weight-bold text-uppercase mb-1">Total Gross (Company Cost)</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.Payroll.totalGross?.ToString("N2")</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card border-0 bg-warning text-dark shadow-sm">
+                        <div class="card-body">
+                            <div class="text-xs font-weight-bold text-uppercase mb-1">Total Net (Take Home)</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.Payroll.totalNet?.ToString("N2")</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card border-0 bg-secondary text-white shadow-sm">
+                        <div class="card-body">
+                            <div class="text-xs font-weight-bold text-uppercase mb-1">Total Tax Liability</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.Payroll.totalTax?.ToString("N2")</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card border-0 bg-info text-white shadow-sm">
+                        <div class="card-body">
+                            <div class="text-xs font-weight-bold text-white text-uppercase mb-1">Total Pension Liability</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.Payroll.TotalPension.ToString("N2")</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mb-4">
+                    <div class="card-header py-3 d-flex justify-content-between align-items-end">
+                        <h6 class="m-0 font-weight-bold text-primary">Cost Center / Department Analysis</h6>
+                        <input type="text" class="searchBox form-control form-control-sm w-25" data-target="#deptTable" placeholder="Filter departments...">
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover" id="deptTable" width="100%" cellspacing="0">
+                                <thead class="bg-light">
+                                    <tr>
+                                        <th>Department</th>
+                                        <th class="text-center">Staff</th>
+                                        <th class="text-end">Gross Pay</th>
+                                        <th class="text-end">Deductions</th>
+                                        <th class="text-end">Net Pay</th>
+                                        <th class="text-end">Avg. Cost/EE</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @if (Model.PayrollPays == null || !Model.PayrollPays.Any())
+                                    {
+                                        <tr>
+                                            <td colspan="10" class="text-center text-muted">
+                                                No payroll pay detail found.
+                                            </td>
+                                        </tr>
+                                    }else{
+                                        @foreach (var item in Model.DeptSummaries.OrderByDescending(p => p.TotalGross))
+                                        {
+                                            <tr>
+                                                <td><strong>@item.DepartmentName</strong></td>
+                                                <td class="text-center">@item.EmployeeCount</td>
+                                                <td class="text-end">@item.TotalGross.ToString("N2")</td>
+                                                <td class="text-end text-danger">@item.TotalDeductions.ToString("N2")</td>
+                                                <td class="text-end fw-bold">@item.TotalNet.ToString("N2")</td>
+                                                <td class="text-end text-muted">@((item.TotalGross / item.EmployeeCount).ToString("N2"))</td>
+                                            </tr>
+                                        }
+                                    }
+                                    
+                                </tbody>
+                                <tfoot class="table-dark">
+                                    <tr>
+                                        <td>GRAND TOTAL</td>
+                                        <td class="text-center">@Model.DeptSummaries.Sum(s => s.EmployeeCount)</td>
+                                        <td class="text-end">@Model.DeptSummaries.Sum(s => s.TotalGross).ToString("N2")</td>
+                                        <td class="text-end">@Model.DeptSummaries.Sum(s => s.TotalDeductions).ToString("N2")</td>
+                                        <td class="text-end">@Model.DeptSummaries.Sum(s => s.TotalNet).ToString("N2")</td>
+                                        <td></td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+        </div>
+        </div>
     </div>
+
 }
+    
+<div class="d-flex justify-content-end  align-items-center m-2">
 
-<!-- ============================= GENERIC FILTER SCRIPT ============================= -->
-<script>
-    document.addEventListener("input", function (e) {
+        @await Html.PartialAsync("back")
+        @await Html.PartialAsync("print")
+    </div>
 
-        // react only to filter inputs
-        if (!e.target.matches(".filter-input, #searchBox")) return;
-
-        let input = e.target.value.toLowerCase();
-        let target = e.target.getAttribute("data-target");
-        if (!target) return;
-
-        let rows = document.querySelectorAll(`${target} tbody tr`);
-
-        rows.forEach(row => {
-            let text = row.textContent.toLowerCase();
-            row.style.display = text.includes(input) ? "" : "none";
-        });
-    });
-</script>

@@ -20,9 +20,9 @@ namespace PIS2.Models
         [Display(Name = "Letter Type")]
         public string letterSubject { get; set; } = null!;
         [Display(Name = "Letter Sender")]
-        public string letterSender { get; set; } = null!;
+        public string? letterSender { get; set; }
         [Display(Name = "Letter Reciever")]
-        public string letterReceiver { get; set; } = null!;
+        public string? letterReceiver { get; set; }
         [Column(TypeName = "nvarchar(max)")]
         [Display(Name = "Letter Body")]
         public string? letterBody { get; set; }

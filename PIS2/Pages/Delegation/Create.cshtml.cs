@@ -7,18 +7,22 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using PIS2.Data;
 using PIS2.Models;
+using PIS2.Pages.Shared;
 
 namespace PIS2.Pages.delegation
 {
     [Authorize(Roles = "MIE\\PMS_MANAGEMENT,MIE\\PMS_HRCLERK, MIE\\PMS_HRMANAGER")]
     public class CreateModel : PageModel
     {
-        private readonly PIS2.Models.PISContext _context;
+        private readonly PISContext _context;
+        private readonly ILogger<CreateModel> _logger;
 
-        public CreateModel(PIS2.Models.PISContext context)
+        public CreateModel(PISContext context, ILogger<CreateModel> logger)
         {
             _context = context;
+            _logger = logger;
         }
         [BindProperty]
         public employmentModel delegator { get; set; }
@@ -56,15 +60,19 @@ namespace PIS2.Pages.delegation
             && d.delegationTo == delegationModel.delegationTo && d.delegationScope == delegationModel.delegationScope
             && d.delegationStatus == mainStatus.Active).AnyAsync();
 
-            if (exists) { TempData["message"] = ("Error","Delegation Already Exists!");
-               
-                await LoadHelper(); return Page(); }
+            if (exists) 
+            {
+                _logger.LogError($"Error: Delegation duplicate",User.Identity.Name, DateTime.Now);
+                var msg = new { success = false, message = "Duplicate Delegation Error!" };
+                return new JsonResult(msg);
+            }
 
             if (delegationModel.delegationFrom == delegationModel.delegationTo)
             {
-                ModelState.AddModelError("Error", "Delegator and Delegatee can not be the same.");
-                await LoadHelper();
-                return Page();
+                _logger.LogError($"Error: Self delegation error.", User.Identity.Name, DateTime.Now);
+                var msg = new { success=false, message= "Self Delegation Error!" };
+                return new JsonResult(msg);
+
             }
             ModelState.Remove("delegationModel.modifiedBy");
             ModelState.Remove("delegationModel.delegationStatus");
@@ -80,21 +88,30 @@ namespace PIS2.Pages.delegation
                 {
                     foreach (var error in kv.Value.Errors)
                     {
-                        Console.WriteLine($"{kv.Key} --> {error.ErrorMessage}");
-                    }
+                        _logger.LogError($"Error: New delegation validation failure for {kv.Key}", User.Identity.Name, DateTime.Now);
+                        var msg = new { success = false, message = $"{kv.Key} Missing or not valid!" };
+                        return new JsonResult(msg);
+                    } 
                     Console.WriteLine(kv.ToString());
                 }
                 return Page();
             }
-
-            _context.Delegations.Add(delegationModel);
-            await _context.SaveChangesAsync();
-
-            return RedirectToPage("./Index");
+            try {
+                _context.Delegations.Add(delegationModel);
+                await _context.SaveChangesAsync();
+                
+            }
+            catch(Exception ex)
+            {
+                TempData["message"] = ("Error", ex.Message);
+                _logger.LogError(ex, $"Error while saving new delegation!", User.Identity.Name, DateTime.Now);
+                var msg = new { success = false, message = "Error saving new delegation!" };
+                return new JsonResult(msg);
+            }
+            return RedirectToPage("./Details", new { id = delegationModel.delegationID});
         }
         private async Task LoadHelper()
         {
-            ModelState.AddModelError("Error", "Delegator and Delegatee can not be the same.");
             var emps = await _context.Employments
             .Include(e => e.personModel)
             .Where(e => e.employmentStatus == mainStatus.Active)

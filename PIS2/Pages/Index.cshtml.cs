@@ -6,7 +6,9 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using PIS2.Data;
 using PIS2.Models;
+using PIS2.Services;
 using PIS2.Views;
 using System.Diagnostics.Contracts;
 using System.Runtime.InteropServices;
@@ -21,6 +23,16 @@ namespace PIS2.Pages
         private readonly PISContext _context;
         private readonly Core _core;
         private readonly IWebHostEnvironment _environment;
+        private readonly ILogger<IndexModel> _logger;
+
+        public IndexModel(PISContext ctx, Core methods, IWebHostEnvironment environment, ILogger<IndexModel> logger)
+        {
+            _context = ctx;
+            _core = methods;
+            _environment = environment;
+            _logger = logger;
+        }
+
         [BindProperty]
         public List<personModel>? People { get; set; } = default!;
        
@@ -53,26 +65,14 @@ namespace PIS2.Pages
         public List<NoticeModel> ActiveNoticesForCarousel { get; set; } = new List<NoticeModel>();
         public List<EvalSingleEmployeeReport> EvalReport { get; set; }
         public List<serviceRequestModel> Requests { get; set; } = new List<serviceRequestModel>();
-        public IndexModel(PISContext ctx, Core methods, IWebHostEnvironment environment)
-        {
-            _context = ctx;
-            _core = methods;
-            _environment = environment;
-        }
+        public List<serviceRequestTypeModel> RequestTypes { get; set; } = new List<serviceRequestTypeModel>();
+        
         //public IList<personModel> Persons { get; set; }
         public async Task OnGetAsync()
         {
-           
-            //Person = new personModel();
-            People = await _context.Persons.OrderBy(p => p.personFirstName).ThenBy(p => p.personFatherName).ThenBy(p => p.personLastName).ToListAsync();
-            Employments = await _context.Employments.ToListAsync();
 
-            ActiveNoticesForCarousel = await _context.Notices
-                .Where(n => n.IsActive &&
-                            (!n.ExpiryDate.HasValue || n.ExpiryDate.Value.Date >= DateTime.Now.Date))
-                .OrderByDescending(n => n.noticePriority)
-                .ThenByDescending(n => n.DatePosted)
-                .ToListAsync();
+            await SetOptionsAsync();
+ 
 
             if (!searchID.IsNullOrEmpty() || !searchName.IsNullOrEmpty())
             {
@@ -180,27 +180,17 @@ namespace PIS2.Pages
     
         public async Task SetOptionsAsync()
         {
-            var leaveTypes = new List<leaveTypeModel>();
-            if (User.IsInRole("MIE\\PMS_CLINIC"))
-            {
-                leaveTypes =await _context.LeaveTypes.Where(lt => lt.leaveAvailability == "Clinic" || lt.leaveAvailability == "Everyone").ToListAsync();
-            }
-            else if (User.IsInRole("MIE\\PMS_HRCLERK"))
-            {
-                leaveTypes =await _context.LeaveTypes.Where(lt => lt.leaveAvailability == "HR" || lt.leaveAvailability == "Everyone").ToListAsync();
-            }
-            else
-            {
-                leaveTypes =await _context.LeaveTypes.Where(lt => lt.leaveAvailability == "Everyone").ToListAsync();
-            }
-            leaveTypes = leaveTypes.Where(lt => lt.leaveTypeStatus == mainStatus.Active).ToList();
-            AllowedLeaveTypes = leaveTypes;
+            People = await _context.Persons.OrderBy(p => p.personFirstName).ThenBy(p => p.personFatherName).ThenBy(p => p.personLastName).ToListAsync();
+            Employments = await _context.Employments.ToListAsync();
+
+            var reqTypes = await _context.ServiceRequestTypes.Where(s => s.serviceRequestTypeStatus == mainStatus.Active).ToListAsync();
+            RequestTypes = reqTypes;
+            
             var empsList = await _context.Employments.ToListAsync();
-            var ots = await _context.Overtimes.ToListAsync();
 
             ViewData["employmentID"] = new SelectList(empsList, "employmentID", "givenID");
-            ViewData["leaveTypeID"] = new SelectList(AllowedLeaveTypes, "leaveTypeID", "leaveTypeName");
-            ViewData["overtimeID"] = new SelectList(ots, "overtimeID", "overtimeName");
+
+            await getNotices();
         }
         public async Task<IActionResult> GetEmploymentHistory(int personID)
                 {
@@ -219,7 +209,7 @@ namespace PIS2.Pages
         public serviceRequestModel requestModel { get; set; }
         public class RequestDto
         {
-            public string requestType { get; set; }
+            public int requestType { get; set; }
         }
 
         /// <summary>
@@ -229,7 +219,7 @@ namespace PIS2.Pages
         /// <returns></returns>
         public async Task<IActionResult> OnPostHandleRequestAsync([FromBody] RequestDto request)
         {
-            if (request == null || string.IsNullOrWhiteSpace(request.requestType))
+            if (request == null || request.requestType ==0)
             {
                 return new JsonResult(new { success = false, message = "Invalid request type." });
             }
@@ -238,38 +228,64 @@ namespace PIS2.Pages
             if (string.IsNullOrEmpty(currentUserName))
                 return new JsonResult(new { success = false, message = "User not authenticated." });
 
-            var usr = await _context.Users.FirstOrDefaultAsync(u => u.userName.ToLower() == currentUserName.ToLower());
+            var usr = await _context.Users.AsNoTracking().FirstOrDefaultAsync(u => u.userName.ToLower() == currentUserName.ToLower());
             if (usr == null)
                 return new JsonResult(new { success = false, message = "User record not found." });
 
-            var emp = await _context.Employments.FirstOrDefaultAsync(e => e.personID == usr.personID && e.employmentStatus == mainStatus.Active);
+            var emp = await _context.Employments.AsNoTracking().FirstOrDefaultAsync(e => e.personID == usr.personID && e.employmentStatus == mainStatus.Active);
             if (emp == null || emp.employmentID == 0)
                 return new JsonResult(new { success = false, message = "Employment ID not found." });
 
             var employmentID = emp.employmentID;
 
-            if (!Enum.TryParse<ServiceRequestTypes>(request.requestType, true, out var service))
-                return new JsonResult(new { success = false, message = "Invalid request type." });
+            //if (!Enum.TryParse<serviceRequestTypeModel>(request.requestType, true, out var service))
+            //    return new JsonResult(new { success = false, message = "Invalid request type." });
 
             bool exists =await _context.ServiceRequests.AnyAsync(r =>
                 r.employmentID == emp.employmentID &&
-                r.requestedService == service &&
+                r.serviceRequestTypeID == request.requestType &&
                 r.serviceRequestStatus == ServiceRequestStatus.Hold);
 
             if (exists)
             {
                 return new JsonResult(new { success = false, message = "You already have a pending request." });
             }
-
+            var reqType = await _context.ServiceRequestTypes.AsNoTracking().FirstOrDefaultAsync(s => s.serviceRequestTypeID == request.requestType);
+            if (reqType == null)
+            {
+                return new JsonResult(new { success = false, message = "Request type not found." });
+            }
+            if (reqType.serviceRequestTypeName.Contains("Guaranty") && !IsGuarantyAllow)
+            {
+                return new JsonResult(new { success = false, message = "Guaranty service not allowed." });
+            }
             requestModel = new serviceRequestModel {
                 employmentID = employmentID,
                 serviceRequestDate = DateTime.Now,
-                requestedService = service,
+                serviceRequestTypeID = request.requestType,
                 serviceRequestStatus = ServiceRequestStatus.Hold, 
                 modifiedBy = currentUserName };
 
             _context.ServiceRequests.Add(requestModel);
-            await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync();          
+
+            if (reqType.serviceRequestTypeName.Contains("Termination"))
+            {
+                return new JsonResult(new
+                {
+                    success = true,
+                    redirect = Url.Page("/Termination/Create", new { id = employmentID })
+                });
+            }
+            if (reqType.serviceRequestTypeName.Contains("Guaranty"))
+            {
+                return new JsonResult(new
+                {
+                    success = true,
+                    redirect = Url.Page("/Guaranty/Create", new { id = employmentID })
+                });
+            }
+
 
             return new JsonResult(new { success = true });
         }
@@ -336,12 +352,13 @@ namespace PIS2.Pages
 
         public async Task getNotices()
         {
-            ActiveNoticesForCarousel = await _context.Notices
+            var items = await _context.Notices.AsNoTracking()
                 .Where(n => n.IsActive &&
                             (!n.ExpiryDate.HasValue || n.ExpiryDate.Value.Date >= DateTime.Now.Date) && n.noticeStatus == NoticeStatus.Posted)
                 .OrderByDescending(n => n.noticePriority)
                 .ThenByDescending(n => n.DatePosted)
                 .ToListAsync();
+            ActiveNoticesForCarousel = items.ToList();
         }
     }
 }

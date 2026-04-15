@@ -3,8 +3,8 @@
 @{
     ViewData["Title"] = "Create Deduction Type";
 }
-<h1 class="fw-bold">Deduction Types</h1>
-<h4 class="mb-0">Create New Deduction Type</h4>
+<h2 class="fw-bold">Deduction Types</h2>
+<p class="mb-0 text-muted">Create New Deduction Type</p>
 <div class="container mt-5">
     <div class="card shadow-sm border-0">
         <div class="card-body">
@@ -14,7 +14,19 @@
                     <input asp-for="DeductionType.deductionName" class="form-control" placeholder="Enter deduction name" />
                     <span asp-validation-for="DeductionType.deductionName" class="text-danger"></span>
                 </div>
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label asp-for="DeductionType.deductionCode" class="form-label fw-semibold"><span class="text-danger">*</span>Code</label>
+                        <input asp-for="DeductionType.deductionCode" class="form-control" placeholder="Enter deduction code" required />
+                        <span asp-validation-for="DeductionType.deductionCode" class="text-danger"></span>
+                    </div>
 
+                    <div class="col-md-6">
+                        <label asp-for="DeductionType.deductionDescription" class="form-label fw-semibold"><span class="text-danger">*</span>Description</label>
+                        <input asp-for="DeductionType.deductionDescription" class="form-control" placeholder="Enter deduction description" required />
+                        <span asp-validation-for="DeductionType.deductionDescription" class="text-danger"></span>
+                    </div>
+                </div>
                 <div class="row">
                     <div class="col-md-6 mb-3">
                         <label asp-for="DeductionType.deductBase" class="form-label fw-semibold">Deduct From</label>
@@ -23,9 +35,9 @@
                     </div>
 
                     <div class="col-md-6 mb-3">
-                        <label asp-for="DeductionType.dedcutionPriority" class="form-label fw-semibold">Deduction Priority</label>
-                        <input asp-for="DeductionType.dedcutionPriority" type="number" min="1" class="form-control" placeholder="e.g. 1 for highest priority" />
-                        <span asp-validation-for="DeductionType.dedcutionPriority" class="text-danger"></span>
+                        <label asp-for="DeductionType.deductionPriority" class="form-label fw-semibold">Deduction Priority</label>
+                        <input asp-for="DeductionType.deductionPriority" type="number" min="1" class="form-control" placeholder="e.g. 1 for highest priority" />
+                        <span asp-validation-for="DeductionType.deductionPriority" class="text-danger"></span>
                     </div>
                 </div>
 
@@ -35,9 +47,25 @@
                         <select asp-for="DeductionType.deductionStatus" class="form-select" asp-items="Html.GetEnumSelectList<Models.mainStatus>()"></select>
                         <span asp-validation-for="DeductionType.deductionStatus" class="text-danger"></span>
                     </div>
-
+                    <!-- Type -->
+                    <!-- Selector -->
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="DeductionType.accountID" class="form-label fw-semibold">
+                            <span class="text-danger">*</span> Account
+                        </label>
+                        <input type="text" class="form-control" list="personList" placeholder="Type to search..." oninput="selector(this, 'personIDHidden')" value="@Model.DeductionType.Account?.accountName" />
+                        <input type="hidden" asp-for="DeductionType.accountID" id="personIDHidden" value="@Model.DeductionType.accountID" />
+                        <datalist id="personList">
+                            @foreach (var account in Model.Accounts)
+                            {
+                                <option data-id="@account.Value" value="@account.Text"></option>
+                            }
+                        </datalist>
+                        <span asp-validation-for="DeductionType.accountID" class="text-danger"></span>
+                    </div>
                     
                 </div>
+                
 
                 <div class="form-check mb-3">
                     <input asp-for="DeductionType.isRecurring" class="form-check-input" />

@@ -4,8 +4,11 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Hosting;
+using Microsoft.IdentityModel.Tokens;
+using PIS2.Data;
 using PIS2.Models;
 using PIS2.Pages.Management;
+using PIS2.Services;
 using PIS2.Views;
 using System;
 using System.Collections.Generic;
@@ -18,10 +21,10 @@ namespace PIS2.Pages.Report
 {
     public class LeaveReportModel : PageModel
     {
-        private readonly PIS2.Models.PISContext _context;
-        private readonly PIS2.Models.Core _core;
+        private readonly PISContext _context;
+        private readonly Core _core;
 
-        public LeaveReportModel(PIS2.Models.PISContext context, Core core)
+        public LeaveReportModel(PISContext context, Core core)
         {
             _context = context;
             _core = core;
@@ -62,16 +65,15 @@ namespace PIS2.Pages.Report
         [BindProperty]
         public int CountUnposted { get; set; } = default!;
        
-        public List<AnnuallLeaveSummaryCompanyView> AnnualLeaveSummaries { get; set; }
+        public List<LeaveBalanceDepartmentView> AnnualLeaveSummaries { get; set; }
         public async Task OnGetAsync()
         {
             //Custom Report 
-            Departments = await _context.Departments.Where(d => d.departmentStatus == mainStatus.Active).OrderBy(d => d.departmentName).ToListAsync();
-            LeaveTypes = await _context.LeaveTypes.ToListAsync();
-            Companies = await _context.Companies.Where(c =>c.companyStatus == mainStatus.Active).OrderBy(c => c.companyName).ToListAsync();
+            Departments = await _context.Departments.Where(d => d.departmentStatus == mainStatus.Active).OrderBy(d => d.departmentName).ToListAsync() ?? new List<departmentModel>();
+            LeaveTypes = await _context.LeaveTypes.ToListAsync() ?? new List<leaveTypeModel>();
+            Companies = await _context.Companies.Where(c =>c.companyStatus == mainStatus.Active).OrderBy(c => c.companyName).ToListAsync() ?? new List<companyModel>();
 
             var allLeaves = _context.LeaveReportView.AsQueryable();
-
 
             leaveModel = new List<LeaveReportView>();
             leaveModel = allLeaves.ToList() ?? new List<LeaveReportView>();
@@ -81,11 +83,11 @@ namespace PIS2.Pages.Report
             totalCount = leaveModel?.Count() ?? 0;
             totalCost = leaveModel?.Sum(l => l.LeaveValue) ?? 0;
             filteredCount = leaveModel?.GroupBy(l => l.EmploymentID).Count() ?? 0;
-            recordsPerEmployee = totalCount / filteredCount;
-            daysPerEmployee = totalDays / filteredCount;
+            recordsPerEmployee =filteredCount > 0? totalCount / filteredCount : 0;
+            daysPerEmployee = filteredCount > 0 ? totalDays / filteredCount : 0;
 
             //Start Date and end Date
-            if (leaveModel != null)
+            if (leaveModel != null && leaveModel.Any())
             {
                 SDate = leaveModel.Min(l => l.LeaveStart);
                 EDate = leaveModel.Max(l => l.LeaveEnd);
@@ -114,44 +116,21 @@ namespace PIS2.Pages.Report
                 LType = _context.LeaveTypes.FirstOrDefault(l => l.leaveTypeID == LeaveType.Value).leaveTypeName;
             }
 
-
             Leaves = new List<LeaveReportCompany>();
 
             var filteredLeave = leaves.ToList();
-            
-            
-
 
             //Payable Annual Leave Summary
-            var annualLeaveSummary = _context.AnnualLeaveSummary.ToList();
-            AnnualLeaveSummaries = new List<AnnuallLeaveSummaryCompanyView>();
-            AnnualLeaveSummaries = annualLeaveSummary
-                .GroupBy(als => als.companyID)
-                .Select(g => new AnnuallLeaveSummaryCompanyView
-                {
-                    CompanyID = g.Key,
-                    Company = g.FirstOrDefault()?.companyName ?? "Unknown",
-                    LeaveBalance = g.Sum(lb => lb.leaveBalance),
-                    AllowedLeave = g.Sum(lb => lb.adjustedLeaveBalance),
-                    PayableLeave = g.Sum(lb => lb.adjustedLeaveBalanceCost),
-                    DepartmentList = g.GroupBy(als => als.departmentID).Select(dv => new AnnuallLeaveSummaryDepartmentView
-                    {
-                        DepartmentID = dv.Key,
-                        Department = dv.First().departmentName,
-                        LeaveBalance = dv.Sum(lb => lb.leaveBalance),
-                        AllowedLeave = dv.Sum(lb => lb.adjustedLeaveBalance),
-                        PayableLeave = dv.Sum(lb => lb.adjustedLeaveBalanceCost)
-                    }).OrderByDescending(d => d.PayableLeave).ToList() ?? new List<AnnuallLeaveSummaryDepartmentView>()
-                }).OrderByDescending(d => d.PayableLeave).ToList();
+            AnnualLeaveSummaries = new List<LeaveBalanceDepartmentView>();
+            AnnualLeaveSummaries = await _context.LeaveBalanceDepartmentView
+                .OrderByDescending(d => d.PayableLeave).ToListAsync();
         }
 
         // Post handler
         public IActionResult OnGetFilter(int? department,int? leaveGroup, int? leaveStatus, int? leaveType, int? company, DateTime? dateStart, DateTime? dateEnd, string? empEp)
         {
+            var leaveModel = _context.LeaveReportView.AsQueryable();
             
-            var leaveModel = _context.LeaveReportView.AsQueryable(); 
-
-
             // Filter by company (if provided)
             if (company.HasValue && company != null)
             {
@@ -211,7 +190,7 @@ namespace PIS2.Pages.Report
 
 
             // Execute the query and get the filtered results
-            var filteredLeaves= leaveModel.OrderBy(e => e.LeaveRequestDate).ToList();
+            var filteredLeaves = leaveModel.OrderBy(e => e.LeaveRequestDate).ToList();
             filteredCount = filteredLeaves.Count;
             totalDays = filteredLeaves?.Sum(l => l.LeaveDays) ?? 0;
             CountUnposted = filteredLeaves.Count(l => l.LeaveStatus == Models.leaveStatus.Hold);
@@ -327,10 +306,14 @@ namespace PIS2.Pages.Report
         [BindProperty]
         public bool? Legality { get; set; }
   
-        public IActionResult OnGetAbsentism(int? CompanyID, int? leaveType, DateTime? StartDate, DateTime? EndDate, int? leaveGroup, bool? Legality, string? EmpEp)
+        public IActionResult OnGetAbsenteesm(int? CompanyID, int? leaveType, DateTime? StartDate, DateTime? EndDate, int? leaveGroup, bool? Legality, string? EmpEp)
         {
             var leaves = _context.LeaveReportView.Where(l => l.LeaveJob == false).AsQueryable();
 
+            if (!leaves.Any())
+            {
+                return new JsonResult(false);
+            }
             if (CompanyID.HasValue && CompanyID.Value > 0)
             {
                 companyName = _context.Companies.FirstOrDefault(c => c.companyID == CompanyID).companyName ;
@@ -472,12 +455,12 @@ namespace PIS2.Pages.Report
 
             //return new JsonResult(new { tableHtml = tableHtml.ToString() });
 
-            var employees = filteredLeave.Select(l => l.EmploymentID).Distinct().Count();
-            var totalDays = filteredLeave.Sum(l => l.LeaveDays);
-            var perEmployee = Math.Round((filteredLeave.Sum(l => l.LeaveDays)/filteredLeave.Select(l => l.EmploymentID).Distinct().Count()) ?? 0 ,2);
-            var countAbsenteesm = filteredLeave.Count();
-            var absenteesmRate = Math.Round((filteredLeave.Sum(l => l.LeaveDays)/(workingDays * filteredLeave.Select(l => l.EmploymentID).Distinct().Count())) ?? 0, 2) * 100;
-            var absenteesmCost = Math.Round(filteredLeave.Sum(l => l.LeaveValue),2);
+            var employees = filteredLeave?.Select(l => l.EmploymentID)?.Distinct().Count() ?? 0;
+            var totalDays = filteredLeave?.Sum(l => l.LeaveDays) ?? 0;
+            var perEmployee = filteredLeave.Any()? Math.Round((filteredLeave?.Sum(l => l.LeaveDays)/filteredLeave?.Select(l => l.EmploymentID).Distinct().Count()) ?? 0 ,2):0;
+            var countAbsenteesm = filteredLeave?.Count() ?? 0;
+            var absenteesmRate = filteredLeave.Any() ? Math.Round((filteredLeave.Sum(l => l.LeaveDays)/(workingDays * filteredLeave.Select(l => l.EmploymentID).Distinct().Count())) ?? 0, 2) * 100 :0;
+            var absenteesmCost = filteredLeave.Any() ? Math.Round(filteredLeave.Sum(l => l.LeaveValue),2) : 0;
 
             //GRAPH DATA
             // Calculate the time span in days
@@ -510,14 +493,14 @@ namespace PIS2.Pages.Report
             }
 
             // Add this inside public IActionResult OnGetAbsentism before the final return
-            var trendList = trendData.ToList();
+            var trendList = trendData?.ToList()?? new List<object>();
 
-            var deptData = Leaves.SelectMany(c => c.Departments)
-                .Select(d => new { label = d.DepartmentName, value = d.DepartmentSum })
+            var deptData = Leaves?.SelectMany(c => c.Departments)?
+                .Select(d => new { label = d.DepartmentName, value = d.DepartmentSum })?
                 .OrderByDescending(x => x.value)
                 .ToList();
 
-            var typeData = filteredLeave.GroupBy(l => l.LeaveType)
+            var typeData = filteredLeave?.GroupBy(l => l.LeaveType)
                 .Select(g => new { label = g.Key, value = g.Sum(l => l.LeaveDays) })
                 .ToList();
 

@@ -11,7 +11,8 @@ namespace PIS2.Models
         public virtual employmentModel? Employment { get; set; }
 
         public DateTime serviceRequestDate { get; set; } = DateTime.Now;
-        public ServiceRequestTypes requestedService { get; set; }
+        public int serviceRequestTypeID { get; set; }
+        public virtual serviceRequestTypeModel? ServiceRequestType { get; set; }
 
         public ServiceRequestStatus serviceRequestStatus { get;set; }
         public virtual ICollection<serviceRequestHistoryModel>? ServiceRequestHistoies { get; set; }
@@ -30,12 +31,23 @@ namespace PIS2.Models
         public virtual serviceRequestModel? ServiceRequest { get; set; }
         public serviceRequestHistoryModel() { }
     }
-    public enum ServiceRequestTypes
+
+    public class serviceRequestTypeModel
     {
-        Experience,
-        Guaranty,
-        Termination
+        [Key]
+        public int serviceRequestTypeID { get; set; }
+        [Required]
+        [Display(Name ="Service Request Name")]
+        public string serviceRequestTypeName { get; set; }
+        public mainStatus serviceRequestTypeStatus { get; set; }
+        public string? serviceRequestTypeDescription { get; set; }
+        public string modifiedBy { get; set; }
+        public DateTime modifiedDate { get; set; }
+        public virtual ICollection<serviceRequestModel>? ServiceRequests { get; set; }
+
+        public serviceRequestTypeModel() { }
     }
+    
     public enum ServiceRequestStatus
     {
         Hold,

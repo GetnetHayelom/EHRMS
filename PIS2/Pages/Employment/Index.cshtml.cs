@@ -5,7 +5,9 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using PIS2.Data;
 using PIS2.Models;
+using PIS2.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,9 +20,9 @@ namespace PIS2.Pages.Employment
     [Authorize(Roles = "MIE\\PMS_HRMANAGER,MIE\\PMS_HRCLERK,MIE\\PMS_MANAGEMENT")]
     public class IndexModel : PageModel
     {
-        private readonly PIS2.Models.PISContext _context;
-        private readonly PIS2.Models.Core _core;
-        public IndexModel(PIS2.Models.PISContext context, Models.Core core)
+        private readonly PISContext _context;
+        private readonly Core _core;
+        public IndexModel(PISContext context, Core core)
         {
             _context = context;
             _core = core;

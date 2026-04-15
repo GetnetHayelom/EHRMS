@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.Blazor;
+using PIS2.Data;
 using PIS2.Models;
 using PIS2.Views;
 using System;
@@ -18,9 +19,9 @@ namespace PIS2.Pages.PersonEducationLevel
     [Authorize(Roles ="MIE\\PMS_CLERK, MIE\\PMS_MANAGEMENT, MIE\\PMS_HRMANAGER")]
     public class IndexModel : PageModel
     {
-        private readonly PIS2.Models.PISContext _context;
+        private readonly PISContext _context;
 
-        public IndexModel(PIS2.Models.PISContext context)
+        public IndexModel(PISContext context)
         {
             _context = context;
         }

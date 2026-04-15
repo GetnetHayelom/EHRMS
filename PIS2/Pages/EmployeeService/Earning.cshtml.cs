@@ -3,7 +3,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using PIS2.Data;
 using PIS2.Models;
+using PIS2.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,10 +16,10 @@ namespace PIS2.Pages.EmployeeService
     [Authorize(Roles = "MIE\\PMS_HRCLERK, MIE\\PMS_HRMANAGER")]
     public class EarningModel : PageModel
     {
-        private readonly PIS2.Models.PISContext _context;
+        private readonly PISContext _context;
         private readonly PayrollService _payrollService;
 
-        public EarningModel(PIS2.Models.PISContext context, PayrollService payrollService)
+        public EarningModel(PISContext context, PayrollService payrollService)
         {
             _context = context;
             _payrollService = payrollService;
@@ -114,7 +116,7 @@ namespace PIS2.Pages.EmployeeService
                 payrollStatus = payrollStatus.PENDING,
                 modifiedBy = User.Identity.Name
             }; 
-            payrollPay = await _payrollService.CalculateEmployeePayAsync(employmentmodel, payroll);
+            //payrollPay = await _payrollService.CalculateEmployeePayAsync(employmentmodel, payroll);
             //
             //
             return Page();

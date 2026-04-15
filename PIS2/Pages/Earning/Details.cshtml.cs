@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
+using PIS2.Data;
 using PIS2.Models;
 
 namespace PIS2.Pages.Earning
@@ -19,7 +20,7 @@ namespace PIS2.Pages.Earning
 
         public async Task<IActionResult> OnGetAsync(int id)
         {
-            EarningType = await _context.EarningTypes
+            EarningType = await _context.EarningTypes.Include(e => e.Account)
                 .FirstOrDefaultAsync(m => m.earningTypeID == id);
 
             if (EarningType == null)

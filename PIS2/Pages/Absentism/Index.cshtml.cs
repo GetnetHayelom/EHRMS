@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using PIS2.Data;
 using PIS2.Models;
 using PIS2.Views;
 using System;
@@ -15,9 +16,9 @@ namespace PIS2.Pages.Absentism
     [Authorize(Roles = "MIE\\PMS_HRMANAGER, MIE\\PMS_HRCLERK, MIE\\PMS_MANAGEMENT")]
     public class IndexModel : PageModel
     {
-        private readonly PIS2.Models.PISContext _context;
+        private readonly PISContext _context;
 
-        public IndexModel(PIS2.Models.PISContext context)
+        public IndexModel(PISContext context)
         {
             _context = context;
         }

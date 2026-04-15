@@ -18,7 +18,7 @@
                 <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#annualLeaveView">Annual Leave Summary</button>
             </li>
             <li class="nav-item">
-                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#absentismView">Absenteeism</button>
+                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#absenteesmView">Absenteeism</button>
             </li>
             <li class="nav-item">
                 <button class="nav-link" data-bs-toggle="tab" data-bs-target="#detailLeaveView">Custom Attendance Report</button>
@@ -90,79 +90,12 @@
         </div>
         <!--DETAILS TABLE-->
         <h4 class="fw-bold">Annual Leave Summary Details</h4>
-        <table class="table table-bordered table-striped table-hover print-full-width">
-            <thead class="bg-dark text-white">
-                <tr>
-                    <th>S/No</th>
-                    <th colspan="2">Company</th>
-                    <th>LeaveBalance</th>
-                    <th>Allowed Leave</th>
-                    <th>Payable</th>
-                    <th>Share</th>
-                </tr>
-            </thead>
-            <tbody>
-                @{
-                    int index = 1;
-                }
-                @if (Model.AnnualLeaveSummaries?.Any() != null)
-                {
-                    @foreach (var item in Model.AnnualLeaveSummaries)
-                    {
-                        var collapseId = $"collapse{index}";
-                        <tr class="fw-bold table-secondary">
-                            <td>@index</td>
-                            <td colspan="2">
-                                <div class="d-flex justify-content-between">
-                                    <span data-bs-toggle="collapse" data-bs-target="#@collapseId" style="cursor:pointer;">@item.Company</span>
-                                    <a style="cursor:pointer;" class="text-sm-end"
-                                       onclick=" location.href='@Url.Page("/Management/AnnualLeaveCompanySummary", new { id = item.CompanyID })' ">Details</a>
-                                </div>
-                            </td>
-
-
-                            <td>@item.LeaveBalance.ToString("N2")</td>
-                            <td>@item.AllowedLeave.ToString("N2")</td>
-                            <td>@item.PayableLeave.ToString("N2")</td>
-                            <td>@((item.PayableLeave * 100 / Model.AnnualLeaveSummaries.Sum(als => als.PayableLeave)).ToString("N2"))%</td>
-                        </tr>
-                        int index2 = 1;
-
-                        @if (item.DepartmentList != null && item.DepartmentList.Any())
-                        {
-                            @foreach (var item2 in item.DepartmentList)
-                            {
-                                <tr class="accordion-collapse collapse" id="@collapseId" style="cursor:pointer;"
-                                    onclick=" location.href='@Url.Page("/Management/AnnualLeaveDepartmentSummary", new { id = item2.DepartmentID })' ">
-                                    <td>@index.@index2</td>
-                                    <td colspan="2">@item2.Department</td>
-                                    <td>@item2.LeaveBalance.ToString("N2")</td>
-                                    <td>@item2.AllowedLeave.ToString("N2")</td>
-                                    <td>@item2.PayableLeave.ToString("N2")</td>
-                                    <td>@((item2.PayableLeave *100/item.PayableLeave).ToString("N2"))%</td>
-                                </tr>
-                                index2++;
-                            }
-                        }
-
-                        index++;
-                    }
-                    <tr class="bg-info text-white fw-bold">
-                        <td colspan="3">Total</td>
-                        <td>@Model.AnnualLeaveSummaries.Sum(als => als.LeaveBalance).ToString("N2") (Days)</td>
-                        <td>@Model.AnnualLeaveSummaries.Sum(als => als.AllowedLeave).ToString("N2") (Days)</td>
-                        <td>@Math.Round(Model.AnnualLeaveSummaries.Sum(als => als.PayableLeave), 2).ToString("N2") Br</td>
-                        <td></td>
-                    </tr>
-                }
-
-            </tbody>
-        </table>
+        @await Html.PartialAsync("_AnnualLeaveSummary", Model.AnnualLeaveSummaries)
     </div>
 
     <!--ABSENTEEISM REPORT-->
-    <div class="tab-pane fade" id="absentismView">
-        <h4 class="fw-bold">Absenteesm Summary</h4>
+    <div class="tab-pane fade" id="absenteesmView">
+        <h4 class="fw-bold">Absenteeism Summary</h4>
 
         <!--SUMMARY POINTS-->
         <div class="card p-2 mb-4 shadow-sm">
@@ -255,7 +188,7 @@
         </div>
 
         <hr />
-        <!--ABSENTISM FILTER CONTROLS-->
+        <!--ABSENTEESM FILTER CONTROLS-->
         <div>
             <div class="card-header bg-white border-0 pt-3">
                 <div class="d-flex align-items-center">
@@ -265,7 +198,7 @@
                 </div>
             </div>
             <div class="card p-3 mb-2">
-                <form id="absentismForm" class="d-flex flex-wrap d-print-none gap-3">
+                <form id="absenteesmForm" class="d-flex flex-wrap d-print-none gap-3">
                     <div class="col-3">
                         <div class="form-floating">
 
@@ -825,17 +758,17 @@
 
     $(document).ready(function () {
 
-        $("#absentismForm").on("submit", function (e) {
+        $("#absenteesmForm").on("submit", function (e) {
             e.preventDefault(); // prevent normal form submission
-            loadAbsentismData($(this));
+            loadAbsenteesmData($(this));
         });
 
-        $('button[data-bs-target="#absentismView"]')
+        $('button[data-bs-target="#absenteesmView"]')
         .on('shown.bs.tab', function () {
 
             if (!annualLeaveLoaded) {
                 setDefaultAbsentismDates();
-                loadAbsentismData($("#absentismForm"));
+                loadAbsenteesmData($("#absenteesmForm"));
                 annualLeaveLoaded = true;
             }
         });
@@ -854,10 +787,10 @@
         });
     });
 
-    function loadAbsentismData($form) {
+    function loadAbsenteesmData($form) {
 
         $.ajax({
-            url: "@Url.Page(null, null, new { handler = "Absentism" })", // OnGetAbsentism
+            url: "@Url.Page(null, null, new { handler = "Absenteesm" })", // OnGetAbsentism
             type: "GET",
             data: $form.serialize(),
             success: function (response) {

@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using PIS2.Data;
 using System.ComponentModel;
 using System.Text.RegularExpressions;
 
@@ -9,9 +10,9 @@ namespace PIS2.Pages.AuditLog
 {
     public class IndexModel : PageModel
     {
-        private readonly PIS2.Models.PISContext _context;
+        private readonly PISContext _context;
 
-        public IndexModel(PIS2.Models.PISContext context)
+        public IndexModel(PISContext context)
         {
             _context = context;
         }
@@ -54,8 +55,10 @@ namespace PIS2.Pages.AuditLog
 
                 new ("Payroll Payments", "PayrollPays"),
                 new ("Payroll Runs", "Payrolls"),
+                
 
                 new ("Penalty Types", "PenaltyTypes"),
+                new ("Person Profile Pics", "Persons"),
                 new ("Shifts", "Shifts"),
                 new ("Shift Assignments", "ShiftAssignments"),
                 new ("Tax Rates", "TaxRates"),

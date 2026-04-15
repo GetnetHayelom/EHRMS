@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -15,6 +16,7 @@ namespace PIS2.Models
         [Required]
         public int employmentID { get; set; }
         public virtual employmentModel? employmentModel { get; set; }
+        [Precision(18, 2)]
         public decimal allowanceAssignmentAmount { get; set; } = 0;
         public DateTime? allowanceAssignmentEndDate { get; set; }
         public mainStatus allowanceStatus { get; set; } = mainStatus.Active;
@@ -30,6 +32,7 @@ namespace PIS2.Models
         public virtual allowanceAssignmentModel? allowanceAssignmentModel { get; }
         public DateTime modifiedDate { get;} 
         public mainStatus allowanceAssignmentHistoryStatus { get; }
+        [Precision(18, 2)]
         public decimal allowanceAssignmentAmount { get;}
         public DateTime? allowanceAssignmentEndDate { get;  }
         public string modifiedBy { get; }

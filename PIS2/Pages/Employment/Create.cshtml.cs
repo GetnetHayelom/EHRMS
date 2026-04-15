@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using PIS2.Data;
 using PIS2.Models;
 using System;
 using System.Collections.Generic;
@@ -13,9 +14,9 @@ namespace PIS2.Pages.Employment
 {
     public class CreateModel : PageModel
     {
-        private readonly PIS2.Models.PISContext _context;
+        private readonly PISContext _context;
 
-        public CreateModel(PIS2.Models.PISContext context)
+        public CreateModel(PISContext context)
         {
             _context = context;
         }
@@ -74,6 +75,12 @@ namespace PIS2.Pages.Employment
             }
             ViewData["personID"] = new SelectList(_context.Persons, "personID", "personFullName");
             ViewData["employmentTypeID"] = new SelectList(_context.EmploymentTypes, "employmentTypeID", "employmentTypeName");
+            var req = _context.JobRequirements.Include(e => e.JobModel).Where(er => er.jobRequirementStatus != jobReqStatus.Hold || er.jobRequirementStatus != jobReqStatus.Declined).Select(r => new
+            {
+                reqID = r.jobRequirementID,
+                reqName = r.JobModel.jobTitle
+            });
+            ViewData["employmentRequest"] = new SelectList(req, "reqID", "reqName");
             ModelState.Remove("employmentModel.modifiedBy");
             employmentModel.modifiedBy = User.Identity.Name;
 

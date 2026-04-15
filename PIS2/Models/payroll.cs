@@ -1,4 +1,5 @@
-﻿using PIS2.Pages.EmployeeService;
+﻿using Microsoft.EntityFrameworkCore;
+using PIS2.Pages.EmployeeService;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.Contracts;
 using System.Security.Permissions;
@@ -10,13 +11,18 @@ namespace PIS2.Models
         [Key]
         public int payrollID { get; set; }
         public string payrollName { get; set; }
-        public string? payrollMonth { get; set; }
+        public string? payrollMonth { get; set; }//Or Period
         public int? companyID { get; set; }
         public virtual companyModel? companyModel { get; set; }
+        [Precision(18, 2)]
         public decimal? totalGross { get; set; }
+        [Precision(18, 2)]
         public decimal? totalNet { get; set; }
+        [Precision(18, 2)]
         public decimal? totalTax { get; set; }
+        [Precision(18, 2)]
         public decimal? totalPensionEmployee { get; set; }
+        [Precision(18, 2)]
         public decimal? totalPensionEmployer { get; set; }
         public int? totalEmployees { get; set; }
         public DateTime StartDate {get; set;}
@@ -25,6 +31,8 @@ namespace PIS2.Models
         public ICollection<payrollHistory>? payrollHistories { get; set; } = new List<payrollHistory>();
         public virtual ICollection<payrollPay>? PayrollPays { get; set; }
         public string modifiedBy { get; set; }
+        public decimal TotalPension => (totalPensionEmployee + totalPensionEmployer) ?? 0;
+    
         public payrollModel() { }
     }
 
@@ -50,9 +58,27 @@ namespace PIS2.Models
         public virtual employmentModel? EmploymentModel { get; set; }
         public ICollection<earningRecordModel>? EarningRecords { get; set; } = new List<earningRecordModel>();
         public ICollection<deductionRecordModel>? DeductionRecords { get; set; } = new List<deductionRecordModel>();
+        [Precision(18, 2)]
         public decimal GrossPay { get; set; }
+        [Display(Name ="Credit Account")]
+        public int CreditAccountID { get; set; }
+        public virtual subAccountModel? CreditAccount{ get; set; }
+        [Display(Name = "Debit Account")]
+        public int DebitAccountID { get; set; }
+        public virtual subAccountModel? DebitAccount{ get; set; }
+        public int? jobPlacementID { get; set; }
+        public virtual jobPlacementModel? JobPlacement { get; set; }
+        public int? departmentID { get; set; }
+        public virtual departmentModel? Department {get; set;}
+        [Precision(18, 2)]
         public decimal NetPay { get; set; }
+        [Precision(18, 2)]
+        public decimal workedHours { get; set; }
+        [Precision(18, 2)]
+        public decimal hourlyRate { get; set; }
+        [Precision(18, 2)]
         public decimal TotalEarning{get { return EarningRecords.Sum(e => e.earningAmount); }}
+        [Precision(18, 2)]
         public decimal TotalDeduction { get { return DeductionRecords.Sum(d => d.deductionAmount) ??0; } }
         public string modifiedBy { get; set; }
         
@@ -66,7 +92,15 @@ namespace PIS2.Models
         public string invoiceNo { get; set; } = "";
         public int earningID { get; set; }
         public virtual earningModel? earningModel { get; set; }
+        [Precision(18, 2)]
         public decimal GrossPay { get; set; }
+        [Display(Name = "Credit Account")]
+        public int CreditAccountID { get; set; }
+        public virtual subAccountModel? CreditAccount { get; set; }
+        [Display(Name = "Debit Account")]
+        public int DebitAccountID { get; set; }
+        public virtual subAccountModel? DebitAccount { get; set; }
+        [Precision(18, 2)]
         public decimal NetPay { get; set; }
         public string? remark { get; set; }
         public payrollStatus paymentStatus { get; set; }
@@ -89,6 +123,7 @@ namespace PIS2.Models
         // Calculation method
         public bool IsPercentage { get; set; } // true = % of base value, false = fixed
         public earningBase earningBase { get; set; } = earningBase.NONE;
+        [Precision(18, 2)]
         public decimal earningAmount { get; set; }// e.g. 7 for 7%, or 500 for fixed
         public string modifiedBy { get; set; }
         public virtual List<earningHistoryModel>? EarningHistories { get; set; }
@@ -102,6 +137,7 @@ namespace PIS2.Models
         public int earningID { get; set; }
         public virtual earningModel? earningModel { get; set; }
         public mainStatus earningStatus { get; set; }
+        [Precision(18, 2)]
         public decimal earningAmount { get; set; }
         public string modifiedBy { get; set; }
         public DateTime modifiedDate { get; set; }
@@ -116,6 +152,7 @@ namespace PIS2.Models
         public int earningTypeID { get; set; }
         public earningType? earningType { get; set; }
         public string earningReference { get; set; }
+        [Precision(18, 2)]
         public decimal earningAmount { get; set; }
         public int payrollPayID { get; set; }
         public virtual payrollPay? PayrollPay { get; set; }       
@@ -126,12 +163,15 @@ namespace PIS2.Models
     {
         [Key]
         public int earningTypeID { get; set; }
-        public string earningTypeName { get; set; } // e.g. "Basic Salary", "Overtime", "Transport Allowance"
+        public string? earningTypeCode { get; set; }
+        public string earningTypeName { get; set; } // e.g. "Basic Salary", "Overtime", "Transport Allowance"     
         public bool isRecurring { get; set; } // true = applies every payroll (e.g. Salary), false = ad-hoc (e.g. Bonus)       
         public bool isTaxable { get; set; } // salary yes, per diem maybe no
         public bool isPayroll { get; set; } = true; //true if it is to be proccessed on payroll(i.e OT), false for(i.e medication benefit)
         public mainStatus earningTypeStatus { get; set; }
         public string? earningTypeDescription { get; set; }
+        public int? accountID { get; set; }
+        public virtual accountModel? Account{get; set;}
         public string modifiedBy { get; set; }
         public DateTime modifiedDate { get; set; } = DateTime.Now;
 
@@ -151,6 +191,7 @@ namespace PIS2.Models
         public int remainingIteration { get; set; } = 1;
         // Calculation method
         public bool IsPercentage { get; set; } // true = % of base value, false = fixed
+        [Precision(18, 2)]
         public decimal deductionAmount { get; set; }// e.g. 7 for 7%, or 500 for fixed
         public deductionBase deductionBase { get; set; }
         public mainStatus deductionStatus { get; set; }
@@ -165,6 +206,7 @@ namespace PIS2.Models
         public int deductionID { get; set; }
         public virtual deductionModel? deductionModel { get; set; }
         public mainStatus deductionStatus { get; set; }
+        [Precision(18, 2)]
         public decimal deductionAmount { get; set; }
         public string modifiedBy { get; set; }
         public DateTime modifiedDate { get; set; }
@@ -177,7 +219,8 @@ namespace PIS2.Models
         public int deductionRecordID { get; set; }
         public int deductionTypeID { get; set; }
         public virtual deductionType? DeductionType { get; set; }
-        public string? deductionReference { get; set; } 
+        public string? deductionReference { get; set; }
+        [Precision(18, 2)]
         public decimal? deductionAmount { get; set; }
         public int payrollPayID { get; set; }
         public virtual payrollPay? PayrollPay { get; set; }
@@ -189,13 +232,17 @@ namespace PIS2.Models
     {
         [Key]
         public int deductionTypeID { get; set; }
+        public string? deductionCode { get; set; }
         public string deductionName { get; set; } // e.g. "Tax", "Pension", "Penalty"
+        public string? deductionDescription { get; set; }
         public deductionBase deductBase { get; set; }// e.g. "BasicSalary", "Gross", "Net", etc.
-        public int dedcutionPriority { get; set; }//priority which to deduct first
+        public int deductionPriority { get; set; }//priority which to deduct first
         public bool isRecurring { get; set; } // tax/pension = recurring, penalty = one-time 
         public mainStatus deductionStatus { get; set; }
         public bool isMandatory { get; set; }//would apply to everyone
         public virtual ICollection<deductionRecordModel>? Deductions { get; set; }
+        public int? accountID { get; set; }
+        public virtual accountModel? Account { get; set; }
         public string modifiedBy {get; set;}
         public DateTime modifiedDate { get; set; } = DateTime.Now;
         public deductionType() { }
@@ -209,9 +256,11 @@ namespace PIS2.Models
         /// Reference to the Proclamation e.g.
         /// </summary>
         public string reference { get; set; }
-        public decimal from { get; set; }
-        public decimal ceiling { get; set; }
+        [Precision(18, 2)]
+        public decimal amount { get; set; }// taxable amount
+        [Precision(18, 2)]
         public decimal taxRate { get; set; }
+        [Precision(18, 2)]
         public decimal deduction { get; set; }
         public mainStatus taxStatus { get; set; }
         public DateTime modifiedDate { get; set; } = DateTime.Now;
@@ -222,8 +271,10 @@ namespace PIS2.Models
     {
         PENDING = 0,
         APPROVED = 1,
-        POSTED = 2,
-        COMPLETED = 3
+        PROCESSED = 2,
+        POSTED = 3,
+        COMPLETED = 4,
+        DISCARDED = 5
     }
     public enum deductionBase
     {
@@ -238,5 +289,11 @@ namespace PIS2.Models
         SALARY,
         ALLOWANCE,
         NONE
+    }
+    public enum earningGroup
+    {
+        EARNING,
+        COMPENSATION,
+        BENEFIT
     }
 }

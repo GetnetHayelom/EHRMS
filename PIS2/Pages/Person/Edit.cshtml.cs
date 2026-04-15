@@ -5,7 +5,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using PIS2.Data;
 using PIS2.Models;
+using PIS2.Services;
 using System;
 using System.IO;
 using System.Linq;
@@ -18,10 +20,10 @@ namespace PIS2.Pages.Person
     public class EditModel : PageModel
     {
         private readonly PISContext _context;
-        private readonly PIS2.Models.Core _core;
+        private readonly Core _core;
         private readonly IWebHostEnvironment _environment;
 
-        public EditModel(PISContext context, IWebHostEnvironment environment, PIS2.Models.Core core)
+        public EditModel(PISContext context, IWebHostEnvironment environment, Core core)
         {
             _context = context;
             _core = core;

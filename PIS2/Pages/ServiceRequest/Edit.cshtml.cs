@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using PIS2.Data;
 using PIS2.Models;
 using System;
 using System.Collections.Generic;
@@ -14,9 +15,9 @@ namespace PIS2.Pages.ServiceRequest
     [Authorize(Roles = "MIE\\PMS_HRMANAGER,MIE\\PMS_HRCLERK")]
     public class EditModel : PageModel
     {
-        private readonly PIS2.Models.PISContext _context;
+        private readonly PISContext _context;
 
-        public EditModel(PIS2.Models.PISContext context)
+        public EditModel(PISContext context)
         {
             _context = context;
         }
@@ -32,6 +33,7 @@ namespace PIS2.Pages.ServiceRequest
             }
 
             var servicerequestmodel =  await _context.ServiceRequests
+                .Include(s => s.ServiceRequestType)
                 .Include(s => s.Employment).ThenInclude(e => e.personModel)
                 .Include(s => s.ServiceRequestHistoies)
                 .FirstOrDefaultAsync(m => m.serviceRequestID == id);

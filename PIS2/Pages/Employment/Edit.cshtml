@@ -33,7 +33,7 @@
                     @if (Model.EmpSelected)
                     {
                         <div class="d-flex align-items-center gap-3">
-                            <img src="/images/@(Model.personModel.personID).jpg"
+                            <img src="/api/attachments/viewprofile/@Model?.personModel?.personID"
                                  class="rounded-circle border shadow-sm" width="55" height="55" style="object-fit: cover;"
                                  onerror="this.onerror=null; this.src='/images/@(Model.personModel.personGender == Models.Gender.Female ? "female-default.png" : "male-default.png")';">
                             <div>

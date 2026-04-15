@@ -7,9 +7,9 @@
     var successMessage = TempData["SuccessMessage"] as string;
 }
 
-<h1 class="fw-bold">Employment</h1>
+<h2 class="fw-bold">Employment</h2>
 
-<h6 class="fw-bold text-muted">Maintain New Employment</h6>
+<h6 class="text-muted">Maintain New Employment</h6>
 <hr />
 @if (!string.IsNullOrEmpty(successMessage))
 {
@@ -18,11 +18,9 @@
 </div>
 }
 <div class="row">
-    <form method="post" class="d-flex justify-content-between">
+    <form method="post" class="d-flex justify-content-end">
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-        <div class="col-md-4">
-
-
+        <div class="card shadow-sm p-2 col-md-4">
             <div class="mb-3">
                 <label asp-for="employmentModel.personID" class="form-label fw-semibold">
                     <span class="text-danger">*</span> Person
@@ -72,23 +70,10 @@
             </div>
             
             
-            <div asp-asp-validation-summary="All" class="text-danger"></div>
-            @if (TempData["successMessage"] != null)
-            {
-                var errors = TempData["successMessage"] as List<string>;
-                <div class="alert alert-danger">
-                    <ul>
-                        @foreach (var error in errors)
-                        {
-                            <li>@error</li>
-                        }
-                    </ul>
-                </div>
-            }
-
+            
 
         </div>
-        <div class="col-md-4">
+        <div class="card shadow-sm p-2 col-md-4">
             <h4 class="fw-bold">Aditional Info</h4>
             <div class="form-group">
                 <label asp-for="employmentModel.employmentCarriedOverLeave" class="control-label">Carried Over Leave</label>
@@ -120,6 +105,12 @@
             </div>
             <div class="form-group d-flex justify-content-end">
                 <input type="submit" value="Save" class="btn btn-success m-2" />
+            </div>
+        </div>
+        <div class="card shadow-sm p-2 flex-fill">
+            <div class="avatar-lg bg-light rounded-circle d-inline-flex align-items-center justify-content-center mb-2">
+                <img id="previewImg" src="/images/male-default.png" alt="Preview" style="max-width:200px">
+
             </div>
         </div>
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
@@ -154,4 +145,30 @@
         toggleTerminationDate();
         employmentType.addEventListener("change", toggleTerminationDate);
     });
+</script>
+<script>
+    const input = document.getElementById('personIDHidden');
+    const img = document.getElementById('previewImg');
+
+    // Function to update the img src based on input value
+    function updateProfileImg() {
+        const src = input.value ? '/images/'+input.value +'.jpg' : '/images/male-default.png';
+        img.src = src;
+
+        // If image fails to load, fallback to default
+        img.onerror = () => {
+            img.src = '/images/male-default.png';
+        };
+    }
+
+    // Observe changes to the hidden input value
+    const observer = new MutationObserver(updateProfileImg);
+    observer.observe(input, { attributes: true, attributeFilter: ['value'] });
+
+    // Initial load
+    updateProfileImg();
+
+    // Example: update the input programmatically
+    // input.value = 'newProfile.jpg'; // img will auto-update
+    // updateProfileImg(); // optional manual call
 </script>

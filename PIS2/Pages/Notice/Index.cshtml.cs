@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
+using PIS2.Data;
 using PIS2.Models;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,6 +26,13 @@ namespace PIS2.Pages.Notices
                            (!n.ExpiryDate.HasValue || n.ExpiryDate > DateTime.Now))
                 .OrderByDescending(n => n.DatePosted)
                 .ToListAsync();
+        }
+        public async Task OnGetAllAsync()
+        {
+            Notices = await _context.Notices
+                .OrderByDescending(n => n.DatePosted)
+                .ToListAsync();
+    
         }
     }
 }

@@ -42,11 +42,19 @@
             </div>
             
             <div class="form-group">
-                <label asp-for="departmentModel.employmentID" class="control-label">Manager</label>
-                <select asp-for="departmentModel.employmentID" asp-items="@(ViewData["employmentID"] as SelectList)" class="form-control">
-                    <option value="">-- Select Manager --</option>
-                </select>
+                <label asp-for="departmentModel.employmentID" class="form-label fw-semibold">
+                    <span class="text-danger">*</span> Person
+                </label>
+                <input type="text" class="form-control" list="personList" placeholder="Type to search..." oninput="selector(this, 'personIDHidden')" />
+                <input type="hidden" asp-for="departmentModel.employmentID" id="personIDHidden" />
+                <datalist id="personList">
+                    @foreach (var person in (SelectList)ViewData["personID"])
+                    {
+                        <option data-id="@person.Value" value="@person.Text"></option>
+                    }
+                </datalist>
                 <span asp-validation-for="departmentModel.employmentID" class="text-danger"></span>
+
             </div>
             <div class="form-group d-flex justify-content-end">
                 @await Html.PartialAsync("back")

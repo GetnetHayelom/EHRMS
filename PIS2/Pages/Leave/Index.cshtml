@@ -14,33 +14,38 @@
     <!-- Header -->
     <div class="d-flex justify-content-between align-items-center mb-3">
         <div>
-            <h1 class="fw-bold text-dark mb-0">Leave & Attendance</h1>
-            <h5 class="text-secondary fw-bold">Unposted Leaves and Attendance</h5>
-            <a asp-page="Create" class="btn btn-primary m-1 d-print-none">Add New Leave Record</a>
+            <h2 class="fw-bold text-dark mb-0">Leave & Attendance</h2>
+            <p class="text-muted mb-0">Unposted Leaves and Attendance</p>
         </div>
-        <div class="">
- 
-            <ul class="nav nav-tabs">
-                <li class="nav-item"><h5 class="fw-bold text-light bg-dark p-2 rounded">Pending Requests: @Model.CountUnposted</h5></li>
-                <li class="nav-item"><button class="nav-link active d-print-none" data-bs-toggle="tab" data-bs-target="#rawView">List View</button></li>
-                <li class="nav-item"><button class="nav-link d-print-none" data-bs-toggle="tab" data-bs-target="#groupDepView">Department View</button></li>
-                <li class="nav-item"><button class="nav-link m-1 d-print-none" data-bs-toggle="tab" data-bs-target="#groupTypeView">Types View</button></li>
-            </ul>
+        <div class="d-flex gap-2 align-items-end">
+            <h5 class="fw-bold text-light bg-dark p-2 m-0 rounded">Pending Requests: @Model.CountUnposted</h5>
+            <a asp-page="Create" class="btn btn-primary m-0 d-print-none"><i class="bi bi-plus-circle me-2"></i> New Record</a>
         </div>
+        
     </div>
-
-    <hr class="border border-secondary" />
-
+    <div class="mb-0 d-flex justify-content-between align-items-end">
+        <ul class="nav nav-tabs">
+            <li class="nav-item"><button class="nav-link active d-print-none" data-bs-toggle="tab" data-bs-target="#rawView">List View</button></li>
+            <li class="nav-item"><button class="nav-link d-print-none" data-bs-toggle="tab" data-bs-target="#groupDepView">Department View</button></li>
+            <li class="nav-item"><button class="nav-link m-1 d-print-none" data-bs-toggle="tab" data-bs-target="#groupTypeView">Types View</button></li>
+            <li class="nav-item"><button class="nav-link m-1 d-print-none" data-bs-toggle="tab" data-bs-target="#toExpire">Expiration View</button></li>
+        </ul>
+    </div>
     <!-- Parent container -->
     <div id="parentDiv" class="tab-content print-full-width">
-        <!-- List View -->
+        <!-- LIST VIEW -->
         <div id="rawView" class="tab-pane active" data-bs-parent="#parentDiv">
-            <div class="d-flex justify-content-end gap-3 d-print-none">
-                <div>@await Html.PartialAsync("filter")</div>
-                <div>
-                    <excel-export table="dataTable" filename="Unposted_Leave_List_@(DateTime.Now).xlsx"></excel-export>
+
+            <div class="card shadow-sm m-1 p-0">
+                <div class="d-flex justify-content-between align-items-end">
+                    <h4 class="fw-bold text-primary">Unposted Leaves</h4>
+                    <div class="d-flex justify-content-end align-items-end m-0">
+                        @await Html.PartialAsync("filter")
+                        @await Html.PartialAsync("back")
+                        @await Html.PartialAsync("print")
+                        <div class="m-2"><excel-export table="dataTable" filename="Unposted_Leave_List_@(DateTime.UtcNow).xlsx"></excel-export></div>
+                    </div>
                 </div>
-                <div>@await Html.PartialAsync("print")</div> 
             </div>
 
             <div class="table-responsive shadow-sm rounded">
@@ -62,33 +67,33 @@
                     </thead>
                     <tbody id="table-body">
                         
-                        @foreach (var item in Model.leaveModel.OrderBy(l => l.leaveRequestDate))
+                        @foreach (var item in Model.leaveModel.OrderBy(l => l.LeaveRequestDate))
                         {
                             <tr>
-                                <td onclick="location.href='@Url.Page("Details", new { id = item.leaveID })'" style="cursor:pointer;">
-                                    <strong>@item.leaveID</strong>
+                                <td onclick="location.href='@Url.Page("Details", new { id = item.LeaveId })'" style="cursor:pointer;">
+                                    <strong>@item.LeaveId</strong>
                                 </td>
-                                <td>@item.employmentModel?.givenID</td>
-                                <td>@item.employmentModel?.personModel?.personFullName</td>
-                                <td>@item.leaveRequestDate.ToString("MM/dd/yyyy")</td>
-                                <td>@item.leaveStartDate.ToString("MM/dd/yyyy")</td>
-                                <td>@item.leaveEndDate.ToString("MM/dd/yyyy")</td>
-                                <td>@item.leaveDays</td>
-                                <td>@item.leaveTypeModel?.leaveTypeName</td>
+                                <td>@item.GivenID</td>
+                                <td>@item.FullName</td>
+                                <td>@item.LeaveRequestDate.ToString("MM/dd/yyyy")</td>
+                                <td>@item.LeaveStart.ToString("MM/dd/yyyy")</td>
+                                <td>@item.LeaveEnd.ToString("MM/dd/yyyy")</td>
+                                <td>@item.LeaveDays</td>
+                                <td>@item.LeaveType</td>
                                 <td>
-                                    @if (item.leaveStatus == Models.leaveStatus.Approved)
+                                    @if (item.LeaveStatus == Models.leaveStatus.Approved)
                                     {
-                                        <span class="badge bg-success">@item.leaveStatus</span>
+                                        <span class="badge bg-success">@item.LeaveStatus</span>
                                     }
                                     else
                                     {
-                                        <span class="badge bg-warning text-dark">@item.leaveStatus</span>
+                                        <span class="badge bg-warning text-dark">@item.LeaveStatus</span>
                                     }
                                 </td>
                                 <td class="text-center d-print-none">
                                     @if (User.IsInRole("MIE\\PMS_HRCLERK"))
                                     {
-                                        <button class="btn btn-success btn-sm post-button" data-id="@item.leaveID">Post</button>
+                                        <button class="btn btn-success btn-sm post-button" data-id="@item.LeaveId">Post</button>
                                     }
                                 </td>
                             </tr>
@@ -98,11 +103,15 @@
             </div>
         </div>
 
-        <!-- Department Group View -->
+        <!-- DEPARTMENT GROUP VIEW -->
         <div id="groupDepView" class="tab-pane" data-bs-parent="#parentDiv">
-            <h4 class="fw-bold mt-3 text-dark">Department Unposted Leave</h4>
-            <div class="table-responsive shadow-sm rounded">
+            <div class="d-flex justify-content-between align-items-end">
+                <h4 class="fw-bold mt-3 text-dark">Department Unposted Leave</h4>
                 <excel-export table="departmentTable" filename="Unposted_Leave_Department_@(DateTime.Now).xlsx"></excel-export>
+            </div>
+            
+            <div class="table-responsive shadow-sm rounded">
+                
                 <table class="table table-striped table-hover align-middle" id="departmentTable">
                     <thead class="bg-dark text-white">
                         <tr>
@@ -147,28 +156,28 @@
                                                 @foreach (var item in dep.Records)
                                                 {
                                                     <tr>
-                                                        <td onclick="location.href='@Url.Page("Details", new { id = item.leaveID })'" style="cursor:pointer;">@item.leaveID</td>
-                                                        <td>@item.employmentModel.givenID</td>
-                                                        <td>@item.employmentModel.personModel.personFullName</td>
-                                                        <td>@item.leaveRequestDate.ToString("MMM dd, yyyy")</td>
-                                                        <td>@item.leaveStartDate.ToString("MMM dd, yyyy")</td>
-                                                        <td>@item.leaveEndDate.ToString("MMM dd, yyyy")</td>
-                                                        <td>@item.leaveDays</td>
-                                                        <td>@item.leaveTypeModel.leaveTypeName</td>
+                                                        <td onclick="location.href='@Url.Page("Details", new { id = item.LeaveId })'" style="cursor:pointer;">@item.LeaveId</td>
+                                                        <td>@item.GivenID</td>
+                                                        <td>@item.FullName</td>
+                                                        <td>@item.LeaveRequestDate.ToString("MM/dd/yyyy")</td>
+                                                        <td>@item.LeaveStart.ToString("MM/dd/yyyy")</td>
+                                                        <td>@item.LeaveEnd.ToString("MM/dd/yyyy")</td>
+                                                        <td>@item.LeaveDays</td>
+                                                        <td>@item.LeaveType</td>
                                                         <td>
-                                                            @if (item.leaveStatus == Models.leaveStatus.Approved)
+                                                            @if (item.LeaveStatus == Models.leaveStatus.Approved)
                                                             {
-                                                                <span class="badge bg-success">@item.leaveStatus</span>
+                                                                <span class="badge bg-success">@item.LeaveStatus</span>
                                                             }
                                                             else
                                                             {
-                                                                <span class="badge bg-warning text-dark">@item.leaveStatus</span>
+                                                                <span class="badge bg-warning text-dark">@item.LeaveStatus</span>
                                                             }
                                                         </td>
                                                         <td class="text-center d-print-none">
                                                             @if (User.IsInRole("MIE\\PMS_HRCLERK"))
                                                             {
-                                                                <button class="btn btn-success btn-sm post-button" data-id="@item.leaveID">Post</button>
+                                                                <button class="btn btn-success btn-sm post-button" data-id="@item.LeaveId">Post</button>
                                                             }
                                                         </td>
                                                     </tr>
@@ -185,11 +194,15 @@
             </div>
         </div>
 
-        <!-- Type Group View -->
+        <!-- TYPE GROUP VIEW -->
         <div id="groupTypeView" class="tab-pane" data-bs-parent="#parentDiv">
-            <h4 class="fw-bold mt-3 text-primary">Unposted Leave By Type</h4>
-            <div class="table-responsive shadow-sm rounded">
+            <div class="d-flex justify-content-between align-items-end">
+                <h4 class="fw-bold mt-3 text-primary">Unposted Leave By Type</h4>
                 <excel-export table="typeTable" filename="Unposted_Leave_Types_@(DateTime.Now).xlsx"></excel-export>
+            </div>
+            
+            <div class="table-responsive shadow-sm rounded">
+                
                 <table class="table table-striped table-hover align-middle" id="typeTable">
                     <thead class="bg-dark text-white">
                         <tr>
@@ -234,28 +247,28 @@
                                                 @foreach (var item in dep.Records)
                                                 {
                                                     <tr>
-                                                        <td onclick="location.href='@Url.Page("Details", new { id = item.leaveID })'" style="cursor:pointer;">@item.leaveID</td>
-                                                        <td>@item.employmentModel.givenID</td>
-                                                        <td>@item.employmentModel.personModel.personFullName</td>
-                                                        <td>@item.leaveRequestDate.ToString("MMM dd, yyyy")</td>
-                                                        <td>@item.leaveStartDate.ToString("MMM dd, yyyy")</td>
-                                                        <td>@item.leaveEndDate.ToString("MMM dd, yyyy")</td>
-                                                        <td>@item.leaveDays</td>
-                                                        <td>@item.leaveTypeModel.leaveTypeName</td>
+                                                        <td onclick="location.href='@Url.Page("Details", new { id = item.LeaveId })'" style="cursor:pointer;">@item.LeaveId</td>
+                                                        <td>@item.GivenID</td>
+                                                        <td>@item.FullName</td>
+                                                        <td>@item.LeaveRequestDate.ToString("MM/dd/yyyy")</td>
+                                                        <td>@item.LeaveStart.ToString("MM/dd/yyyy")</td>
+                                                        <td>@item.LeaveEnd.ToString("MM/dd/yyyy")</td>
+                                                        <td>@item.LeaveDays</td>
+                                                        <td>@item.LeaveType</td>
                                                         <td>
-                                                            @if (item.leaveStatus == Models.leaveStatus.Approved)
+                                                            @if (item.LeaveStatus == Models.leaveStatus.Approved)
                                                             {
-                                                                <span class="badge bg-success">@item.leaveStatus</span>
+                                                                <span class="badge bg-success">@item.LeaveStatus</span>
                                                             }
                                                             else
                                                             {
-                                                                <span class="badge bg-warning text-dark">@item.leaveStatus</span>
+                                                                <span class="badge bg-warning text-dark">@item.LeaveStatus</span>
                                                             }
                                                         </td>
                                                         <td class="text-center d-print-none">
                                                             @if (User.IsInRole("MIE\\PMS_HRCLERK"))
                                                             {
-                                                                <button class="btn btn-success btn-sm post-button" data-id="@item.leaveID">Post</button>
+                                                                <button class="btn btn-success btn-sm post-button" data-id="@item.LeaveId">Post</button>
                                                             }
                                                         </td>
                                                     </tr>
@@ -271,10 +284,60 @@
                 </table>               
             </div>
         </div>
+
+        <!-- TO EXPIRE VIEW -->
+        <div id="toExpire" class="tab-pane" data-bs-parent="#parentDiv">
+            <div class="d-flex justify-content-between align-items-end">
+                <h4 class="fw-bold mt-3 text-primary">Expiring Leaves</h4>
+                <excel-export table="typeTable" filename="Unposted_Leave_Types_@(DateTime.Now).xlsx"></excel-export>
+            </div>
+            <table class="table table-striped table-hover" id="expireTable">
+                <thead class="table-dark">
+                    <tr>
+                        <th>S/No</th>
+                        <th>Emp.ID</th>
+                        <th>Full Name</th>
+                        <th>Gender</th>
+                        <th>Department</th>
+                        <th>Days</th>
+                        <th>Expire Date</th>
+                        <th class="d-print-none text-end px-2">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @{
+                        int expIndex = 1;
+                    }
+                    @foreach(var exp in Model.ExpiringLeaves.OrderBy(e => e.CompanyName).GroupBy(e => e.CompanyName))
+                    { 
+                        <tr><th colspan="8">@exp.Key (@exp.Count())</th></tr>
+                        @foreach (var e in exp.OrderBy(e => e.DepartmentName).ThenBy(e => e.givenID))
+                        {
+                            <tr>
+                                <td>@expIndex</td>
+                                <td>@e.givenID</td>
+                                <td>@e.FullName</td>
+                                <td>@e.Gender</td>
+                                <td>@e.DepartmentName</td>
+                                <td>@e.days</td>
+                                <td>@e.expDate.ToString("MM/dd/yy")</td>
+                                <td class="d-print-none text-end px-2">
+                                    <a asp-page="/Leave/Create" asp-route-id="@e.employmentID" class="btn btn-sm btn-outline-primary" title="View Details">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                            expIndex++; 
+                        }
+                        
+                    }
+                   
+                </tbody>
+            </table>
+        </div>
     </div>
 
     <div class="d-flex justify-content-end mt-3">
-        
         @await Html.PartialAsync("print")
     </div>
 </div>

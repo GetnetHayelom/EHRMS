@@ -1,0 +1,87 @@
+﻿@page
+@model PIS2.Pages.Benefits.CreateModel
+
+@{
+    ViewData["Title"] = "Create Other Payment";
+}
+
+<div class="container-fluid">
+    <div class="card shadow mb-4">
+        <div class="card-header py-3 d-flex justify-content-between align-items-center">
+            <h6 class="m-0 font-weight-bold text-primary">New Other Payment Record</h6>
+        </div>
+        <div class="card-body">
+            <form method="post">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                <div class="row">
+                    <div class="col-md-6 border-right">
+                        <div class="form-group mb-3">
+                            <label asp-for="OtherPay.invoiceNo" class="form-label font-weight-bold">Invoice Number</label>
+                            <input asp-for="OtherPay.invoiceNo" class="form-control" placeholder="REF-0000" />
+                            <span asp-validation-for="OtherPay.invoiceNo" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label asp-for="OtherPay.earningID" class="form-label font-weight-bold">Earning Link</label>
+                            <select asp-for="OtherPay.earningID" class="form-control" asp-items="ViewBag.earningID">
+                                <option value="">-- Select Earning --</option>
+                            </select>
+                            <span asp-validation-for="OtherPay.earningID" class="text-danger"></span>
+                        </div>
+
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-group mb-3">
+                            <label asp-for="OtherPay.GrossPay" class="form-label font-weight-bold">Gross Amount</label>
+                            <div class="input-group">
+                                <span class="input-group-text">$</span>
+                                <input asp-for="OtherPay.GrossPay" id="gross" class="form-control" type="number" step="0.01" />
+                            </div>
+                            <span asp-validation-for="OtherPay.GrossPay" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label asp-for="OtherPay.NetPay" class="form-label font-weight-bold">Net Amount</label>
+                            <div class="input-group">
+                                <span class="input-group-text">$</span>
+                                <input asp-for="OtherPay.NetPay" id="net" class="form-control" type="number" step="0.01" />
+                            </div>
+                            <span asp-validation-for="OtherPay.NetPay" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label asp-for="OtherPay.remark" class="form-label font-weight-bold">Remarks/Notes</label>
+                            <textarea asp-for="OtherPay.remark" class="form-control" rows="4"></textarea>
+                            <span asp-validation-for="OtherPay.remark" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-4 border-top pt-3">
+                    <button type="submit" class="btn btn-success btn-icon-split">
+                        <span class="text">Create Payment</span>
+                    </button>
+                    <a asp-page="./Index" class="btn btn-secondary">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+        // Auto-sync Net Pay with Gross Pay as a convenience
+        const grossInput = document.getElementById('gross');
+        const netInput = document.getElementById('net');
+
+        grossInput.addEventListener('input', () => {
+            netInput.value = grossInput.value;
+        });
+    </script>
+}

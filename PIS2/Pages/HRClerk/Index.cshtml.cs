@@ -4,8 +4,11 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
+using PIS2.Data;
 using PIS2.Models;
+using PIS2.Pages.Account.Budgeting;
 using PIS2.Pages.Company;
+using PIS2.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,10 +21,10 @@ namespace PIS2.Pages.HRClerck
         [Authorize(Roles = "MIE\\PMS_HRMANAGER")]
     public class IndexModel : PageModel
     {
-        private readonly PIS2.Models.PISContext _context;
-        private readonly PIS2.Models.Core _core;
+        private readonly PISContext _context;
+        private readonly Core _core;
 
-        public IndexModel(PIS2.Models.PISContext context, Core core)
+        public IndexModel(PISContext context, Core core)
         {
             _context = context;
             _core = core;
@@ -41,6 +44,8 @@ namespace PIS2.Pages.HRClerck
         public int contractEndCount { get; set; } = default!;
         public int prohibitions { get; set; } = default!;
         public int lettersCount { get; set; } = default!;
+        public List<BudgetPlanSummary> Plans { get; set; } = new();
+        public DashboardStats Stats { get; set; } = new();
         public async Task OnGetAsync()
         {
             var userID = _context.Users.FirstOrDefault(u => u.userName == User.Identity.Name)?.userID ?? 0;
@@ -99,7 +104,7 @@ namespace PIS2.Pages.HRClerck
             lettersCount = _context.Letters.Where(l=> l.letterStatus == LetterStatus.Draft).Count();
         }
 
-        public IActionResult OnGetGetSummary(string sumType)
+        public async Task<IActionResult> OnGetGetSummary(string sumType)
         {
             var userID = _context.Users.FirstOrDefault(u => u.userName == User.Identity.Name)?.userID ?? 0;
 
@@ -198,6 +203,7 @@ namespace PIS2.Pages.HRClerck
                     break;
                 case "Service":
                     var servicesList = _context.ServiceRequests
+                        .Include(s => s.ServiceRequestType)
                         .Include(s => s.Employment).ThenInclude(e => e.JobPlacements).ThenInclude(j => j.departmentModel)
                         .Where(s => s.serviceRequestStatus == ServiceRequestStatus.Hold && empIDs.Contains(s.employmentID)).ToList();
 
@@ -211,7 +217,7 @@ namespace PIS2.Pages.HRClerck
 
                         string department = activeJobPlacement?.departmentModel?.departmentName ?? "N/A";
 
-                        return $"<tr onclick=\"location.href='{url}'\" style='cursor:pointer'><td>{s.Employment.givenID}</td><td>{s.requestedService}</td><td>{s.serviceRequestDate}</td><td>{department}</td><td>{s.serviceRequestStatus}</td></tr>";
+                        return $"<tr onclick=\"location.href='{url}'\" style='cursor:pointer'><td>{s.Employment.givenID}</td><td>{s.ServiceRequestType?.serviceRequestTypeName}</td><td>{s.serviceRequestDate}</td><td>{department}</td><td>{s.serviceRequestStatus}</td></tr>";
                     }));
                     break;
                 case "Contract":
@@ -356,6 +362,33 @@ namespace PIS2.Pages.HRClerck
                     break;
 
             }
+
+            var plans = await _context.BudgetPlans
+                .Include(b => b.BudgetLines)
+                .Where(b => b.Status == BudgetStatus.ACTIVE)
+                .OrderByDescending(b => b.StartDate)
+                .ToListAsync();
+
+            foreach (var p in plans)
+            {
+                var allocated = p.BudgetLines.Sum(l => l.AllocatedAmount);
+                var spent = await _context.JournalEntryLines
+                    .Where(j => j.JournalEntry.EntryDate >= p.StartDate && j.JournalEntry.EntryDate <= p.EndDate)
+                    .SumAsync(j => j.Debit);
+
+                Plans.Add(new BudgetPlanSummary
+                {
+                    Plan = p,
+                    TotalAllocated = allocated,
+                    TotalSpent = spent
+                });
+            }
+
+            // Dashboard Aggregates
+            Stats.ActivePlansCount = plans.Count(x => x.Status == BudgetStatus.ACTIVE);
+            Stats.TotalGlobalBudget = Plans.Sum(x => x.TotalAllocated);
+            Stats.TotalGlobalSpent = Plans.Sum(x => x.TotalSpent);
+
 
             return new JsonResult(new { tableHeader, tableBody, tableTitle });
         }

@@ -1,15 +1,15 @@
 ﻿using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
-
+using PIS2.Data;
 using PIS2.Models;
 
 namespace PIS2.Views
 {
     public class DepartmentView
     {
-        private readonly PIS2.Models.PISContext _context;
+        private readonly PISContext _context;
 
-        public DepartmentView(PIS2.Models.PISContext context)
+        public DepartmentView(PISContext context)
         {
             _context = context;
         }

@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using PIS2.Models;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using PIS2.Data;
 
 namespace PIS2.Pages.Deduction
 
@@ -16,10 +18,10 @@ namespace PIS2.Pages.Deduction
 
         [BindProperty]
         public deductionType DeductionType { get; set; } = new deductionType();
-
+        public SelectList Accounts { get; set; }
         public void OnGet()
         {
-            // nothing to initialize for now
+            getOptions(null);
         }
 
         public async Task<IActionResult> OnPostAsync()
@@ -30,7 +32,7 @@ namespace PIS2.Pages.Deduction
             }
 
             ModelState.Remove("DeductionType.modifiedBy");
-            if (!ModelState.IsValid) return Page();
+            if (!ModelState.IsValid) { getOptions(null);  return Page(); };
 
             DeductionType.modifiedBy = User.Identity.Name ?? "system";
             DeductionType.deductionStatus = mainStatus.Active;
@@ -40,6 +42,14 @@ namespace PIS2.Pages.Deduction
             await _db.SaveChangesAsync();
 
             return RedirectToPage("Index");
+        }
+        private void getOptions(int? id)
+        {
+            var accounts = _db.Accounts
+                .Where(a => a.accountStatus == mainStatus.Active)
+                .OrderBy(a => a.accountName)
+                .ToList();
+            Accounts = new SelectList(accounts, "accountID", "accountName", id);
         }
     }
 }

@@ -67,9 +67,10 @@
         <div class="form-group">
             <label for="editor">Content</label>
 
-            @await Html.PartialAsync("_EditorHeader")
+            <!-- Editor -->
+            <div id="editor" style="height:300px; background:white;"></div>
             <!-- Hidden input for form -->
-            <input type="hidden" id="letterBody" name="Letter.letterBody" />
+            <input type="hidden" id="letterBody" asp-for="Letter.letterBody" />
         </div>
         <!-- Selector -->
         <div class="mb-3">
@@ -100,13 +101,22 @@
     <script src="/lib/quill/quill.min.js"></script>
     <script src="/js/quill-editor.js"></script>
     <script>
+
         document.addEventListener('DOMContentLoaded', function () {
-            window.initQuillEditor({
-                editorId: 'editor',
-                hiddenInputId: 'letterBody',
-                initialContent: '@Html.Raw(Model.Letter.letterBody)'
+            const hiddenInput = document.getElementById("letterBody");
+            const initialContent = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.Letter.letterBody));
+
+            const quill = new Quill('#editor', {
+              theme: 'snow'
+            });
+
+            if(initialContent){quill.root.innerHTML = initialContent;hiddenInput.value = initialContent;}
+
+            quill.on('text-change', () => {
+                hiddenInput.value = quill.root.innerHTML;
             });
         });
+
     </script>
 }
 

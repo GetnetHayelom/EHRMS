@@ -1,7 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
+using PIS2.Data;
 using PIS2.Models;
+using PIS2.Services;
 using System.Diagnostics.Metrics;
 
 
@@ -10,10 +12,10 @@ namespace PIS2.Pages.Experience
     
     public class _OfficialPrintModel : PageModel
     {
-        private readonly PIS2.Models.PISContext _context;
-        private readonly PIS2.Models.Core _core;
+        private readonly PISContext _context;
+        private readonly Core _core;
 
-        public _OfficialPrintModel(PIS2.Models.PISContext context, Models.Core core)
+        public _OfficialPrintModel(PISContext context, Core core)
         {
             _context = context;
             _core = core;
@@ -43,7 +45,6 @@ namespace PIS2.Pages.Experience
             {
                 Experiences = experiences;
                 personName = person;
-                
             }
             if(employment.Any(e => e.employmentStatus == mainStatus.Active))
             {
@@ -55,7 +56,7 @@ namespace PIS2.Pages.Experience
                     {
                         experienceStartDate = activeJobPlacement.jobPlacementDate,
                         experienceEndDate =DateTime.Now,
-                        jobTitle =activeJobPlacement.jobModel?.jobTitle
+                        jobTitle = activeJobPlacement.jobModel?.jobTitle
                     });
 
                 }

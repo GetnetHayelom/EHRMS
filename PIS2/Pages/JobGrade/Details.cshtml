@@ -1,20 +1,20 @@
 @page
-@model PIS2.Pages.JobGrade.DeleteModel
+@model PIS2.Pages.JobGrade.DetailsModel
 
 @{
-    ViewData["Title"] = "Delete";
+    ViewData["Title"] = "Details";
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
 
-<h1>Job Grade</h1>
+<h2 class="fw-bold mb-0">Job Grades</h2>
+<p class="text-muted mb-0">Job grade details #@Model.jobGradeModel.jobGradeID</p>
 
-<h3>Job Grade Details</h3>
-<div>
+<div class="d-flex justify-content-between">
 
     <hr />
-    <dl class="row">
+    <dl class="row col-md-5">
         <dt class="col-sm-2">
-            Job Grade Name: 
+            Name: 
         </dt>
         <dd class="col-sm-10">
             @Html.DisplayFor(model => model.jobGradeModel.jobGradeName)
@@ -44,10 +44,57 @@
             @Html.DisplayFor(model => model.jobGradeModel.jobGradeStatus)
         </dd>
     </dl>
-    
+    <div class="col-md-7">
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-dark text-white d-flex align-items-center">
+                <i class="bi bi-clock-history me-2"></i> Audit Trail
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive" style="max-height: 500px; overflow-y: auto;">
+                    <table class="table table-sm table-hover mb-0">
+                        <thead class="table-light">
+                            <tr class="small text-uppercase">
+                                <th>Date</th>
+                                <th>User</th>
+                                <th>Field</th>
+                                <th>Old Value</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model.History.Any())
+                            {
+                                @foreach (var log in Model.History)
+                                {
+                                    <tr>
+                                        <td class="small">@log.ModifiedDate.ToString("MM/dd/yyyy HH:mm")</td>
+                                        <td class="small fw-bold">@log.ModifiedBy</td>
+                                        <td><span class="badge bg-light text-dark">@Model.GetFriendlyColumnName(log.ColumnName)</span></td>
+                                        <td class="text-muted italic small">
+                                            <span class="text-danger text-decoration-line-through small">
+                                                @Model.FormatAuditValue(log.ColumnName, log.OldValue)
+                                            </span>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td colspan="4" class="text-center py-4 text-muted">No change history found for this record.</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="card-footer bg-white small text-muted">
+                Total changes tracked: @Model.History.Count
+            </div>
+        </div>
+    </div>
   
 </div>
 <div>
-    <a asp-page="./Edit" asp-route-id="@Model.jobGradeModel.jobGradeID">Edit</a> |
-    <a asp-page="./Index">Back to List</a>
+    <a asp-page="./Edit" asp-route-id="@Model.jobGradeModel.jobGradeID" class="btn btn-primary me-2"><i class="bi bi-pencil-square me-2"></i>Edit</a> 
+    <a asp-page="./Index" class="btn btn-outline-secondary">Back to List</a>
 </div>

@@ -1,0 +1,129 @@
+﻿@page
+@model PIS2.Pages.Account.ChartOfAccountsModel
+
+@{
+    ViewData["Title"] = "Chart of Accounts";
+}
+@await Html.PartialAsync("headerSimple", "")
+<div>
+    <div class="d-flex justify-content-between align-items-end m-1">
+        <h2 class="fw-bold m-0 text-dark">Chart of Accounts</h2>
+        <a asp-page="Create" class="btn btn-sm btn-primary"><i class="bi bi-plus-circle me-2"></i>Add New Account</a>
+    </div>
+    <div class="card shadow-sm m-1 p-0">
+        <div class="d-flex justify-content-end align-items-end m-0">
+            @await Html.PartialAsync("filter")
+            @await Html.PartialAsync("back")
+            @await Html.PartialAsync("print")
+        </div>
+    </div>
+</div>
+<div class="card shadow-sm">   
+    <div class="card-body p-0">
+        @* Removed padding for better table fit *@
+        <table class="table table-hover mb-0" id="dataTable">
+            <thead class="table-dark">
+                <tr>
+                    <th>S/No</th>
+                    <th>Code</th>
+                    <th>Account Name</th>
+                    <th>Type</th>
+                    <th>Status</th>
+                    <th>Sub-Accounts</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.Accounts == null || !Model.Accounts.Any())
+                {
+                    <tr>
+                        <td colspan="10" class="text-center text-muted">
+                            No accounts found.
+                        </td>
+                    </tr>
+                }
+                @{
+                    int index = 1;
+                }
+                @foreach (var acc in Model.Accounts)
+                {
+                    @* 1. Added data-toggle and data-target to the parent row *@
+                    @* 2. Added style="cursor: pointer" to indicate it's clickable *@
+                    <tr class="font-weight-bold"
+                        data-bs-toggle="collapse"
+                        data-bs-target=".sub-@acc.accountNumber"
+                        aria-expanded="false"
+                        style="cursor: pointer;">
+                        <td>@(index++)</td>
+                        <td>@acc.accountNumber</td>
+                        <td>
+                            <i class="fas fa-chevron-right mr-2 small text-muted"></i> @acc.accountName
+                        </td>
+                        <td><span class="badge  bg-info badge-info">@acc.accountType</span></td>
+                        <td>
+                            @if (acc.accountStatus == Models.mainStatus.Active)
+                            {
+                                <span class="badge bg-success">@Html.DisplayFor(modelItem => acc.accountStatus)</span>
+                            }
+                            else if (acc.accountStatus == Models.mainStatus.Suspended)
+                            {
+                                <span class="badge bg-warning">@Html.DisplayFor(modelItem => acc.accountStatus)</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-secondary">@Html.DisplayFor(modelItem => acc.accountStatus)</span>
+                            }
+                        </td>
+                        <td>
+                            <span class="badge badge-pill bg-info badge-dark">@acc.SubAccounts?.Count</span>
+                        </td>
+                    </tr>
+                    <tr class="collapse sub-@acc.accountNumber">
+                        <td colspan="6">
+                            <div class="sub-container" data-account="@acc.accountNumber">
+                                Loading...
+                            </div>
+                        </td>
+                    </tr>
+                    @foreach (var sub in acc.SubAccounts)
+                    {
+                        @* 3. Added 'collapse' class and a unique class based on parent ID *@
+                        <tr class="collapse sub-@acc.accountNumber bg-light">
+                            <td></td>
+                            <td class="pl-4 text-muted small">@acc.accountNumber - @sub.subAccountID</td>
+                            <td class="pl-5">↳ @sub.subAccountName</td>
+                            <td colspan="2" class="small text-muted italic">@sub.subAccountDescription</td>
+                            <td><span class="badge badge-light">Sub</span></td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+<div class="d-flex justify-content-end align-items-center m-0">
+    @await Html.PartialAsync("back")
+    @await Html.PartialAsync("print")
+</div>
+@section Scripts {
+    <script>
+        document.querySelectorAll('[data-bs-toggle="collapse"]').forEach(row => {
+            row.addEventListener('click', function () {
+
+                const targetClass = this.getAttribute('data-bs-target');
+                const container = document.querySelector(targetClass + ' .sub-container');
+
+                // Prevent reloading
+                if (container.dataset.loaded === "true") return;
+
+                const accountNumber = container.dataset.account;
+
+                fetch(`/Account/ChartOfAccounts/GetSubAccounts?accountNumber=${accountNumber}`)
+                    .then(res => res.text())
+                    .then(html => {
+                        container.innerHTML = html;
+                        container.dataset.loaded = "true";
+                    });
+            });
+        });
+    </script>
+}

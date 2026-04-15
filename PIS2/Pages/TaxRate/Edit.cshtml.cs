@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
+using PIS2.Data;
 using PIS2.Models;
 using System;
 using System.Threading.Tasks;
@@ -38,8 +39,7 @@ namespace PIS2.Pages.TaxRate
             if (existingTaxRate == null) return NotFound();
 
             // update properties
-            existingTaxRate.from = TaxRate.from;
-            existingTaxRate.ceiling = TaxRate.ceiling;
+            existingTaxRate.amount = TaxRate.amount;
             existingTaxRate.taxRate = TaxRate.taxRate;
             existingTaxRate.deduction = TaxRate.deduction;
             existingTaxRate.reference = TaxRate.reference;

@@ -4,19 +4,49 @@
     ViewData["Title"] = "Edit";
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
+<div class="d-flex justify-content-between align-items-end">
+    <div>
+        <h2 class="fw-bold">Person</h2>
+        <p class="text-muted mb-0"> Update a Persons Information #@Model.personModel.personID</p>
+    </div>
+    <div class="btn-group">
+        <a class="btn btn-outline-secondary" asp-page="Index"><i class="bi bi-arrow-left me-2"></i>Back To Catalog</a>
+        <a class="btn btn-primary" asp-page="Details" asp-route-id="@Model.personModel.personID"><i class="bi bi-eye me-2"></i>Details</a>
+    </div>
+</div>
 
-<h2 class="fw-bold">Person</h2>
-<h6 class="fw-bold text-secondary"> Update a Persons Information</h6>
 <hr />
 <div class="row">
-    <div>
+    <div class="col-md-3 col-sm-12">
+        <form id="imgForm">
+            <div class="card shadow-sm">
+                <div class="card-header bg-dark text-white"><h5 class="fw-bold card-title">Profile Picture</h5></div>
+                <div class="card-body">
+                    <div class="d-flex flex-column justify-content-center align-items-center">
+                        <input type="hidden" name="personId" value="@Model.personModel.personID" />
+                        <img src="/api/attachments/viewprofile/@Model?.personModel?.personID" class="rounded-circle border shadow-sm" style="max-width: 200px; max-height: 200px; object-fit: cover;" alt="Profile Picture"
+                             onerror="this.onerror=null; this.src='/images/@(Model.personModel.personGender == Models.Gender.Female ? "female-default.png" : "male-default.png")';" id="preview">
+                    </div>
+
+                </div>
+                <div class="card-footer">
+                    <div class="btn-group mt-3">
+                        <input type="file" id="imageUpload" name="file" class="form-control" accept="image/jpeg" onchange="previewImage(event)" />
+                        <input type="submit" value="Change Pic" class="btn btn-success" id="changeBtn" />
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <!-- Right Column - Photo -->
+    <div class="col-md-9 col-sm-12">
         <form method="post" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="personModel.personID" />
 
-            <div class="d-flex">
+            <div class="row g-2">
                 <!-- Left Column -->
-                <div class="col-md-4 me-4 card shadow-sm">
+                <div class="col-md-6 card shadow-sm col-sm-12">
                     <div class="card-header bg-dark text-white"><h5 class="fw-bold card-title">Personal Info.</h5></div>
                     <div class="card-body">
 
@@ -73,7 +103,7 @@
                 </div>
 
                 <!-- Middle Column -->
-                <div class="col-md-5 me-4">
+                <div class="col-md-6 col-sm-12">
                     <div class="card shadow-sm">
                         <div class="card-header bg-dark text-white"><h5 class="fw-bold card-title">Contact Info.</h5></div>
                         <div class="card-body">
@@ -130,36 +160,17 @@
 
                         </div>
                     </div>
-                    
-                </div>
-
-                <!-- Right Column - Photo -->
-                <div class="col-md-3">
-                    <div class="card shadow-sm">
-                        <div class="card-header bg-dark text-white"><h5 class="fw-bold card-title">Update Person Photo</h5></div>
-                        <div class="card-body justify-content-center">
-                            
-                            <input type="file" id="imageUpload" name="Photo" class="form-control" accept="image/jpeg" onchange="previewImage(event)" />
-
-                            @if (Model.PhotoExists)
-                            {
-                                <img src="~/images/@(Model.personModel.personID + ".jpg")" style="max-width:200px; margin-top:10px;" />
-
-                            }
-
-                            <img id="preview" style="max-width:200px; display:none; margin-top:10px;" />
-                        </div>
+                    <div class="form-group mt-3 d-flex justify-content-end">
+                        <input type="submit" value="Save" class="btn btn-success" />
                     </div>
-                    
                 </div>
-            </div>
-
-            <div class="form-group mt-3 d-flex justify-content-end">
-                <input type="submit" value="Save" class="btn btn-success" />
             </div>
         </form>
-    </div>
+     </div>
+    
+    
 </div>
+
 @await Html.PartialAsync("_AttachmentPartial",
 new Pages.Shared.AttachmentPartialModel
 {
@@ -173,13 +184,19 @@ new Pages.Shared.AttachmentPartialModel
 @section Scripts {
     <script>
         function previewImage(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
             const reader = new FileReader();
+            
             reader.onload = function () {
                 const preview = document.getElementById('preview');
+               
                 preview.src = reader.result;
                 preview.style.display = 'block';
+
             }
-            reader.readAsDataURL(event.target.files[0]);
+            reader.readAsDataURL(file);
         }
     </script>
 
@@ -225,7 +242,18 @@ new Pages.Shared.AttachmentPartialModel
         document.getElementById("tabyaInput")
             .addEventListener("input", () => loadSuggestions("tabya","tabyaInput","tabyaList"));
     </script>
+    <script>
+        document.getElementById("imgForm").addEventListener("submit", async e => {
+            e.preventDefault();
 
+            const formData = new FormData(e.target);
+            await fetch("/api/attachments/uploadprofile", {
+                method: "POST",
+                body: formData
+            });
+
+        });
+    </script>
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }

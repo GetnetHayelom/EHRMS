@@ -8,10 +8,14 @@
 @await Html.PartialAsync("headerSimple","")
 <div class="d-flex justify-content-between align-items-end">
     <div>
-        <h2 class="fw-bold">Companies</h2>
-        <a class="" asp-page="Create" class="btn btn-primary d-print-none">Add New Company</a>
+        <h2 class="fw-bold mb-0">Companies</h2>
+       <p class="text-muted mb-0">Companies catalog</p>
     </div>
+    <a asp-page="Create" class="btn btn-primary d-print-none"><i class="bi bi-plus-circle me-2"></i>Add New Company</a>
+</div>
+<div class="card shadow-sm m-1">
     <div class="d-flex justify-content-end d-print-none">
+
         <form method="get" class="d-flex">
             <label class="form-label"> Filter by Status</label>
             <select asp-for="CompanyStatus" class="form-control m-2" asp-items="@Html.GetEnumSelectList<Models.mainStatus>()" onchange="this.form.submit()">
@@ -23,7 +27,6 @@
         <excel-export table="dataTable" filename="Companies_@(DateTime.UtcNow).xlsx"></excel-export>
     </div>
 </div>
-
 
 <table class="table table-striped table-hover print-full-width" id="dataTable">
     <thead>
@@ -62,7 +65,7 @@
                 @Html.DisplayFor(modelItem => item.companyAlias)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.employmentID)
+                @Html.DisplayFor(modelItem => item.employmentModel.personModel.personFullName)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.addressModel.addressFormatted)

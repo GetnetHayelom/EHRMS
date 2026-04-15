@@ -1,0 +1,232 @@
+﻿@page
+@model PIS2.Pages.Structure.JobPlacementAnalaysisModel
+
+@{
+    ViewData["Title"] = "Policy Compliance: Placement Analysis";
+    var totalUnder = Model.Analysis.UnderStaffed.Sum(x => x.Difference);
+    var totalOver = Model.Analysis.OverStaffed.Sum(x => x.Difference);
+    var totalUnstructured = Model.Analysis.Unstructured.Count();
+}
+@await Html.PartialAsync("headerSimple", "")
+<div class="d-flex justify-content-between align-items-center">
+    <h2 class="fw-bold">Placement Policy Analysis</h2>
+    @await Html.PartialAsync("print")
+</div>
+<hr />
+
+<div class="row mb-4">
+    <div class="col-md-4">
+        <div class="card border-0 bg-danger text-white shadow-sm">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-uppercase small mb-1">Vacant Positions</h6>
+                        <h2 class="mb-0 fw-bold">@totalUnder</h2>
+                    </div>
+                    <i class="bi bi-person-dash fs-1 opacity-50"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card border-0 bg-warning text-dark shadow-sm">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-uppercase small mb-1">Over-Staffed</h6>
+                        <h2 class="mb-0 fw-bold">@totalOver</h2>
+                    </div>
+                    <i class="bi bi-person-plus fs-1 opacity-50"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card border-0 bg-secondary text-white shadow-sm">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-uppercase small mb-1">Unstructured</h6>
+                        <h2 class="mb-0 fw-bold">@totalUnstructured</h2>
+                    </div>
+                    <i class="bi bi-diagram-3 fs-1 opacity-50"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12 mb-5">
+        <div class="card border-danger shadow-sm">
+            <div class="card-header bg-danger text-white">
+                <h5 class="mb-0">Under-Staffed Positions (Gaps)</h5>
+            </div>
+            <div class="card-body p-0">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Classification</th>
+                            <th>Target</th>
+                            <th>Actual</th>
+                            <th>Missing</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var citem in Model.Analysis.UnderStaffed.GroupBy(u => u.CompanyName).Select((g, i) => new { g, i }))
+                        {
+                            var cID = $"under_c_{citem.i}";
+                            <tr class="table-primary fw-bold clickable" data-bs-toggle="collapse" data-bs-target=".@cID">
+                                <td><i class="bi bi-building me-2"></i> @citem.g.Key</td>
+                                <td>@citem.g.Sum(x => x.Required)</td>
+                                <td>@citem.g.Sum(x => x.Actual)</td>
+                                <td>@citem.g.Sum(x => x.Difference)</td>
+                            </tr>
+
+                            @foreach (var gitem in citem.g.GroupBy(u => u.DepartmentName).Select((dg, di) => new { dg, di }))
+                            {
+                                var dID = $"{cID}_d_{gitem.di}";
+                                <tr class="collapse @cID table-light fw-semibold clickable" data-bs-toggle="collapse" data-bs-target=".@dID">
+                                    <td class="ps-4 text-primary"><i class="bi bi-arrow-return-right me-2"></i> @gitem.dg.Key</td>
+                                    <td>@gitem.dg.Sum(x => x.Required)</td>
+                                    <td>@gitem.dg.Sum(x => x.Actual)</td>
+                                    <td>@gitem.dg.Sum(x => x.Difference)</td>
+                                </tr>
+
+                                @foreach (var item in gitem.dg)
+                                {
+                                    <tr class="collapse @dID">
+                                        <td class="ps-5 text-muted italic">@item.JobTitle</td>
+                                        <td>@item.Required</td>
+                                        <td><span class="badge bg-warning text-dark">@item.Actual</span></td>
+                                        <td class="text-danger fw-bold">@item.Difference</td>
+                                    </tr>
+                                }
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-12 mb-5">
+        <div class="card border-warning shadow-sm">
+            <div class="card-header bg-warning text-dark">
+                <h5 class="mb-0">Over-Staffed Positions (Risk)</h5>
+            </div>
+            <div class="card-body p-0">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Classification</th>
+                            <th>Target</th>
+                            <th>Actual</th>
+                            <th>Added</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var citem in Model.Analysis.OverStaffed.GroupBy(u => u.CompanyName).Select((g, i) => new { g, i }))
+                        {
+                            var ocID = $"over_c_{citem.i}";
+                            <tr class="table-warning fw-bold clickable" data-bs-toggle="collapse" data-bs-target=".@ocID">
+                                <td><i class="bi bi-building me-2"></i> @citem.g.Key</td>
+                                <td>@citem.g.Sum(x => x.Required)</td>
+                                <td>@citem.g.Sum(x => x.Actual)</td>
+                                <td>@citem.g.Sum(x => x.Difference)</td>
+                            </tr>
+                            @foreach (var gitem in citem.g.GroupBy(u => u.DepartmentName).Select((dg, di) => new { dg, di }))
+                            {
+                                var odID = $"{ocID}_d_{gitem.di}";
+                                <tr class="collapse @ocID table-light fw-semibold clickable" data-bs-toggle="collapse" data-bs-target=".@odID">
+                                    <td class="ps-4 text-warning"><i class="bi bi-arrow-return-right me-2"></i> @gitem.dg.Key</td>
+                                    <td>@gitem.dg.Sum(x => x.Required)</td>
+                                    <td>@gitem.dg.Sum(x => x.Actual)</td>
+                                    <td>@gitem.dg.Sum(x => x.Difference)</td>
+                                </tr>
+                                @foreach (var item in gitem.dg)
+                                {
+                                    <tr class="collapse @odID">
+                                        <td class="ps-5 text-muted italic">@item.JobTitle</td>
+                                        <td>@item.Required</td>
+                                        <td>@item.Actual</td>
+                                        <td class="text-danger fw-bold">+@item.Difference</td>
+                                    </tr>
+                                }
+                            }
+                        }
+                    </tbody>
+                               
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-12 mb-4">
+        <div class="card border-secondary shadow-sm">
+            <div class="card-header bg-secondary text-white">
+                <h5 class="mb-0">Unstructured Placements</h5>
+            </div>
+            <div class="card-body p-0">
+                <table class="table table-hover mb-0">
+                    @{
+                        int comp = 1;
+                    }
+                    @foreach (var citem in Model.Analysis.Unstructured.GroupBy(u => u.CompanyName))
+                    {
+                        var ucID = $"uns_c_{comp}";
+                        <tr class="table-secondary fw-bold clickable" data-bs-toggle="collapse" data-bs-target=".@ucID">
+                            <td colspan="4">@citem.Key (@citem.Count())</td>
+                        </tr>
+                        int dept = 1;
+                        @foreach (var gitem in citem.GroupBy(g => g.DepartmentName))
+                        {
+                            var udID = $"uns_d_{comp}{dept}";
+                            <tr class="collapse @ucID table-light fw-semibold clickable" data-bs-toggle="collapse" data-bs-target=".@udID">
+                                <td colspan="4" class="ps-4 text-secondary"><i class="bi bi-arrow-return-right me-2"></i> @gitem.Key (gitem.Count())</td>
+                            </tr>
+                            @foreach (var item in gitem)
+                            {
+                                <tr class="collapse @udID small">
+                                    <td class="ps-4">@item.GivenID
+                                        <a asp-page="/Employment/Details" asp-route-id="@item.EmploymentID" class="btn btn-sm btn-outline-primary" target="_blank" title="View Details">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                    </td>
+                                    <td>@item.EmployeeName</td>
+                                    <td>@item.DepartmentName</td>
+                                    <td>@item.JobTitle</td>
+                                </tr>
+                            }
+                            dept++;
+                        }
+                        comp++;
+                    }
+                
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="d-flex justify-content-end align-items-center m-0">
+    @await Html.PartialAsync("back")
+    @await Html.PartialAsync("print")
+</div>
+<style>
+    .clickable {
+        cursor: pointer;
+        transition: background 0.2s;
+    }
+
+        .clickable:hover {
+            filter: brightness(0.95);
+        }
+
+    .italic {
+        font-style: italic;
+    }
+    /* Ensure table rows animate or at least display correctly when toggled */
+    .collapse.show {
+        display: table-row !important;
+    }
+</style>

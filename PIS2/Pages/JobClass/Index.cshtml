@@ -8,17 +8,27 @@
 @await Html.PartialAsync("headerSimple", "")
 <div class="d-flex justify-content-between align-items-end">
     <div>
-        <h2 class="fw-bold">Job Classes</h2>
+        <h2 class="fw-bold mb-0">Job Classes</h2>
 
-        <p class="d-print-none">
-            <a asp-page="Create" class="btn btn-primary">Add New Job Class</a>
+        <p class="text-muted mb-0">
+            Job classes catalog
         </p>
     </div>
-    <div class="d-flex justify-content-end d-print-none">
-        <div class="me-2">@await Html.PartialAsync("filter")</div>
-        @await Html.PartialAsync("print")
-        <excel-export table="dataTable" filename="Companies_@(DateTime.UtcNow).xlsx"></excel-export>
+    <div class="card shadow-sm m-1">
+        <div class="d-flex justify-content-end d-print-none">
+            <form method="get" class="d-flex align-items-end">
+                <label class="form-label fw-bold m-2">Status</label>
+                <select asp-for="JobClassStatus" class="form-control m-2" asp-items="@Html.GetEnumSelectList<Models.mainStatus>()" onchange="this.form.submit()">
+                    <option value="" selected> All</option>
+                </select>
+            </form>
+            <div class="me-2">@await Html.PartialAsync("filter")</div>
+            @await Html.PartialAsync("print")
+            <excel-export table="dataTable" filename="Companies_@(DateTime.UtcNow).xlsx"></excel-export>
+            <a asp-page="Create" class="btn btn-primary m-2"><i class=bi bi-plus-circle"></i> New Job Class</a>
+        </div>
     </div>
+    
 </div>
 
 

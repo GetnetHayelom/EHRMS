@@ -1,6 +1,6 @@
 ﻿@model AttachmentPartialModel
 
-<div class="card mt-3 shadow-sm">
+<div class="card mt-3 shadow-sm d-print-none">
     <div class="card-header fw-bold">
         Attachments
     </div>
@@ -13,7 +13,7 @@
                 <input type="hidden" name="recordId" value="@Model.recordId" />
 
                 <div class="form-group m-2">
-                    <label asp-for="fileTitle" class="control-label">Title</label>
+                    <label asp-for="fileTitle" class="control-label" required><span class="text-danger">*</span>Title</label>
                     <input asp-for="fileTitle" class="form-control" type="text"/>
                     <span asp-validation-for="fileTitle" class="text-danger"></span>
                 </div>
@@ -36,6 +36,7 @@
     const fileTitle =document.getElementById("fileTitle").ariaValueMax;
 
     async function loadAttachments() {
+
         const res = await fetch(`/api/attachments/${tableName}/${recordId}`);
         const data = await res.json();
 
@@ -43,7 +44,7 @@
         list.innerHTML = "";
 
         data.forEach(a => {
-            const isImage = [".jpg", ".jpeg", ".png"].includes(a.fileType.toLowerCase());
+            const isImage = [".jpg", ".jpeg", ".png", ".webp"].includes(a.fileType.toLowerCase());
 
             list.innerHTML += `
             <li class="list-group-item d-flex align-items-center justify-content-between gap-3">
@@ -61,15 +62,13 @@
                     </div>
                 </div>
 
-                <a class="btn btn-sm btn-outline-primary"
-                   href="/api/attachments/view/${a.attachmentID}" target="_blank">
-                   Open
-                </a>
+                
             </li>`;
         });
 
     }
 
+   
     document.getElementById("uploadForm").addEventListener("submit", async e => {
         e.preventDefault();
 

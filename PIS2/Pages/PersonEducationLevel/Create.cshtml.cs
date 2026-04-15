@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using PIS2.Data;
 using PIS2.Models;
 using System;
 using System.Collections.Generic;
@@ -13,9 +14,9 @@ namespace PIS2.Pages.PersonEducationLevel
     [Authorize(Roles = "MIE\\PMS_HRCLERK")]
     public class CreateModel : PageModel
     {
-        private readonly PIS2.Models.PISContext _context;
+        private readonly PISContext _context;
 
-        public CreateModel(PIS2.Models.PISContext context)
+        public CreateModel(PISContext context)
         {
             _context = context;
         }
@@ -66,7 +67,7 @@ namespace PIS2.Pages.PersonEducationLevel
             _context.PersonEducationLevels.Add(personEducationLevelModel);
             await _context.SaveChangesAsync();
 
-            return RedirectToPage("./Index");
+            return RedirectToPage("./Details", new { id=personEducationLevelModel.personEducationLevelID });
         }
     }
 }

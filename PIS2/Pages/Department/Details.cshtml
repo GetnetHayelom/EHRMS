@@ -49,7 +49,7 @@
 
                 </button>
             }
-            @if (Model.Delegations.Any(d => d == Models.delegationScopes.Fulldelegation))
+            @if (Model.Delegations.Any(d => d == Models.delegationScopes.Fulldelegation || d == Models.delegationScopes.WorkSiteAssignment || d == Models.delegationScopes.ShiftAssignment))
             {
                 <a asp-page="ShiftSite" asp-route-id="@Model.departmentModel.departmentID" class="btn btn-primary flex-fill">Shift & Work Location</a> 
             }
@@ -158,7 +158,7 @@
                             <td>@Math.Round(item.Leave.AllowedLeave, 2)</td>
                             <td>
                                 <div class="position-relative d-inline-block shift-wrapper">
-                                    <select class="form-select shift-selector" data-focus="1" data-employment="@item.Employment.employmentID" @(Model.isManager || Model.Delegations.Any(d => d == Models.delegationScopes.ShiftAssignment) ? "disabled" : "")>
+                                    <select class="form-select shift-selector" data-focus="1" data-employment="@item.Employment.employmentID" @(Model.isManager || Model.Delegations.Any(d => d == Models.delegationScopes.ShiftAssignment) ? "" : "disabled")>
                                         <option value="">-- Select Shift --</option>
                                         @foreach (var shift in Model.Shifts)
                                         {
@@ -169,7 +169,7 @@
                             </td>
                             <td>
                                 <div class="position-relative d-inline-block shift-wrapper">
-                                    <select class="form-select shift-selector" data-focus="2" data-employment="@item.Employment.employmentID" @(Model.isManager || Model.Delegations.Any(d => d == Models.delegationScopes.WorkSiteAssignment) ? "disabled" : "")>
+                                    <select class="form-select shift-selector" data-focus="2" data-employment="@item.Employment.employmentID" @(Model.isManager || Model.Delegations.Any(d => d == Models.delegationScopes.WorkSiteAssignment) ? "" : "disabled")>
                                         <option value="">-- Select Site --</option>
                                         @foreach (var site in Model.WorkSites)
                                         {

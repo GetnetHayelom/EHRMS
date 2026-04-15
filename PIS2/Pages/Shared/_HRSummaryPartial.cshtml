@@ -1,0 +1,108 @@
+﻿@model List<Services.MetricComparison>
+
+<div class="container-fluid px-0">
+    <div class="text-muted m-0 text-center">
+        <p class="small m-0 fw-bold">@Model.FirstOrDefault()?.CurrentStart?.ToString("MM/dd/yyyy") - @Model.FirstOrDefault()?.CurrentEnd?.ToString("MM/dd/yyyy")
+            <strong class="mx-5">VS</strong> @Model.FirstOrDefault()?.PreviousStart?.ToString("MM/dd/yyyy") - @Model.FirstOrDefault()?.CurrentStart?.ToString("MM/dd/yyyy")
+        </p>
+    </div>
+    <div class="d-flex gap-2">
+        @foreach (var item in Model)
+        {
+            <div class="flex-fill">
+                <div class="card h-100 shadow-sm border-0" style="border-left: 4px solid #4e73df !important;">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h6 class="text-uppercase fw-bold text-primary mb-0">@item.Label</h6>
+                            
+                            @{
+                                string link = "";
+
+                                switch (item.Label?.ToLower())
+                                {
+                                    case "overtime":
+                                        link = "/Report/OvertimeRecordReport";
+                                        break;
+
+                                    case "leaves & absenteeism":
+                                        link = "/Report/LeaveReport";
+                                        break;
+                                    case "terminations":
+                                        link = "/Termination/Index";
+                                        break;
+                                    case "employee & salary":
+                                        link = "/Report/JobPlacementReport";
+                                        break;
+                                    case "allowances":
+                                        link = "/Report/AllowanceAssignmentReport";
+                                        break;
+                                    default:
+                                        link = "";
+                                        break;
+                                }
+                            }
+                            <a asp-page="@link" asp-route-id="@Model" class="btn btn-sm btn-outline-primary" title="View Details">
+                                <i class="bi bi-eye"></i>
+                            </a>
+                        </div>
+
+                        <div class="row align-items-center mb-2">
+                            <div class="col">
+                                <div class="text-muted small">Total Count</div>
+                                <div class="h4 mb-0 fw-bold">@item.CurrentCount</div>
+                                <div class="mb-0 text-muted"><small>Prev=@item.PreviousCount.ToString("N2")</small></div>
+                            </div>
+                            <div class="col-auto text-end">
+                                <h1 class=fw-bold m-0">
+                                    <span class="p-0 badge @(item.CountPercentChange >= 0 ? "bg-light-danger text-danger" : "bg-light-success text-success")">
+                                    <i class="h1 bi @(item.CountPercentChange >= 0 ? "bi-arrow-up-short" : "bi-arrow-down-short")"></i>
+                                    @Math.Abs(item.CountPercentChange).ToString("F1")%
+                                    </span>
+                                </h1>
+                            </div>
+                        </div>
+
+                        <hr class="my-2 text-light">
+
+                        <div class="row align-items-center">
+                            <div class="col">
+                                <div class="text-muted small">Total Cost / Value</div>
+                                <div class="h5 mb-0 fw-bold text-dark">
+                                    @item.CurrentSum.ToString("C2")
+                                </div>
+                                <div class="mb-0 text-muted"><small>Prev=@item.PreviousSum.ToString("N2")</small></div>
+                            </div>
+                            <div class="col-auto text-end">
+                                @if (item.PreviousSum > 0)
+                                {
+                                    <div class="small fw-semibold @(item.SumPercentChange >= 0 ? "text-danger" : "text-success")">
+                                        @(item.SumPercentChange >= 0 ? "+" : "")@item.SumPercentChange.ToString("F1")%
+                                    </div>
+                                }
+                                <div class="text-muted" style="font-size: 0.75rem;">vs prev. period</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<style>
+    .bg-light-danger {
+        background-color: #f8d7da;
+    }
+
+    .bg-light-success {
+        background-color: #d1e7dd;
+    }
+
+    .card {
+        transition: transform 0.2s;
+    }
+
+        .card:hover {
+            transform: translateY(-3px);
+        }
+</style>

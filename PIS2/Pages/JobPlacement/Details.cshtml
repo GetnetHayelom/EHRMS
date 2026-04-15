@@ -5,14 +5,18 @@
     ViewData["Title"] = "Job Placement Details";
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
+<div class="d-flex justify-content-between align-items-end m-2">
+    <div>
+        <h2 class="fw-bold">Job Placements</h2>
+        <p class="text-muted mb-0">Job Placement Details #@Model.jobPlacementID</p>
+    </div>
+    <a asp-page="Create" asp-route-id="@Model.jobPlacementModel.employmentID" class="btn btn-outline-primary"><i class="bi bi-plus-circle"></i>Assign New Job</a>
+</div>
 
-<h1 class="fw-bold">Job Placements</h1>
-
-<div class ="row d-flex" id="jobPlacementDiv">
-    <h4 class="fw-bold">Job Placement Details</h4>
-    <hr />
-    <div class="col-md-6">
-      
+<hr />
+<div class ="d-flex gap-4" id="jobPlacementDiv">  
+    <!--JOB PLACEMENT DETAILS-->
+    <div class="card shadow-sm p-2 col-md-6">      
         <dl class="row d-print-flex">
             <div class="d-flex">
                 <dt class="m-2">
@@ -22,6 +26,14 @@
                     <u onclick="location.href='@Url.Page("/Employment/Details", new{id = Model.jobPlacementModel.employmentID})'" style="cursor:pointer;">@Html.DisplayFor(model => model.jobPlacementModel.employmentModel.givenID)</u>
                 </dd>
              </div>
+            <div class="d-flex">
+                <dt class="m-2">
+                    Company:
+                </dt>
+                <dd class="m-2">
+                    <u>@Model.jobPlacementModel?.departmentModel?.companyModel?.companyName</u>
+                </dd>
+            </div>
             <div class="d-flex">
                 <dt class="m-2">
                     Department:
@@ -35,7 +47,7 @@
                     Job Title:
                 </dt>
                 <dd class="m-2">
-                    <u>@Model.jobPlacementModel?.jobModel?.jobTitle</u>
+                    <a asp-page="/Job/Details" asp-route-id="@Model.jobPlacementModel?.jobID" target="_blank" class="text-decoration-underline">@Model.jobPlacementModel?.jobModel?.jobTitle</a>
                 </dd>
             </div>
             <div class="d-flex">
@@ -51,7 +63,7 @@
                     Grade:
                 </dt>
                 <dd class="m-2">
-                    <u>@Model.jobPlacementModel?.jobModel?.jobGradeModel?.jobGradeName</u>
+                    <u>@Model.jobPlacementModel?.jobStepModel?.jobGradeModel?.jobGradeName</u>
                 </dd>
             </div>
             <div class="d-flex">
@@ -89,29 +101,37 @@
             </div>
         </dl>
     </div>
-    <div class="col-md-6">
+    <!--JOB PLACEMENT AUDIT TRIAL-->
+    <div class="card shadow-sm p-2 col-md-6">
         <h4 class="fw-bold">Job Placement History</h4>
         <table class="table table-striped table-hover">
             <thead>
                 <tr class="bg-info text-white">
-                    <th>Date</th>
+                    <th>Placement Date</th>
                     <th>Step</th>
                     <th>Salary</th>                   
                     <th>Department</th>
                     <th>Status</th>
-                    <th>Modified By</th>
+                    <th>Modified</th>
                 </tr>
             </thead>
             <tbody>
-                @foreach(var item in Model.jobPlacementHistoryList)
+                @foreach(var item in Model.jobPlacementHistoryList.OrderBy(j => j.modifiedDate))
                 {
                     <tr>
-                        <td>@item.modifiedDate</td>
-                        <td>@item.jobStepModel?.jobStepNumber</td>
+                        <td>@item.jobPlacementDate.ToString("MM/dd/yyyy")</td>
+                        <td>
+                            <p class="mb-0">@item.jobStepModel?.jobStepName</p>
+                            <p class="small text-muted mb-0">@item.jobPlacementReason</p>
+                        </td>
+
                         <td>@item.jobPlacementSalary</td>
                         <td>@item.departmentModel?.departmentName</td>
                         <td>@item.jobPlacementStatus</td>
-                        <td>@item.modifiedBy</td>
+                        <td>
+                            <p class="mb-0">@item.modifiedBy</p>
+                            <p class="small text-muted mb-0">@item.modifiedDate.ToString("yyyy-MM-dd HH:mm")</p>
+                        </td>
                     </tr>
                 }
             </tbody>
@@ -119,6 +139,7 @@
     </div>
 </div>
 <div class="d-print-none d-flex justify-content-end">
+    @await Html.PartialAsync("back")
     @if (User.IsInRole("MIE\\PMS_HRMANAGER") && Model.jobPlacementModel.jobPlacementStatus == Models.mainStatus.Suspended)
     {
          <form method="POST">
@@ -128,8 +149,17 @@
     }
     @if (User.IsInRole("MIE\\PMS_HRCLERK"))
     {
-        <a asp-page="./Edit" asp-route-id="@Model.jobPlacementModel.jobPlacementID" class="btn btn-primary m-2 d-print-none">Edit</a>
-        <a asp-page="./Delete" asp-route-id="@Model.jobPlacementModel.jobPlacementID" class="btn btn-danger m-2 d-print-none">Delete</a>
+        <a href="/Experience/Index?id=@Model.jobPlacementModel?.employmentModel?.personModel" class="btn btn-outline-primary m-2 d-print-none">View Experience</a>
+        <a asp-page="./Edit" asp-route-id="@Model.jobPlacementModel?.jobPlacementID" class="btn btn-warning m-2 d-print-none">Edit</a>
     }   
     @await Html.PartialAsync("print")
 </div>
+@if (User.IsInRole("MIE\\PMS_HRCLERK"))
+    {
+        @await Html.PartialAsync("_AttachmentPartial",
+        new Pages.Shared.AttachmentPartialModel
+        {
+            tableName = "JobPlacement",
+            recordId = Model.jobPlacementModel.jobPlacementID
+        })
+    }

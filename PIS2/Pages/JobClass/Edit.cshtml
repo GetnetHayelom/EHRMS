@@ -6,12 +6,12 @@
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
 
-<h1 class="fw-bold">Job Classes</h1>
+<h2 class="fw-bold">Job Classes</h2>
 
-<h4 class="fw-bold">Update Job Class</h4>
+<p class="text-muted">Update Job Class</p>
 <hr />
 <div class="row">
-    <div class="col-md-4">
+    <div class="card shadow-sm p-2 col-md-4">
         <form method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="jobClassModel.jobClassId" />
@@ -33,13 +33,15 @@
                 <span asp-validation-for="jobClassModel.jobClassStatus" class="text-danger"></span>
             </div>
             <div class="form-group d-flex justify-content-end m-2">
-                <input type="submit" value="Update" class="btn btn-success" />
+                @await Html.PartialAsync("back")
+                <input type="submit" value="Update" class="btn btn-success m-2" />
             </div>
         </form>
     </div>
 </div>
 
 <div>
+   
     <a asp-page="./Index">View All Job Classes</a>
 </div>
 

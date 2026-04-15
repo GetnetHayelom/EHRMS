@@ -10,29 +10,10 @@
 
     <!-- Page Header -->
     <div class="mb-4">
-        <h1 class="fw-bold text-dark">Job Placements</h1>
+        <h2 class="fw-bold">Job Placements</h2>
         <p class="text-muted mb-0">Assign and manage employee job placements</p>
     </div>
-    <!--EMPLOYEE LOOKUP-->
-    <div class="card shadow-sm border-0 px-3 py-2">
-        <form method="get" class="d-flex align-items-center gap-2">
-            <label for="givenID" class="text-nowrap small fw-bold text-uppercase text-muted mb-0">Find Employee:</label>
-            <input asp-for="employmentModel.givenID" id="givenID" class="form-control form-control-sm" placeholder="Enter ID..." name="givenID" style="width: 150px;" />
-            <button type="submit" class="btn btn-sm btn-primary px-3" id="goButton">Go</button>
-        </form>
-    </div>
     
-
-    @if (Model.employmentModel != null && Model.employmentModel.employmentStatus == Models.mainStatus.Active)
-    {
-        <!-- Employee Info -->
-        <div class="mb-3">
-            <h4 class="fw-bold text-success">
-                @Model.employmentModel.personModel?.personFullName
-            </h4>
-            <hr />
-        </div>
-
         <!-- Main Form Card -->
         <div class="card shadow-sm">
             <div class="card-body">
@@ -42,10 +23,6 @@
                 <form method="post">
                     <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
-                    <input asp-for="jobPlacementModel.employmentID"
-                           value="@Model.employmentModel.employmentID"
-                           type="hidden" />
-
                     <input asp-for="jobPlacementModel.jobPlacementStatus"
                            value="@Models.mainStatus.Suspended"
                            type="hidden" />
@@ -54,7 +31,23 @@
 
                         <!-- LEFT COLUMN -->
                         <div class="col-md-6">
-
+                        <!--EMPLOYEE LOOKUP-->
+                        <!-- Selector -->
+                        <div class="mb-3">
+                            <label asp-for="jobPlacementModel.employmentID" class="form-label fw-semibold">
+                                <span class="text-danger">*</span> Select Employee
+                            </label>
+                            
+                            <input type="text" class="form-control" list="personList" placeholder="Type to search..." oninput="selector(this, 'personIDHidden')" value="@Model.employmentModel.givenID-@Model.employmentModel?.personModel?.personFullName" />
+                            <input type="hidden" asp-for="jobPlacementModel.employmentID" id="personIDHidden" value="@Model.employmentModel?.employmentID" />
+                            <datalist id="personList">
+                                @foreach (var person in Model.Employments)
+                                {
+                                    <option data-id="@person.Value" value="@person.Text"></option>
+                                }
+                            </datalist>
+                            <span asp-validation-for="jobPlacementModel.employmentID" class="text-danger"></span>
+                        </div>
                             <div class="mb-3">
                                 <label asp-for="company" class="form-label fw-semibold">Company</label>
                                 <select asp-for="company" class="form-control" asp-items="ViewBag.companyID" id="filter-company">
@@ -169,20 +162,7 @@
                 </form>
             </div>
         </div>
-    }
-    else if (Model.employmentModel != null && Model.employmentModel.employmentStatus != Models.mainStatus.Active)
-    {
-        <div class="alert alert-danger fw-semibold">
-            Employee is not active.
-        </div>
-    }
-    else
-    {
-        <div class="alert alert-info fw-semibold">
-            Enter Employee ID to proceed.
-        </div>
-    }
-
+    
     <div class="mt-4">
         <a asp-page="/JobPlacement/Index" class="link-primary fw-semibold">
             ← View Job Placements

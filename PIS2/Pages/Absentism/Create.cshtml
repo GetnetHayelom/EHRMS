@@ -6,16 +6,16 @@
     Layout = "~/Pages/Shared/_Layout.cshtml";
     var successMessage = TempData["SuccessMessage"] as string;
 }
-
+@await Html.PartialAsync("headerSimple","")
 <h2 class="fw-bold">Absenteeism</h2>
 
 <h6 class="text-muted">Add Absenteeism</h6>
 <hr />
 <div class="d-flex justify-content-between gap-3">
     <div class="col-md-4 card shadow-sm p-2 d-print-none">
-        <div class="row">
+        <div class="">
             <!--row for Search control-->
-            <div class="row mt-2">
+            <div class="mt-2">
                 <!--form for searching using ID -->
                 <label for="employeeID" class="fw-bold">Look up by Empolyee ID: </label>
                 <form method="post" asp-page-handler="SearchID" class="d-flex col-md-8">
@@ -102,9 +102,7 @@
             </div>
         
         </div>
-        <div>
-            <a asp-page="Index">View All Absentism Record</a>
-        </div>
+        
     </div>
     
     
@@ -115,11 +113,11 @@
             <div class="d-flex justify-content-around w-100 mb-2 d-none d-print-block">
                 <div class="d-flex">
                     <div class="fw-bold">Name:</div>
-                    <div><u>@Model.Person.personFullName</u></div>
+                    <div><u>@Model.Person?.personFullName</u></div>
                 </div>
                 <div class="d-flex">
                     <div class="fw-bold">EP:</div>
-                    <div><u>@Model.Employment.givenID</u></div>
+                    <div><u>@Model.Employment?.givenID</u></div>
                 </div>
             </div>
             <div class="d-flex justify-content-around">
@@ -152,7 +150,7 @@
                     </div>
                 </div>
             </div>
-            <table class="table table-stripe table-hover">
+            <table class="table table-stripe table-hover print-full-width">
                 <thead class="bg-info text-white">
                     <tr>
                         <th>Date From</th>
@@ -184,6 +182,9 @@
     
     
 </div>
+<div>
+    <a asp-page="Index">View Absentism Catalog</a>
+    </div>
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 }

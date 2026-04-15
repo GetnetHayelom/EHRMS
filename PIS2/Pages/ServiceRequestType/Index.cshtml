@@ -1,0 +1,151 @@
+﻿@page
+@model PIS2.Pages.ServiceRequestType.IndexModel
+
+@{
+    ViewData["Title"] = "Service Requests";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+@Html.AntiForgeryToken()
+@await Html.PartialAsync("headerSimple", "")
+<!-- Page Header -->
+<div class="d-flex justify-content-between align-items-end mb-4">
+    <div>
+        <h2 class="fw-bold text-dark mb-0">Service Types</h2>
+        <p class="text-muted mb-0">Manage and service types</p>
+    </div>
+    <a class="btn btn-primary d-print-none" asp-page="Create"><i class="bi bi-plus"></i>Add Service Type</a>
+</div>
+
+@if(Model.serviceRequestTypeModel.Any())
+{
+    <!-- Table -->
+    <div class="card shadow-sm border-0">
+        <div class="card-body p-0">
+            <table class="table table-hover mb-0">
+                <thead class="table-dark">
+                    <tr>
+                        <th>S/No</th>
+                        <th>Service Request Name</th>
+                        <th>Description</th>
+                        <th>Status</th>
+                        <th>Modified By</th>
+                        <th>Modified Date</th>
+                        <th class="d-print-none text-end">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @{
+                        int index = 1;
+                    }
+                    @foreach (var item in Model.serviceRequestTypeModel)
+                {
+                    <tr onclick="update(this)"
+                        style="cursor:pointer" data-id="@item.serviceRequestTypeID">
+                        <td>@(index++)</td>
+                        <td>@item.serviceRequestTypeName</td>
+                            <td>
+                                @if (item.serviceRequestTypeStatus == Models.mainStatus.Active)
+                                {
+                                    <span class="badge bg-success">@Html.DisplayFor(modelItem => item.serviceRequestTypeStatus)</span>
+
+                                }
+                                else if (item.serviceRequestTypeStatus == Models.mainStatus.Suspended)
+                                {
+                                    <span class="badge bg-warning">@Html.DisplayFor(modelItem => item.serviceRequestTypeStatus)</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary">@Html.DisplayFor(modelItem => item.serviceRequestTypeStatus)</span>
+                                }
+                            </td>
+                         <td>@item.serviceRequestTypeDescription</td>
+                        <td>@item.modifiedBy</td>
+                        <td>@item.modifiedDate</td>
+
+                            <td class="d-print-none text-end">
+                            <div class="btn-group" role="group">
+                                <a asp-page="./Details" asp-route-id="@item.serviceRequestTypeID" class="btn btn-sm btn-outline-primary" title="View Details">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                                <a asp-page="./Edit" asp-route-id="@item.serviceRequestTypeID" class="btn btn-sm btn-outline-success" title="Edit">
+                                    <i class="bi bi-pencil-square"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+    <!-- Print -->
+    <div class="d-flex justify-content-end mt-3">
+        @await Html.PartialAsync("print")
+    </div>
+}
+else
+{
+    <h6> The are no request records!</h6>
+}
+<!-- Filters -->
+
+
+<script>
+    function filter() {
+        const params = new URLSearchParams({
+            reqStatus: document.getElementById("filter-status").value,
+            department: document.getElementById("filter-department").value,
+            company: document.getElementById("filter-company").value,
+            reqType: document.getElementById("filter-type").value,
+            startDate: document.getElementById("dateStart").value,
+            endDate: document.getElementById("dateEnd").value
+        });
+
+        window.location.href = `/ServiceRequest/Index?${params.toString()}`;
+    }
+
+    async function update(row){
+        const id = row.dataset.id;
+        const token = document.querySelector('input[name="__RequestVerificationToken"]')?.value;
+
+        const response = await fetch('/ServiceRequest/Index?handler=Update&id='+id,
+        {
+            method:"POST",
+            headers:{"RequestVerificationToken": token}
+        });
+        
+        if (!response.ok) {
+            showToast("Error", "Request failed");
+            window.location.href='/ServiceRequest/Details/id='+id;
+            return;
+        }
+
+        const res = await response.json();
+
+        if(!res.success){window.location.href='/ServiceRequest/Details/id=${id}';}
+
+            let urlTo;
+
+            switch (res.type) {
+                case "Experience":
+                    urlTo = `/Experience/Index?id=${res.prsnID}`;
+                    break;
+
+                case "Guaranty":
+                    urlTo = `/Guaranty/Create?id=${res.prsnID}`;
+                    break;
+
+                case "Termination":
+                    urlTo = `/Termination/Create?id=${res.empID}`;
+                    break;
+
+                default:
+                
+                    urlTo = `/ServiceRequest/Details?id=${id}`;
+            }
+
+            window.location.href = urlTo;
+    
+    }
+</script>

@@ -3,7 +3,6 @@
 @{
     ViewData["Title"] = "Welcome";
     var successMessage = TempData["SuccessMessage"] as string;
-  
 }
 @Html.AntiForgeryToken()
 
@@ -130,33 +129,33 @@
                     <div class="card mt-3 border-0 shadow-sm">
                         <div class="card-body text-center p-3">
 
-                            <img src="/images/@(Model.Person?.personID).jpg" class="rounded-circle border shadow-sm" style="width: 120px; height: 120px; object-fit: cover;" alt="Profile Picture"
+                            <img src="/api/attachments/viewprofile/@Model?.Person?.personID" class="rounded-circle border shadow-sm" style="width: 120px; height: 120px; object-fit: cover;" alt="Profile Picture"
                                  onerror="this.onerror=null; this.src='/images/@(Model.Person.personGender == Models.Gender.Female ? "female-default.png" : "male-default.png")';">
-
+                            
                             <h6 class="fw-bold mb-1 text-primary">
                                 @if (Model.Employment != null)
                                 {
                                     if (User.IsInRole("MIE\\PMS_HRCLERK"))
                                     {
-                                        <span onclick="location.href='@Url.Page("/Employment/Edit", new { id = Model.Employment.employmentID })'"
+                                        <a href="/Employment/Edit?id=@Model.Employment.employmentID"
                                               style="cursor:pointer; text-decoration:underline;">
                                             @Html.DisplayFor(model => model.Person.personFullName)
-                                        </span>
+                                        </a>
                                     }
                                     else
                                     {
-                                        <span onclick="location.href='@Url.Page("/Employment/Details", new { id = Model.Employment.employmentID })'"
+                                        <a href="/Employment/Details?id=@Model.Employment.employmentID"
                                               style="cursor:pointer; text-decoration:underline;">
                                             @Html.DisplayFor(model => model.Person.personFullName)
-                                        </span>
+                                        </a>
                                     }
                                 }
                                 else
                                 {
-                                    <span onclick="location.href='@Url.Page("/Person/Details", new { id = Model.Person.personID })'"
+                                    <a href="/Person/Details?id=@Model.Person.personID"
                                           style="cursor:pointer; text-decoration:underline;">
                                         @Html.DisplayFor(model => model.Person.personFullName)
-                                    </span>
+                                    </a>
                                 }
                             </h6>
 
@@ -185,7 +184,7 @@
                             }
 
                             <a class="d-block mt-2 small fw-semibold text-decoration-underline text-primary"
-                               onclick="location.href='@Url.Page("/Person/Details", new { id = Model.Person.personID })'"
+                               href="/Person/Details?id=@Model.Person.personID"
                                style="cursor:pointer;">
                                 View Full Details
                             </a>
@@ -266,7 +265,7 @@
                                         <div class="card-body p-4">
                                             <p class="text-secondary small mb-2">Request Windows, Internet, or Company Email access.</p>
                                             <h5 class="fw-bold text-danger mb-0">
-                                                <a href="@Url.Page("/Forms/GeneralUserAccess")" class="text-danger text-decoration-underline">General User Access</a>
+                                                <a href="@Url.Page("/Forms/GeneralUserAccess")" class="text-info text-decoration-underline">General User Access</a>
                                             </h5>
                                         </div>
                                     </div>
@@ -276,7 +275,7 @@
                                         <div class="card-body p-4">
                                             <p class="text-secondary small mb-2">Request login credentials for the PIS system.</p>
                                             <h5 class="fw-bold text-primary mb-0">
-                                                <a href="@Url.Page("/Forms/PISAccess")" class="text-primary text-decoration-underline">PIS Access</a>
+                                                <a href="@Url.Page("/Forms/PISAccess")" class="text-danger text-decoration-underline">PIS Access</a>
                                             </h5>
                                         </div>
                                     </div>
@@ -296,7 +295,7 @@
                                         <div class="card-body p-4">
                                             <p class="text-secondary small mb-2">Template and format for official interoffice correspondence.</p>
                                             <h5 class="fw-bold text-danger mb-0">
-                                                <a href="@Url.Page("/Forms/InterOffice")" class="text-danger text-decoration-underline">Interoffice Memo</a>
+                                                <a href="@Url.Page("/Forms/InterOffice")" class="text-info text-decoration-underline">Interoffice Memo</a>
                                             </h5>
                                         </div>
                                     </div>
@@ -306,7 +305,7 @@
                                         <div class="card-body p-4">
                                             <p class="text-secondary small mb-2">Submit a formal report for sick leave or absence.</p>
                                             <h5 class="fw-bold text-info mb-0">
-                                                <a href="@Url.Page("/Forms/SickReport")" class="text-info text-decoration-underline">Sick Report</a>
+                                                <a href="@Url.Page("/Forms/SickReport")" class="text-danger text-decoration-underline">Sick Report</a>
                                             </h5>
                                         </div>
                                     </div>
@@ -316,7 +315,7 @@
                                         <div class="card-body p-4">
                                             <p class="text-secondary small mb-2">Transport request form</p>
                                             <h5 class="fw-bold text-info mb-0">
-                                                <a href="@Url.Page("/Forms/Transport")" class="text-info text-decoration-underline">Transport Request</a>
+                                                <a href="@Url.Page("/Forms/Transport")" class="text-warning text-decoration-underline">Transport Request</a>
                                             </h5>
                                         </div>
                                     </div>
@@ -401,18 +400,15 @@
                                 <h3 class="fw-bold col-md-6">Employment History</h3>
                                 @if (Model.isSelf && Model.Employment?.employmentStatus == Models.mainStatus.Active)
                                 {
-                                    <div class="d-flex p-2 m-2">
-                                        <button type="button" class="form-control btn btn-primary m-2 d-print-none" id="btnExperience" data-request-type="Experience" onclick="requestService(this)">
-                                            Request Official Experience
-                                        </button>
-
-                                        <button class="form-control btn btn-primary m-2 d-print-none" id="btnTermination" data-request-type="Termination" onclick="requestService(this)">
-                                            Request Termination</button>
-                                        @if (Model.IsGuarantyAllow)
-                                        {
-                                            <button class="form-control btn btn-primary m-2 d-print-none" id="btnGuarantee"
-                                            data-request-type="Guaranty" onclick="requestService(this)">Request Guaranty</button>
-                                        }
+                                
+                                <div class="d-flex p-2 m-2">
+                                    @foreach(var req in Model.RequestTypes)
+                                    {
+                                    <button type="button" class="form-control btn btn-primary m-2 d-print-none" id="@req.serviceRequestTypeID" data-request-type="@req.serviceRequestTypeID" onclick="requestService(this)">
+                                            @req.serviceRequestTypeName
+                                    </button>
+                                    }
+                                    
                                     </div>
                                 }
                         
@@ -594,7 +590,7 @@
                                             index++;
                                             <tr>
                                                 <td>@index</td>
-                                                <td>@req.requestedService</td>
+                                                <td>@req.ServiceRequestType?.serviceRequestTypeName</td>
                                                 <td>@req.serviceRequestDate</td>
                                                 <td><span class="badge @bg">@req.serviceRequestStatus</span></td>
                                             </tr>
@@ -658,11 +654,8 @@
 
         if (result.success) {
             showToast("Success", "Request submitted successfully");
-            if (requestType === "Termination") {
-                window.location.href = "/Termination/Create?id=@Model.Employment?.employmentID";
-            }
-            if (requestType === "Guaranty") {
-                window.location.href = "/Guaranty/Create?id=@Model.Employment?.employmentID";
+            if (result.redirect) {
+                window.location = result.redirect;
             }
         } else {
             showToast("Error", result.message ?? "Request failed");

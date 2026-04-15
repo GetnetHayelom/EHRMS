@@ -1,0 +1,39 @@
+﻿@page "{id:int}"
+@model PIS2.Pages.Budget.LineEditModel
+
+<div class="container mt-4">
+    <div class="card border-warning">
+        <div class="card-header bg-warning text-dark">
+            <h4 class="mb-0">Adjust Allocation: @Model.BudgetLine.SubAccount.subAccountDescription</h4>
+        </div>
+        <div class="card-body">
+            <form method="post">
+                <input type="hidden" asp-for="BudgetLine.BudgetLineID" />
+
+                <div class="row">
+                    <div class="col-md-6 form-group">
+                        <label>Sub-Account / Department</label>
+                        <input class="form-control" value="@Model.BudgetLine.SubAccount.subAccountName" disabled />
+                    </div>
+                    <div class="col-md-6 form-group">
+                        <label>Allocated Amount</label>
+                        <div class="input-group">
+                            <div class="input-group-prepend"><span class="input-group-text">$</span></div>
+                            <input asp-for="BudgetLine.AllocatedAmount" class="form-control form-control-lg text-primary font-weight-bold" />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group mt-3">
+                    <label asp-for="BudgetLine.Notes"></label>
+                    <textarea asp-for="BudgetLine.Notes" class="form-control" rows="3"></textarea>
+                </div>
+
+                <div class="mt-4 border-top pt-3">
+                    <button type="submit" class="btn btn-warning px-4">Update Allocation</button>
+                    <a href="/Budget/LineDetails?id=@Model.BudgetLine.BudgetLineID" class="btn btn-link text-muted">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

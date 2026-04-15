@@ -1,12 +1,12 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using PIS2.Models;
+using PIS2.Services;
 
 namespace PIS2.Pages.Forms
 {
     public class GeneralUserAccessModel : PageModel
     {
-        private PIS2.Models.Core _core;
+        private Core _core;
 
         public GeneralUserAccessModel (Core core)
         {

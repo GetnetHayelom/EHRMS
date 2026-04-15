@@ -3,26 +3,19 @@
 @{
     ViewData["Title"] = "Create Vacancy";
 }
-
-<div class="container-fluid py-4">
-    <div class="d-flex align-items-center justify-content-between mb-4">
-        <div>
-            <h1 class="h3 mb-1 fw-bold text-dark">Create New Vacancy</h1>
-            <nav aria-label="breadcrumb">
-                <ol class="breadcrumb mb-0 small">
-                    <li class="breadcrumb-item"><a asp-page="Index" class="text-decoration-none">Vacancy List</a></li>
-                    <li class="breadcrumb-item active" aria-current="page">New Entry</li>
-                </ol>
-            </nav>
-        </div>
-        <a asp-page="Index" class="btn btn-outline-secondary btn-sm shadow-sm">
-            Cancel & Return
-        </a>
+<div class="d-flex justify-content-between mb-2 align-items-end">
+    <div>
+        <h2 class="fw-bold">Vacancy</h2>
+        <h6 class="text-muted">Maintain new vacancy</h6>
     </div>
+    <a class="btn btn-outline-primary" asp-page="Index">View Catalog</a>
+</div>
+<div class="container-fluid py-4">
+
 
     <div class="card shadow-sm border-0">
-        <div class="card-header bg-white py-3 border-bottom">
-            <h6 class="m-0 font-weight-bold text-primary"><i class="bi bi-plus-circle me-2"></i>Vacancy Information</h6>
+        <div class="card-header bg-dark border-bottom">
+            <h6 class="m-0 font-weight-bold text-white"><i class="bi bi-plus-circle me-2"></i>Vacancy Information</h6>
         </div>
         <div class="card-body p-4">
             <form method="post">
@@ -36,14 +29,24 @@
                         </div>
                     </div>
                     <div class="col-md-6">
-                        <label asp-for="VacancyModel.jobRequirementID" class="form-label fw-semibold small">Job Request Reference</label>
-                        <select asp-for="VacancyModel.jobRequirementID" class="form-select border-info" asp-items="Model.JobRequests" onchange="loadInfo()">
-                            <option value="">-- Select Job Request If Any --</option>
-                        </select>
+                        <!-- Selector -->
+                        
+                            <label asp-for="VacancyModel.jobRequirementID" class="form-label fw-semibold">Job Request Reference
+                            </label>
+                        <input type="text" class="form-control" list="requestList" placeholder="Type to search..." oninput="selector(this, 'requestIDHidden')"  />
+                            <input type="hidden" asp-for="VacancyModel.jobRequirementID" id="requestIDHidden" onchange="loadInfo()" value="@Model.JobReq?.jobRequirementID"/>
+                            <datalist id="requestList">
+                                @foreach (var jobReq in Model.JobRequests)
+                                {
+                                    <option data-id="@jobReq.Value" value="@jobReq.Text"></option>
+                                }
+                            </datalist>
+                  
                     </div>
                     <div class="col-md-6">
                         <label asp-for="VacancyModel.VacancyTitle" class="form-label fw-semibold small"><span class="text-danger">*</span> Vacancy Display Title</label>
                         <input asp-for="VacancyModel.VacancyTitle" class="form-control" placeholder="e.g. Marketing Lead - Q3 Expansion" value="@Model.JobReq?.JobModel?.jobTitle"/>
+                        <span asp-validation-for="VacancyModel.VacancyTitle" class="text-danger small"></span>
                     </div>
                 </div>
                 @if(Model.JobReq == null || Model.JobReq?.jobRequirementID == 0)
@@ -56,8 +59,8 @@
                         </div>
                         <div class="col-md-6">
                             <label asp-for="VacancyModel.jobID" class="form-label fw-semibold small"><span class="text-danger">*</span> Job Title/Position</label>
-                            <input type="text" class="form-control" list="jobList" placeholder="Search and select position..." oninput="selector(this, 'jobIDHidden')" value="@Model.JobReq?.JobModel?.jobTitle"/>
-                            <input type="hidden" asp-for="VacancyModel.jobID" id="jobIDHidden" value="@Model.JobReq?.jobID"/>
+                            <input required type="text" class="form-control" list="jobList" placeholder="Search and select position..." oninput="selector(this, 'jobIDHidden')" value="@Model.JobReq?.JobModel?.jobTitle" />
+                            <input type="hidden" asp-for="VacancyModel.jobID" id="jobIDHidden"/>
                             <datalist id="jobList">
                                 @foreach (var job in Model.JobList)
                                 {
@@ -113,27 +116,32 @@
                         <select asp-for="VacancyModel.VacancyType" class="form-select" asp-items="@Html.GetEnumSelectList<Models.VacancyTypes>()">
                             <option value="">-- Select Type --</option>
                         </select>
+                        <span asp-validation-for="VacancyModel.VacancyType" class="text-danger small"></span>
                     </div>
                     <div class="col-md-4">
                         <label asp-for="VacancyModel.employmentTypeID" class="form-label fw-semibold small"><span class="text-danger">*</span> Employment Type</label>
                         <select asp-for="VacancyModel.employmentTypeID" class="form-select" asp-items="Model.EmploymentType">
                             <option value="">-- Select --</option>
                         </select>
+                        <span asp-validation-for="VacancyModel.employmentTypeID" class="text-danger small"></span>
                     </div>
                     <div class="col-md-4">
                         <label asp-for="VacancyModel.employmentMethodID" class="form-label fw-semibold small"><span class="text-danger">*</span> Method</label>
                         <select asp-for="VacancyModel.employmentMethodID" class="form-select" asp-items="Model.EmploymentMethods">
                             <option value="">-- Select --</option>
                         </select>
+                        <span asp-validation-for="VacancyModel.employmentMethodID" class="text-danger small"></span>
                     </div>
 
                     <div class="col-md-8">
                         <label asp-for="VacancyModel.Location" class="form-label fw-semibold small"><span class="text-danger">*</span> Location</label>
                         <input asp-for="VacancyModel.Location" class="form-control" placeholder="HQ, Remote, or Specific Branch" />
+                        <span asp-validation-for="VacancyModel.Location" class="text-danger small"></span>
                     </div>
                     <div class="col-md-4">
                         <label asp-for="VacancyModel.VacancyRequiredNumber" class="form-label fw-semibold small"><span class="text-danger">*</span> Openings</label>
                         <input asp-for="VacancyModel.VacancyRequiredNumber" class="form-control" type="number" value="1" />
+                        <span asp-validation-for="VacancyModel.VacancyRequiredNumber" class="text-danger small"></span>
                     </div>
 
                     <div class="col-md-6">
@@ -154,7 +162,7 @@
                 <div class="border-top pt-4 d-flex justify-content-end gap-2">
                     <a asp-page="Index" class="btn btn-light border px-4">Discard</a>
                     <button type="submit" class="btn btn-success px-5 shadow-sm">
-                        Publish Vacancy
+                        Save
                     </button>
                 </div>
             </form>
@@ -166,10 +174,16 @@
 <script src="~/js/filter-department.js"></script>
 <script>
         function loadInfo() {
-        var id = $('#jobReq').val();
+        var id = $('#requestIDHidden').val();
 
         if (id && id > 0) {
             window.location.href = '?id=' + id;
         }
     }
 </script>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

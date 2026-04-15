@@ -7,10 +7,10 @@
 }
 
 <div class="container-fluid py-4">
-    <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-4 d-print-none gap-3">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-1 d-print-none gap-3">
         <div>
             <h2 class="fw-bold m-0 text-dark">Employment Record</h2>
-            <small class="text-muted">Manage employee leave, overtime, and job history</small>
+            <small class="text-muted m-0">Manage employee leave, overtime, and job history #@Model.employmentModel.employmentID</small>
         </div>
         <!--EMPLOYEE LOOKUP-->
         <div class="card shadow-sm border-0 px-3 py-2">
@@ -23,7 +23,7 @@
     </div>
 
     <!--CALL TO ACTION-->
-    <div class="card shadow-sm border-0 mb-4 d-print-none">
+    <div class="card shadow-sm border-0 mb-1 d-print-none">
         <div class="card-body p-2 d-flex flex-wrap gap-2 justify-content-center justify-content-md-start">
             <ul class="nav nav-pills gap-2" id="employmentTab" role="tablist">
                 <li class="nav-item" role="presentation">
@@ -33,7 +33,6 @@
                 </li>
                     @if (Model.employmentModel.employmentStatus == Models.mainStatus.Active)
                     {
-
                         <li class="nav-item">
                         <a class="btn btn-outline-primary btn-sm" asp-page="/Leave/Create" asp-route-id="@Model.employmentModel.employmentID"><i class="bi bi-calendar-plus"></i> Leave Request</a>
                         </li>
@@ -54,8 +53,9 @@
                             <button class="btn btn-light btn-sm border" data-bs-toggle="tab" data-bs-target="#overtimeHistoryView" role="tab"><i class="bi bi-stopwatch"></i> Overtime History</button>
                         </li>
                     }
+                    
                     <li class="nav-item">
-                    <button class="btn btn-light btn-sm border" data-bs-toggle="tab" data-bs-target="#evaluationHistoryView" role="tab"><i class="bi bi-star"></i> Evaluation</button>
+                        <button class="btn btn-light btn-sm border" data-bs-toggle="tab" data-bs-target="#evaluationHistoryView" role="tab"><i class="bi bi-star"></i> Evaluation</button>
                     </li>
             </ul>
         </div>
@@ -118,7 +118,7 @@
                             </div>
                             <div class="col-md-4">
                                 <label class="text-muted small d-block">Hire Date</label>
-                                <span class="fw-bold">@Model.employmentModel.employmentDate.ToString("MMM dd, yyyy")</span>
+                                <span class="fw-bold">@Model.employmentModel.employmentDate.ToString("MM/dd/yyyy")</span>
                             </div>
                             <div class="col-md-4">
                                 <label class="text-muted small d-block">Type</label>
@@ -179,7 +179,6 @@
                                     <table class="table table-hover align-middle mb-0 small">
                                         <thead class="table-light">
                                             <tr>
-                                                <th class="ps-3">Date</th>
                                                 <th>Type</th>
                                                 <th>Position</th>
                                                 <th>Status</th>
@@ -187,14 +186,16 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            @foreach (var item in Model.employmentModel.EmploymentHistories)
+                                            @foreach (var item in Model.employmentModel.EmploymentHistories.OrderBy(e => e.modifiedDate))
                                             {
                                                 <tr>
-                                                    <td class="ps-3">@item.modifiedDate.ToString("MMM dd, yyyy")</td>
-                                                    <td class="fw-bold">@item.employmentTypeModel.employmentTypeName</td>
+                                                    <td class="fw-bold">@item.employmentTypeModel?.employmentTypeName</td>
                                                     <td>@item.employmentPosition</td>
                                                     <td><span class="badge @(item.employmentStatus == Models.mainStatus.Active ? "bg-success" : "bg-secondary")">@item.employmentStatus</span></td>
-                                                    <td class="text-muted">@item.modifiedBy</td>
+                                                    <td class="text-muted">
+                                                        <p class="mb-0">@item.modifiedBy</p>
+                                                        <p class="ps-3 mb-0">@item.modifiedDate.ToString("MM/dd/yyyy")</p>
+                                                    </td>
                                                 </tr>
                                             }
                                         </tbody>
@@ -228,7 +229,7 @@
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                @foreach (var item in Model.employmentModel.JobPlacements)
+                                                @foreach (var item in Model.employmentModel.JobPlacements.OrderBy(j => j.jobPlacementDate))
                                                 {
                                                     <tr onclick="location.href='@Url.Page("/JobPlacement/Details", new { id = item.jobPlacementID })'" style="cursor:pointer">
                                                         <td class="ps-3">@item.jobPlacementDate.ToString("MM/dd/yy")</td>
@@ -239,7 +240,7 @@
                                                             <div class="fw-bold">@item.departmentModel?.departmentName</div>
                                                             <div class="text-muted small">@item.departmentModel?.companyModel?.companyName</div>
                                                         </td>
-                                                        <td><span class="badge border text-dark">@item.jobPlacementStatus</span></td>
+                                                        <td><span class="badge @(item.jobPlacementStatus == Models.mainStatus.Active ? "bg-success" : "border text-dark")">@item.jobPlacementStatus</span></td>
                                                     </tr>
                                                 }
                                             </tbody>

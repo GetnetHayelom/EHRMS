@@ -96,38 +96,48 @@ namespace PIS2.Models
     {
         [Key]
         public int VacancyID { get; set; }
+        [Required]
+        [Display(Name ="Vacancy Title")]
         public string VacancyTitle { get; set; }
 
         [Required]
+        [Display(Name = "Job Title/Position")]
+        [Range(1, int.MaxValue, ErrorMessage = "Please select a valid Job Title.")]
         public int jobID { get; set; }   
         public virtual jobModel? jobModel {get; set;}// Position name
 
         [StringLength(500)]
         public string? Remark { get; set; }           // Job description
 
-        [Required]
         public int? departmentID { get; set; }             // Link to Department
         public virtual departmentModel? departmentModel { get; set; }
 
         public string? Location { get; set; }              // Work location
 
         [Required]
+        [Display(Name = "Required Number")]
         public int VacancyRequiredNumber { get; set; }        // How many open slots
 
-        [Required]
-        public VacancyStatus Status { get; set; }         // Open, Closed, OnHold
+        public VacancyStatus Status { get; set; } = VacancyStatus.OnHold;        // Open, Closed, OnHold
         public jobReqStatus VacancyStage { get; set; } = jobReqStatus.Hold;
+        [Required]
+        [Display(Name = "Date Posted")]
         public DateTime DatePosted { get; set; } = DateTime.Now;
 
         public DateTime? ClosingDate { get; set; }       // Optional closing date
 
         public int? jobRequirementID { get; set; }
         public virtual jobRequirementModel? jobRequirmentmodel { get; set; }
+        [Required]
+        [Display(Name = "Employment Method")]
         public int employmentMethodID { get; set; }
         public virtual employmentMethodModel? employmentMethodModel { get; set; }
-
+        [Required]
+        [Display(Name = "Employment Type")]
         public int employmentTypeID { get; set; }
         public virtual employmentTypeModel? employmentTypeModel { get; set; }
+        [Required]
+        [Display(Name = "Vacancy Type")]
         public VacancyTypes VacancyType { get; set; }
         public string modifiedBy { get; set; }
         public DateTime modifiedDate { get; set; } = DateTime.Now;

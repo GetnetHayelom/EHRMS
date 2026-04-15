@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using NuGet.ProjectModel;
+using PIS2.Data;
 using PIS2.Models;
 using System;
 using System.Collections.Generic;
@@ -15,9 +16,9 @@ namespace PIS2.Pages.Penalty
     [Authorize(Roles = "MIE\\PMS_HRCLERK")]
     public class EditModel : PageModel
     {
-        private readonly PIS2.Models.PISContext _context;
+        private readonly PISContext _context;
 
-        public EditModel(PIS2.Models.PISContext context)
+        public EditModel(PISContext context)
         {
             _context = context;
         }

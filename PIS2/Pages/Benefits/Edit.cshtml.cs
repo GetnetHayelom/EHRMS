@@ -3,7 +3,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using PIS2.Data;
 using PIS2.Models;
+using PIS2.Services;
 
 namespace PIS2.Pages.Benefits
 {
@@ -11,10 +13,12 @@ namespace PIS2.Pages.Benefits
     public class EditModel : PageModel
     {
         private readonly PISContext _context;
+        private readonly PayrollService _payrollService;
 
-        public EditModel(PISContext context)
+        public EditModel(PISContext db, PayrollService payrollService)
         {
-            _context = context;
+            _context = db;
+            _payrollService = payrollService;
         }
         [BindProperty]
         public otherPay OtherPay { get; set; } = default!;
@@ -106,6 +110,38 @@ namespace PIS2.Pages.Benefits
             }
 
             return RedirectToPage("./Details", new {id = OtherPay.paymentID});
+        }
+
+        public async Task<IActionResult> OnPostApproveAsync(int id)
+        {
+            if (!User.IsInRole("MIE\\PMS_HRMANAGER")) return RedirectToPage("/Shared/AccessDenied");
+            var payroll = await _context.Payrolls.FirstOrDefaultAsync(p => p.payrollID == id);
+            if (payroll == null) return NotFound();
+
+            payroll.payrollStatus = payrollStatus.APPROVED;
+            payroll.modifiedBy = User.Identity.Name ?? "system";
+            await _context.SaveChangesAsync();
+
+            return RedirectToPage(new { id });
+        }
+
+        public async Task<IActionResult> OnPostPostAsync(int id)
+        {
+            if (!User.IsInRole("MIE\\PMS_PAYROLL")) return RedirectToPage("/Shared/AccessDenied");
+            var payroll = await _context.Payrolls.FirstOrDefaultAsync(p => p.payrollID == id);
+            if (payroll == null) return NotFound();
+            if (payroll.payrollStatus == payrollStatus.PENDING) return BadRequest("Payroll must be approved first.");
+
+            // mark as posted
+            await _payrollService.PostPayrollAsync(payroll.payrollID, User.Identity.Name ?? "system");
+
+            return RedirectToPage(new { id });
+        }
+        public async Task<IActionResult> OnPostCompleteAsync(int id)
+        {
+            if (!User.IsInRole("MIE\\PMS_FINANCE")) return RedirectToPage("/Shared/AccessDenied");
+            await _payrollService.CompletePayrollAsync(id, User.Identity.Name);
+            return RedirectToPage();
         }
     }
 }

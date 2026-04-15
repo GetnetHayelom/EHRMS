@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
+using PIS2.Data;
 using PIS2.Models;
 
 namespace PIS2.Pages.Earning
@@ -20,6 +21,7 @@ namespace PIS2.Pages.Earning
         public async Task OnGetAsync()
         {
             EarningTypes = await _context.EarningTypes
+                .Include(e => e.Account)
                 .OrderBy(e => e.earningTypeName)
                 .ToListAsync();
         }

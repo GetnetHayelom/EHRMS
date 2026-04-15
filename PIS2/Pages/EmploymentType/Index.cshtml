@@ -5,16 +5,29 @@
     ViewData["Title"] = "Employment Types";
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
+@await Html.PartialAsync("headerSimple", "")
+<div class="d-flex justify-content-between align-items-end mb-2">
+    <div>
+        <h2 class="fw-bold mb-0">Employment Types</h2>
+        <p class="text-muted mb-0">Employment types catalog</p>
+    </div>
+    <p>
+        <a asp-page="Create" class="btn btn-primary d-print-none"><i class="bi bi-plus-circle me-2"></i>Add New Employment Type</a>
+    </p>
+</div>
+<div class="card shadow-sm mb-1 p-0">
+    <div class="d-flex justify-content-end align-items-end m-0">
+        @await Html.PartialAsync("filter")
+        @await Html.PartialAsync("back")
+        @await Html.PartialAsync("print")
+    </div>
+</div>
 
-<h1 class="fw-bold">Employment Types</h1>
 
-<p>
-    <a asp-page="Create" class="btn btn-primary">Add New Employment Type</a>
-</p>
-@await Html.PartialAsync("filter")
 <table class="table table-striped table-hover" id="dataTable">
     <thead>
         <tr class="bg-dark text-white">
+            <th>S\No</th>
             <th>
                 Type Name
             </th>
@@ -48,12 +61,24 @@
             <th>
                 Base Leave
             </th>
-            <th>Actions</th>
+            <th class="d-print-none text-end px-2">Actions</th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model.employmentTypeModel) {
+        @if (Model.employmentTypeModel == null || !Model.employmentTypeModel.Any())
+        {
+            <tr>
+                <td colspan="10" class="text-center text-muted">
+                    No employment types found.
+                </td>
+            </tr>
+        }
+        @{
+            int index = 1;
+        }
+        @foreach (var item in Model.employmentTypeModel) {
         <tr>
+            <td>@(index++)</td>
             <td>
                 @Html.DisplayFor(modelItem => item.employmentTypeName)
             </td>
@@ -61,25 +86,43 @@
                 @Html.DisplayFor(modelItem => item.employmentTypeDescription)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.isLeaveCount)
+                <i class="bi @(item.isLeaveCount ? "bi-check-circle-fill text-success" : "bi-x-circle text-danger") fs-4 me-2"></i>
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.isExprienceCount)
+                
+                    <i class="bi @(item.isExprienceCount ? "bi-check-circle-fill text-success" : "bi-x-circle text-danger") fs-4 me-2"></i>
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.isSalaryAllowed)
+                
+                    <i class="bi @(item.isSalaryAllowed ? "bi-check-circle-fill text-success" : "bi-x-circle text-danger") fs-4 me-2"></i>
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.isLoyalityAllowed)
+                
+                    <i class="bi @(item.isLoyalityAllowed ? "bi-check-circle-fill text-success" : "bi-x-circle text-danger") fs-4 me-2"></i>
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.isSeveranceAllowed)
+                
+                    <i class="bi @(item.isSeveranceAllowed ? "bi-check-circle-fill text-success" : "bi-x-circle text-danger") fs-4 me-2"></i>
             </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.isPensionAllowed)
+                    
+                    <i class="bi @(item.isPensionAllowed ? "bi-check-circle-fill text-success" : "bi-x-circle text-danger") fs-4 me-2"></i>
                 </td>
             <td>
-                @Html.DisplayFor(modelItem => item.employmentTypeStatus)
+
+                @if (item.employmentTypeStatus == Models.mainStatus.Active)
+                {
+                    <span class="badge bg-success">@Html.DisplayFor(modelItem => item.employmentTypeStatus)</span>
+
+                }
+                else if (item.employmentTypeStatus == Models.mainStatus.Suspended)
+                {
+                    <span class="badge bg-warning">@Html.DisplayFor(modelItem => item.employmentTypeStatus)</span>
+                }
+                else
+                {
+                    <span class="badge bg-secondary">@Html.DisplayFor(modelItem => item.employmentTypeStatus)</span>
+                }
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.annualAccrualRate)
@@ -87,12 +130,22 @@
             <td>
                 @Html.DisplayFor(modelItem => item.employmentBaseLeave)
             </td>
-            <td>
-                <a asp-page="./Edit" asp-route-id="@item.employmentTypeID">Edit</a> |
-                <a asp-page="./Details" asp-route-id="@item.employmentTypeID">Details</a>
+                <td class="d-print-none text-end px-2">
+                    <div class="btn-group" role="group">
+                        <a asp-page="./Details" asp-route-id="@item.employmentTypeID" class="btn btn-sm btn-outline-primary" title="View Details">
+                            <i class="bi bi-eye"></i>
+                        </a>
+                        <a asp-page="./Edit" asp-route-id="@item.employmentTypeID" class="btn btn-sm btn-outline-success" title="Edit">
+                            <i class="bi bi-pencil-square"></i>
+                        </a>
+                    </div>
                
             </td>
         </tr>
 }
     </tbody>
 </table>
+<div class="d-flex justify-content-end m-2">
+    @await Html.PartialAsync("back")
+    @await Html.PartialAsync("print")
+</div>

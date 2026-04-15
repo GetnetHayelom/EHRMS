@@ -2,7 +2,9 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
+using PIS2.Data;
 using PIS2.Models;
+using PIS2.Services;
 using PIS2.Views;
 using System;
 using System.Collections.Generic;
@@ -16,10 +18,10 @@ namespace PIS2.Pages.EmployeeService
     [Authorize(Roles = "MIE\\PMS_HRCLERK, MIE\\PMS_HRMANAGER")]
     public class IndexModel : PageModel
     {
-        private readonly PIS2.Models.PISContext _context;
-        private readonly PIS2.Models.Core _core;
-        private readonly PIS2.Models.PayrollService _payrollService;
-        public IndexModel(PIS2.Models.PISContext context, Models.Core core, PayrollService payrollService)
+        private readonly PISContext _context;
+        private readonly Core _core;
+        private readonly PayrollService _payrollService;
+        public IndexModel(PISContext context, Core core, PayrollService payrollService)
         {
             _context = context;
             _core = core;
@@ -49,9 +51,10 @@ namespace PIS2.Pages.EmployeeService
         public async Task OnGetAsync()
         {
             
-            EarningTypes = await _context.EarningTypes.ToListAsync();
-            DeductionTypes = await _context.DeductionTypes.ToListAsync();
-            var userID = _context.Users.FirstOrDefault(u => u.userName == User.Identity.Name)?.userID ?? 0;
+            EarningTypes = await _context.EarningTypes.ToListAsync() ?? new List<earningType>();
+            DeductionTypes = await _context.DeductionTypes.ToListAsync() ?? new List<deductionType>();
+
+            var userID =_context.Users.FirstOrDefault(u => u.userName == User.Identity.Name)?.userID ?? 0;
 
             var empID = _core.getUserEmp(User.Identity.Name);
 
@@ -69,7 +72,7 @@ namespace PIS2.Pages.EmployeeService
                 .Distinct()
                 .ToList();
             
-            Company = _context.Companies.Where(e => allowedCompanies.Contains(e.companyID)).Select(e => e.companyName).ToList();
+            Company = _context.Companies.Where(e => allowedCompanies.Contains(e.companyID)).Select(e => e.companyName).ToList() ?? new List<string>();
             var employees = _context.Employments
                 .Include(e => e.JobPlacements).ThenInclude(jp => jp.departmentModel).ThenInclude(d => d.companyModel)
                 .Include(e => e.JobPlacements).ThenInclude(jp => jp.jobModel)
@@ -106,7 +109,7 @@ namespace PIS2.Pages.EmployeeService
                     Salary = e.ActiveJobPlacement?.jobPlacementSalary ?? 0,
                     Allowance = e.Allowance
                 })
-                .ToList();
+                .ToList() ?? new List<EarningView>();
 
             EarningView =employees.ToList();
 
@@ -118,52 +121,48 @@ namespace PIS2.Pages.EmployeeService
                     Allowance = g.Sum(e => e.Allowance),
                     Records = g.ToList()
                    
-                }).ToList();
-
-            
+                }).ToList() ?? new List<GroupedEarningByDep>();
+          
             allowanceSum = EarningView.Sum(e => e.Allowance);
             SalarySum = EarningView.Sum(e => e.Salary);
-
 
             //Payroll Pay
             var today = DateTime.Today;
             var start = new DateTime(today.Year, today.Month, 1);
             var end = start.AddMonths(1).AddDays(-1);
 
-            var payroll = new payrollModel
-            {
-                StartDate = start,
-                EndDate = end,
-                payrollName = $"{today:MM}-{Company.First()}",
-                payrollStatus = payrollStatus.PENDING,
-                modifiedBy = User.Identity.Name
-            };
-
-
-            var totalGross = 0.0m;
-            var totalNet = 0.0m;
-            var totalTax = 0.0m;
-            var totalPenEmp = 0.0m;
-            var totalEmployees = 0;
-            payrollPays = new List<payrollPay>();
-            foreach (var emp in employees)
-            {
-                var emplModel = _context.Employments.FirstOrDefault(e => e.employmentID == emp.empID);
-                var pay = await _payrollService.CalculateEmployeePayAsync(emplModel, payroll);
+            //var payroll = new payrollModel();
+            //payroll.StartDate = start;
+            //payroll.EndDate = end;
+            //payroll.payrollName = $"{today:MM}-{Company.First()}";
+            //payroll.payrollStatus = payrollStatus.PENDING;
+            //payroll.modifiedBy = User.Identity.Name;
+            
+            //var totalGross = 0.0m;
+            //var totalNet = 0.0m;
+            //var totalTax = 0.0m;
+            //var totalPenEmp = 0.0m;
+            //var totalEmployees = 0;
+            //payrollPays = new List<payrollPay>();
+            //foreach (var emp in employees)
+            //{
+            //    var emplModel = _context.Employments.FirstOrDefault(e => e.employmentID == emp.empID);
+            //    var pay = await _payrollService.CalculateEmployeePayAsync(emplModel, payroll);
+            //    var pay = new payrollPays();
                
-                payrollPays.Add(pay);
-                totalGross += pay.GrossPay;
-                totalNet += pay.NetPay;
-                totalTax += pay.DeductionRecords.Where(d => d.DeductionType != null && d.DeductionType.deductionName.ToLower().Contains("tax")).Sum(d => d.deductionAmount ?? 0);
-                totalPenEmp += pay.DeductionRecords.Where(d => d.DeductionType != null && d.DeductionType.deductionName.ToLower().Contains("pension")).Sum(d => d.deductionAmount ?? 0);
-                totalEmployees++;
-            }
+            //    payrollPays.Add(pay);
+            //    totalGross += pay.GrossPay;
+            //    totalNet += pay.NetPay;
+            //    totalTax += pay.DeductionRecords.Where(d => d.DeductionType != null && d.DeductionType.deductionName.ToLower().Contains("tax")).Sum(d => d.deductionAmount ?? 0);
+            //    totalPenEmp += pay.DeductionRecords.Where(d => d.DeductionType != null && d.DeductionType.deductionName.ToLower().Contains("pension")).Sum(d => d.deductionAmount ?? 0);
+            //    totalEmployees++;
+            //}
 
-            payroll.totalGross = totalGross;
-            payroll.totalNet = totalNet;
-            payroll.totalTax = totalTax;
-            payroll.totalPensionEmployee = totalPenEmp;
-            payroll.totalEmployees = totalEmployees;
+            //payroll.totalGross = totalGross;
+            //payroll.totalNet = totalNet;
+            //payroll.totalTax = totalTax;
+            //payroll.totalPensionEmployee = totalPenEmp;
+            //payroll.totalEmployees = totalEmployees;
      
             //
             //

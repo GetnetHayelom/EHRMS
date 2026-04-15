@@ -124,17 +124,26 @@
                     @foreach (var item in Model.personModel)
                     {
                         No++;
-                        <tr>
-                            <td>@No</td>
-                            <td class="fw-semibold">@item.personFullName</td>
-                            <td>@item.personDoB.ToString("dd MMM yyyy")</td>
-                            <td>
-                                <span class="badge bg-secondary">@item.personGender</span>
+                        <tr class="mb-0 p-0">
+                            <td class="mb-0">@No</td>
+                            <td class="fw-semibold mb-0">@item.personFullName</td>
+                            <td class="mb-0">
+                                @if (item.personGender == Models.Gender.Male)
+                                {
+                                    <i class="bi-gender-male btn-outline-primary"></i>
+                                }
+                                else
+                                {
+                                    <i class="bi-gender-female btn-outline-danger"></i>
+                                }
+
                             </td>
-                            <td>@item.personPhoneNumber</td>
-                            <td>@item.personRecordNumber</td>
-                            <td>@item.personEmailAddress</td>
-                            <td>
+                            <td class="mb-0">@item.personDoB.ToString("MM/dd/yyyy")</td>
+
+                            <td class="mb-0">@item.personPhoneNumber</td>
+                            <td class="mb-0">@item.personRecordNumber</td>
+                            <td class="mb-0">@item.personEmailAddress</td>
+                            <td class="mb-0">
                                 <div class="btn-group" role="group">
                                     <a asp-page="./Details" asp-route-id="@item.personID" class="btn btn-sm btn-outline-primary" title="View Details">
                                         <i class="bi bi-eye"></i>

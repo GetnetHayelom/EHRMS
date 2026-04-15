@@ -7,8 +7,8 @@
     var successMessage = TempData["SuccessMessage"] as string;
 }
 
-<h1 class="fw-bold">Guaranty</h1>
-<h6 class="fw-bold text-muted">Request Guaranty Service</h6>
+<h2 class="fw-bold">Guaranty</h2>
+<p class="text-muted">Guaranty request form</p>
 
 <hr />
 <div class="d-flex gap-4">
@@ -17,16 +17,24 @@
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             @if (User.IsInRole("MIE\\PMS_HRCLERK"))
             {
-                <div class="form-group">
-                    <label asp-for="givenID" class="control-label">Guarantor Employment ID</label>
-                    <input asp-for="givenID" class="form-control mb-2" name="givenID" placeholder="Enter Employee ID" />
-                </div>
                 
+                <!-- Selector -->
+                <div class="form-group">
+                    <label asp-for="guarantyModel.employmentID" class="form-label fw-semibold">
+                        <span class="text-danger">*</span> Employee
+                    </label>
+                    <input type="text" class="form-control" list="personList" placeholder="Type to search..." oninput="selector(this, 'personIDHidden')" value="@Model.Employee?.givenID @Model.Employee?.personModel?.personFullName"/>
+                    <input type="hidden" asp-for="guarantyModel.employmentID" id="personIDHidden" value="@Model.Employee?.employmentID"/>
+                    <datalist id="personList">
+                        @foreach (var person in Model.Employments)
+                        {
+                            <option data-id="@person.Value" value="@person.Text"></option>
+                        }
+                    </datalist>
+                    <span asp-validation-for="guarantyModel.employmentID" class="text-danger"></span>
+                </div>
             }
-            else
-            {
-                <input asp-for="givenID" class="form-control d-none" name="givenID" placeholder="Enter Employee ID" readonly/>                
-            }
+            
             
             <div class="form-group">
                 <label asp-for="guarantyModel.guarantyStartDate" class="control-label">Guaranty Start Date</label>

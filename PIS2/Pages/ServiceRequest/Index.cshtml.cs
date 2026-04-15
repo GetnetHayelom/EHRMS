@@ -7,14 +7,15 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using PIS2.Models;
+using PIS2.Data;
 
 namespace PIS2.Pages.ServiceRequest
 {
     public class IndexModel : PageModel
     {
-        private readonly PIS2.Models.PISContext _context;
+        private readonly PISContext _context;
 
-        public IndexModel(PIS2.Models.PISContext context)
+        public IndexModel(PISContext context)
         {
             _context = context;
         }
@@ -31,6 +32,7 @@ namespace PIS2.Pages.ServiceRequest
         public int Approved { get; set; }
         public int Declined { get; set; }
         public int Completed { get; set; }
+        public SelectList RequestTypes { get; set; }
        
 
         public async Task OnGetAsync(int? reqStatus, int? department, int? company, int? reqType, DateTime? startDate, DateTime? endDate)
@@ -45,6 +47,9 @@ namespace PIS2.Pages.ServiceRequest
                 .Where(d => d.companyStatus == mainStatus.Active)
                 .OrderBy(c => c.companyName).ToListAsync(), "companyID", "companyName");
 
+            var req = await _context.ServiceRequestTypes.Where(s => s.serviceRequestTypeStatus == mainStatus.Active).ToListAsync();
+            RequestTypes = new SelectList(req, "serviceRequestTypeID", "serviceRequestTypeName");
+
             var qry =_context.ServiceRequests
                 .Include(s => s.Employment).ThenInclude(e => e.SiteAssignments)
                 .Include(s => s.Employment).ThenInclude(e => e.JobPlacements).ThenInclude(j => j.departmentModel).ThenInclude(d => d.companyModel)
@@ -58,7 +63,7 @@ namespace PIS2.Pages.ServiceRequest
 
             if (reqType.HasValue)
             {
-                qry = qry.Where(s => s.requestedService == (ServiceRequestTypes) reqType);
+                qry = qry.Where(s => s.serviceRequestTypeID == reqType);
             }
 
             if (company.HasValue)
@@ -72,10 +77,7 @@ namespace PIS2.Pages.ServiceRequest
             {
                 qry = qry.Where(s => s.Employment.JobPlacements.FirstOrDefault(j => j.jobPlacementStatus == mainStatus.Active).departmentModel.departmentID == department);
             }
-                
-
-           
-
+            
             if (startDate.HasValue) { qry = qry.Where(s => s.serviceRequestDate >= startDate); }
 
 
@@ -100,7 +102,7 @@ namespace PIS2.Pages.ServiceRequest
 
             await _context.SaveChangesAsync();
 
-            return new JsonResult(new { success = true, message = "Invalid request type.", type=req.requestedService.ToString(), empID=req.employmentID, prsnID=req.Employment?.personID });
+            return new JsonResult(new { success = true, message = "Invalid request type.", type=req.ServiceRequestType?.serviceRequestTypeName.ToString(), empID=req.employmentID, prsnID=req.Employment?.personID });
         }
 
     }

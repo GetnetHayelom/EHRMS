@@ -1,0 +1,15 @@
+﻿
+@model Models.mainStatus;
+@if (Model == Models.mainStatus.Active)
+{
+    <span class="badge bg-success">@Model</span>
+
+}
+else if (Model == Models.mainStatus.Suspended)
+{
+    <span class="badge bg-warning">@Model</span>
+}
+else
+{
+    <span class="badge bg-secondary">@Model</span>
+}

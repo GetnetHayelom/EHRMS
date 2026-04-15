@@ -223,7 +223,7 @@
                     <canvas id="earningsChart"></canvas>
                 </div>
                 <div class="text-center mt-2">
-                    <small class="text-muted">Total Earnings: @Model.payrollPay.EarningRecords?.Sum(e => e.earningAmount).ToString("N2") Br</small>
+                    <small class="text-muted">Total Earnings: @Model.payrollPay?.EarningRecords?.Sum(e => e.earningAmount).ToString("N2") Br</small>
                 </div>
             </div>
         </div>
@@ -240,7 +240,7 @@
                     <canvas id="deductionsChart"></canvas>
                 </div>
                 <div class="text-center mt-2">
-                    <small class="text-muted">Total Deductions: @(Model.payrollPay.DeductionRecords.Sum(d => d.deductionAmount)?.ToString("N2") ?? "0") Br</small>
+                    <small class="text-muted">Total Deductions: @(Model.payrollPay?.DeductionRecords?.Sum(d => d.deductionAmount)?.ToString("N2") ?? "0") Br</small>
                 </div>
             </div>
         </div>

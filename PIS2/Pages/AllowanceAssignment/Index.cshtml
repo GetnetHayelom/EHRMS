@@ -6,40 +6,52 @@
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
 
+@await Html.PartialAsync("headerSimple", "")
 
-
-<div class="d-flex justify-content-between">
+<div class="d-flex justify-content-between align-items-end">
     <div>
-        <h1 class="fw-bold flex-grow">Allowance Assignments</h1>
-        <h4 class="fw-bold">@Model.Company</h4>
+        <h2 class="fw-bold mb-0">Allowance Assignments</h2>
+        <p class="text-muted mb-0">Active allowance assignment, @Model.Company</p>
     </div>
     <div>
-        <div class="d-flex justify-content-between">
-            <p class="fw-bold">Total No of Allowance:<u>@Model.allowanceCount</u></p>
-            <p class="fw-bold">Total Sum of Allowance:<u>@Math.Round(Model.allowanceSum, 2).ToString("N2")</u></p>
-        </div>
-        <div>
-            <a asp-page="Create" class="btn btn-primary m-2 d-print-none">New Allowance Assignment</a>
-            <a asp-page="Create" class="btn btn-primary m-2 d-print-none" data-bs-toggle="collapse" data-bs-target="#rawView">List View</a>
-            <a asp-page="Create" class="btn btn-primary m-2 d-print-none" data-bs-toggle="collapse" data-bs-target="#groupDepView">Department View</a>
-        </div>
         
-    </div>
-     
+        <div>
+            <a asp-page="Create" class="btn btn-primary m-2 d-print-none"><i class="bi bi-plus-circle me-2"></i>New Allowance Assignment</a>
+        </div>
+    </div>  
+</div>
+<div class="d-flex justify-content-between">
+    <p class="fw-bold mb-0">Total No of Allowance:<u>@Model.allowanceCount</u></p>
+    <p class="fw-bold mb-0">Total Sum of Allowance:<u>@Math.Round(Model.allowanceSum, 2).ToString("N2")</u></p>
 </div>
 
-<hr />
-<div id="parentDiv">
+<div class="d-flex d-print-none mt-3">
+    <ul class="nav nav-tabs">
+        <li class="nav-item">
+            <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#rawView">Details View</button>
+        </li>
+        <li class="nav-item">
+            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#groupDepView">Department View</button>
+        </li>
+    </ul>
+</div>
+
+<div class ="tab-content mt-0">
     <!--List View-->
-    <div id="rawView" class="show" data-bs-parent="#parentDiv">
-        <div class="d-flex">
-            @await Html.PartialAsync("filter")
-            @await Html.PartialAsync("print")
+    <div id="rawView" class="tab-pane fade show active">
+        <div class="card shadow-sm m-1 p-0">
+            <div class="d-flex justify-content-end align-items-end m-0">
+                @await Html.PartialAsync("filter")
+                @await Html.PartialAsync("back")
+                @await Html.PartialAsync("print")
+                <excel-export table="dataTable" filename="ActiveAllowanceAssignment_@(DateTime.UtcNow).xlsx"></excel-export>
+            </div>
         </div>
         
         <table class="table table-striped table-hover" id="dataTable">
-            <thead class="bg-dark text-white">
+            <thead class="table-dark">
                 <tr>
+                    <th>S/No</th>
                     <th>
                         Employment ID
                     </th>
@@ -56,11 +68,26 @@
                     <th>
                         Allowance Status
                     </th>
+                    <th class="d-print-none text-end px-2">
+                        Actions
+                    </th>
                 </tr>
             </thead>
             <tbody>
+                @if (Model.allowanceAssignmentModel == null || !Model.allowanceAssignmentModel.Any())
+                {
+                    <tr>
+                        <td colspan="10" class="text-center text-muted">
+                            No active allowance assignments found.
+                        </td>
+                    </tr>
+                }
+                @{
+                    int listIndex = 1;
+                }
                 @foreach (var item in Model.allowanceAssignmentModel) {
                     <tr onclick="location.href='@Url.Page("Details", new { id = item.allowanceAssignmentID})'" style="cursor:pointer">
+                        <td>@(listIndex++)</td>
                         <td>
                             @Html.DisplayFor(modelItem => item.employmentModel.givenID)
                         </td>
@@ -71,145 +98,95 @@
                             @Html.DisplayFor(modelItem => item.allowanceModel.allowanceName)
                         </td>
                         <td>
-                            @item.allowanceAssignmentAmount
+                            @item.allowanceAssignmentAmount.ToString("N2")
                         </td>
                         <td>
-                            @item.allowanceAssignmentDate.Value.ToString("yyyy-MM-dd")
-                        </td>@{
-                            string bg_color;
-                            if (item.allowanceStatus == Models.mainStatus.Suspended)
-                            {
-                                bg_color = "bg-warning text-black";
-                            }
-                            else if (item.allowanceStatus == Models.mainStatus.Active)
-                            {
-                                bg_color = "bg-success text-white";
-                            }
-                            else
-                            {
-                                bg_color = "bg-grey text-black";
-                            }
-                        }
-                        <td class="@bg_color">
-                            @Html.DisplayFor(modelItem => item.allowanceStatus)
+                            @item.allowanceAssignmentDate?.ToString("MM/dd/yyyy")
+                        </td>
+                        <td>
+                            @await Html.PartialAsync("_StatusBadges", item.allowanceStatus)
+                        </td>
+                        <td class="d-print-none text-end px-2">
+                            @await Html.PartialAsync("_Actions", item.allowanceAssignmentID)
                         </td>
                     </tr>
                 }
             </tbody>
         </table>
-        <div class="d-flex justify-content-end">
-            @await Html.PartialAsync("print")
-        </div>
+        
 
     </div>
     <!--Group View-->
-    <div id="groupDepView" class="show" data-bs-parent="#parentDiv">
+    <div id="groupDepView" class="tab-pane fade">
     <h4 class="fw-bold">Allowance By Department</h4>
-        <table class="table table-striped table-hover">
+        <div class="card shadow-sm m-1 p-0">
+            <div class="d-flex justify-content-end align-items-end m-0">
+                @await Html.PartialAsync("back")
+                @await Html.PartialAsync("print")
+                <excel-export table="dataTable2" filename="DepartmentAllowanceAssignment_@(DateTime.UtcNow).xlsx"></excel-export>
+            </div>
+        </div>
+        <table class="table table-striped table-hover" id="dataTable2">
             <thead class="bg-dark text-white">
                 <tr>
                     <th>S/No</th>
                     <th>Department</th>
                     <th>Number of Allowance</th>
                     <th>Total Allowance</th>
+                    <th></th>
                 </tr>
             </thead>
             <tbody id="departmentsAccordion">
+                @if (Model.allowanceAssignmentModel == null || !Model.allowanceAssignmentModel.Any())
+                {
+                    <tr>
+                        <td colspan="4" class="text-center text-muted">
+                            No active allowance assignments found.
+                        </td>
+                    </tr>
+                }
+
                 @{
                     int index = 0;
                     int rowCounter = 1;
                 }
                 @foreach (var dep in Model.GroupedAllowance)
                 {
-                    var collapseId = $"collapse{index}";
-                    <tr class="" data-bs-toggle="collapse"
-                        data-bs-target="#@collapseId"
+                    var groupClass = $"group-{index}";
+
+                    <tr class="table-primary"
+                        data-bs-toggle="collapse"
+                        data-bs-target=".@groupClass"
                         style="cursor:pointer;">
                         <td>@rowCounter</td>
-                        <td>
-                            @dep.Name
-                           
-                        </td>
-                        <td>
-                            @dep.Count
-
-                        </td>
-                        <td>
-                            @Math.Round(dep.Sum, 2).ToString("N2")
-
-                        </td>
-
+                        <td><strong>@dep.Name</strong></td>
+                        <td>@dep.Count</td>
+                        <td colspan="2">@dep.Sum.ToString("N2")</td>
                     </tr>
 
-                    <tr>
-                        <td colspan="6" class="p-0">
-                            <div id="@collapseId" class="accordion-collapse collapse"
-                                 data-bs-parent="#departmentsAccordion">
-                                <table class="table table-striped table-hover mb-0">
-                                    <thead class="bg-info text-white">
-                                        <tr>
-                                            <th>
-                                                Employment ID
-                                            </th>
-                                            <th>Employee Name</th>
-                                            <th>
-                                                Allowance Type
-                                            </th>
-                                            <th>
-                                                Allowance Amount
-                                            </th>
-                                            <th>
-                                                Allowance Assignment Date
-                                            </th>
-                                            <th>
-                                                Allowance Status
-                                            </th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-
-                                        @foreach (var item in dep.Records)
-                                        {
-                                            <tr onclick="location.href='@Url.Page("Details", new { id = item.allowanceAssignmentID})'" style="cursor:pointer">
-                                                <td>
-                                                    @Html.DisplayFor(modelItem => item.employmentModel.givenID)
-                                                </td>
-                                                <td>
-                                                    @item.employmentModel.personModel.personFullName
-                                                </td>
-                                                <td>
-                                                    @Html.DisplayFor(modelItem => item.allowanceModel.allowanceName)
-                                                </td>
-                                                <td>
-                                                    @item.allowanceAssignmentAmount
-                                                </td>
-                                                <td>
-                                                    @item.allowanceAssignmentDate.Value.ToString("yyyy-MM-dd")
-                                                </td>@{
-                                                    string bg_color;
-                                                    if (item.allowanceStatus == Models.mainStatus.Suspended)
-                                                    {
-                                                        bg_color = "bg-warning text-black";
-                                                    }
-                                                    else if (item.allowanceStatus == Models.mainStatus.Active)
-                                                    {
-                                                        bg_color = "bg-success text-white";
-                                                    }
-                                                    else
-                                                    {
-                                                        bg_color = "bg-grey text-black";
-                                                    }
-                                                }
-                                                <td class="@bg_color">
-                                                    @Html.DisplayFor(modelItem => item.allowanceStatus)
-                                                </td>
-                                            </tr>
-                                        }
-                                    </tbody>
-                                </table>
-                            </div>
-                        </td>
+                    <tr class="collapse @groupClass bg-light">
+                        <th class="ps-4">Employment ID</th>
+                        <th>Employee Name</th>
+                        <th>Type</th>
+                        <th>Amount</th>
+                        <th class="d-print-none text-end px-2">Actions</th>
                     </tr>
+
+                    @foreach (var item in dep.Records)
+                    {
+                        <tr class="collapse @groupClass">
+                            <td class="ps-4">@item.employmentModel?.givenID</td>
+                            <td>@item.employmentModel?.personModel?.personFullName</td>
+                            <td>@item.allowanceModel?.allowanceName</td>
+                            <td>
+                                @item.allowanceAssignmentAmount.ToString("N2")
+                            </td>
+                            <th class="d-print-none text-end px-2">
+                                @await Html.PartialAsync("_Actions", item.allowanceAssignmentID)
+                            </th>
+                        </tr>
+                    }
+
                     index++;
                     rowCounter++;
                 }
@@ -217,6 +194,9 @@
         </table>
     </div>
 </div>
-<div class="d-flex justify-content-end">
-   @await Html.PartialAsync("print")
+<div class="card shadow-sm m-1 p-0">
+    <div class="d-flex justify-content-end align-items-center m-0">
+        @await Html.PartialAsync("back")
+        @await Html.PartialAsync("print")
+    </div>
 </div>

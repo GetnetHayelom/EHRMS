@@ -7,14 +7,16 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+using PIS2.Data;
 using PIS2.Models;
+using PIS2.Services;
 using static System.Formats.Asn1.AsnWriter;
 
 namespace PIS2.Pages.Leave
 {
     public class CreateModel : PageModel
     {
-        private readonly PIS2.Models.PISContext _context;
+        private readonly PISContext _context;
         private readonly Core _core;
         public CreateModel(PISContext ctx, Core methods)
         {

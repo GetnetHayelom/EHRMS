@@ -25,19 +25,27 @@
                 </tr>
             </thead>
             <tbody>
-                @{
-                    int sn = 1;
-                }
-                @foreach (var i in Model.Experiences)
+                @if (Model.Experiences == null || !Model.Experiences.Any())
                 {
                     <tr>
-                        <td>@sn</td>
-                        <td>@i.experienceStartDate.ToString("MM/dd/yyyy")</td>
-                        <td>@i.experienceEndDate.ToString("MM/dd/yyyy")</td>
-                        <td>@i.jobTitle</td>
+                        <td colspan="10" class="text-center text-muted">
+                            No Experiences found.
+                        </td>
                     </tr>
-                    sn++;
+                }else{
+                    int sn = 1;
+                    foreach (var i in Model.Experiences)
+                    {
+                        <tr>
+                            <td>@(sn++)</td>
+                            <td>@i.experienceStartDate.ToString("MM/dd/yyyy")</td>
+                            <td>@i.experienceEndDate.ToString("MM/dd/yyyy")</td>
+                            <td>@i.jobTitle</td>
+                        </tr>
+                    
+                    }
                 }
+                
 
             </tbody>
         </table>

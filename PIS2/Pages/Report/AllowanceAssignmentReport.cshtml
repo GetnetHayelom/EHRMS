@@ -55,7 +55,7 @@
 
         <!--FILTER CONTROLLS-->
         <div class="card shadow-sm p-2 mb-4 ">
-            <div class="d-flex d-print-flex flex-wrap gap-4">
+            <div class="d-flex d-print-flex flex-wrap gap-4 align-item-end">
                 <div class="flex-fill">
                     <label for="filter-company">Company:</label>
                     <select class="form-select" aria-label="Default select example" id="filter-company">
@@ -169,6 +169,9 @@
             <th>
                 Allowance Status
             </th>
+            <th class="d-print-none text-end px-2">
+                Actions
+            </th>
         </tr>
     </thead>
     <tbody id="table-body">
@@ -185,7 +188,7 @@
                         @item2.FirstOrDefault()?.DepartmentName
                         (Total: @item2.Count())
                     </td>
-                    <td colspan='3'>@item2.Sum(c => c.AllowanceAmount)</td>
+                    <td colspan='4'>@item2.Sum(c => c.AllowanceAmount)</td>
                 </tr>
                 @foreach (var item3 in item2)
                 {
@@ -202,24 +205,11 @@
                         </td>
                         <td>
                             @item3.AllowanceStart.ToString("MM/dd/yyyy")
-                        </td>@{
-                            string bg_color;
-                            if (item3.AllowanceStatus == Models.mainStatus.Suspended)
-                            {
-                                bg_color = "bg-warning text-black";
-                            }
-                            else if (item3.AllowanceStatus == Models.mainStatus.Active)
-                            {
-                                bg_color = "bg-success text-white";
-                            }
-                            else
-                            {
-                                bg_color = "bg-grey text-black";
-                            }
-                        }
-                        <td class="@bg_color">
-                            @Html.DisplayFor(modelItem => item3.AllowanceStatus)
                         </td>
+                        <td>
+                            @await Html.PartialAsync("_StatusBadges", item3.AllowanceStatus)
+                        </td>
+                        <td class="d-print-none text-end px-2">@await Html.PartialAsync("_Actions",item3.AllowanceID)</td>
                     </tr>
                 }
             }

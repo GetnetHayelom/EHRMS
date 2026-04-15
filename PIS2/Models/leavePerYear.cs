@@ -1,12 +1,13 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using PIS2.Data;
 
 namespace PIS2.Models
 {
     public class leavePerYear
     {
-        private readonly PIS2.Models.PISContext _context;
+        private readonly PISContext _context;
 
-        public leavePerYear(PIS2.Models.PISContext context)
+        public leavePerYear(PISContext context)
         {
             _context = context;
         }

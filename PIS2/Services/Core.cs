@@ -9,8 +9,9 @@ using PIS2.Models;
 using System;
 using PIS2.Views;
 using System.Threading.Tasks;
+using PIS2.Data;
 
-namespace PIS2.Models
+namespace PIS2.Services
 {
     public class Core
     {
@@ -64,15 +65,15 @@ namespace PIS2.Models
 
             //amount of leave that can be utilised
             decimal allowedLeave = 0;
-            spareDays = Enumerable.Range(0, ((endDate - (startDate).AddYears(years - 1))).Days + 1)
+            spareDays = Enumerable.Range(0, (endDate - startDate.AddYears(years - 1)).Days + 1)
         .Select(offset => startDate.AddDays(offset))
         .Count(date => date.DayOfWeek != DayOfWeek.Sunday);
 
             totalLeave = accruedLeave - usedLeave;
-            allowedLeave = totalLeave - (lastAnnualLeaveIncrement - (spareDays * dailyAccrualRate));
+            allowedLeave = totalLeave - (lastAnnualLeaveIncrement - spareDays * dailyAccrualRate);
             var job =await _context.JobPlacements?.Include(j => j.departmentModel).ThenInclude(d => d.companyModel).SingleOrDefaultAsync(j => j.employmentID == empID && j.jobPlacementStatus == mainStatus.Active)?? new jobPlacementModel();
             var dep = job.departmentModel;
-            decimal leaveCost = (job.jobPlacementSalary / 26)*(allowedLeave);
+            decimal leaveCost = job.jobPlacementSalary / 26*allowedLeave;
             leaveDetail leaveSummary = new leaveDetail(totalLeave, allowedLeave, lastAnnualLeaveIncrement, startDate, endDate,leaveCost, dep);
             return leaveSummary;
         }
@@ -157,7 +158,7 @@ namespace PIS2.Models
             decimal hRate = 0;
             if (_context.JobPlacements.Any( jp=> jp.employmentID == empID))
             {
-                hRate = (decimal)_context.JobPlacements.OrderByDescending(js => js.jobPlacementDate).First(js => js.employmentID == empID).jobPlacementSalary / 26;
+                hRate = _context.JobPlacements.OrderByDescending(js => js.jobPlacementDate).First(js => js.employmentID == empID).jobPlacementSalary / 26;
             }
             DateTime startDate =await GetLeaveStart(empID);
             DateTime endDate =await GetLeaveEndAsync(empID);
@@ -192,14 +193,14 @@ namespace PIS2.Models
             spareDays = Enumerable.Range(0, (endDate - partialYearStart).Days + 1)
             .Select(offset => partialYearStart.AddDays(offset))
             .Count();
-            var allocatedForGrant = lastAnnualLeaveIncrement - (spareDays * dailyAccrualRate);
+            var allocatedForGrant = lastAnnualLeaveIncrement - spareDays * dailyAccrualRate;
 
             totalLeave = accruedLeave - usedLeave;
             if (empStatus == mainStatus.Inactive)
             {
                 totalLeave -= allocatedForGrant;
             }
-            allowedLeave = totalLeave - (lastAnnualLeaveIncrement - (spareDays * dailyAccrualRate));
+            allowedLeave = totalLeave - (lastAnnualLeaveIncrement - spareDays * dailyAccrualRate);
             allowedLeave = allowedLeave < 0 ? 0 : allowedLeave;
             var lpy = await LeavesPerYear(empID);
             leaveDetail leaveSummary = new leaveDetail(Math.Round(totalLeave,2), allowedLeave, lastAnnualLeaveIncrement, startDate, endDate, lpy);
@@ -254,7 +255,7 @@ namespace PIS2.Models
             {
                 
                 usedLeaves = used.Where(l => l.leaveRequestDate >= dateCounter && l.leaveRequestDate < dateCounter.AddYears(1)).Sum(l =>l.leaveDays);
-                accruedLeaves = accrued.Where(l => (l.leaveRequestDate >= dateCounter && l.leaveRequestDate < dateCounter.AddYears(1))).Sum(l => l.leaveDays);
+                accruedLeaves = accrued.Where(l => l.leaveRequestDate >= dateCounter && l.leaveRequestDate < dateCounter.AddYears(1)).Sum(l => l.leaveDays);
                
 
                 leavePerYear = new leavePerYear();
@@ -270,7 +271,7 @@ namespace PIS2.Models
                             
 
                 dateCounter = dateCounter.AddYears(1);
-                startingLeavePerYear += (accruedLeaves - usedLeaves);
+                startingLeavePerYear += accruedLeaves - usedLeaves;
                 var accruedSorted = accrued.OrderBy(l => l.leaveRequestDate).ToList();
                 lastIncrement = accruedSorted.LastOrDefault()?.leaveDays ?? 0;
                 balance = totalAccruedLeaves - totalUsedLeaves;
@@ -282,12 +283,12 @@ namespace PIS2.Models
                 {
                     carryOverTotal -= leavesPerYear[i].accruedLeaveAmount;
                     leavesPerYear[i].rollOverLeave = leavesPerYear[i].accruedLeaveAmount;
-                    leavesPerYear[i].remainingLeaveCost = Math.Round((leavesPerYear[i].rollOverLeave * hRate), 2);
+                    leavesPerYear[i].remainingLeaveCost = Math.Round(leavesPerYear[i].rollOverLeave * hRate, 2);
                 }
                 else
                 {
                     leavesPerYear[i].rollOverLeave = carryOverTotal;
-                    leavesPerYear[i].remainingLeaveCost = Math.Round((leavesPerYear[i].rollOverLeave * hRate), 2);
+                    leavesPerYear[i].remainingLeaveCost = Math.Round(leavesPerYear[i].rollOverLeave * hRate, 2);
                     break;
                 }
                  
@@ -327,7 +328,7 @@ namespace PIS2.Models
                 dailyAccrualRate = lastAnnualLeaveIncrement / workingDayPerYear;
                 totalLeave = leaves.Where(l => l.leaveTypeID == 2017).Sum(l => l.leaveDays);
                 //totalLeave = ((lastAnnualLeaveIncrement - baseLeave + 1) / 2) * (baseLeave + lastAnnualLeaveIncrement);
-                allowedLeave =leaveBalance + (lastAnnualLeaveIncrement - (spareDays*dailyAccrualRate));
+                allowedLeave =leaveBalance + (lastAnnualLeaveIncrement - spareDays*dailyAccrualRate);
             }
             else
             {
@@ -600,14 +601,14 @@ namespace PIS2.Models
             if (startDate >= endDate) return 0;
 
             decimal salary = jobPlacement.jobPlacementSalary;
-            decimal yearsOfService = (decimal) ((endDate - startDate).TotalDays)/365.25m;
+            decimal yearsOfService = (decimal) (endDate - startDate).TotalDays/365.25m;
 
             var severance = 0.0m;
 
             if(yearsOfService >= 1)
             {
                 var additionalYears = Math.Max(0, yearsOfService - 1);
-                severance = salary + (additionalYears * (salary / 3));
+                severance = salary + additionalYears * (salary / 3);
             }
 
             severance = Math.Min(severance, salary * 12);
@@ -747,6 +748,53 @@ namespace PIS2.Models
             };
         }
 
+        /// <summary>
+        /// DETERMINE JOB GRADE PROMOTION/DEMOTION
+        /// </summary>
+        /// 
+        public bool IsPromotion(jobGradeModel? currentGrade, int newGradeId)
+        {
+            var temp = currentGrade?.NextJobGrade;
+            while (temp != null)
+            {
+                if (temp.jobGradeID == newGradeId) return true;
+                temp = temp.NextJobGrade; // Move one step higher
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// PERCENTILE/QUARETILES
+        /// </summary>
+        /// 
+        double Percentile(double[] sortedData, double p)
+        {
+            if (p < 0 || p > 100) throw new ArgumentException("p must be between 0 and 100");
+            double pos = p / 100 * (sortedData.Length - 1);
+            int lower = (int)Math.Floor(pos);
+            int upper = (int)Math.Ceiling(pos);
+            if (lower == upper) return sortedData[lower];
+            return sortedData[lower] + (sortedData[upper] - sortedData[lower]) * (pos - lower);
+        }
+        /// <summary>
+        /// GET WORKING DAYS
+        /// </summary>
+        public int GetWorkingDaysInPeriod(DateTime start, DateTime end)
+        {
+            // implement business calendar logic (exclude weekends)
+            int days = (end.Date - start.Date).Days + 1;
+
+            if (start > end) { return 0; }
+
+            int workingDays = 0;
+            for (int i = 0; i < days; i++)
+            {
+                var day = start.AddDays(i);
+                if (day.DayOfWeek == DayOfWeek.Sunday) continue; // exclude Sundays 
+                workingDays++;
+            }
+            return workingDays;
+        }
         public Core() { }
 
     }

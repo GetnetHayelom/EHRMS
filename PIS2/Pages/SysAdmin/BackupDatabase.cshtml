@@ -23,7 +23,21 @@
     </div>
     <button type="submit" name="action" value="ExportExcel" class="btn btn-success mt-2">Export to Excel</button>
 </form>
+<!-- Log File List -->
+<div class="col-md-2 d-print-none">
+    <h4 class="fw-bold">Backup Files</h4>
 
+    <ul>
+        @foreach (var file in Model.BackFiles)
+        {
+            <li>
+                <a asp-page="Index" asp-route-file="@file">
+                    @file
+                </a>
+            </li>
+        }
+    </ul>
+</div>
 @if (!string.IsNullOrEmpty(Model.Message))
 {
     <div class="alert alert-info mt-3">@Html.Raw(Model.Message)</div>

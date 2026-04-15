@@ -6,21 +6,22 @@
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
 @await Html.PartialAsync("headerSimple", "")
-<div class="container py-4 print-container mb-2">
-    <div class="d-flex justify-content-between align-items-center no-print">
-        <div>
-            <h2 class="fw-bold text-dark">Jobs</h2>
-            <h6 class="text-muted">Manage and Review Jobs</h6>
-        </div>
-        <div>
-            <a asp-page="Create" class="btn btn-primary me-2">
-                <i class="bi bi-plus-circle"></i> Add New Job
-            </a>
-            <button type="button" onclick="window.print()" class="btn btn-success">
-                <i class="bi bi-printer"></i> Print
-            </button>
-        </div>
+<div class="d-flex justify-content-between align-items-center no-print">
+    <div>
+        <h2 class="fw-bold text-dark">Jobs</h2>
+        <h6 class="text-muted">Manage and Review Jobs</h6>
     </div>
+    <div>
+        <a asp-page="Create" class="btn btn-primary me-2">
+            <i class="bi bi-plus-circle"></i> Add New Job
+        </a>
+        <button type="button" onclick="window.print()" class="btn btn-success">
+            <i class="bi bi-printer"></i> Print
+        </button>
+    </div>
+</div>
+<div class="container py-4 print-container mb-2">
+    
     <div class="card shadow-sm p-2 mb-3">
         <div class="d-flex justify-content-between gap-3">
             <div class="flex-fill">
@@ -101,6 +102,7 @@
                                 </td>
                             </tr>
                         }
+                    
                     </tbody>
                 </table>
             </div>

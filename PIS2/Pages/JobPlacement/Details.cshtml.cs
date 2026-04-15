@@ -5,15 +5,16 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
+using PIS2.Data;
 using PIS2.Models;
 
 namespace PIS2.Pages.JobPlacement
 {
     public class DetailsModel : PageModel
     {
-        private readonly PIS2.Models.PISContext _context;
+        private readonly PISContext _context;
 
-        public DetailsModel(PIS2.Models.PISContext context)
+        public DetailsModel(PISContext context)
         {
             _context = context;
         }
@@ -31,10 +32,10 @@ namespace PIS2.Pages.JobPlacement
            
 
             var jobplacementmodel = await _context.JobPlacements
-                .Include(j => j.jobModel).ThenInclude(j => j.jobGradeModel)
-                .Include(j => j.jobStepModel)
+                .Include(j => j.jobModel)
+                .Include(j => j.jobStepModel).ThenInclude(j => j.jobGradeModel)
                 .Include(j => j.JobPlacementHistories)
-                .Include(j => j.departmentModel)
+                .Include(j => j.departmentModel).ThenInclude(j => j.companyModel)
                 .Include(j => j.employmentModel)
                 .FirstOrDefaultAsync(m => m.jobPlacementID == id);
             if (jobplacementmodel == null)
@@ -45,8 +46,8 @@ namespace PIS2.Pages.JobPlacement
             {
 
                 jobPlacementModel = jobplacementmodel;
-                jobPlacementHistoryList = _context.JobPlacementHistories
-                    .Include(jh => jh.departmentModel).Where(jh => jh.jobPlacementID == jobPlacementModel.jobPlacementID).ToList() ?? new List<jobPlacementHistoryModel>();
+                jobPlacementHistoryList =await _context.JobPlacementHistories
+                    .Include(jh => jh.departmentModel).Where(jh => jh.jobPlacementID == jobPlacementModel.jobPlacementID).ToListAsync() ?? new List<jobPlacementHistoryModel>();
 
                 shiftAssigned = _context.ShiftAssignments
                     .Where(s => s.employmentID == jobPlacementModel.employmentID)?.OrderBy(s => s.modifiedDate)?.LastOrDefault()?.shiftModel ?? new shiftModel();

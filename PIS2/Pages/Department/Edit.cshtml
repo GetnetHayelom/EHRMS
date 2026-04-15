@@ -55,8 +55,8 @@
                         <label asp-for="departmentModel.employmentID" class="form-label fw-semibold">
                             <span class="text-danger">*</span> Manager
                         </label>
-                        <input type="text" class="form-control" list="employmentList" placeholder="Type to search..." oninput="selector(this, 'employeeIDHidden')" />
-                        <input type="hidden" asp-for="departmentModel.employmentID" id="employeeIDHidden" />
+                        <input type="text" class="form-control" list="employmentList" placeholder="Type to search..." oninput="selector(this, 'employeeIDHidden')" value="@Model.departmentModel?.employmentModel?.personModel?.personFullName"/>
+                        <input type="hidden" asp-for="departmentModel.employmentID" id="employeeIDHidden" value="@Model.departmentModel?.employmentID"/>
                         <datalist id="employmentList">
                             @foreach (var emp in Model.Manager)
                             {

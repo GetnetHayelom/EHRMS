@@ -25,6 +25,7 @@ namespace PIS2.Models
         public virtual departmentModel? departmentModel {get; set;}
         public string modifiedBy { get; set; }
         public int? oldBatchNbr { get; set; }
+        public decimal? overtimeAmount { get; }
         public TimeSpan TimeElapsed { get { return overtimeRecordEndTime - overtimeRecordStartTime; } }
         public decimal GetOtCost { get { return (decimal)TimeElapsed.TotalHours*overtimeRate*overtimeRecordEmploymentRate; } }  
         public overtimeRecordModel() { }

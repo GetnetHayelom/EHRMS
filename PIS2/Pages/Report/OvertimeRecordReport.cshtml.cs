@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.Blazor;
+using PIS2.Data;
 using PIS2.Models;
 using PIS2.Views;
 using System;
@@ -15,9 +16,9 @@ namespace PIS2.Pages.Report
 {
     public class OvertimeReceordReportModel : PageModel
     {
-        private readonly PIS2.Models.PISContext _context;
+        private readonly PISContext _context;
 
-        public OvertimeReceordReportModel(PIS2.Models.PISContext context)
+        public OvertimeReceordReportModel(PISContext context)
         {
             _context = context;
         }
@@ -86,12 +87,11 @@ namespace PIS2.Pages.Report
                 otDetails = otDetails.Where(ot => ot.OvertimeStatus == OtStatus);
 
 
-
             OvertimeDetails = new List<OvertimeDetailView>();
 
-            OvertimeDetails = otDetails.ToList();
-            SDate = OvertimeDetails.Min(o => o.OvertimeDate).Value;
-            EDate = OvertimeDetails.Max(o => o.OvertimeDate).Value;
+            OvertimeDetails = otDetails?.ToList() ?? new List<OvertimeDetailView>();
+            SDate = OvertimeDetails.Any()? OvertimeDetails.Min(o => o.OvertimeDate).Value : DateTime.Now;
+            EDate = OvertimeDetails.Any()? OvertimeDetails.Max(o => o.OvertimeDate).Value : DateTime.Now;
 
             var ots = OvertimeDetails
             .GroupBy(v => new
@@ -122,33 +122,33 @@ namespace PIS2.Pages.Report
                 DaysPerEmployee = (g.Sum(x => x.TimeElapsed) / 24.0m) / (g.Select(x => x.EmploymentID).Distinct().Count() == 0 ? 1 : g.Select(x => x.EmploymentID).Distinct().Count()),
                 CostPerEmployee = g.Sum(x => x.TimeElapsed * x.OvertimeRate* x.EmployeeRate) / (g.Select(x => x.EmploymentID).Distinct().Count() == 0 ? 1 : g.Select(x => x.EmploymentID).Distinct().Count()),
              })
-            .ToList();
+            .ToList() ?? new List<OvertimeSummaryView>();
 
 
-            OvertimeSummary = ots.ToList();
-            TotalRecords1 = otDetails.Count();
-            TotalHours1 = otDetails.Sum(os => os.TimeElapsed??0);
+            OvertimeSummary = ots.ToList() ?? new List<OvertimeSummaryView>();
+            TotalRecords1 = otDetails?.GroupBy(o => new { o.EmploymentID,o.OvertimeDate}).Count() ?? 0;
+            TotalHours1 = otDetails?.Sum(os => os.TimeElapsed??0) ?? 0;
             TotalDays1 = TotalHours1/24m ;
-            TotalCost1 = otDetails.Sum(os => os.OvertimeCost) ?? 0;
-            InvolvedEmployees1 = otDetails.Select(e => e.EmploymentID).Distinct().Count();
-            DaysPerEmployees1 = TotalDays1 / InvolvedEmployees1;
-            CostPerEmployees1 = TotalCost1 / InvolvedEmployees1;
+            TotalCost1 = otDetails?.Sum(os => os.OvertimeCost) ?? 0;
+            InvolvedEmployees1 = otDetails?.Select(e => e.EmploymentID).Distinct().Count() ?? 0;
+            DaysPerEmployees1 =InvolvedEmployees1>0? TotalDays1 / InvolvedEmployees1 : 0;
+            CostPerEmployees1 = InvolvedEmployees1 > 0 ? TotalCost1 / InvolvedEmployees1 : 0;
 
-            TotalRecords = otDetails1.Count();
-            TotalHours = otDetails1.Sum(os => os.TimeElapsed ?? 0);
+            TotalRecords = otDetails1?.Count() ?? 0;
+            TotalHours = otDetails1?.Sum(os => os.TimeElapsed ?? 0) ?? 0;
             TotalDays = TotalHours / 24m;
-            TotalCost = otDetails1.Sum(os => os.OvertimeCost) ?? 0;
-            InvolvedEmployees = otDetails1.Select(e => e.EmploymentID).Distinct().Count();
-            DaysPerEmployees = TotalDays / InvolvedEmployees;
-            CostPerEmployees = TotalCost / InvolvedEmployees;
+            TotalCost = otDetails1?.Sum(os => os.OvertimeCost) ?? 0;
+            InvolvedEmployees = otDetails1?.Select(e => e.EmploymentID).Distinct().Count() ?? 0;
+            DaysPerEmployees = InvolvedEmployees >0? TotalDays / InvolvedEmployees : 0;
+            CostPerEmployees = InvolvedEmployees > 0? TotalCost / InvolvedEmployees : 0;
 
-            Companies = _context.Companies.OrderBy(c => c.companyName).ToList();
-            Departments = _context.Departments.ToList();
-            OvertimeTypes = _context.Overtimes.ToList();
+            Companies = _context.Companies.OrderBy(c => c.companyName).ToList() ?? new List<companyModel>();
+            Departments = _context.Departments.ToList() ?? new List<departmentModel>();
+            OvertimeTypes = _context.Overtimes.ToList() ?? new List<overtimeModel>();
 
-            var filteredOvertime = otDetails1.ToList();
+            var filteredOvertime = otDetails1?.ToList() ?? new List<OvertimeDetailView>();
 
-            MonthlySummary = filteredOvertime.Where(o => o.OvertimeStatus == Models.overtimeStatus.Completed)
+            MonthlySummary = filteredOvertime?.Where(o => o.OvertimeStatus == Models.overtimeStatus.Completed)
                 .GroupBy(o => o.OvertimeDate.Value.Year)
                 .Select(g => new OvertimeSummaryVM
                 {
@@ -158,9 +158,7 @@ namespace PIS2.Pages.Report
                     EmployeeCount = g.Select(go => go.GivenID).Distinct().Count()
                 })
                 .OrderBy(x => x.Period)
-                .ToList();
-
-
+                .ToList() ?? new List<OvertimeSummaryVM>();
         }
 
         //================================================================================
@@ -183,33 +181,30 @@ namespace PIS2.Pages.Report
             // Start with the full list of employees
             var otDetails = _context.OvertimeDetailView.AsQueryable();
 
+            if (!otDetails.Any()) { return new JsonResult(false); }
             // Apply filters based on the provided query parameters
 
             // Filter by company (if provided)
             if (company.HasValue)
             {
                 otDetails = otDetails.Where(e => e.CompanyID == company);
-
             }
 
             // Filter by Department (if provided)
             if (department.HasValue)
             {
                 otDetails = otDetails.Where(e => e.DepartmentID == department);
-
             }
 
             // Filter by Status (if provided)
             if (overtimeStatus.HasValue)
             {
                 otDetails = otDetails.Where(e => e.OvertimeStatus == (Models.overtimeStatus) overtimeStatus);
-
             }
 
             // Filter by type (if provided)
             if (overtimeType.HasValue)
             {
-
                 otDetails = otDetails.Where(e => e.OvertimeID == overtimeType);
             }
 
@@ -321,7 +316,7 @@ namespace PIS2.Pages.Report
         {
             
             var otDetails = _context.OvertimeDetailView.AsQueryable();
-
+            if (!otDetails.Any()) { return new JsonResult(false); }
             // Filter by Status (if provided)
             if (overtimeStatus.HasValue)
             {

@@ -4,8 +4,8 @@
     ViewData["Title"] = "Earning Type Details";
 }
 @await Html.PartialAsync("headerSimple", "")
-<h1 class="fw-bold">Compensation and Benefit Types</h1>
-
+<h2 class="fw-bold mb-0">Earning Types</h2>
+<p class="text-muted mb-0">Earning type details #@Model.EarningType.earningTypeID</p>
 <div class="container mt-2">
     <div class="card shadow-sm border-0 rounded-4 mb-4">
         <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center rounded-top-4">
@@ -29,6 +29,7 @@
                 <div class="col-md-4">
                     <label class="text-muted small text-uppercase fw-bold">Type Name</label>
                     <p class="fs-5 fw-semibold">@Model.EarningType.earningTypeName</p>
+                    <p class="text-muted">@Model.EarningType.Account?.accountName</p>
                 </div>
 
                 <div class="col-md-4">
@@ -110,7 +111,7 @@
                             {
                                 <tr>
                                     <td class="ps-4 text-muted">
-                                        @log.ModifiedDate.ToString("MMM dd, yyyy HH:mm")
+                                        @log.ModifiedDate.ToString("MM/dd/yyyy HH:mm")
                                     </td>
                                     <td>
                                         <span class="badge bg-info-subtle text-info rounded-pill px-2">

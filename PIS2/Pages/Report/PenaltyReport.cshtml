@@ -5,7 +5,10 @@
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
 @await Html.PartialAsync("headerSimple", "")
-<div class="container-fluid mt-4">
+@if(Model.PenaltyRecords == null || !Model.PenaltyRecords.Any())
+{
+    <p> No penalty records found!</p>
+}else{<div class="container-fluid mt-4">
     <!--TOP HEADER-->
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
@@ -241,15 +244,15 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach(var comp in Model.PenaltyRecords.OrderBy(c => c.departmentModel.companyModel.companyName).GroupBy(p => p.departmentModel.companyModel))
+                                @foreach(var comp in Model.PenaltyRecords?.OrderBy(c => c.departmentModel?.companyModel?.companyName).GroupBy(p => p.departmentModel?.companyModel))
                                 {
                                     <tr class="table-primary">
-                                        <th class="fw-bol table-primary" colspan="6">@comp.FirstOrDefault().departmentModel?.companyModel?.companyName - <strong>@comp.Count()</strong></th>
+                                        <th class="fw-bol table-primary" colspan="6">@comp?.FirstOrDefault()?.departmentModel?.companyModel?.companyName - <strong>@comp?.Count()</strong></th>
                                     </tr>
-                                    @foreach(var dep in comp.OrderBy(c => c.departmentModel.departmentName).GroupBy(c => c.departmentID))
+                                    @foreach(var dep in comp.OrderBy(c => c.departmentModel?.departmentName).GroupBy(c => c.departmentID))
                                     {
                                         <tr>
-                                            <th class="table-secondary" colspan="6">@dep.FirstOrDefault().departmentModel.departmentName - <strong>@dep.Count()</strong></th>
+                                            <th class="table-secondary" colspan="6">@dep.FirstOrDefault()?.departmentModel?.departmentName - <strong>@dep.Count()</strong></th>
                                 
                                         </tr>
 
@@ -258,7 +261,7 @@
                                                     <td class="ps-4" rowspan="@(emp.Count() +1)">
                                                         <div class="d-flex align-items-center">
                                                             <div class="avatar-sm-text me-2">ID</div>
-                                                            <span class="fw-bold">@emp.FirstOrDefault().employmentModel?.givenID</span>
+                                                            <span class="fw-bold">@emp.FirstOrDefault()?.employmentModel?.givenID</span>
                                                         </div>
                                                     </td>
                                                     </tr>
@@ -322,18 +325,18 @@
             </div>
         </div>
     </div>
-</div>
+</div>}
 
 
 @section Scripts {
     
     <script>
         // Data passed from backend via JSON (ensure these exist in your PageModel)
-        const typeLabels = @Json.Serialize(Model.PenaltyRecords.GroupBy(p => p.penaltyTypeModel.penaltyName).Select(g => g.Key));
-        const typeData = @Json.Serialize(Model.PenaltyRecords.GroupBy(p => p.penaltyTypeModel.penaltyName).Select(g => g.Count()));
+        const typeLabels = @Json.Serialize(Model.PenaltyRecords?.GroupBy(p => p.penaltyTypeModel.penaltyName).Select(g => g.Key));
+        const typeData = @Json.Serialize(Model.PenaltyRecords?.GroupBy(p => p.penaltyTypeModel.penaltyName).Select(g => g.Count()));
 
-        const statusLabels = @Json.Serialize(Model.PenaltyRecords.GroupBy(p => p.penaltyStatus.ToString()).Select(g => g.Key));
-        const statusData = @Json.Serialize(Model.PenaltyRecords.GroupBy(p => p.penaltyStatus.ToString()).Select(g => g.Count()));
+        const statusLabels = @Json.Serialize(Model.PenaltyRecords?.GroupBy(p => p.penaltyStatus.ToString()).Select(g => g.Key));
+        const statusData = @Json.Serialize(Model.PenaltyRecords?.GroupBy(p => p.penaltyStatus.ToString()).Select(g => g.Count()));
 
         // 1. Bar Chart - Volume by Type
         new Chart(document.getElementById('typeChart'), {

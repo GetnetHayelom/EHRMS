@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using PIS2.Data;
 using PIS2.Models;
 using System;
 using System.Collections.Generic;
@@ -13,16 +15,16 @@ namespace PIS2.Pages.Person
     [Authorize(Roles = "MIE\\PMS_HRMANAGER")]
     public class DeleteModel : PageModel
     {
-        private readonly PIS2.Models.PISContext _context;
+        private readonly PISContext _context;
 
-        public DeleteModel(PIS2.Models.PISContext context)
+        public DeleteModel(PISContext context)
         {
             _context = context;
         }
 
         [BindProperty]
         public personModel personModel { get; set; } = default!;
-
+        
         public async Task<IActionResult> OnGetAsync(int? id)
         {
             if (id == null)
@@ -31,7 +33,7 @@ namespace PIS2.Pages.Person
             }
 
             var personmodel = await _context.Persons.FirstOrDefaultAsync(m => m.personID == id);
-
+            
             if (personmodel == null)
             {
                 return NotFound();

@@ -1,0 +1,119 @@
+﻿@page
+@model PIS2.Pages.Deduction.DetailsModel
+@{
+    ViewData["Title"] = "Deduction Type Details";
+}
+<h2 class="fw-bold mb-0">Deduction Types</h2>
+<p class="text-muted mb-0">Deduction details #@Model.DeductionType.deductionTypeID</p> 
+<div class="container mt-2">
+    <div class="row g-2">
+        <div class="col-md 5 card shadow-sm">
+            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                <h4 class="mb-0">Deduction Type: @Model.DeductionType.deductionName</h4>
+                <span class="badge bg-light text-dark">ID: @Model.DeductionType.deductionTypeID</span>
+            </div>
+            <div class="card-body">
+                <dl class="row">
+                    <dt class="col-sm-4">Deduction Name</dt>
+                    <dd class="col-sm-8">@Model.DeductionType.deductionName</dd>
+
+                    <dt class="col-sm-4">Base Calculation</dt>
+                    <dd class="col-sm-8">@Model.DeductionType.deductBase</dd>
+
+                    <dt class="col-sm-4">Priority Ranking</dt>
+                    <dd class="col-sm-8">@Model.DeductionType.deductionPriority</dd>
+
+                    <dt class="col-sm-4">Type Configuration</dt>
+                    <dd class="col-sm-8">
+                        @if (Model.DeductionType.isRecurring)
+                        {
+                            <span class="badge bg-info text-dark">Recurring</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-secondary">One-Time</span>
+                        }
+
+                        @if (Model.DeductionType.isMandatory)
+                        {
+                            <span class="badge bg-danger">Mandatory</span>
+                        }
+                    </dd>
+
+                    <dt class="col-sm-4">Status</dt>
+                    <dd class="col-sm-8">
+                        <span class="text-capitalize">@Model.DeductionType.deductionStatus</span>
+                    </dd>
+
+                    <dt class="col-sm-4">Linked Account</dt>
+                    <dd class="col-sm-8">
+                        @(Model.DeductionType.Account?.accountName ?? "No Account Assigned")
+                    </dd>
+
+                    <hr />
+
+                    <dt class="col-sm-4 text-muted">Last Modified By</dt>
+                    <dd class="col-sm-8 text-muted">@Model.DeductionType.modifiedBy</dd>
+
+                    <dt class="col-sm-4 text-muted">Last Modified Date</dt>
+                    <dd class="col-sm-8 text-muted">@Model.DeductionType.modifiedDate.ToString("f")</dd>
+                </dl>
+            </div>
+            <div class="card-footer bg-light d-flex justify-content-end">
+                <a asp-page="./Edit" asp-route-id="@Model.DeductionType.deductionTypeID" class="btn btn-primary me-2">Edit</a>
+                <a asp-page="./Index" class="btn btn-outline-secondary me-2">Back to List</a>
+            </div>
+        </div>
+
+        <div class="col-md-7">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-dark text-white d-flex align-items-center">
+                    <i class="bi bi-clock-history me-2"></i> Audit Trail
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive" style="max-height: 500px; overflow-y: auto;">
+                        <table class="table table-sm table-hover mb-0">
+                            <thead class="table-light">
+                                <tr class="small text-uppercase">
+                                    <th>Date</th>
+                                    <th>User</th>
+                                    <th>Field</th>
+                                    <th>Old Value</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (Model.History.Any())
+                                {
+                                    @foreach (var log in Model.History)
+                                    {
+                                        <tr>
+                                            <td class="small">@log.ModifiedDate.ToString("MM/dd/yyyy HH:mm")</td>
+                                            <td class="small fw-bold">@log.ModifiedBy</td>
+                                            <td><span class="badge bg-light text-dark">@Model.GetFriendlyColumnName(log.ColumnName)</span></td>
+                                            <td class="text-muted italic small">
+                                                <span class="text-danger text-decoration-line-through small">
+                                                    @Model.FormatAuditValue(log.ColumnName, log.OldValue)
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                                else
+                                {
+                                    <tr>
+                                        <td colspan="4" class="text-center py-4 text-muted">No change history found for this record.</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="card-footer bg-white small text-muted">
+                    Total changes tracked: @Model.History.Count
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+</div>

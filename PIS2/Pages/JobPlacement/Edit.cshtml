@@ -10,8 +10,8 @@
 
     <!-- Page Header -->
     <div class="mb-4">
-        <h1 class="fw-bold text-dark mb-1">Job Placements</h1>
-        <p class="text-muted mb-0 fw-bold">Update employee job placement details</p>
+        <h2 class="fw-bold mb-0">Job Placements</h2>
+        <p class="text-muted">Update employee job placement details</p>
     </div>
 
     <!-- Employee Info -->
@@ -62,7 +62,9 @@
                             <select asp-for="jobPlacementModel.departmentID"
                                     class="form-control"
                                     id="filter-department1">
-                                <option value="">-- Select Department --</option>
+                                <option value="@Model.jobPlacementModel.departmentID">
+                                    @Model.jobPlacementModel.departmentModel?.departmentName
+                                </option>
                             </select>
                         </div>
 
@@ -156,8 +158,10 @@
                 </div>
 
                 <!-- Actions -->
-                <div class="d-flex justify-content-end border-top pt-3 mt-4">
-                    <button type="submit" class="btn btn-success px-4">
+                <div class="d-flex justify-content-end border-top align-items-end">
+                    
+                        @await Html.PartialAsync("back")
+                    <button type="submit" class="btn btn-success m-2">
                         Save Changes
                     </button>
                 </div>
@@ -188,14 +192,14 @@
                                 <table class="table table-sm table-hover align-middle mb-0">
                                     <thead class="table-light">
                                         <tr>
-                                            <th>Date</th>
+                                            <th>Placement Date</th>
                                             <th>Reason</th>
                                             <th>Department</th>
                                             <th>Job Step</th>
                                             <th class="text-end">Salary</th>
                                             <th>Status</th>
                                             <th>Reference</th>
-                                            <th>Modified By</th>
+                                            <th>Modified</th>
                                         </tr>
                                     </thead>
 
@@ -204,7 +208,7 @@
                                         {
                                             <tr>
                                                 <td class="text-nowrap">
-                                                    @h.modifiedDate.ToString("yyyy-MM-dd HH:mm")
+                                                    @h.jobPlacementDate.ToString("MM/dd/yyyy")
                                                 </td>
 
                                                 <td>@h.jobPlacementReason</td>
@@ -234,7 +238,8 @@
                                                 </td>
 
                                                 <td class="text-nowrap">
-                                                    @h.modifiedBy
+                                                    <p class="mb-0">@h.modifiedBy</p>
+                                                    <p class="small text-muted mb-0">@h.modifiedDate.ToString("yyyy-MM-dd HH:mm")</p>
                                                 </td>
                                             </tr>
                                         }

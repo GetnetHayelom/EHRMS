@@ -2,7 +2,7 @@
 
 namespace PIS2.TagHelpers
 {
-    // This allows you to use <excel-export> in your Razor pages
+    // This allows to use <excel-export> in Razor pages
     [HtmlTargetElement("excel-export")]
     public class ExcelExportTagHelper : TagHelper
     {
@@ -16,8 +16,7 @@ namespace PIS2.TagHelpers
 
         // Optional CSS class
         [HtmlAttributeName("class")]
-        public string CssClass { get; set; } = "btn btn-outline-primary m-2";
-
+        public string CssClass { get; set; } = "btn btn-outline-primary m-2 d-print-none d-flex";
         public override void Process(TagHelperContext context, TagHelperOutput output)
         {
             // Render a <button> element
@@ -30,7 +29,7 @@ namespace PIS2.TagHelpers
             output.Attributes.SetAttribute("onclick", $"exportTableToExcel('{Table}', '{FileName}')");
 
             // Set inner text
-            output.Content.SetContent("Export to Excel");
+            output.Content.SetContent("To Excel");
         }
     }
 }

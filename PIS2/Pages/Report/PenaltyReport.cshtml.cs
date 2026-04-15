@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using PIS2.Data;
 using PIS2.Models;
 
 namespace PIS2.Pages.Report
@@ -10,9 +11,9 @@ namespace PIS2.Pages.Report
     [Authorize(Roles = "MIE\\PMS_HRCLERK, MIE\\PMS_HRMANAGER, MIE\\PMS_MANAGEMENT")]
     public class PenaltyReport : PageModel
     {
-        private readonly PIS2.Models.PISContext _context;
+        private readonly PISContext _context;
 
-        public PenaltyReport(PIS2.Models.PISContext context)
+        public PenaltyReport(PISContext context)
         {
             _context = context;
         }
@@ -48,7 +49,7 @@ namespace PIS2.Pages.Report
         public List<string> TrendLabels { get; set; } = new();
         public List<int> TrendData { get; set; } = new();
 
-        public async Task OnGetAsync()
+        public async Task<IActionResult> OnGetAsync()
         {
             PenaltyTypes = new SelectList(await _context.PenaltyTypes.ToListAsync(), "penaltyTypeID", "penaltyName");
 
@@ -58,6 +59,7 @@ namespace PIS2.Pages.Report
                 .Include(p => p.departmentModel).ThenInclude(d => d.companyModel)
                 .AsQueryable();
 
+            if (query == null || !query.Any()) { return Page(); }
             // Apply Filters
             if (!string.IsNullOrEmpty(SearchEmpId))
             {
@@ -82,34 +84,34 @@ namespace PIS2.Pages.Report
             }
             else
             {
-                StartDate = query.Min(q => q.penaltyIssueDate);
+                StartDate = query?.Min(q => q.penaltyIssueDate) ?? DateTime.MinValue;
             }
             if (EndDate.HasValue)
             {
-                query = query.Where(s => s.penaltyIssueDate <= EndDate);
+                query = query?.Where(s => s.penaltyIssueDate <= EndDate);
             }
             else
             {
-                EndDate = query.Max(q => q.penaltyIssueDate);
+                EndDate = query?.Max(q => q.penaltyIssueDate) ?? DateTime.Now;
             }
 
-                var penalties = query.ToList();
-            TotalPenalties = penalties.Count;
-            PendingActions = penalties.Count(p => p.penaltyStatus == penaltyStatus.Pending || p.penaltyStatus == penaltyStatus.Hold);
+                var penalties = query?.ToList();
+            TotalPenalties = penalties?.Count ?? 0;
+            PendingActions = penalties?.Count(p => p.penaltyStatus == penaltyStatus.Pending || p.penaltyStatus == penaltyStatus.Hold) ?? 0;
 
             // Determine if we use Monthly or Quarterly bucketing
             bool useQuarterly = StartDate.HasValue
                  && EndDate.HasValue
                  && (EndDate.Value - StartDate.Value).TotalDays > 365;
 
-            var trendGroup = penalties
+            var trendGroup = penalties?
                 .GroupBy(p => useQuarterly
                     ? $"{Math.Ceiling(p.penaltyIssueDate.Month / 3.0)}Qt {p.penaltyIssueDate.Year}"
                     : p.penaltyIssueDate.ToString("MMM yyyy"))
                 .OrderBy(g => g.First().penaltyIssueDate);
 
-            TrendLabels = trendGroup.Select(g => g.Key).ToList();
-            TrendData = trendGroup.Select(g => g.Count()).ToList();
+            TrendLabels = trendGroup?.Select(g => g.Key).ToList() ?? new List<string>();
+            TrendData = trendGroup?.Select(g => g.Count()).ToList() ?? new List<int>();
 
             // Calculate sum of amounts (handling potential nulls)
             TotalPenaltyValue = await query.SumAsync(p => p.penaltyTypeModel != null ? p.penaltyTypeModel.penaltyAmount : 0);
@@ -120,6 +122,7 @@ namespace PIS2.Pages.Report
                 .FirstOrDefaultAsync()) ?? "N/A";
 
             PenaltyRecords = await query.OrderByDescending(p => p.penaltyIssueDate).ToListAsync();
+            return Page();
         }
     }
 }

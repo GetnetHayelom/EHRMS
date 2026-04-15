@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
+using PIS2.Data;
 using PIS2.Models;
 
 namespace PIS2.Pages.Notice
@@ -8,10 +9,11 @@ namespace PIS2.Pages.Notice
     public class DetailsModel : PageModel
     {
         private readonly PISContext _context;
-
-        public DetailsModel(PISContext context)
+        private readonly ILogger<DetailsModel> _logger;
+        public DetailsModel(PISContext context, ILogger<DetailsModel> logger)
         {
             _context = context;
+            _logger = logger;
         }
 
         [BindProperty]
@@ -32,27 +34,25 @@ namespace PIS2.Pages.Notice
         {
             if (!User.IsInRole("MIE\\PMS_HRMANAGER"))
             {
-                TempData["message"] = ("Error", "Access Denied!");
+                return RedirectToPage("/Shared/AccessDenied");
             }
 
             var notice = await _context.Notices.FirstOrDefaultAsync(l => l.noticeID == Notice.noticeID);
             if (notice == null) { return NotFound(); }
             if (notice.noticeStatus != NoticeStatus.Pending)
             {
-                TempData["message"] = ("Error", "Notice Not Approved!");
-                return Page();
+                return new JsonResult(new { success=false, message="Notice is Not Pending!"});
             }
 
             if (notice == null)
             {
+                _logger.LogError($"Error: Notice not found #{Notice.noticeID}, User {User.Identity.Name}");
                 return NotFound();
             }
 
             notice.noticeStatus = NoticeStatus.Approved;   // change status here
             notice.modifiedDate = DateTime.Now;
             notice.modifiedBy = User.Identity.Name;
-
-            TempData["message"] = ("Success", "Letter Approved!");
 
             await _context.SaveChangesAsync();
 
@@ -69,7 +69,7 @@ namespace PIS2.Pages.Notice
             
             if (letterType == null)
             {
-                TempData["message"] = ("Error", "Letter not sent because notice letter type is not configured!");return Page();
+                return new JsonResult(new {success=false, message= "Notice approved, but a letter not sent because notice letter type is not configured!"});
             }
             letter.letterTypeID = letterType.letterTypeID;
             letter.letterGroup = LetterGroup.Outgoing;
@@ -80,15 +80,14 @@ namespace PIS2.Pages.Notice
             _context.Letters.Add(letter);
             await _context.SaveChangesAsync();
 
-            TempData["message"] = ("Success", "Notice Approved and New Letter Created Successfully!");
-            return RedirectToPage();
+            return new JsonResult(new { success = true, message = "Notice approved successfuly and letter created!" });
         }
 
         public async Task<IActionResult> OnPostExpireAsync()
         {
             if (!User.IsInRole("MIE\\PMS_HRMANAGER") || !User.IsInRole("MIE\\PMS_HRCLERK"))
             {
-                TempData["message"] = ("Error", "Access Denied!");
+                return RedirectToPage("/Shared/AccessDenied");
             }
 
             var notice = await _context.Notices.FirstOrDefaultAsync(l => l.noticeID == Notice.noticeID);
@@ -106,6 +105,29 @@ namespace PIS2.Pages.Notice
 
             await _context.SaveChangesAsync();
             return RedirectToPage("./Details", new { id = notice.noticeID});
+        }
+
+        public async Task<IActionResult> OnPostPostAsync()
+        {
+            if (!User.IsInRole("MIE\\PMS_HRMANAGER") || !User.IsInRole("MIE\\PMS_HRCLERK"))
+            {
+                return RedirectToPage("/Shared/AccessDenied");
+            }
+
+            var notice = await _context.Notices.FirstOrDefaultAsync(l => l.noticeID == Notice.noticeID);
+            if (notice == null) { return NotFound(); }
+
+            if (notice.noticeStatus == NoticeStatus.Void)
+            {
+                return new JsonResult(new { success=false, message="Notice is void!"});
+            }
+
+            notice.noticeStatus = NoticeStatus.Posted;   // change status here
+            notice.modifiedDate = DateTime.Now;
+            notice.modifiedBy = User.Identity.Name;
+
+            await _context.SaveChangesAsync();
+            return RedirectToPage("./Details", new { id = notice.noticeID });
         }
     }
 

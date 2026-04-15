@@ -44,8 +44,7 @@
 <div class="container">
     <div class="card">
         <h2 class="text-center fw-bold m-0 p-0">PIS Access Privilege Requesting Form</h2>
-        <hr />
-
+      
         <form method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
@@ -57,7 +56,7 @@
                         <div class="input-group">
                             <input type="text" class="form-control" id="EmployeeID" asp-for="EmployeeID" required placeholder="Enter ID" />
                             <button class="btn btn-outline-secondary d-print-none" type="button" id="lookupButton"
-                                    onclick="fetchEmployeeData($('#EmployeeID').val(), '#EmployeeName', '#JobTitle', '#Department', '','#WorkLocation')">
+                                    onclick="fetchEmployeeData($('#EmployeeID').val(), 'EmployeeName', 'JobTitle', 'Department', '','WorkLocation')">
                                 <i class="bi bi-search"></i>
                             </button>
                         </div>
@@ -172,6 +171,8 @@
             <div class="d-flex justify-content-center">
                 @await Html.PartialAsync("print")
                 @await Html.PartialAsync("back")
+                <div><button type="reset" class="btn btn-outline-secondary px-4 m-2 d-print-none"><i class="bi bi-recycle me-2"></i>Reset</button></div>
+                <div><a href="/Index" class="btn btn-outline-primary m-2"><i class="bi bi-house-fill me-2"></i>Home</a></div>
             </div>
             
             <h4 class="m-0 p-0">Sign-Off and Approvals</h4>

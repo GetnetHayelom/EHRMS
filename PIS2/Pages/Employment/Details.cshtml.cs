@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
+using PIS2.Data;
 using PIS2.Models;
+using PIS2.Services;
 using PIS2.Views;
 using System;
 using System.Collections.Generic;
@@ -12,9 +14,9 @@ namespace PIS2.Pages.Employment
 {
     public class DetailsModel : PageModel
     {
-        private readonly PIS2.Models.PISContext _context;
-        private readonly PIS2.Models.Core _core;
-        public DetailsModel(PIS2.Models.PISContext context, PIS2.Models.Core core)
+        private readonly PISContext _context;
+        private readonly Core _core;
+        public DetailsModel(PISContext context, Core core)
         {
             _context = context;
             _core = core;
@@ -36,7 +38,14 @@ namespace PIS2.Pages.Employment
         public async Task<IActionResult> OnGetAsync(int? id)
         {
 
-            if (!User.IsInRole("MIE\\PMS_HRCLERK") || !User.IsInRole("MIE\\PMS_HRMANAGER") || !User.IsInRole("MIE\\PMS_MANAGEMENT") || _core.IsSelf(User.Identity.Name, id))
+            var isInRole =
+                User.IsInRole("MIE\\PMS_HRCLERK") ||
+                User.IsInRole("MIE\\PMS_HRMANAGER") ||
+                User.IsInRole("MIE\\PMS_MANAGEMENT");
+
+            var isSelf = _core.IsSelf(User.Identity.Name, id);
+
+            if (!isInRole && !isSelf)
             {
                 return RedirectToPage("/Shared/AccessDenied");
             }
@@ -107,7 +116,7 @@ namespace PIS2.Pages.Employment
             }
             else
             {
-                Exprience = _core.GetYearsAndMonths(employmentModel.employmentDate, DateTime.Now).Item1 + " years " +
+                Exprience = _core.GetYearsAndMonths(employmentModel.employmentDate, employmentModel.employmentDate).Item1 + " years " +
                     _core.GetYearsAndMonths(employmentModel.employmentDate, employmentModel.employmentTerminationDate ?? DateTime.MinValue).Item2 + " months ";
             }
 

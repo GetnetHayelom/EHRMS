@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using PIS2.Models;
 using Microsoft.AspNetCore.Authorization;
+using PIS2.Services;
+using PIS2.Data;
 
 namespace PIS2.Pages.Payroll
 {
@@ -32,8 +34,16 @@ namespace PIS2.Pages.Payroll
             if (!User.IsInRole("MIE\\PMS_PAYROLL")) return RedirectToPage("/Shared/AccessDenied");
             await _payrollService.GeneratePayrollAsync(id, User.Identity.Name);
             // mark as posted
-            await _payrollService.PostPayrollAsync(id, User.Identity.Name ?? "system");
+            //await _payrollService.PostPayrollAsync(id, User.Identity.Name ?? "system");
             Console.WriteLine("Payroll Posted ############################");
+            return RedirectToPage();
+        }
+        public async Task<IActionResult> OnPostPostAsync(int id)
+        {
+            if (!User.IsInRole("MIE\\PMS_HRMANAGER")) return RedirectToPage("/Shared/AccessDenied");
+            // mark as posted
+            await _payrollService.PostPayrollAsync(id, User.Identity.Name ?? "system");
+            
             return RedirectToPage();
         }
 
@@ -42,6 +52,19 @@ namespace PIS2.Pages.Payroll
             if (!User.IsInRole("MIE\\PMS_FINANCE")) return RedirectToPage("/Shared/AccessDenied");
             await _payrollService.CompletePayrollAsync(id, User.Identity.Name);
             return RedirectToPage();
+        }
+
+        public async Task<IActionResult> OnPostApproveAsync(int id)
+        {
+            if (!User.IsInRole("MIE\\PMS_HRMANAGER")) return RedirectToPage("/Shared/AccessDenied");
+            var payroll = await _db.Payrolls.FirstOrDefaultAsync(p => p.payrollID == id);
+            if (payroll == null) return NotFound();
+
+            payroll.payrollStatus = payrollStatus.APPROVED;
+            payroll.modifiedBy = User.Identity.Name ?? "system";
+            await _db.SaveChangesAsync();
+
+            return RedirectToPage(new { id });
         }
     }
 

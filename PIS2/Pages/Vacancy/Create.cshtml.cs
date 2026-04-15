@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using PIS2.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ValueGeneration.Internal;
+using PIS2.Data;
 
 namespace PIS2.Pages.Vacancy
 {
@@ -41,10 +42,10 @@ namespace PIS2.Pages.Vacancy
             JobList = _context.Jobs.Where(j => j.jobStatus == mainStatus.Active).ToList();
             CompanyList =new SelectList(_context.Companies.Where(d => d.companyStatus == mainStatus.Active).ToList(), "companyID", "companyName");
             EmploymentType = new SelectList(_context.EmploymentTypes.Where(d => d.employmentTypeStatus == mainStatus.Active).ToList(), "employmentTypeID", "employmentTypeName");
-            var jReqs = _context.JobRequirements.Include(j => j.JobModel).Where(j => j.jobRequirementStatus == jobReqStatus.Approved).Select(j => new
+            var jReqs = _context.JobRequirements.Include(j => j.JobModel).Include(j => j.DepartmentModel).Where(j => j.jobRequirementStatus == jobReqStatus.Approved).Select(j => new
             {
                 jrID= j.jobRequirementID,
-                jrTitle = j.JobModel.jobTitle
+                jrTitle = $"{j.JobModel.jobTitle}, {j.DepartmentModel.departmentName}"
             }).ToList();
             JobRequests = new SelectList(jReqs, "jrID", "jrTitle", id);
             EmploymentMethods = new SelectList(_context.EmploymentMethods.Where(j => j.employmentMethodStatus == mainStatus.Active).ToList(), "employmentMethodID", "employmentMethodName");
@@ -52,13 +53,10 @@ namespace PIS2.Pages.Vacancy
 
         public async Task<IActionResult> OnPostAsync()
         {
-            //if(!_context.Departments.Any(v => v.departmentID == VacancyModel.departmentID && v.departmentStatus == mainStatus.Active))
-            //{
-            //    TempData["message"] = ("Error", "There is no active department with the given department id!");
-            //}
+            
             int depID = 0;
             int jobID = 0;
-            if(VacancyModel.jobRequirementID != null)
+            if(VacancyModel.jobRequirementID != null && VacancyModel.jobRequirementID >0)
             {
                 var req = await _context.JobRequirements.FirstOrDefaultAsync(j => j.jobRequirementID == VacancyModel.jobRequirementID);
                 depID = req?.departmentID ?? 0;
@@ -67,8 +65,8 @@ namespace PIS2.Pages.Vacancy
             var vacancy = new VacancyModel()
             {
                 ClosingDate = VacancyModel.ClosingDate,
-                jobID =jobID ==0? VacancyModel.jobID : jobID,
-                jobRequirementID = VacancyModel.jobRequirementID ?? null,
+                jobID =jobID !=0 ? VacancyModel.jobID : jobID,
+                jobRequirementID =VacancyModel.jobRequirementID > 0? VacancyModel.jobRequirementID : null,
                 VacancyTitle = VacancyModel.VacancyTitle,
                 departmentID = depID != 0? depID : VacancyModel.departmentID,
                 employmentTypeID = VacancyModel.employmentTypeID,
@@ -87,7 +85,8 @@ namespace PIS2.Pages.Vacancy
             VacancyModel.modifiedBy = User.Identity.Name;
             VacancyModel.modifiedDate = DateTime.Now;
             VacancyModel.Status = VacancyStatus.OnHold;
-          
+
+            
             if (!ModelState.IsValid)
             {
                 foreach (var kv in ModelState)
@@ -117,7 +116,7 @@ namespace PIS2.Pages.Vacancy
             _context.Vacancies.Add(vacancy);
             await _context.SaveChangesAsync();
             
-            return RedirectToPage("Index");
+            return RedirectToPage("Details", new {id = vacancy.VacancyID});
         }
     }
 

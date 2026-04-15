@@ -74,13 +74,13 @@
                 </div>
             </div>
 
-            <div class="d-flex justify-content-center gap-3">
+            <div class="d-flex justify-content-center gap-2">
                 
                     @await Html.PartialAsync("print")
                     @await Html.PartialAsync("back")
                
                 <div><button type="reset" class="btn btn-outline-secondary px-4 m-2 d-print-none">Reset</button></div>
-                
+                <div><a href="/Index" class="btn btn-outline-primary m-2"><i class="bi bi-house-fill me-2"></i>Home</a></div>
             </div>
         </form>
     </div>

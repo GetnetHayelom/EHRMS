@@ -3,13 +3,13 @@
 @{
 }
 
-<div class="container mt-4">
+<div class="container mt-2">
     <div class="d-flex justify-content-between align-items-end mb-3">
         <div>
-            <h2 class="fw-bold">Letters</h2>
-            <h6 class="text-muted">Letter Details</h6>
+            <h2 class="fw-bold mb-0">Letters</h2>
+            <p class="text-muted mb-0">Letter Catalog</p>
         </div>
-        <a asp-page="Create" class="btn btn-primary">+ New Letter</a>
+        <a asp-page="Create" class="btn btn-primary"><i class="bi bi-plus-circle me-2"></i> New Letter</a>
     </div>
 
     <table class="table table-striped table-hover">
@@ -22,7 +22,7 @@
                 <th>Group</th>
                 <th>Date</th>
                 <th>Status</th>
-                <th width="160"></th>
+                <th class="d-print-none text-end">Actions</th>
             </tr>
         </thead>
         <tbody>
@@ -51,7 +51,6 @@
                         @if (l.letterStatus == Models.LetterStatus.Draft)
                         {
                             <span class="badge bg-warning">@Html.DisplayFor(modelItem => l.letterStatus)</span>
-
                         }
                         else if (l.letterStatus == Models.LetterStatus.Approved)
                         {
@@ -62,7 +61,7 @@
                             <span class="badge bg-secondary">@Html.DisplayFor(modelItem => l.letterStatus)</span>
                         }
                 </td>
-                <td>
+                    <td class="d-print-none text-end">
                         <div class="btn-group" role="group">
                             <a asp-page="./Details" asp-route-id="@l.letterID" class="btn btn-sm btn-outline-primary" title="View Details">
                                 <i class="bi bi-eye"></i>

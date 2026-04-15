@@ -3,22 +3,29 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using PIS2.Data;
 using PIS2.Models;
+using PIS2.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using static System.Formats.Asn1.AsnWriter;
 
 namespace PIS2.Pages.JobPlacement
 {
     [Authorize(Roles = "MIE\\PMS_HRMANAGER")]
     public class EditModel : PageModel
     {
-        private readonly PIS2.Models.PISContext _context;
+        private readonly PISContext _context;
+        private readonly Core _core;
+        private readonly ILogger<EditModel> _logger;
 
-        public EditModel(PIS2.Models.PISContext context)
+        public EditModel(PISContext context, Core core, ILogger<EditModel> logger)
         {
             _context = context;
+            _core = core;
+            _logger = logger;
         }
 
         [BindProperty]
@@ -103,7 +110,28 @@ namespace PIS2.Pages.JobPlacement
                 populateSelect();
                 return Page();
             }
+            if (empStat.employmentDate > jobPlacementModel.jobPlacementDate)
+            {
+                _logger.LogWarning("Attempt to assign job placement date before date of employment {EmploymentID}:" + User.Identity.Name,
+                    jobPlacementModel.employmentID);
 
+                TempData["message"] = ("Error", "Job plcaement date can not be before employment date!");
+                populateSelect();
+                return Page();
+            }
+            var lastestJobPlacement = await _context.JobPlacements
+                .OrderByDescending(j => j.jobPlacementDate)
+                .FirstOrDefaultAsync(j => j.employmentID == empStat.employmentID);
+
+            if (lastestJobPlacement.jobPlacementDate > jobPlacementModel.jobPlacementDate)
+            {
+                _logger.LogWarning("Attempt to assign job placement date overlapping with previous job placement:" + User.Identity.Name,
+                    jobPlacementModel.employmentID);
+
+                TempData["message"] = ("Error", "Job plcaement date overlap!");
+                populateSelect();
+                return Page();
+            }
             var prohibitions = _context.Prohibitions.Where(p => p.employmentID == jobPlacementModel.employmentID && p.prohibitionStatus== mainStatus.Active).ToList();
 
             if (prohibitions.Any(p => p.prohibitionType == ProhibitionType.Scale || p.prohibitionType == ProhibitionType.Step)
@@ -151,7 +179,26 @@ namespace PIS2.Pages.JobPlacement
 
             var jp = _context.JobPlacements.FirstOrDefault(j => j.jobPlacementID == jobPlacementModel.jobPlacementID);
 
-            if(jp != jobPlacementModel)
+            if (jp == null)
+            {
+                jobPlacementModel.jobPlacementCareer = JobCareer.Step;
+            }
+            else if (jp != null && jp.jobStepID == jobPlacementModel.jobStepID)
+            {
+                jobPlacementModel.jobPlacementCareer = JobCareer.Transfer;
+            }
+            else if (jp != null && _core.IsPromotion(jp.jobStepModel.jobGradeModel,
+                    jobPlacementModel.jobStepModel.jobGradeID))
+            {
+                jobPlacementModel.jobPlacementCareer = JobCareer.Promotion;
+            }
+            else if (jp != null && jp.jobStepID != jobPlacementModel.jobStepID && jobPlacementModel.jobStepModel.jobGradeID == jp.jobStepModel.jobGradeID)
+            {
+                jobPlacementModel.jobPlacementCareer = JobCareer.Step;
+            }
+            else { jobPlacementModel.jobPlacementCareer = JobCareer.Demotion; }
+
+            if (jp != jobPlacementModel)
             {
                 jp.departmentID = jobPlacementModel.departmentID;
                 jp.jobPlacementDate = jobPlacementModel.jobPlacementDate;
@@ -168,7 +215,7 @@ namespace PIS2.Pages.JobPlacement
             {
                    
                 await _context.SaveChangesAsync();
-                TempData["message"] = ("Success", "Job Placement Updated Successfully!");
+                //TempData["message"] = ("Success", "Job Placement Updated Successfully!");
                 return RedirectToPage("./Details", new { id = jobPlacementModel.jobPlacementID });
             }
             catch (DbUpdateException ex)

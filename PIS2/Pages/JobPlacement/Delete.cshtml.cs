@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
+using PIS2.Data;
 using PIS2.Models;
 using System;
 using System.Collections.Generic;
@@ -13,9 +14,9 @@ namespace PIS2.Pages.JobPlacement
     [Authorize(Roles = "MIE\\PMS_HRMANAGER")]
     public class DeleteModel : PageModel
     {
-        private readonly PIS2.Models.PISContext _context;
+        private readonly PISContext _context;
 
-        public DeleteModel(PIS2.Models.PISContext context)
+        public DeleteModel(PISContext context)
         {
             _context = context;
         }

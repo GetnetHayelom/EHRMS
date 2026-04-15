@@ -3,19 +3,20 @@
 @{
     ViewData["Title"] = "Edit Training";
 }
-<h2 class="fw-bold">Training</h2>
+<div class="d-flex justify-content-between mb-2 align-items-end">
+    <div>
+        <h2 class="fw-bold">Training</h2>
+        <h6 class="text-muted">Update training details and status</h6>
+    </div>
+    <a class="btn btn-outline-primary" asp-page="/Index">View Catalog</a>
+</div>
+
 <div class="container mt-4">
     <div class="row justify-content-center">
         <div class="col-lg-8">
-            <nav aria-label="breadcrumb">
-                <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a asp-page="./Index">Training</a></li>
-                    <li class="breadcrumb-item active">Edit @Model.Training.trainingTitle</li>
-                </ol>
-            </nav>
-
+  
             <div class="card shadow border-0">
-                <div class="card-header bg-primary text-white py-3">
+                <div class="card-header bg-dark text-white">
                     <h5 class="mb-0"><i class="fas fa-edit me-2"></i> Update Training Configuration</h5>
                 </div>
                 <div class="card-body p-4">

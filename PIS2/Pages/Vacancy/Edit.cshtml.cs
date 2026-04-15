@@ -2,6 +2,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.Blazor;
+using PIS2.Data;
 using PIS2.Models;
 
 namespace PIS2.Pages.Vacancy
@@ -28,7 +30,10 @@ namespace PIS2.Pages.Vacancy
         public async Task<IActionResult> OnGetAsync(int id)
         {
             
-            VacancyModel = await _context.Vacancies.FirstOrDefaultAsync(v => v.VacancyID == id) ?? new VacancyModel();
+            VacancyModel = await _context.Vacancies
+                .Include(v => v.departmentModel).ThenInclude(d => d.companyModel)
+                .Include(v => v.jobModel)
+                .FirstOrDefaultAsync(v => v.VacancyID == id) ?? new VacancyModel();
 
             if (VacancyModel == null) return NotFound();
 
@@ -90,37 +95,109 @@ namespace PIS2.Pages.Vacancy
 
         public async Task<IActionResult> OnPostAsync()
         {
-            if (!_context.Departments.Any(v => v.departmentID == VacancyModel.departmentID && v.departmentStatus == mainStatus.Active))
-            {
-                TempData["message"] = ("Error", "There is no active department with the given department id!");
-            }
 
             ModelState.Remove("VacancyModel.modifiedBy");
-            VacancyModel.modifiedBy = User.Identity.Name;
-            VacancyModel.modifiedDate = DateTime.Now;
-            
+            ModelState.Remove("VacancyModel.modifiedDate");
+  
             if (!ModelState.IsValid)
             {
                 foreach (var kv in ModelState)
                 {
                     foreach (var error in kv.Value.Errors)
                     {
-                        Console.WriteLine($"{kv.Key} --> {error.ErrorMessage}");
+                        Console.WriteLine($"{kv.Key} --> {error.ErrorMessage}");TempData["message"] = ("Error", $"{kv.Key} --> {error.ErrorMessage}");
                     }
                     Console.WriteLine(kv.ToString());
                 }
-                JobList = _context.Jobs.Where(j => j.jobStatus == mainStatus.Active).ToList();
-                CompanyList = new SelectList(_context.Companies.Where(d => d.companyStatus == mainStatus.Active).ToList(), "companyID", "companyName");
-                EmploymentType = new SelectList(_context.EmploymentTypes.Where(d => d.employmentTypeStatus == mainStatus.Active).ToList(), "employmentTypeID", "employmentTypeName");
-                JobRequests = new SelectList(_context.JobRequirements.Where(j => j.jobRequirementStatus == jobReqStatus.Approved).ToList(), "jobRequirementID", "jobRequirementID");
-                EmploymentMethods = new SelectList(_context.EmploymentMethods.Where(j => j.employmentMethodStatus == mainStatus.Active).ToList(), "employmentMethodID", "employmentMethodName");
-                OnGetAsync(VacancyModel.VacancyID); // reload lists
-                TempData["message"] = ("Error", "Check fields are filled!");
+
+                await OnGetAsync(VacancyModel.VacancyID);
                 return Page();
             }
+            var existing = await _context.Vacancies
+    .FirstOrDefaultAsync(v => v.VacancyID == VacancyModel.VacancyID);
 
-            _context.Attach(VacancyModel).State = EntityState.Modified;
+            if (existing == null)
+                return NotFound();
+
+            var previousStatus = existing.Status;
+
+            letterTypeModel? letterType = null;
+
+            // BUSINESS VALIDATION FIRST
+            if (VacancyModel.Status == VacancyStatus.Open
+                && previousStatus != VacancyStatus.Open)
+            {
+                letterType = await _context.LetterTypes
+                    .FirstOrDefaultAsync(t => t.letterTypeName.Contains("Vacancy"));
+
+                if (letterType == null)
+                {
+                    ModelState.AddModelError("",
+                        "Vacancy cannot be opened because letter type is not configured.");
+                    await OnGetAsync(VacancyModel.VacancyID);
+                    return Page();
+                }
+            }
+
+            //APPLY UPDATES AFTER VALIDATION
+            existing.jobID = VacancyModel.jobID;
+            existing.jobRequirementID = VacancyModel.jobRequirementID;
+            existing.VacancyTitle = VacancyModel.VacancyTitle;
+            existing.departmentID = VacancyModel.departmentID;
+            existing.Location = VacancyModel.Location;
+            existing.VacancyRequiredNumber = VacancyModel.VacancyRequiredNumber;
+            existing.employmentTypeID = VacancyModel.employmentTypeID;
+            existing.employmentMethodID = VacancyModel.employmentMethodID;
+            existing.Status = VacancyModel.Status;
+            existing.VacancyType = VacancyModel.VacancyType;
+            existing.DatePosted = VacancyModel.DatePosted;
+            existing.ClosingDate = VacancyModel.ClosingDate;
+            existing.Remark = VacancyModel.Remark;
+            existing.modifiedBy = User.Identity.Name;
+            existing.modifiedDate = DateTime.Now;
+
+            await using var transaction = await _context.Database.BeginTransactionAsync();
+
+            if (VacancyModel.Status == VacancyStatus.Open
+                && previousStatus != VacancyStatus.Open)
+            {
+                var empType = await _context.EmploymentTypes
+                    .FirstOrDefaultAsync(e => e.employmentTypeID == VacancyModel.employmentTypeID);
+
+                var jobTitle = await _context.Jobs
+                    .FirstOrDefaultAsync(j => j.jobID == VacancyModel.jobID);
+
+                var letter = new letterModel
+                {
+                    letterBody = $"<p><strong>Job Title:</strong> <u>{jobTitle.jobTitle}</u></p>" +
+                    $"<p><strong>Job Description:</strong></p> {jobTitle.jobDescription}" +
+                    $"<p><strong>Qualifications:</strong> {jobTitle.jobQualifications}</p>" +
+                    $"<p><strong>Experience:</strong> {jobTitle.jobExperience} Years </p>" +
+                    $"<p><strong>Required Number:</strong> {VacancyModel.VacancyRequiredNumber}</p>" +
+                    $"<p><strong>Employment Type:</strong> {empType.employmentTypeName}</p>" +
+                    $"<p><strong>Closing Date:</strong> <u>{VacancyModel.ClosingDate:dd/MM/yyyy}</u></p>" +
+                    $"<p><strong>Remark:</strong> {VacancyModel.Remark}</p>",
+
+                    letterTitle = $"{VacancyModel.VacancyType} Vacancy",
+                    letterDate = VacancyModel.DatePosted.Date,
+                    letterSender = "",
+                    letterReceiver = "",
+                    letterSignedBy = "",
+                    letterStatus = LetterStatus.Draft,
+                    letterTypeID = letterType.letterTypeID,
+                    letterGroup = LetterGroup.Outgoing,
+                    letterSubject = VacancyModel.VacancyTitle ?? "",
+                    modifiedBy = User.Identity.Name,
+                    modifiedDate = DateTime.Now,
+
+                };
+
+                _context.Letters.Add(letter);
+            }
+
+            //SAVE ONCE
             await _context.SaveChangesAsync();
+            await transaction.CommitAsync();
 
             return RedirectToPage("Index");
         }

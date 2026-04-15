@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using PIS2.Models;
 using Microsoft.EntityFrameworkCore;
+using PIS2.Data;
 
 namespace PIS2.Pages.Payroll
 {

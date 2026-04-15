@@ -15,6 +15,17 @@ function printDiv(divId) {
 //
 //
 //
+document.addEventListener('DOMContentLoaded', () => {
+    // 1. Select the input element 
+    const myInput = document.querySelector('#searchBox');
+
+    // 2. Check if the element exists AND if it has a value
+    // .value.trim() ensures we don't count an input full of just spaces as "having a value"
+    if (myInput && myInput.value.trim() !== "") {
+        filterTable();
+    }
+});
+
 
 function filterTable() {
     let input = document.getElementById("searchBox").value.toLowerCase();
@@ -26,11 +37,60 @@ function filterTable() {
     
     rows.forEach(row => {
         let text = row.textContent.toLowerCase();
-        row.style.display = text.includes(input) ? "" : "none";
+        let match = text.includes(input);
+        row.style.display = match ? "" : "none";
+        
+        if (match && row.dataset.parent)
+        {
+            let parent = document.querySelector(`[data-id="${row.dataset.parent}"]`);       
+            if (parent ) parent.style.display = "";
+        }        
     });
 }
 
+function CustomFilter(inpuElement) {
+    if (!inputEl.classList.contains("searchBox")) return;
 
+    // 1. Check if the element that triggered the event has the 'searchBox' class
+    if (inputEl.classList.contains("searchBox")) {
+        let input = inputEl.value.toLowerCase();
+
+        // 2. Get the target table ID from the data-target attribute
+        let targetSelector = inputEl.getAttribute("data-target");
+        if (!targetSelector) return;
+
+        // 3. Find the rows within that specific table
+        let table = document.querySelector(targetSelector);
+        if (!table) return;
+
+        let rows = table.querySelectorAll("tbody tr");
+
+        // 4. Filter the rows
+        rows.forEach(row => {
+            let text = row.textContent.toLowerCase();
+            let match = text.includes(input);
+            row.style.display = text.includes(input) ? "" : "none";
+            if (match && row.dataset.parent) {
+                let parent = document.querySelector(`[data-id="${row.dataset.parent}"]`);
+                if (parent) parent.style.display = "";
+            }
+        });
+    }
+
+}
+function filterTable1() {
+    let el = document.querySelector(".searchBox");
+    let input = el.value.toLowerCase();
+    let target = el.getAttribute("data-target");
+    if (!target) return;
+
+    let rows = document.querySelectorAll(`${target} tbody tr`);
+
+    rows.forEach(row => {
+        let text = row.textContent.toLowerCase();
+        row.style.display = text.includes(input) ? "" : "none";
+    });
+};
 
 
 function highlightDifferences() {
@@ -407,11 +467,15 @@ function bindUserOnlyChange(controlId, callback, ...controls) {
 }
 
 function showToast(type, message) {
+    const container = document.querySelector('.toast-container');
     const toastEl = document.getElementById('actionToast');
     const titleEl = document.getElementById('toastTitle');
     const bodyEl = document.getElementById('toastBody');
 
-    const isSuccess = type === 'Success';
+    container.classList.remove('d-none');
+
+    const isSuccess = type;// === 'Success';
+    const typeName = type == true ? 'Success' : 'Error';
 
     toastEl.classList.remove('bg-success', 'bg-danger');
     toastEl.querySelector('.toast-header')
@@ -421,11 +485,18 @@ function showToast(type, message) {
     toastEl.querySelector('.toast-header')
         .classList.add(isSuccess ? 'bg-success' : 'bg-danger');
 
-    titleEl.textContent = `${isSuccess ? '✔' : '⚠'} ${type}`;
+    titleEl.textContent = `${isSuccess ? '✔' : '⚠'} ${typeName}`;
     bodyEl.textContent = message;
 
     new bootstrap.Toast(toastEl).show();
+
+    //toastEl.addEventListener('hidden.bs.toast', () => {
+    //    container.classList.add('d-none');
+    //});
 }
+
+
+
 
 function updateMinDate() {
     const startInput = document.getElementById('startDate');

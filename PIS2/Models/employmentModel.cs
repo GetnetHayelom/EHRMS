@@ -1,6 +1,6 @@
 ﻿using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.EntityFrameworkCore;
-using PIS2.Models;
+using PIS2.Data;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -16,7 +16,7 @@ namespace PIS2.Models
         [Display(Name ="Employee ID")]
         public string givenID { get; set; }
         [Required]
-        [Display(Name = "Person")]
+        [Display(Name = "Name")]
         public int personID { get; set; }
         public virtual personModel? personModel { get; set; } = default!;
         [Required]
@@ -45,6 +45,8 @@ namespace PIS2.Models
         public virtual jobRequirementModel? JobRequirementModel { get; set; }
         [Display(Name = "Employment Position")]
         public EmploymentPositions employmentPosition { get; set; }
+        public virtual contractModel? contractModel { get; set; }
+        public virtual terminationModel? TerminationModel { get; set; }
         public virtual ICollection<overtimeRecordModel>? OvertimeRecords { get; set; }
         public virtual ICollection<jobPlacementModel>? JobPlacements { get; set; }
         public virtual ICollection<leaveModel>? Leaves { get; set; }
@@ -63,12 +65,10 @@ namespace PIS2.Models
         public virtual ICollection<earningModel>? Earnings { get; set; }
         public virtual ICollection<deductionModel>? Deductions { get; set; }
         public virtual ICollection<trainingAttendanceModel>? TrainingAttendaces { get; set; }
-        public virtual contractModel? contractModel { get; set; }
-        public virtual terminationModel? TerminationModel { get; set; }
         public virtual ICollection<departmentModel>? departmentModel { get; set; }
         public virtual ICollection<companyModel>? companyModel { get; set; }
         public virtual ICollection<evaluationModel>? Evaluations { get; set; }
-        public virtual ICollection<workSiteHistoryModel>? WorkSiteHistories { get; set; }
+        
         public string modifiedBy { get; set; }
         public employmentModel() { }
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)

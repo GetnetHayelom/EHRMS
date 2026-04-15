@@ -9,7 +9,7 @@
             <h2 class="fw-bold">Letters</h2>
             <h6 class="text-muted">Approved letters ready for archive</h6>
         </div>
-        <a asp-page="Archived">View Archive</a>
+        <a asp-page="Archived" class="d-print-none">View Archive</a>
     </div>
 
     <table class="table table-striped table-hover">
@@ -21,7 +21,7 @@
                 <th>Type</th>
                 <th>Group</th>
                 <th>Date</th>
-                <th class="d-print-none">Action</th>
+                <th class="d-print-none text-end">Action</th>
             </tr>
         </thead>
         <tbody>
@@ -29,7 +29,7 @@
             {
                 <tr>
                     <td colspan="7" class="text-center text-muted">
-                        No apptoved letter found.
+                        No approved letter found.
                     </td>
                 </tr>
             }
@@ -44,8 +44,8 @@
                     <td>@l.LetterType?.letterTypeName</td>
                     <td>@l.letterGroup</td>
                     <td>@l.letterDate.ToShortDateString()</td>
-                    
-                    <td class="d-print-none">
+
+                    <td class="d-print-none text-end">
                         <div class="btn-group" role="group">
                             <a asp-page="/Letter/Details" asp-route-id="@l.letterID" class="btn btn-sm btn-outline-primary" title="View Details">
                                 <i class="bi bi-eye"></i>

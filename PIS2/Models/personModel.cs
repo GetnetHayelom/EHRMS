@@ -43,6 +43,9 @@ namespace PIS2.Models
         public string? personEmailAddress { get; set; }
         public string personFullName => $"{personFirstName} {personFatherName} {personLastName}";
         public int personsAge => DateTime.Now.Year - personDoB.Year;
+        [Display(Name = "Account")]
+        public int? subAccountID {  get; set; } 
+        public virtual subAccountModel? SubAccount { get; set; }
         //Navigation Properties
         public virtual ICollection<bankInfoModel>? Banks { get; set; }
         public virtual ICollection<employmentModel>? Employments { get; set; }
@@ -143,4 +146,5 @@ namespace PIS2.Models
         public string modifiedDate { get; set; }
         public personHistoryModel() { }
     }
+
 }

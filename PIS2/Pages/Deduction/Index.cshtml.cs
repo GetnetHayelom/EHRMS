@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
+using PIS2.Data;
 using PIS2.Models;
 
 namespace PIS2.Pages.Deductions
@@ -18,8 +19,8 @@ namespace PIS2.Pages.Deductions
 
         public async Task OnGetAsync()
         {
-            DeductionTypes = await _context.DeductionTypes
-                .OrderBy(d => d.dedcutionPriority)
+            DeductionTypes = await _context.DeductionTypes.Include(d => d.Account)
+                .OrderBy(d => d.deductionPriority)
                 .ToListAsync();
         }
 

@@ -2,7 +2,9 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
+using PIS2.Data;
 using PIS2.Models;
+using PIS2.Services;
 using PIS2.Views;
 using System.Runtime.Intrinsics.Arm;
 using System.Security.Cryptography.Pkcs;
@@ -14,8 +16,8 @@ namespace PIS2.Pages.Management
     [Authorize(Roles = "MIE\\PMS_HRMANAGER,MIE\\PMS_MANAGEMENT,MIE\\PMS_HRCLERK")]
     public class Companyp : PageModel
     {
-        private readonly PIS2.Models.PISContext _context;
-        private readonly PIS2.Models.Core _core;
+        private readonly PISContext _context;
+        private readonly Core _core;
         public Companyp(PISContext ctx, Core methods)
         {
             _context = ctx;

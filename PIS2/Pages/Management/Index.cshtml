@@ -5,12 +5,16 @@
     var successMessage = TempData["SuccessMessage"] as string ?? string.Empty;
 }
 @await Html.PartialAsync("headerSimple", "")
-<div class="d-flex justify-content-between align-items-center flex-wrap">
-    <h2 class="fw-bold text-primary mb-2 d-flex align-items-center">
-        <i class="bi bi-speedometer2 me-2"></i>
-        <span class="d-print-none text-dark">Management Dashboard</span>
-        <span class="d-none d-print-block">Management Report</span>
-    </h2>
+<div class="d-flex justify-content-between align-items-end flex-wrap">
+    <div>
+        <h2 class="fw-bold text-primary mb-2 d-flex align-items-center">
+            <i class="bi bi-speedometer2 me-2"></i>
+            <span class="d-print-none text-dark mb-0">Management Dashboard</span>
+            <span class="d-none d-print-block mb-0">Management Report</span>
+
+        </h2>
+        <p class="text-muted small mb-0">Real-time management dashboard</p>
+    </div>
 
     <ul class="nav nav-pills shadow-sm rounded-3 d-print-none mb-2">
         <li class="nav-item">
@@ -124,10 +128,37 @@
             </div>
         </div>
 
+        <!--METRICS TREND-->
+        
+        <div class="d-flex justify-content-between align-items-center mt-4 bg-warning p-2">
+            <div>
+                <h4 class="fw-bold mb-0 text-dark">Trend Analytics</h4>
+                <p class="text-muted small mb-0">Real-time summary and period comparison</p>
+            </div>
+            <div class="form-group form-check m-2">
+                <label class="form-check-label">
+                    Standard Period<input type="checkbox" id="periodType" class="form-check-input" checked/>
+                </label>
+            </div>
+            <div class="d-flex align-items-center bg-white p-2 rounded shadow-sm border">
+                
+                <i class="bi bi-calendar3 me-2 text-primary"></i>
+                <select id="periodFilter" class="form-select form-select-sm border-0 shadow-none" style="width: 160px; cursor: pointer;">
+                    <option value="Monthly">Monthly</option>
+                    <option value="Quarterly">Quarterly</option>
+                    <option value="SemiAnnually">Semi-Annually</option>
+                    <option value="Annually" selected>Annually</option>
+                </select>
+            </div>
+        </div>
+        <div id="summaryContainer" class="mt-3">
+            @await Html.PartialAsync("_HRSummaryPartial", Model.MetricData)
+        </div>
+
         <!-- PAYABLE SUMMARY -->
         <div class="card shadow-sm mt-3 p-2">
             <h4 class="fw-bold text-secondary border-bottom pb-2 mb-3">
-                <i class="bi bi-cash-stack me-2"></i> Current Payable Summary
+                <i class="bi bi-cash-stack me-2"></i> Liability Summary
             </h4>
 
             <div class="d-flex flex-wrap gap-3">
@@ -160,12 +191,12 @@
                 </div>
 
                 <div class="flex-fill">
-                    <div class="card shadow-sm p-3 border-start border-info border-3 clickable" onclick="location.href='@Url.Page("/Report/OvertimeRecordReport")'">
+                    <div class="card shadow-sm p-3 border-start border-info border-3 clickable" onclick="location.href='@Url.Page("/Report/LeaveReport")'">
                         <div class="d-flex justify-content-between align-items-center">
                             <div>
-                                <p class="small mb-1 text-muted">Overtime</p>
+                                <p class="small mb-1 text-muted">Anual Leave</p>
                                 <h5 class="fw-bold text-dark mb-0">
-                                    $@Math.Round((decimal)(Model.CompanySummaries.Sum(c => c.Overtime)), 2).ToString("N0")
+                                    @Math.Round(Model.AnnualLeaveSummaries.Sum(als => als.PayableLeave), 2).ToString("N0")
                                 </h5>
                             </div>
                             <i class="bi bi-clock-history fs-2 text-info"></i>
@@ -174,7 +205,7 @@
                 </div>
 
                 <div class="flex-fill">
-                    <div class="card shadow-sm p-3 border-start border-danger border-3 clickable" onclick="location.href='@Url.Page("/Report/OvertimeRecordReport")'">
+                    <div class="card shadow-sm p-3 border-start border-danger border-3 clickable" onclick="location.href='@Url.Page("/Report/CostAnalysisReport")'">
                         <div class="d-flex justify-content-between align-items-center">
                             <div>
                                 <p class="small mb-1 text-muted">Severance Pay</p>
@@ -193,7 +224,7 @@
                             <div>
                                 <p class="small mb-1 text-success">Total</p>
                                 <h4 class="fw-bold mb-0">
-                                    $@Math.Round((decimal)(Model.CompanySummaries.Sum(c => c.Salary + c.Allowance + c.Overtime + c.SeverancePayable)), 2).ToString("N0")
+                                    $@Math.Round((decimal)(Model.CompanySummaries.Sum(c => c.Salary + c.Allowance + c.Overtime + c.SeverancePayable + c.payableLeaves)), 2).ToString("N0")
                                 </h4>
                             </div>
                             <i class="bi bi-clipboard-data fs-2 text-success"></i>
@@ -225,6 +256,11 @@
                     <div class="card shadow-sm p-3">
                         <canvas id="jobCategoryChart" height="300"></canvas>
                     </div>
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div class="card shadow-sm p-3">
+                    <canvas id="jobClassChart" height="300"></canvas>
                 </div>
             </div>
         </div>
@@ -267,72 +303,8 @@
     <!--ANNUAL LEAVE SUMMARY-->
     <div class="tab-pane fade" id="annualLeaveView">
         <h4 class="fw-bold">Annual Leave Summary</h4>
-        <table class="table table-bordered table-striped table-hover print-full-width">
-            <thead class="bg-dark text-white">
-                <tr>
-                    <th>S/No</th>
-                    <th colspan="2">Company</th>
-                    <th>LeaveBalance</th>
-                    <th>Allowed Leave</th>
-                    <th>Payable</th>
-                </tr>
-            </thead>
-            <tbody>
-                @{
-                    int index = 1;
-                }
-                @if (Model.AnnualLeaveSummaries != null && Model.AnnualLeaveSummaries.Any())
-                {
-                    @foreach (var item in Model.AnnualLeaveSummaries)
-                    {
-                        var collapseId = $"collapse{index}";
-                        <tr class="fw-bold bg-secondary">
-                            <td>@index</td>
-                            <td colspan="2">
-                                <div class="d-flex justify-content-between">
-                                    <span data-bs-toggle="collapse" data-bs-target="#@collapseId" style="cursor:pointer;">@item.Company</span>
-                                    <a style="cursor:pointer;"
-                                       onclick=" location.href='@Url.Page("AnnualLeaveCompanySummary", new { id = item.CompanyID })' ">View more</a>
-                                </div>
-                            </td>
-            
-                                
-                            <td>@item.LeaveBalance.ToString("N2")</td>
-                            <td>@item.AllowedLeave.ToString("N2")</td>
-                            <td>@Math.Round(item.PayableLeave, 2).ToString("N2")</td>
-                        </tr>
-                        int index2 = 1;
-               
-                        @if (item.DepartmentList != null && item.DepartmentList.Any())
-                        {
-                            @foreach (var item2 in item.DepartmentList)
-                            {
-                                <tr class="accordion-collapse collapse" id="@collapseId" style="cursor:pointer;"
-                                    onclick=" location.href='@Url.Page("AnnualLeaveDepartmentSummary", new { id =  item2.DepartmentID})' ">
-                                    <td>@index.@index2</td>
-                                    
-                                    
-                                    <td colspan="2">@item2.Department</td>
-                                    <td>@item2.LeaveBalance.ToString("N2")</td>
-                                    <td>@item2.AllowedLeave.ToString("N2")</td>
-                                    <td>@Math.Round(item2.PayableLeave,2).ToString("N2")</td>
-                                </tr>
-                                index2++;
-                            }
-                        }
-
-                        index++;
-                    }
-                    <tr class="bg-info text-white fw-bold">
-                        <td colspan="3">Total</td>
-                        <td>@Model.AnnualLeaveSummaries.Sum(als => als.LeaveBalance).ToString("N2") (Days)</td>
-                        <td>@Model.AnnualLeaveSummaries.Sum(als => als.AllowedLeave).ToString("N2") (Days)</td>
-                        <td>@Math.Round(Model.AnnualLeaveSummaries.Sum(als => als.PayableLeave), 2).ToString("N2") Br</td>
-                    </tr>
-                }
-                
-            </tbody>
-        </table>
+        @await Html.PartialAsync("_AnnualLeaveSummary", Model.AnnualLeaveSummaries)
+        
     </div>
 
     <!--EMPLOYMENT STATS TABLE-->
@@ -367,38 +339,51 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @{
-                        int indexStats = 1;
-                    }
-                    @foreach (var item in Model.EmploymentYearlyStats)
+                    @if (Model.EmploymentYearlyStats == null || !Model.EmploymentYearlyStats.Any())
                     {
                         <tr>
-                            <td class="text-center text-muted">@indexStats</td>
-                            <td class="fw-bold">@item.Year</td>
-                            <td class="text-end">@((item.NewEmployees ?? 0).ToString("N0"))</td>
-                            <td class="text-end text-danger">@((item.TerminatedEmployees ?? 0).ToString("N0"))</td>
-                            <td class="text-end fw-semibold">@((item.ActiveEmployees ?? 0).ToString("N0"))</td>
-                            <td class="text-center">@((item.HireRatePercent ?? 0).ToString("N1"))%</td>
-                            <td class="text-center">@((item.TerminationRatePercent ?? 0).ToString("N1"))%</td>
-                            <td class="text-center">
-                                <span class="badge @(100 - item.TerminationRatePercent > 90 ? "bg-success" : "bg-info")">
-                                    @((100 - (item.TerminationRatePercent ?? 0)).ToString("N1"))%
-                                </span>
+                            <td colspan="10" class="text-center text-muted">
+                                No employment records found.
                             </td>
                         </tr>
-                        indexStats++;
+                    }else{
+                        
+                        int indexStats = 1;
+                        
+                        foreach (var item in Model.EmploymentYearlyStats)
+                        {
+                            <tr>
+                                <td class="text-center text-muted">@(indexStats++)</td>
+                                <td class="fw-bold">@item?.Year</td>
+                                <td class="text-end">@((item?.NewEmployees ?? 0).ToString("N0"))</td>
+                                <td class="text-end text-danger">@((item?.TerminatedEmployees ?? 0).ToString("N0"))</td>
+                                <td class="text-end fw-semibold">@((item?.ActiveEmployees ?? 0).ToString("N0"))</td>
+                                <td class="text-center">@((item?.HireRatePercent ?? 0).ToString("N1"))%</td>
+                                <td class="text-center">@((item?.TerminationRatePercent ?? 0).ToString("N1"))%</td>
+                                <td class="text-center">
+                                    <span class="badge @(100 - item?.TerminationRatePercent > 90 ? "bg-success" : "bg-info")">
+                                        @((100 - (item?.TerminationRatePercent ?? 0)).ToString("N1"))%
+                                    </span>
+                                </td>
+                            </tr>
+                        }
                     }
+                    
                 </tbody>
                 <tfoot class="table-light fw-bold border-top-2">
-                    <tr>
-                        <td colspan="2" class="text-center">AVERAGES / TOTALS</td>
-                        <td class="text-end">@Model.EmploymentYearlyStats.Sum(e => e.NewEmployees ?? 0).ToString("N0")</td>
-                        <td class="text-end">@Model.EmploymentYearlyStats.Sum(e => e.TerminatedEmployees ?? 0).ToString("N0")</td>
-                        <td class="text-end">---</td>
-                        <td class="text-center">@((Model.EmploymentYearlyStats.Average(e => e.HireRatePercent ?? 0)).ToString("N1"))%</td>
-                        <td class="text-center">@((Model.EmploymentYearlyStats.Average(e => e.TerminationRatePercent ?? 0)).ToString("N1"))%</td>
-                        <td class="text-center">@((100 - Model.EmploymentYearlyStats.Average(e => e.TerminationRatePercent ?? 0)).ToString("N1"))%</td>
-                    </tr>
+                    @if (Model.EmploymentYearlyStats != null && Model.EmploymentYearlyStats.Any())
+                    { 
+                        <tr>
+                            <td colspan="2" class="text-center">AVERAGES / TOTALS</td>
+                            <td class="text-end">@Model.EmploymentYearlyStats?.Sum(e => e.NewEmployees ?? 0).ToString("N0")</td>
+                            <td class="text-end">@Model.EmploymentYearlyStats?.Sum(e => e.TerminatedEmployees ?? 0).ToString("N0")</td>
+                            <td class="text-end">---</td>
+                            <td class="text-center">@((Model.EmploymentYearlyStats?.Average(e => e.HireRatePercent ?? 0))?.ToString("N1"))%</td>
+                            <td class="text-center">@((Model.EmploymentYearlyStats?.Average(e => e.TerminationRatePercent ?? 0))?.ToString("N1"))%</td>
+                            <td class="text-center">@((100 - Model.EmploymentYearlyStats?.Average(e => e.TerminationRatePercent ?? 0))?.ToString("N1"))%</td>
+                        </tr>
+                    }
+                    
                 </tfoot>
             </table>
         </div>
@@ -432,21 +417,21 @@
                 @{
                     int indexDepStats = 1;
                 }
-                @foreach (var item in Model.DepartmentEmploymentStats.Where(d => d.TotalEmployees >0))
+                @foreach (var item in Model.DepartmentEmploymentStats?.Where(d => d.TotalEmployees >0))
                 {
                     <tr class="align-middle">
                         <td>@indexDepStats</td>
                         <td>
-                            <span class="fw-bold text-dark">@item.companyName</span><br />
+                            <span class="fw-bold text-dark">@item?.companyName</span><br />
                         </td>
-                        <td class="text-end">@item.TotalEmployees?.ToString("N0")</td>
-                        <td class="text-end text-danger">@item.TerminatedEmployees?.ToString("N0")</td>
-                        <td class="text-end fw-bold">@item.ActiveEmployees?.ToString("N0")</td>
+                        <td class="text-end">@item?.TotalEmployees?.ToString("N0")</td>
+                        <td class="text-end text-danger">@item?.TerminatedEmployees?.ToString("N0")</td>
+                        <td class="text-end fw-bold">@item?.ActiveEmployees?.ToString("N0")</td>
                         <td class="text-center">
                             <div class="progress" style="height: 8px;">
-                                <div class="progress-bar bg-danger" style="width: @item.TerminationRatePercent%"></div>
+                                <div class="progress-bar bg-danger" style="width: @item?.TerminationRatePercent%"></div>
                             </div>
-                            <small>@item.TerminationRatePercent?.ToString("F1")%</small>
+                            <small>@item?.TerminationRatePercent?.ToString("F1")%</small>
                         </td>
                     </tr>
                     
@@ -455,23 +440,27 @@
 
             </tbody>
             <tfoot class="fw-bold bg-secondary">
-                <tr>
+                @if (Model.DepartmentEmploymentStats.Any()) 
+                {
+                    <tr>
 
-                    <td colspan="2">Summary</td>
-                    <td>
-                        @Model.DepartmentEmploymentStats.Sum(eys => eys.TotalEmployees ??0).ToString("N2") (Total)
-                        @((Model.DepartmentEmploymentStats.Sum(eys => eys.TotalEmployees) / Model.DepartmentEmploymentStats.Count())) (Avg)
-                    </td>
-                    <td>
-                        @Model.DepartmentEmploymentStats.Sum(eys => eys.TerminatedEmployees ?? 0).ToString("N2") (Total)
-                        @((Model.DepartmentEmploymentStats.Sum(eys => eys.TerminatedEmployees) / Model.DepartmentEmploymentStats.Count())) (Avg)
-                    </td>
-                    <td>
-                        @Model.DepartmentEmploymentStats.Sum(eys => eys.ActiveEmployees ?? 0).ToString("N2") (Total)
-                        @((Model.DepartmentEmploymentStats.Sum(eys => eys.ActiveEmployees) / Model.DepartmentEmploymentStats.Count())) (Avg)
-                    </td>
-                    <td>@((Model.DepartmentEmploymentStats.Sum(eys => eys.TerminationRatePercent ?? 0) / Model.DepartmentEmploymentStats.Count()).ToString("N2"))% (Avg)</td>
-                </tr>
+                        <td colspan="2">Summary</td>
+                        <td>
+                            @Model.DepartmentEmploymentStats?.Sum(eys => eys.TotalEmployees ??0).ToString("N2") (Total)
+                            @((Model.DepartmentEmploymentStats?.Sum(eys => eys.TotalEmployees) / Model.DepartmentEmploymentStats?.Count())) (Avg)
+                        </td>
+                        <td>
+                            @Model.DepartmentEmploymentStats?.Sum(eys => eys.TerminatedEmployees ?? 0).ToString("N2") (Total)
+                            @((Model.DepartmentEmploymentStats?.Sum(eys => eys.TerminatedEmployees) / Model.DepartmentEmploymentStats?.Count())) (Avg)
+                        </td>
+                        <td>
+                            @Model.DepartmentEmploymentStats?.Sum(eys => eys.ActiveEmployees ?? 0).ToString("N2") (Total)
+                            @((Model.DepartmentEmploymentStats?.Sum(eys => eys.ActiveEmployees) / Model.DepartmentEmploymentStats?.Count())) (Avg)
+                        </td>
+                        <td>@((Model.DepartmentEmploymentStats?.Sum(eys => eys.TerminationRatePercent ?? 0) / Model.DepartmentEmploymentStats?.Count())?.ToString("N2"))% (Avg)</td>
+                    </tr> 
+                }
+                
             </tfoot>
         </table>
 
@@ -572,95 +561,114 @@
 
     <!--EDUCATION LEVEL CHART SCRIPT-->
     <script>
-        var educationLevelData = @Html.Raw(Json.Serialize(Model.EduLevelSummary));
-        var Total = @Model.EduLevelSummary.Select(el => el.zCount).Sum();
-        var educationLevelLabels = educationLevelData.map(function (item) {
-            return Math.round((item.zCount/Total)*100) + '% ' + item.zName;
-        });
-        var educationLevelCategories = educationLevelData.map(item => item.educationLevelCategories);
-        var educationLevelCounts = educationLevelData.map(function (item) {
-            return item.zCount;
-        });
+        document.addEventListener("DOMContentLoaded", function () {
 
-        var ctx = document.getElementById('educationLevelPieChart').getContext('2d');
-        var educationLevelChart = new Chart(ctx, {
-            type: 'doughnut',
-            data: {
-                labels: educationLevelLabels,
-                datasets: [{
-                    data: educationLevelCounts,
-                    backgroundColor: [
-                        '#3B82F6', '#60A5FA', '#34D399', '#10B981', '#FBBF24',
-                        '#F59E0B', '#EF4444', '#EC4899', '#8B5CF6', '#6366F1',
-                        '#14B8A6', '#0EA5E9', '#F472B6', '#84CC16', '#EAB308'
-                    ],
-                    borderColor: '#fff',
-                    borderWidth: 2,
-                    hoverOffset: 15,
-                    hoverBorderColor: '#333'
-                }]
-            },
-                options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            cutout: '60%', // more modern thin-ring look
-            plugins: {
-                title: {
-                    display: true,
-                    text: "Education Level",
-                    color: "#111827",
-                    padding: { top: 10, bottom: 25 }
+            // Data from Razor
+            var educationLevelData = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.EduLevelSummary));
+            var Total = @(Model.EmploymentHireRate?.Sum(el => el.zCount) ?? 0);
+
+            // Safety check
+            if (!educationLevelData || educationLevelData.length === 0) {
+                console.error("No data found for Chart");
+                return;
+            }
+
+            // Labels (with percentage)
+            var educationLevelLabels = educationLevelData.map(function (item) {
+                var percentage = Total > 0 ? Math.round((item.zCount / Total) * 100) : 0;
+                return percentage + '% ' + item.zName;
+            });
+
+            // Values
+            var educationLevelCounts = educationLevelData.map(function (item) {
+                return item.zCount;
+            });
+
+            // Get canvas safely
+            var canvas = document.getElementById("educationLevelPieChart");
+            if (!canvas) return;
+
+            var ctx = canvas.getContext('2d');
+
+            // Create chart (same look & behavior)
+            var educationLevelChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: educationLevelLabels,
+                    datasets: [{
+                        data: educationLevelCounts,
+                        backgroundColor: [
+                            '#3B82F6', '#60A5FA', '#34D399', '#10B981', '#FBBF24',
+                            '#F59E0B', '#EF4444', '#EC4899', '#8B5CF6', '#6366F1',
+                            '#14B8A6', '#0EA5E9', '#F472B6', '#84CC16', '#EAB308'
+                        ],
+                        borderColor: '#fff',
+                        borderWidth: 2,
+                        hoverOffset: 15,
+                        hoverBorderColor: '#333'
+                    }]
                 },
-                legend: {
-                    position: 'bottom',
-                    labels: {
-                        color: "#374151",
-                        padding: 15,
-                        font: { size: 13, weight: '500' },
-                        generateLabels: function (chart) {
-                            const data = chart.data;
-                            return data.labels.map(function (label, i) {
-                                const meta = chart.getDatasetMeta(0);
-                                const style = meta.controller.getStyle(i);
-                                return {
-                                    text: label,
-                                    fillStyle: style.backgroundColor,
-                                    strokeStyle: style.borderColor,
-                                    lineWidth: 2,
-                                    index: i
-                                };
-                            });
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '60%',
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: "Education Levels",
+                            color: "#111827",
+                            padding: { top: 10, bottom: 25 }
+                        },
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                color: "#374151",
+                                padding: 15,
+                                font: { size: 13, weight: '500' },
+                                generateLabels: function (chart) {
+                                    const data = chart.data;
+                                    return data.labels.map(function (label, i) {
+                                        const meta = chart.getDatasetMeta(0);
+                                        const style = meta.controller.getStyle(i);
+                                        return {
+                                            text: label,
+                                            fillStyle: style.backgroundColor,
+                                            strokeStyle: style.borderColor,
+                                            lineWidth: 2,
+                                            index: i
+                                        };
+                                    });
+                                }
+                            },
+                            onClick: (e, legendItem, legend) => {
+                                const index = legendItem.index;
+                                const chart = legend.chart;
+                                chart.toggleDataVisibility(index);
+                                chart.update();
+                            }
+                        },
+                        tooltip: {
+                            usePointStyle: true,
+                            callbacks: {
+                                label: (context) => {
+                                    const label = context.label || '';
+                                    const value = context.raw || 0;
+                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                    const percentage = total > 0 ? Math.round((value / total) * 100) : 0;
+                                    return `${label}: ${value} (${percentage}%)`;
+                                }
+                            }
                         }
                     },
-                    onClick: (e, legendItem, legend) => {
-                        const index = legendItem.index;
-                        const chart = legend.chart;
-                        chart.toggleDataVisibility(index);
-                        chart.update();
-                    }
-                },
-                tooltip: {
-                    usePointStyle: true,
-                    callbacks: {
-                        label: (context) => {
-                            const label = context.label || '';
-                            const value = context.raw || 0;
-                            const total = context.dataset.data.reduce((a, b) => a + b, 0);
-                            const percentage = Math.round((value / total) * 100);
-                            return `${label}: ${value} (${percentage}%)`;
-                        }
+                    animation: {
+                        duration: 1200,
+                        easing: 'easeOutQuart'
                     }
                 }
-            },
-            animation: {
-                duration: 1200,
-                easing: 'easeOutQuart'
-            }
-        }
+            });
 
         });
     </script>
-
 
     <!--EMPLOYMENT RATES SCRIPT-->
     <script>
@@ -759,6 +767,7 @@
                 }
             });
         });
+    
     </script>
 
     <!--JOB CATEGORY CHART SCRIPT-->
@@ -918,8 +927,8 @@
     </script>
     <!--JOB CLASS CHART -->
     <script>
-        var jobClassData = @Html.Raw(Json.Serialize(Model.WorkSiteEmployees));
-        var Total = @Model.WorkSiteEmployees.Select(el => el.zCount).Sum();
+        var jobClassData = @Html.Raw(Json.Serialize(Model.JobClassSummary));
+        var Total = @Model.JobClassSummary.Select(el => el.zCount).Sum();
 
         var jobClassLabels = jobClassData.map(function (item) {
             return item.zName;
@@ -929,7 +938,7 @@
             return item.zCount;
         });
 
-        var ctx = document.getElementById('none').getContext('2d');
+        var ctx = document.getElementById("jobClassChart").getContext('2d');
         var jobCategoryChart = new Chart(ctx, {
             type: 'bar',
             data: {
@@ -1123,5 +1132,33 @@
         });
     </script>
 
-  
+    <script>
+        $(document).ready(function () {
+            $('#periodFilter').on('change', reMetric);
+            $('#periodType').on('change', reMetric);
+            reMetric();
+        });
+
+        function reMetric()
+        {
+            const selectedPeriod = $('#periodFilter').val();
+            const periodType = $('#periodType').is(':checked')? true : false;
+            // Show a simple loader while fetching
+            $('#summaryContainer').css('opacity', '0.5');
+
+            $.ajax({
+                url: '/api/dashboard', // Match your controller/action path
+                data: { period: selectedPeriod, isOfficial: periodType },
+                type: 'GET',
+                success: function (result) {
+                    $('#summaryContainer').html(result).css('opacity', '1');
+
+                },
+                error: function () {
+                    alert("Error loading dashboard data.");
+                    $('#summaryContainer').css('opacity', '1');
+                }
+            });
+        }
+    </script>
 }

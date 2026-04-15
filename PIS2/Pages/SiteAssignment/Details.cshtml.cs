@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
+using PIS2.Data;
 using PIS2.Models;
 using System;
 using System.Collections.Generic;
@@ -13,9 +14,9 @@ namespace PIS2.Pages.SiteAssignment
     [Authorize(Roles = "MIE\\PMS_HRCLERK")]
     public class DetailsModel : PageModel
     {
-        private readonly PIS2.Models.PISContext _context;
+        private readonly PISContext _context;
 
-        public DetailsModel(PIS2.Models.PISContext context)
+        public DetailsModel(PISContext context)
         {
             _context = context;
         }

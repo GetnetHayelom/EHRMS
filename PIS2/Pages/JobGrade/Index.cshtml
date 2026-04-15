@@ -6,22 +6,31 @@
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
 @await Html.PartialAsync("headerSimple", "")
-<h1 class="fw-bold">Job Grades</h1>
+<div class="d-flex justify-content-between">
+    <div>
+        <h2 class="fw-bold mb-0">Job Grades</h2>
+        <p class="text-muted mb-0">Job Grades catalog</p>
+    </div>
 
-<p class="d-print-none">
-    <a asp-page="Create" class="btn btn-primary">Add New Job Grade</a>
-</p>
-<div class="d-flex justify-content-end d-print-none">
-    <form method="get" class="d-flex">
-        <label class="form-label fw-bold m-2">Status</label>
-        <select asp-for="JobGradeStatus" class="form-control m-2" asp-items="@Html.GetEnumSelectList<Models.mainStatus>()" onchange="this.form.submit()">
-            <option value="" selected> All</option>
-        </select>
-    </form>
-    <div class="me-2">@await Html.PartialAsync("filter")</div>
-    @await Html.PartialAsync("print")
-    <excel-export table="dataTable" filename="Companies_@(DateTime.UtcNow).xlsx"></excel-export>
+    <div class="d-flex justify-content-end align-items-end">
+        <div class="card shadow-sm m-1">
+            <div class="d-flex justify-content-end d-print-none">
+                <form method="get" class="d-flex align-items-end">
+                    <label class="form-label fw-bold m-2">Status</label>
+                    <select asp-for="JobGradeStatus" class="form-control m-2" asp-items="@Html.GetEnumSelectList<Models.mainStatus>()" onchange="this.form.submit()">
+                        <option value="" selected> All</option>
+                    </select>
+                </form>
+                <div class="me-2">@await Html.PartialAsync("filter")</div>
+                <excel-export table="dataTable" filename="Companies_@(DateTime.UtcNow).xlsx"></excel-export>
+                @await Html.PartialAsync("print")            
+                <a asp-page="Create" class="btn btn-primary m-2"><i class="bi bi-plus-circle"></i>Add New Job Grade</a>
+            </div>
+        </div>
+    </div>
 </div>
+
+
 <table class="table table-striped table-hover" id="dataTable">
     <thead>
         <tr class="bg-dark text-white">
@@ -93,8 +102,7 @@
     </tbody>
 </table>
 <div class="d-flex justify-content-end d-print-none">
-    
-    
-@await Html.PartialAsync("print")
+    @await Html.PartialAsync("back")
     <excel-export table="dataTable" filename="JobGrades_@(DateTime.UtcNow).xlsx"></excel-export>
+    @await Html.PartialAsync("print")
 </div>

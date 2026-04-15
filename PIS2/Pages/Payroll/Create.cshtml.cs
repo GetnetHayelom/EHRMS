@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using PIS2.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
+using PIS2.Data;
 
 namespace PIS2.Pages.Payroll
 {
@@ -23,8 +24,15 @@ namespace PIS2.Pages.Payroll
         [Authorize(Roles = @"MIE\PMS_HRCLERK,MIE\PMS_HRMANAGER,MIE\PMS_PAYROLL")]
         public async Task OnGetAsync()
         {
+            var lastPayroll = await _db.Payrolls.Where(p => p.payrollStatus == payrollStatus.COMPLETED).OrderBy(p => p.EndDate).LastOrDefaultAsync();
             Companies = await _db.Companies.Where(c => c.companyStatus == mainStatus.Active).ToListAsync();
-            Payroll.payrollStatus = payrollStatus.PENDING; // default status
+            Payroll.payrollStatus = payrollStatus.PENDING;// default status
+            Payroll.StartDate = lastPayroll?.EndDate.AddDays(1) ?? DateTime.Now;
+            Payroll.EndDate = new DateTime(
+                Payroll.StartDate.Year,
+                Payroll.StartDate.Month,
+                DateTime.DaysInMonth(Payroll.StartDate.Year, Payroll.StartDate.Month)
+            );
         }
 
         public async Task<IActionResult> OnPostAsync()
