@@ -1,0 +1,39 @@
+﻿@page
+@model PIS2.Pages.Benefits.NonPayrollModel
+@{
+}
+<div class="d-flex justify-content-between align-items-end m-2">
+    <div>
+        <h2 class="fw-bold mb-0">Non Payroll Earnings</h2>
+        <p class="text-muted mb-0">Earnings not processed with payroll</p>
+    </div>
+    <div>
+        <a class="btn btn-primary" asp-page="/EarningRecord/Create"><i class="bi bi-plus-circle me-2"></i>Add Earning</a>
+    </div>
+</div>
+    <table class="table">
+        <thead class="table-dark">
+            <tr>
+                <td>S/No</td>
+                <td> Employee Name/ID</td>
+                <td> Earning Type</td>
+                <td> Earning Amount</td>
+                <td>Actions</td>
+            </tr>
+        </thead>
+        <tbody>
+            @{
+                int index = 1;
+            }
+            @foreach(var e in Model.Earnings)
+            {
+                <tr>
+                    <td>@(index++)</td>
+                    <td>@e.EmploymentModel?.personModel?.personFullName / @e.EmploymentModel?.givenID</td>
+                    <td> e.earningType.earningTypeName</td>
+                    <td></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
