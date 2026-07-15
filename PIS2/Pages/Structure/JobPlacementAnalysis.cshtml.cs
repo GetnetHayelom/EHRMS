@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using PIS2.Data;
-using PIS2.Models;
+using PIS2.Enums;
 using PIS2.Services;
 using PIS2.Views;
 
@@ -19,9 +19,9 @@ namespace PIS2.Pages.Structure
         }
         public JobPlacementAnalysisView Analysis { get; set; }= new JobPlacementAnalysisView
         {
-            UnderStaffed = new List<JobPlacementAnalysisView.PlacementGap>(),
-            OverStaffed = new List<JobPlacementAnalysisView.PlacementGap>(),
-            Unstructured = new List<JobPlacementAnalysisView.UnstructuredPlacement>()
+            UnderStaffed = new List<PlacementGap>(),
+            OverStaffed = new List<PlacementGap>(),
+            Unstructured = new List<UnstructuredPlacement>()
         };
         public async Task OnGetAsync()
         {
@@ -50,7 +50,7 @@ namespace PIS2.Pages.Structure
                     p.departmentID == structItem.DeptID &&
                     p.jobID == structItem.JobID);
 
-                var gap = new JobPlacementAnalysisView.PlacementGap
+                var gap = new PlacementGap
                 {
                     CompanyName = structItem.CompanyName ?? "Unknown",
                     DepartmentName = structItem.DepartmentName ?? "Unknown",
@@ -73,7 +73,7 @@ namespace PIS2.Pages.Structure
 
             foreach (var p in unstructured)
             {
-                Analysis.Unstructured.Add(new JobPlacementAnalysisView.UnstructuredPlacement
+                Analysis.Unstructured.Add(new UnstructuredPlacement
                 {
                     EmploymentID= p.employmentID,
                     JobPlacementID = p.jobPlacementID,

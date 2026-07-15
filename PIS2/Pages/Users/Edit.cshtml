@@ -1,7 +1,8 @@
 ﻿@page
 @model PIS2.Pages.Users.EditModel
-@using PIS2.Models
 @using Microsoft.AspNetCore.Mvc.Rendering
+@using PIS2.Enums
+@using PIS2.Models
 
 @{
     ViewData["Title"] = "Edit User";
@@ -101,7 +102,7 @@
 
                             <div class="mb-3">
                                 <label class="form-label">User Group</label>
-                                <select asp-for="AccessInput.userGroups" id="userGroups" class="form-select" asp-items="@Html.GetEnumSelectList<Models.UserGroups>()">
+                                <select asp-for="AccessInput.userGroups" id="userGroups" class="form-select" asp-items="@Html.GetEnumSelectList<Enums.UserGroups>()">
                                                                     
                                 </select>
                             </div>
@@ -119,7 +120,7 @@
 
                             <div class="mb-3">
                                 <label class="form-label">Status</label>
-                                <select id="accessStatus" asp-for="AccessInput.accessStatus" class="form-select" asp-items="@Html.GetEnumSelectList<Models.mainStatus>()">
+                                <select id="accessStatus" asp-for="AccessInput.accessStatus" class="form-select" asp-items="@Html.GetEnumSelectList<mainStatus>()">
                                     
                                 </select>
                             </div>

@@ -4041,7 +4041,7 @@ namespace PIS2.Migrations
                     b.HasAnnotation("SqlServer:UseSqlOutputClause", false);
                 });
 
-            modelBuilder.Entity("PIS2.Pages.Report.LeaveReportCompany", b =>
+            modelBuilder.Entity("PIS2.Views.LeaveReportCompany", b =>
                 {
                     b.Property<int>("CompanyID")
                         .HasColumnType("int");

@@ -1,4 +1,5 @@
 ﻿@page
+@using PIS2.Enums
 @model PIS2.Pages.Holiday.IndexModel
 
 @{
@@ -65,12 +66,12 @@
                 @Html.DisplayFor(modelItem => item.holidayCycle)
             </td>
             <td>
-                    @if (item.holidayStatus == Models.mainStatus.Active)
+                    @if (item.holidayStatus == mainStatus.Active)
                     {
                         <span class="badge bg-success">@Html.DisplayFor(modelItem => item.holidayStatus)</span>
 
                     }
-                    else if (item.holidayStatus == Models.mainStatus.Suspended)
+                    else if (item.holidayStatus == mainStatus.Suspended)
                     {
                         <span class="badge bg-warning">@Html.DisplayFor(modelItem => item.holidayStatus)</span>
                     }

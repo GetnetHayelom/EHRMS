@@ -6,8 +6,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using PIS2.Data;
-using PIS2.Models;
+using PIS2.Enums;
 using PIS2.Services;
+using PIS2.Views;
 
 namespace PIS2.Pages.JobPlacement
 {
@@ -21,7 +22,7 @@ namespace PIS2.Pages.JobPlacement
             _core = core;
         }
 
-        public IList<jobPlacementModel> jobPlacementModel { get;set; } = default!;
+        public IList<JobPlacementView> jobPlacementModel { get;set; } = default!;
         public int jpCount { get; set; }
         public async Task OnGetAsync()
         {
@@ -42,14 +43,8 @@ namespace PIS2.Pages.JobPlacement
                 .Distinct()
                 .ToList();
 
-            jobPlacementModel = await _context.JobPlacements
-                .Include(j => j.departmentModel)
-                .Include(j => j.employmentModel)
-                .Include(j => j.jobModel)
-                .Include(j => j.jobStepModel).ThenInclude(j => j.jobGradeModel)
-                .Include(j => j.jobModel).ThenInclude(j => j.jobClassModel)
-                .Where(j => (j.jobPlacementStatus == mainStatus.Active || j.jobPlacementStatus == mainStatus.Suspended) && j.departmentModel.companyID == company)
-                .OrderBy(j => j.employmentModel.givenID)
+            jobPlacementModel = await _context.JobPlacementView.Where(j => j.jobPlacementStatus == mainStatus.Active)
+                .OrderBy(j => j.givenID)
                 .ToListAsync();
 
             jpCount = jobPlacementModel.Count();

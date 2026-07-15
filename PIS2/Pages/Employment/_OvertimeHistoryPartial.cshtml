@@ -69,15 +69,15 @@ else
                                     <td>@item.overtimeModel?.overtimeName</td>
                                     <td> @Math.Round((item.overtimeRate * item.overtimeRecordEmploymentRate * (decimal)item.TimeElapsed.TotalMinutes / 60), 2).ToString("N2")</td>
                                     <td>
-                                        @if (item.overtimeRecordStatus == Models.overtimeStatus.Posted)
+                                        @if (item.overtimeRecordStatus == Enums.overtimeStatus.Posted)
                                         {
                                             <span class="badge bg-success">@Html.DisplayFor(modelItem => item.overtimeRecordStatus)</span>
                                         }
-                                        else if (item.overtimeRecordStatus == Models.overtimeStatus.Hold)
+                                        else if (item.overtimeRecordStatus == Enums.overtimeStatus.Hold)
                                         {
                                             <span class="badge bg-warning">@Html.DisplayFor(modelItem => item.overtimeRecordStatus)</span>
                                         }
-                                        else if (item.overtimeRecordStatus == Models.overtimeStatus.Approved)
+                                        else if (item.overtimeRecordStatus == Enums.overtimeStatus.Approved)
                                         {
                                             <span class="badge bg-primary">@Html.DisplayFor(modelItem => item.overtimeRecordStatus)</span>
                                         }

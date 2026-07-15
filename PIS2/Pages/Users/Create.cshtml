@@ -1,4 +1,5 @@
 ﻿@page
+@using PIS2.Enums
 @model PIS2.Pages.Users.CreateModel
 
 @{
@@ -55,7 +56,7 @@
 
                 <div class="mb-3">
                     <label asp-for="userModel.userStatus" class="form-label fw-semibold">Status</label>
-                    <select asp-for="userModel.userStatus" class="form-select" asp-items="Html.GetEnumSelectList<Models.mainStatus>()"></select>
+                    <select asp-for="userModel.userStatus" class="form-select" asp-items="Html.GetEnumSelectList<mainStatus>()"></select>
                     <span asp-validation-for="userModel.userStatus" class="text-danger"></span>
                 </div>
 

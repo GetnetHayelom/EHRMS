@@ -5,9 +5,19 @@
     ViewData["Title"] = "Details";
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
+@await Html.PartialAsync("headerSimple", "")
+<div class="d-flex justify-content-between align-items-end">
+    <div>
+        <h2 class="fw-bold mb-0">Termination</h2>
+        <p class="text-muted mb-0">Termination Details #@Model.terminationModel.terminationID</p>
+    </div>
+    <div class="btn-group d-print-none">
+        <a asp-page="./Index" class="btn btn-outline-secondary m-2"><i class="bi bi-arrow-left me-2"></i>Back to Catalog</a>
+        @await Html.PartialAsync("print")
+    </div>
+</div>
 
-<h2 class="fw-bold mb-0">Termination</h2>
-<p class="text-muted mb-0">Termination Details #@Model.terminationModel.terminationID</p>
+
 <div>
 
     <hr />
@@ -15,16 +25,25 @@
         <div class="col-sm-12 col-md-5 card shadow-sm p-2">
             <dl class="row">
                 <dt class="col-sm-5">
-                    Employee ID:
+                    Employee Name & ID:
                 </dt>
                 <dd class="col-sm-7">
-                    @Html.DisplayFor(model => model.terminationModel.EmploymentModel.givenID)
+                    @Model.employeeDetail?.FullName - @Model.employeeDetail?.GivenID
+                    <a asp-page="/Employment/Details" asp-route-id="@Model.terminationModel?.employmentID" class="btn btn-sm btn-outline-primary" title="View Details">
+                        <i class="bi bi-eye"></i>
+                    </a>
+                </dd>
+                <dt class="col-sm-5">
+                    Job/Salary:
+                </dt>
+                <dd class="col-sm-7">
+                    @Model.employeeDetail?.JobTitle - @Model.employeeDetail?.Salary?.ToString("N2")
                 </dd>
                 <dt class="col-sm-5">
                     Termination Date:
                 </dt>
                 <dd class="col-sm-7">
-                    @Model.terminationModel.terminationDate.ToString("MM/dd/yyyy")
+                    @Model.terminationModel?.terminationDate.ToString("MM/dd/yyyy")
                 </dd>
                 <dt class="col-sm-5">
                     Termination Reason:
@@ -42,18 +61,18 @@
                     Status:
                 </dt>
                 @{
-                    string bgColor = Model.terminationModel.terminationStatus switch
+                    string bgColor = Model.terminationModel?.terminationStatus switch
                     {
-                        Models.terminationStatus.Hold => "bg-warning",
-                        Models.terminationStatus.Approved => "bg-success",
-                        Models.terminationStatus.Posted => "bg-primary",
+                        Enums.terminationStatus.Hold => "bg-warning",
+                        Enums.terminationStatus.Approved => "bg-success",
+                        Enums.terminationStatus.Posted => "bg-primary",
                         _ => "bg-secondary"
                     };
                 }
 
                 <dd class="col-sm-7">
                     
-                    <span class="badge @bgColor">@Model.terminationModel.terminationStatus</span>
+                    <span class="badge @bgColor">@Model.terminationModel?.terminationStatus</span>
                 </dd>
                 <dt class="col-sm-5">
                     Modified By:
@@ -115,46 +134,124 @@
             </div>
         </div>
         <div class="d-flex gap-3">
-            <div class="card shadow-sm text-center mt-3">
+            <div class="card shadow-sm text-center mt-3 col-md-3 col-6">
                 <div class="card-header bg-warning text-white">
                     <h6 class="fw-bold mb-1"> Severance Pay</h6>
                 </div>
                 <div class="card-body p-4 ">
                     <h4 class="card-body fw-bold">@Model.SeverancePay.ToString("N2") </h4>
-                    @if ((User.IsInRole("MIE\\PMS_HRCLERCK") || User.IsInRole("MIE\\PMS_HRMANAGER")) && Model.SeverancePay > 0 && Model.terminationModel.terminationStatus == Models.terminationStatus.Posted)
-                    {
-                        <a class="btn btn-primary"><i class="bi bi-plus-circle"></i> Prepare Severance Benefit</a>
-                    }
+                    
                 </div>
                 <div class="card-footer text-muted"><p class="fw-bold">Year of Service: @Model.YearsOfService.ToString("N2")</p></div>
             </div>
 
-            <div class="card shadow-sm text-center mt-3">
+            <div class="card shadow-sm text-center mt-3 col-md-3 col-6" >
                 <div class="card-header bg-info text-white"><h6 class="fw-bold mb-1">Leave Payable</h6></div>
                 <div class="card-body p-4">
                     <h4 class="card-body fw-bold">@(Model.LeaveSummary?.adjustedLeaveBalanceCost.ToString("N2") ?? "0.00")</h4>
-                    @if ((User.IsInRole("MIE\\PMS_HRCLERCK") || User.IsInRole("MIE\\PMS_HRMANAGER")) && Model.LeaveSummary?.adjustedLeaveBalanceCost > 0 && Model.terminationModel.terminationStatus == Models.terminationStatus.Posted)
-                    {
-                        <a class="btn btn-primary"><i class="bi bi-plus-circle"></i> Prepare Leave Benefit</a>
-                    }
+                    
                 </div>
                 <div class="card-footer  text-muted"><p class="fw-bold">Leave Balance: @(Model.LeaveSummary?.adjustedLeaveBalance.ToString("N2") ?? "0")</p></div>
+            </div>
+            <div class="row mt-3 col-md-6 col-12" >
+                <div class="col-md-6">
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-header bg-light">
+                            <h6 class="mb-0">Earnings</h6>
+                        </div>
+                        <div class="card-body p-0">
+                            <table class="table table-hover mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Type</th>
+                                        <th>Reference</th>
+                                        <th class="text-end">Amount</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var earning in Model.Payments.EarningRecords)
+                                    {
+                                        <tr>
+                                            <td>@earning.earningType?.earningTypeName</td>
+                                            <td><small class="text-muted">@earning.earningReference</small></td>
+                                            <td class="text-end font-monospace">@earning.earningAmount.ToString("N2")</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                                <tfoot>
+                                    <tr class="table-info fw-bold">
+                                        <td colspan="2">Total Earnings</td>
+                                        <td class="text-end">@Model.Payments.TotalEarning.ToString("N2")</td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-header bg-light text-danger">
+                            <h6 class="mb-0 text-dark">Deductions</h6>
+                        </div>
+                        <div class="card-body p-0">
+                            <table class="table table-hover mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Type</th>
+                                        <th>Reference</th>
+                                        <th class="text-end">Amount</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var deduction in Model.Payments.DeductionRecords)
+                                    {
+                                        <tr>
+                                            <td>@deduction.DeductionType?.deductionName</td>
+                                            <td><small class="text-muted">@deduction.deductionReference</small></td>
+                                            <td class="text-end font-monospace text-danger">@deduction.deductionAmount?.ToString("N2")</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                                <tfoot>
+                                    <tr class="table-warning fw-bold text-danger">
+                                        <td colspan="2">Total Deductions</td>
+                                        <td class="text-end">@Model.Payments.TotalDeduction.ToString("N2")</td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
     
     
 </div>
-<div class="d-flex justify-content-end">
-    @if ((Model.terminationModel.terminationStatus == Models.terminationStatus.Hold || Model.terminationModel.terminationStatus == Models.terminationStatus.Approved)
-    && User.IsInRole("MIE\\PMS_MANAGER"))
-    {
-        <form method="post">
-            <input asp-for="terminationID" value="@Model.terminationModel.terminationID" type="hidden" />
-            <button class="btn btn-success m-2 d-print-none" type="submit">Post</button>
-        </form>
+<div class="d-flex justify-content-end d-print-none">
+    <div class="btn-group">
+        @if (Model.terminationModel.terminationStatus == Enums.terminationStatus.Hold && User.IsInRole("MIE\\PMS_HRMANAGER"))
+        {
+            <form method="post" asp-page-handler="Approve">
+                <input asp-for="terminationID" value="@Model.terminationModel.terminationID" type="hidden" />
+                <button class="btn btn-success m-2 d-print-none" type="submit">Approve</button>
+            </form>
+        }
+        @if (Model.terminationModel.terminationStatus == Enums.terminationStatus.Hold && User.IsInRole("MIE\\PMS_HRCLERK"))
+        {
+            <a asp-page="./Edit" asp-route-id="@Model.terminationModel.terminationID" class="btn btn-primary m-2"><i class="bi bi-pencil-square me-2"></i>Edit</a>
+        }
+        @if(Model.terminationModel.terminationStatus == Enums.terminationStatus.Approved && User.IsInRole("MIE\\PMS_HRMANAGER"))
+        {
+            <form method="post">
+                <input asp-for="terminationID" value="@Model.terminationModel.terminationID" type="hidden" />
+                <button class="btn btn-success m-2 d-print-none" type="submit">Post</button>
+            </form>
+        }
+    </div>
+  
 
-    }
-    <a asp-page="./Edit" asp-route-id="@Model.terminationModel.terminationID" class="btn btn-primary m-2">Edit</a>   
+        
 </div>
-<a asp-page="./Index">View All Termination</a>
+<a asp-page="./Index" class="d-print-none">View All Termination</a>

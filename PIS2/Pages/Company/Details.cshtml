@@ -1,4 +1,5 @@
 ﻿@page
+@using PIS2.Enums
 @model PIS2.Pages.Company.DetailsModel
 
 @{
@@ -16,7 +17,7 @@
     <div class="d-flex justify-content-end align-items-end m-0">
         <form method="get" class="d-flex">
             <label class="form-label"> Filter by Status</label>
-            <select asp-for="DepartmentStatus" class="form-control m-2" asp-items="@Html.GetEnumSelectList<Models.mainStatus>()" onchange="this.form.submit()">
+            <select asp-for="DepartmentStatus" class="form-control m-2" asp-items="@Html.GetEnumSelectList<mainStatus>()" onchange="this.form.submit()">
                 <option value="" selected> All</option>
             </select>
         </form>
@@ -102,14 +103,14 @@
                         <td>@item.departmentShort</td>
                         <td>@item.subAccountModel?.subAccountName</td>
                         <td>@item.employmentModel?.personModel?.personFullName</td>
-                        <td>@item.JobPlacements.Where(jp => jp.jobPlacementStatus == Models.mainStatus.Active).Count()</td>
+                        <td>@item.JobPlacements.Where(jp => jp.jobPlacementStatus == mainStatus.Active).Count()</td>
                         <td>
-                            @if (item.departmentStatus == Models.mainStatus.Active)
+                            @if (item.departmentStatus == mainStatus.Active)
                             {
                                 <span class="badge bg-success">@Html.DisplayFor(modelItem => item.departmentStatus)</span>
 
                             }
-                            else if (item.departmentStatus == Models.mainStatus.Suspended)
+                            else if (item.departmentStatus == mainStatus.Suspended)
                             {
                                 <span class="badge bg-warning">@Html.DisplayFor(modelItem => item.departmentStatus)</span>
                             }
@@ -130,8 +131,8 @@
             <tr>
                 
                 <td colspan="5">Total</td>
-                <td>@Model.Departments.SelectMany(d => d.JobPlacements).Where(jp => jp.jobPlacementStatus ==Models.mainStatus.Active)?.Count()</td>
-                <td>@Model.Departments.Where(d => d.departmentStatus == Models.mainStatus.Active).Count()</td>
+                <td>@Model.Departments.SelectMany(d => d.JobPlacements).Where(jp => jp.jobPlacementStatus ==mainStatus.Active)?.Count()</td>
+                <td>@Model.Departments.Where(d => d.departmentStatus == mainStatus.Active).Count()</td>
                 
             </tr>
         </tfoot>
@@ -139,7 +140,7 @@
     </table>
 </div>
 <div class="d-flex justify-content-end">
-    @if(Model.companyModel.companyStatus == Models.mainStatus.Active)
+    @if(Model.companyModel.companyStatus == mainStatus.Active)
     {
         <a class="btn btn-warning m-2" asp-page="/Department/Create" asp-route-id="@Model.companyModel.companyID">Add Department</a>
     }

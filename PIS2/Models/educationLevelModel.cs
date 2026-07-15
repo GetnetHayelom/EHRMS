@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using PIS2.Enums;
+using System.ComponentModel.DataAnnotations;
 
 namespace PIS2.Models
 {
@@ -22,35 +23,5 @@ namespace PIS2.Models
 
         }
     }
-    public enum educationDomains
-    {
-        [Display(Name = "Natural Sciences, Mathematics and Statistics")]
-        Natural,
-        [Display(Name = "Engineering, Manufacturing and Construction")]
-        Engineering,
-        [Display(Name = "Information and Communication Technologies (ICT)")]
-        ICT,
-        [Display(Name = "Health and Welfare")]
-        Health,
-        [Display(Name = "Social Sciences, Journalism and Information")]
-        Social,
-        [Display(Name = "Arts and Humanities")]
-        Art,
-        [Display(Name = "Business, Administration and Law")]
-        MBA,
-        [Display(Name = "Agriculture, Forestry, Fisheries and Veterinary")]
-        Agriculture,
-        [Display(Name = "Services")]
-        Services
-
-    }
-    public enum educationCategory
-    {
-        Certificate,
-        Diploma,
-        Degree,
-        Masters,
-        PHD,
-        Other
-    }
+   
 }

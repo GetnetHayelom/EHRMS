@@ -1,4 +1,5 @@
 ﻿@page
+@using PIS2.Enums
 @model PIS2.Pages.Exprience.IndexModel
 
 @{
@@ -23,7 +24,7 @@
             <div>
                 <label class="me-2 fw-bold">Experience Type:</label>
                 <input type="radio" name="EmploymentFilter" value="" @(Model.ExperienceTypeFilter == null ? "checked" : "") onchange="this.form.submit()" /> All
-                @foreach (var type in Enum.GetValues<Models.Ex_In>())
+                @foreach (var type in Enum.GetValues<Enums.Ex_In>())
                 {
                     <input type="radio" name="EmploymentFilter" value="@type" @(Model.ExperienceTypeFilter == type ? "checked" : "") onchange="this.form.submit()" />
                     @type
@@ -34,7 +35,7 @@
             <div>
                 <label class="me-2 fw-bold">Gender:</label>
                 <input type="radio" name="GenderFilter" value="" @(Model.GenderFilter == null ? "checked" : "") onchange="this.form.submit()" /> All
-                @foreach (var g in Enum.GetValues<Models.Gender>())
+                @foreach (var g in Enum.GetValues<Gender>())
                 {
                     <input type="radio" name="GenderFilter" value="@g" @(Model.GenderFilter == g ? "checked" : "") onchange="this.form.submit()" />
                     @g
@@ -97,7 +98,7 @@
                 <th>@index</th>
                 <th colspan="6">@persons?.FirstOrDefault()?.FullName</th>
                 <th>
-                    @if(persons.Any(p => p.experienceType == Models.Ex_In.Internal))
+                    @if(persons.Any(p => p.experienceType == Enums.Ex_In.Internal))
                     {
                         <a class="btn btn-outline-primary" role="button" href="/Experience/_OfficialPrint?id=@persons.FirstOrDefault().personID">Preview</a>
                     }
@@ -117,7 +118,7 @@
              
                 </td>
                 <td>
-                    @if (item.experienceType == Models.Ex_In.Internal)
+                    @if (item.experienceType == Enums.Ex_In.Internal)
                     {
                         <span class="badge bg-success">Internal</span>
                     }

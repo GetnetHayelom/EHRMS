@@ -77,14 +77,14 @@
 
 @functions {
     // Helper function to map Priority enum to Bootstrap color class
-    string GetPriorityColor(PIS2.Models.Priority priority)
+    string GetPriorityColor(PIS2.Enums.Priority priority)
     {
         // Using the same switch logic as your original Razor View logic
         return priority switch
         {
-            PIS2.Models.Priority.Low => "success",
-            PIS2.Models.Priority.Medium => "warning",
-            PIS2.Models.Priority.High => "danger",
+            PIS2.Enums.Priority.Low => "success",
+            PIS2.Enums.Priority.Medium => "warning",
+            PIS2.Enums.Priority.High => "danger",
             _ => "secondary"
         };
     }

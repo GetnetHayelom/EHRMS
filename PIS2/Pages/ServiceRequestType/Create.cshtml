@@ -1,4 +1,5 @@
 ﻿@page
+@using PIS2.Enums
 @model PIS2.Pages.ServiceRequestType.CreateModel
 
 @{
@@ -27,7 +28,7 @@
             </div>
             <div class="form-group">
                 <label asp-for="serviceRequestType.serviceRequestTypeStatus" class="control-label">Status</label>
-                <select asp-for="serviceRequestType.serviceRequestTypeStatus" class="form-control" asp-items="@Html.GetEnumSelectList<Models.mainStatus>()"></select>
+                <select asp-for="serviceRequestType.serviceRequestTypeStatus" class="form-control" asp-items="@Html.GetEnumSelectList<mainStatus>()"></select>
                 <span asp-validation-for="serviceRequestType.serviceRequestTypeStatus" class="text-danger"></span>
             </div>
             

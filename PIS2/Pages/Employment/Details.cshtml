@@ -1,11 +1,12 @@
 ﻿@page
+@using PIS2.Enums
 @model PIS2.Pages.Employment.DetailsModel
 
 @{
     ViewData["Title"] = "Employment Details";
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
-
+@await Html.PartialAsync("headerSimple", "")
 <div class="container-fluid py-4">
     <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-1 d-print-none gap-3">
         <div>
@@ -31,7 +32,7 @@
                         <i class="bi bi-person-lines-fill me-1"></i> Employment Details
                     </button>
                 </li>
-                    @if (Model.employmentModel.employmentStatus == Models.mainStatus.Active)
+                    @if (Model.employmentModel.employmentStatus == mainStatus.Active)
                     {
                         <li class="nav-item">
                         <a class="btn btn-outline-primary btn-sm" asp-page="/Leave/Create" asp-route-id="@Model.employmentModel.employmentID"><i class="bi bi-calendar-plus"></i> Leave Request</a>
@@ -102,8 +103,10 @@
                 </div>
             </div>
         </div>
-
+        
         <div class="tab-content col-lg-8" id="employmentTabContent">
+            
+            
             <!--EMPLOYMENT STATUS-->
             <div class="tab-pane fade show active" id="details-content" role="tabpanel" aria-labelledby="details-tab">
                 <div class="card shadow-sm border-0 mb-4">
@@ -137,7 +140,7 @@
                                 <span class="fw-bold">@Model.employmentModel.employmentReference</span>
                             </div>
 
-                            @if (Model.employmentModel.employmentStatus == Models.mainStatus.Inactive)
+                            @if (Model.employmentModel.employmentStatus == mainStatus.Inactive)
                             {
                                 <div class="col-12 mt-3">
                                     <div class="bg-danger bg-opacity-10 border border-danger border-opacity-25 rounded p-3">
@@ -156,7 +159,7 @@
                             }
                         
                         </div>
-                        <div class="text-end mt-4">
+                        <div class="text-end mt-4 d-print-none">
                             <a asp-page="/EmployeeService/Earning" asp-route-id="@Model.employmentModel.employmentID" class="btn btn-outline-primary">
                                 <i class="bi bi-wallet2"></i> View Earnings Details
                             </a>
@@ -191,7 +194,7 @@
                                                 <tr>
                                                     <td class="fw-bold">@item.employmentTypeModel?.employmentTypeName</td>
                                                     <td>@item.employmentPosition</td>
-                                                    <td><span class="badge @(item.employmentStatus == Models.mainStatus.Active ? "bg-success" : "bg-secondary")">@item.employmentStatus</span></td>
+                                                    <td><span class="badge @(item.employmentStatus == mainStatus.Active ? "bg-success" : "bg-secondary")">@item.employmentStatus</span></td>
                                                     <td class="text-muted">
                                                         <p class="mb-0">@item.modifiedBy</p>
                                                         <p class="ps-3 mb-0">@item.modifiedDate.ToString("MM/dd/yyyy")</p>
@@ -240,7 +243,7 @@
                                                             <div class="fw-bold">@item.departmentModel?.departmentName</div>
                                                             <div class="text-muted small">@item.departmentModel?.companyModel?.companyName</div>
                                                         </td>
-                                                        <td><span class="badge @(item.jobPlacementStatus == Models.mainStatus.Active ? "bg-success" : "border text-dark")">@item.jobPlacementStatus</span></td>
+                                                        <td><span class="badge @(item.jobPlacementStatus == mainStatus.Active ? "bg-success" : "border text-dark")">@item.jobPlacementStatus</span></td>
                                                     </tr>
                                                 }
                                             </tbody>
@@ -293,6 +296,24 @@
                         </div>
                     }
 
+                    <!--CAREER PROGRESSION-->
+                    <div class="card shadow-sm mt-2">
+                        <div class="card-header"><h5 class="fw-bold">Career Progression & Grade Benchmarking</h5></div>
+                        <div class="card-body"><canvas id="careerChart" width="800" height="200"></canvas></div>
+                    </div>
+                    <!--CAREER PATH-->
+                    <div class="career-path-container mt-2 p-2">
+                        <h5 class="fw-bold">Projected Career Growth Path</h5>
+                        <ul id="careerTimeline" class="d-flex flex-wrap w-auto gap-2">
+                        </ul>
+                    </div>
+                    <!--ATTACHMENT-->
+                    @await Html.PartialAsync("_AttachmentPartial",
+                    new Pages.Shared.AttachmentPartialModel
+                    {
+                        tableName = "Employment",
+                        recordId = Model.employmentModel.employmentID
+                    })
                 </div>
             </div>
             
@@ -369,29 +390,26 @@
                     </div>
                 </div>
             </div>
-
-            @await Html.PartialAsync("_AttachmentPartial",
-            new Pages.Shared.AttachmentPartialModel
-            {
-                tableName = "Employment",
-                recordId = Model.employmentModel.employmentID
-            })
+            
         </div>
 
-
     </div>
-
-    <div class="mt-4 pt-3 border-top d-print-none d-flex justify-content-between align-items-center">
-        <a class="btn btn-outline-secondary" asp-page="./Index"><i class="bi bi-arrow-left"></i> Back to Employee List</a>
+    
+    
+    
+    <div class="mt-4 pt-3 border-top d-print-none d-flex justify-content-end align-items-center">
+        <a class="btn btn-outline-secondary" asp-page="./Index"><i class="bi bi-arrow-left"></i> Employee Catalog</a>
         <div class="d-flex gap-2">
             @if (User.IsInRole("PMS_HRCLERK"))
             {
-                <a class="btn btn-primary m-2" asp-page="./Edit" asp-route-id="@Model.employmentModel.employmentID">Edit Record</a>
+                <a class="btn btn-primary m-2" asp-page="./Edit" asp-route-id="@Model.employmentModel.employmentID"><i class="bi bi-pencil-square me-2"></i>Edit Record</a>
             }
             @await Html.PartialAsync("print")
         </div>
     </div>
 </div>
+
+
 
 
 <script>
@@ -400,7 +418,7 @@
         const typeElems = document.querySelectorAll('.overall-score');
 
         typeElems.forEach((el, index) => {
-            const next = typeElems[index + 1]; // 👈 compare to older row
+            const next = typeElems[index + 1]; // compare to older row
             if (!next) return;
 
             const current = parseFloat(el.dataset.value);
@@ -448,4 +466,92 @@
     });
 </script>
 
+<script>
+    fetch('?handler=EmployeeProgress&employmentId=@Model.employmentModel.employmentID')
+        .then(response => response.json())
+        .then(data => {
+            const ctx = document.getElementById('careerChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: data.dates,
+                    datasets: [
+                        {
+                            label: 'Employee Actual Salary',
+                            data: data.employeeSalaries,
+                            borderColor: 'rgba(0, 225, 255, 1)',
+                            borderWidth: 3,
+                            fill: false,
+                            tension: 0.1
+                        },
+                        {
+                            label: 'Dept Average Salary',
+                            data: data.averageSalaries,
+                            borderColor: 'rgba(255, 225, 64, 0.5)',
+                            borderDash: [5, 5],
+                            fill: false
+                        },
+                        {
+                            label: 'Grade Max (Path)',
+                            data: data.gradeMax,
+                            borderColor: 'rgba(255, 99, 132, 0.2)',
+                            backgroundColor: 'rgba(255, 99, 132, 0.05)',
+                            fill: true, // This creates the "band" effect
+                            pointRadius: 0
+                        },
+                        {
+                            label: 'Grade Midpoint',
+                            data: data.gradeMidpoints,
+                            borderColor: 'rgba(54, 162, 235, 0.4)',
+                            borderDash: [2, 2],
+                            fill: false,
+                            pointStyle: 'rectRot'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            title: { display: true, text: 'Salary Amount' },
+                            beginAtZero: false
+                        },
+                        x: {
+                            title: { display: true, text: 'Placement Date' }
+                        }
+                    },
+                    plugins: {
+                        tooltip: { mode: 'index', intersect: false },
+                        title: { display: true, text: 'Career Progression & Grade Benchmarking' }
+                    }
+                }
+            });
+        });
+</script>
 
+<script>
+    fetch('?handler=CareerPath&employmentId=@Model.employmentModel.employmentID')
+        .then(res => res.json())
+        .then(data => {
+            const container = document.getElementById('careerTimeline');
+            const filteredData = data.filter(step => step.potentialTitles && step.potentialTitles.length > 0);
+
+            if (filteredData.length === 0) {
+                container.innerHTML = '<li class="text-muted">No further career progression found within this job class.</li>';
+                return;}
+            container.innerHTML = filteredData.map((step, index) => `
+                <li class="card shadow-sm p-2">
+                <div class="card-header">
+                    <div class="badge bg-primary">${step.gradeName}</div>
+                </div>
+
+                <div class="card-body">
+                    <strong>Possible Titles:</strong>
+                    ${step.potentialTitles.length > 0 ? step.potentialTitles.join(", <br>") : "No titles defined for this grade"}
+                    <br/>
+                    <small class="text-muted">Pay Range: ${step.salaryRange}</small>
+                </div>
+                </li>
+            `).join('<div class="d-flex align-items-center"><div class="badge bg-outline-success" ><i class="bi bi-arrow-right mx-2"></i></div></div>');
+        });
+</script>

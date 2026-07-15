@@ -69,10 +69,10 @@ namespace PIS2.Pages.Leave
                 return NotFound();
             }
             
-            if(leave.leaveStatus == leaveStatus.Hold || leave.leaveStatus == leaveStatus.Approved)
+            if(leave.leaveStatus == Enums.leaveStatus.Hold || leave.leaveStatus == Enums.leaveStatus.Approved)
             {
                 // Update the leaveStatus
-                leave.leaveStatus = leaveStatus.Posted;
+                leave.leaveStatus = Enums.leaveStatus.Posted;
                 leave.modifiedBy = User.Identity.Name;
                 _context.Update(leave);
                 await _context.SaveChangesAsync();

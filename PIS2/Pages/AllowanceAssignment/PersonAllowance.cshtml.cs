@@ -4,6 +4,7 @@ using PIS2.Models;
 using PIS2.Services;
 using Microsoft.EntityFrameworkCore;
 using PIS2.Data;
+using PIS2.Enums;
 
 namespace PIS2.Pages.AllowanceAssignment
 {

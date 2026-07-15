@@ -1,4 +1,5 @@
 ﻿@page
+@using PIS2.Enums
 @model PIS2.Pages.Allowance.IndexModel
 
 @{
@@ -182,12 +183,12 @@
                     @Html.DisplayFor(modelItem => item.allowanceTaxable)
                 </td>
                 <td>
-                    @if (item.allowanceStatus == Models.mainStatus.Active)
+                    @if (item.allowanceStatus == mainStatus.Active)
                     {
                         <span class="badge bg-success">@Html.DisplayFor(modelItem => item.allowanceStatus)</span>
 
                     }
-                    else if (item.allowanceStatus == Models.mainStatus.Suspended)
+                    else if (item.allowanceStatus == mainStatus.Suspended)
                     {
                         <span class="badge bg-warning">@Html.DisplayFor(modelItem => item.allowanceStatus)</span>
                     }

@@ -1,4 +1,5 @@
-﻿@model List<PIS2.Models.accessModel>
+﻿@using PIS2.Enums
+@model List<PIS2.Models.accessModel>
 
 <table class="table table-bordered table-striped">
     <thead class="bg-secondary text-white">
@@ -20,7 +21,7 @@
                     <td>@(access.accessStatus.ToString() ?? "Active")</td>
                     <td class="text-center">
                         @{
-                            var stat = access.accessStatus == Models.mainStatus.Active ? "Disable" : "Enable";
+                            var stat = access.accessStatus == mainStatus.Active ? "Disable" : "Enable";
                         }
                         <button type="button" class="btn btn-sm btn-@(stat == "Disable" ? "warning" : "primary") me-1" onclick="updateAccess(@access.accessID)">
                             @stat

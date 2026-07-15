@@ -1,4 +1,5 @@
 ﻿@page
+@using PIS2.Enums
 @model PIS2.Pages.Termination.IndexModel
 
 @{
@@ -202,7 +203,7 @@
                 <label class="form-label fw-bold">Status</label>
                 <select asp-for="Status" class="form-select">
                     <option value="">All</option>
-                    @foreach (var s in Enum.GetValues(typeof(PIS2.Models.terminationStatus)).Cast<PIS2.Models.terminationStatus>())
+                    @foreach (var s in Enum.GetValues(typeof(PIS2.Enums.terminationStatus)).Cast<PIS2.Enums.terminationStatus>())
                     {
                         <option value="@( (int)s )">@s</option>
                     }
@@ -383,7 +384,7 @@
                                 @{
                                     int indexer = 1;
                                 }
-                                @foreach (var item in Model.terminationModel.GroupBy(x => x.terminationReason).OrderByDescending(g => g.Count()).Select(g => new { Reason = g.Key, Count = g.Count(), Male = g.Count(g => g.personGender == (int)Models.Gender.Male), Female = g.Count(g => g.personGender == (int)Models.Gender.Female) }))
+                                @foreach (var item in Model.terminationModel.GroupBy(x => x.terminationReason).OrderByDescending(g => g.Count()).Select(g => new { Reason = g.Key, Count = g.Count(), Male = g.Count(g => g.personGender == (int)Gender.Male), Female = g.Count(g => g.personGender == (int)Gender.Female) }))
                                 {
                                     <tr>
                                         <td>@(indexer++)</td>
@@ -448,8 +449,9 @@
                             <tr>
                                 <td>
                                     @(index3). @t.FullName
+                                    <p class="text-muted m-0 small">@t.givenID</p>
                                 </td>
-                                <td>@((Models.Gender)t.personGender)</td>
+                                <td>@((Gender)t.personGender)</td>
                                 <td>@t.jobCategoryName</td>
                                 <td>@t.jobClassName</td>
                                 <td>@t.terminationReason</td>
@@ -457,15 +459,15 @@
                                     @{
                                         var badgeClass = t.terminationStatus switch
                                         {
-                                            (int)PIS2.Models.terminationStatus.Posted => "bg-success",
-                                            (int)PIS2.Models.terminationStatus.Hold => "bg-warning",
-                                            (int)PIS2.Models.terminationStatus.Complete => "bg-secondary",
-                                            (int)PIS2.Models.terminationStatus.Approved => "bg-info",
+                                            (int)PIS2.Enums.terminationStatus.Posted => "bg-success",
+                                            (int)PIS2.Enums.terminationStatus.Hold => "bg-warning",
+                                            (int)PIS2.Enums.terminationStatus.Complete => "bg-secondary",
+                                            (int)PIS2.Enums.terminationStatus.Approved => "bg-info",
                                             _ => "bg-primary"
                                         };
                                     }
                                     <span class="badge rounded-pill @badgeClass" style="min-width: 80px;">
-                                        @((PIS2.Models.terminationStatus)t.terminationStatus)
+                                        @((PIS2.Enums.terminationStatus)t.terminationStatus)
                                     </span>
                                 </td>
                                 <td>@t.terminationDate.ToString("MM/dd/yyyy")</td>

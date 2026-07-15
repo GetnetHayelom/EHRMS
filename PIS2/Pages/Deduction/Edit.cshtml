@@ -1,4 +1,5 @@
 ﻿@page "{id:int}"
+@using PIS2.Enums
 @model PIS2.Pages.Deduction.EditModel
 @{
     ViewData["Title"] = "Edit Deduction Type";
@@ -23,7 +24,7 @@
 
                     <div class="col-md-6">
                         <label asp-for="DeductionType.deductBase" class="form-label fw-semibold">Base</label>
-                        <select asp-for="DeductionType.deductBase" class="form-select" asp-items="Html.GetEnumSelectList<Models.deductionBase>()"></select>
+                        <select asp-for="DeductionType.deductBase" class="form-select" asp-items="Html.GetEnumSelectList<Enums.deductionBase>()"></select>
                         <span asp-validation-for="DeductionType.deductBase" class="text-danger"></span>
                     </div>
                 </div>
@@ -81,7 +82,7 @@
                 <div class="row mb-4">
                     <div class="col-md-6">
                         <label asp-for="DeductionType.deductionStatus" class="form-label fw-semibold">Deduction Status</label>
-                        <select asp-for="DeductionType.deductionStatus" class="form-select" asp-items="Html.GetEnumSelectList<Models.mainStatus>()"></select>
+                        <select asp-for="DeductionType.deductionStatus" class="form-select" asp-items="Html.GetEnumSelectList<mainStatus>()"></select>
                     </div>
 
                     <div class="col-md-6">

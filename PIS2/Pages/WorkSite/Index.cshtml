@@ -1,5 +1,6 @@
 ﻿
 @page
+@using PIS2.Enums
 @model PIS2.Pages.WorkSite.IndexModel
 
 @{
@@ -58,12 +59,12 @@
                             @Html.DisplayFor(modelItem => item.addressModel.addressFormatted)
                         </td>
                         <td>
-                            @if (item.workSiteStatus == Models.mainStatus.Active)
+                            @if (item.workSiteStatus == mainStatus.Active)
                             {
                                 <span class="badge bg-success">@Html.DisplayFor(modelItem => item.workSiteStatus)</span>
 
                             }
-                            else if (item.workSiteStatus == Models.mainStatus.Suspended)
+                            else if (item.workSiteStatus == mainStatus.Suspended)
                             {
                                 <span class="badge bg-warning">@Html.DisplayFor(modelItem => item.workSiteStatus)</span>
                             }

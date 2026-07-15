@@ -1,4 +1,5 @@
 ﻿@page
+@using PIS2.Enums
 @model PIS2.Pages.Deductions.IndexModel
 @{
     ViewData["Title"] = "Deduction Types";
@@ -82,15 +83,15 @@
                                     <td>
                                         @switch (item.deductionStatus)
                                         {
-                                            case Models.mainStatus.Active:
+                                            case mainStatus.Active:
                                                 <span class="badge bg-success">Active</span>
                                                 ;
                                                 break;
-                                            case Models.mainStatus.Suspended:
+                                            case mainStatus.Suspended:
                                                 <span class="badge bg-warning text-dark">Suspended</span>
                                                 ;
                                                 break;
-                                            case Models.mainStatus.Inactive:
+                                            case mainStatus.Inactive:
                                                 <span class="badge bg-danger">Inactive</span>
                                                 ;
                                                 break;

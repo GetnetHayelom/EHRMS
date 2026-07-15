@@ -1,4 +1,5 @@
 ﻿@page
+@using PIS2.Enums
 @model PIS2.Pages.EvaluationType.CreateModel
 @{
     ViewData["Title"] = "Create Evaluation Type";
@@ -28,12 +29,12 @@
         <div class="mb-3">
             <label asp-for="EvaluationType.evaluationTypeStatus" class="form-label">Status</label>
             <select asp-for="EvaluationType.evaluationTypeStatus" class="form-select"
-                    asp-items="Html.GetEnumSelectList<Models.mainStatus>()"></select>
+                    asp-items="Html.GetEnumSelectList<mainStatus>()"></select>
         </div>
         <div class="mb-3">
             <label asp-for="EvaluationType.Position" class="form-label">Target Position</label>
             <select asp-for="EvaluationType.Position" class="form-select"
-                    asp-items="Html.GetEnumSelectList<Models.EmploymentPositions>()">
+                    asp-items="Html.GetEnumSelectList<Enums.EmploymentPositions>()">
                 <option value=""> All</option>
             </select>
         </div>

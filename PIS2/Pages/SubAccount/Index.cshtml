@@ -1,4 +1,5 @@
 ﻿@page
+@using PIS2.Enums
 @model PIS2.Pages.SubAccount.IndexModel
 
 @{
@@ -17,7 +18,7 @@
     <div class="d-flex justify-content-end d-print-none">
         <form method="get" class="d-flex">
             <label class="form-label"> Filter by Status</label>
-            <select asp-for="SubAccountStatus" class="form-control m-2" asp-items="@Html.GetEnumSelectList<Models.mainStatus>()" onchange="this.form.submit()">
+            <select asp-for="SubAccountStatus" class="form-control m-2" asp-items="@Html.GetEnumSelectList<mainStatus>()" onchange="this.form.submit()">
                 <option value="" selected> All</option>
             </select>
         </form>
@@ -66,12 +67,12 @@
                     @Html.DisplayFor(modelItem => item.subAccountDescription)
                 </td>
                 <td>
-                        @if (item.subAccountStatus == Models.mainStatus.Active)
+                        @if (item.subAccountStatus == mainStatus.Active)
                         {
                             <span class="badge bg-success">@Html.DisplayFor(modelItem => item.subAccountStatus)</span>
 
                         }
-                        else if (item.subAccountStatus == Models.mainStatus.Suspended)
+                        else if (item.subAccountStatus == mainStatus.Suspended)
                         {
                             <span class="badge bg-warning">@Html.DisplayFor(modelItem => item.subAccountStatus)</span>
                         }

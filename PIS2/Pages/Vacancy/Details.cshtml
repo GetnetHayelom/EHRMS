@@ -4,16 +4,26 @@
 @{
     ViewData["Title"] = "Vacancy Details";
 }
+<div class="d-flex justify-content-between align-items-end">
+    <div>
+        <h2 class="fw-bold m-0">Vacancy</h2>
+        <p class="text-muted mb-0">Vacancy details #@Model.Vacancy.VacancyID</p>
+    </div>
+    <div class="btn-group">
+        <a asp-page="Index" class="btn btn-outline-secondary"><i class="bi bi-arrow-left me-2"></i>View All</a>
+        <a asp-page="Create" class="btn btn-primary"><i class="bi bi-plus-circle me-2"></i>Add New</a>
+    </div>
+</div>
 
 <div class="container mt-4">
 
     <!-- HEADER -->
     <div class="d-flex justify-content-between align-items-center mb-3">
-        <h2>@Model.Vacancy.VacancyTitle</h2>
+        <h2 >@Model.Vacancy.VacancyTitle</h2>
 
         <span class="badge fs-6
-            @(Model.Vacancy.Status == Models.VacancyStatus.Open ? "bg-success" :
-              Model.Vacancy.Status == Models.VacancyStatus.Closed ? "bg-danger" : "bg-warning")">
+            @(Model.Vacancy.Status == Enums.VacancyStatus.Open ? "bg-success" :
+              Model.Vacancy.Status == Enums.VacancyStatus.Closed ? "bg-danger" : "bg-warning")">
             @Model.Vacancy.Status
         </span>
     </div>
@@ -39,11 +49,18 @@
                     <p class="text-muted">@Model.Vacancy.Remark</p>
                 </div>
             </div>
+            <div class="d-flex justify-content-end my-2">
+                <div class="btn-group">
+                    <a asp-page="Index" class="btn btn-outline-secondary"><i class="bi bi-arrow-left me-2"></i>View All</a>
+                    <a asp-page="Edit"  asp-route-id="@Model.Vacancy.VacancyID" class="btn btn-primary"><i class="bi bi-pencil-square me-2"></i>Edit</a>
+                </div>
+            </div>
+            
         </div>
     </div>
 
     <!-- ACTIONS -->
-    @if (Model.Vacancy.Status ==Models.VacancyStatus.Open)
+    @if (Model.Vacancy.Status ==Enums.VacancyStatus.Open)
     {
         <div class="mb-3 d-flex gap-3">
             <a asp-page="/Applications/Create"
@@ -54,7 +71,7 @@
             <a asp-page="/Vacancy/Publish"
                    asp-route-Id="@Model.Vacancy.VacancyID"
                    class="btn btn-outline-info">
-                <i class="bi bi-person-plus"></i> Published View
+                <i class="bi bi-book-half"></i> Published View
             </a>
         </div>
        
@@ -99,7 +116,7 @@
                                     <a asp-page="/Applications/Details"
                                        asp-route-id="@applicant.ApplicantID"
                                        class="btn btn-sm btn-outline-info">
-                                        View
+                                        <i class="bi bi-eye"></i>
                                     </a>
                                 </td>
                             </tr>

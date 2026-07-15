@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using PIS2.Enums;
 
 namespace PIS2.Models
 {
@@ -17,12 +18,5 @@ namespace PIS2.Models
         public DateTime modifiedDate { get; set; }= DateTime.Now;
         public loyaltyHistoryModel() { }
     }
-    public enum loyaltyStatus
-    {
-        Approved,
-        Hold,
-        Posted,
-        Completed,
-        Declined
-    }
+    
 }

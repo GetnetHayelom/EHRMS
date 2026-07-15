@@ -1,4 +1,5 @@
 ﻿@page
+@using PIS2.Enums
 @model PIS2.Pages.JobPlacement.EditModel
 
 @{
@@ -36,7 +37,7 @@
                        type="hidden" />
 
                 <input asp-for="jobPlacementModel.jobPlacementStatus"
-                       value="@Models.mainStatus.Suspended"
+                       value="@mainStatus.Suspended"
                        type="hidden" />
 
                 <div class="row g-4">
@@ -226,7 +227,7 @@
                                                 </td>
 
                                                 <td>
-                                                    <span class="badge @(h.jobPlacementStatus == Models.mainStatus.Active
+                                                    <span class="badge @(h.jobPlacementStatus == mainStatus.Active
                                                                                                       ? "bg-success"
                                                                                                       : "bg-secondary")">
                                                         @h.jobPlacementStatus

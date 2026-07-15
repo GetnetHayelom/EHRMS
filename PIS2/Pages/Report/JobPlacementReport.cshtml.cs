@@ -6,7 +6,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using PIS2.Data;
+using PIS2.Enums;
 using PIS2.Models;
+using PIS2.Views;
 
 namespace PIS2.Pages.Report
 {
@@ -19,7 +21,7 @@ namespace PIS2.Pages.Report
             _context = context;
         }
 
-        public IList<jobPlacementModel> jobPlacementModel { get; set; } = default!;
+        public IList<JobPlacementView> jobPlacementModel { get; set; } = default!;
         [BindProperty(SupportsGet = true)]
         public int? CompanyID { get; set; }
         public List<companyModel> Companies { get; set; } = new();
@@ -30,7 +32,7 @@ namespace PIS2.Pages.Report
         public int? jClass { get; set; }
         public List<jobClassModel> JobClasses { get; set; } = new();
         [BindProperty(SupportsGet = true)]
-        public mainStatus? jStatus { get; set; } = mainStatus.Active;
+        public mainStatus? jStatus { get; set; }
 
         [BindProperty(SupportsGet = true)]
         public int? Category { get; set; }
@@ -62,19 +64,12 @@ namespace PIS2.Pages.Report
             Reasons = await _context.JobPlacements.OrderBy(j => j.jobPlacementReason).Select(j => j.jobPlacementReason).Distinct().ToListAsync();
             
             // Base query
-            var q = _context.JobPlacements
-                .Include(j => j.departmentModel).ThenInclude(d => d.companyModel)
-                .Include(j => j.employmentModel)
-                .Include(j => j.jobModel)
-                .Include(j => j.jobModel).ThenInclude(jt => jt.jobClassModel)
-                .Include(j => j.jobStepModel).ThenInclude(jt => jt.jobGradeModel)
-                .AsNoTracking()
+            var q = _context.JobPlacementView
                 .AsQueryable();
 
             if (companyID.HasValue && companyID.Value > 0)
             {
-                q = q.Where(j => j.departmentModel != null && j.departmentModel.companyID == companyID.Value);
-                 
+                q = q.Where(j => j.companyID == companyID.Value);                
             }
 
             if (departmentID.HasValue && departmentID.Value > 0)
@@ -83,11 +78,11 @@ namespace PIS2.Pages.Report
             }
             if (jclass.HasValue && jclass.Value > 0)
             {
-                q = q.Where(j => j.jobModel.jobClassID == jclass.Value);
+                q = q.Where(j => j.jobClassID == jclass.Value);
             }
             if (category.HasValue && category.Value > 0)
             {
-                q = q.Where(j => j.jobModel.jobCategoryID == category.Value);
+                q = q.Where(j => j.jobCategoryID == category.Value);
             }
             if (jstatus.HasValue)
             {
@@ -111,21 +106,18 @@ namespace PIS2.Pages.Report
             }
 
             jobPlacementModel = await q.ToListAsync();
-            
 
             // Summaries
             total = jobPlacementModel.Any() ? jobPlacementModel.Count : 0;
             // assuming mainStatus value '2' = Active (you can adjust)
             active = jobPlacementModel.Any() ? jobPlacementModel.Count(j => j.jobPlacementStatus == mainStatus.Active) : 0;
             From = jobPlacementModel.Any() ? jobPlacementModel.Min(j => j.jobPlacementDate) : DateTime.Now; // or DateTime.Today per your preference
-            
+
             To = jobPlacementModel.Any() ? jobPlacementModel.Max(j => j.jobPlacementDate) : DateTime.Now;
             now = DateTime.UtcNow;
             firstOfMonth = new DateTime(now.Year, now.Month, 1);
             transfersThisMonth = jobPlacementModel.Any() ? jobPlacementModel.Count(j => j.jobPlacementDate >= firstOfMonth) : 0;
-            avgSalary =jobPlacementModel.Any() ? Math.Round(jobPlacementModel.Average(j => j.jobPlacementSalary) , 2) : 0m;
-
-            
+            avgSalary = jobPlacementModel.Any() ? Math.Round(jobPlacementModel.Average(j => j.jobPlacementSalary), 2) : 0m;
 
         }
 

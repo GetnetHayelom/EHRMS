@@ -1,4 +1,5 @@
 ﻿@page
+@using PIS2.Enums
 @model PIS2.Pages.delegation.DetailsModel
 
 @{
@@ -91,11 +92,11 @@
 
                             <td>@item.delegationEndDate.ToString("MM/dd/yyyy")</td>
                             <td>
-                                @if (item.delegationStatus == Models.mainStatus.Active)
+                                @if (item.delegationStatus == mainStatus.Active)
                                 {
                                     <span class="badge bg-success">@Html.DisplayFor(modelItem => item.delegationStatus)</span>
                                 }
-                                else if (item.delegationStatus == Models.mainStatus.Suspended)
+                                else if (item.delegationStatus == mainStatus.Suspended)
                                 {
                                     <span class="badge bg-warning">@Html.DisplayFor(modelItem => item.delegationStatus)</span>
                                 }

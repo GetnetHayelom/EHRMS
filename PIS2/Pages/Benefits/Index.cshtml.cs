@@ -1,37 +1,79 @@
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
-using PIS2.Data;
 using PIS2.Models;
+using Microsoft.AspNetCore.Authorization;
+using PIS2.Services;
+using PIS2.Data;
 
 namespace PIS2.Pages.Benefits
 {
-    [Authorize(Roles = "MIE\\PMS_HRMANAGER, MIE\\PMS_FINANCE, MIE\\PMS_HRCLERK")]
+    [Authorize(Roles = @"MIE\PMS_HRCLERK,MIE\PMS_HRMANAGER,MIE\PMS_PAYROLL")]
     public class IndexModel : PageModel
     {
-        private readonly PISContext _context;
+        private readonly PISContext _db;
+        private readonly PayrollService _payrollService;
+        private readonly ILogger<IndexModel> _logger;
 
-        public IndexModel(PISContext context)
+        public IndexModel(PISContext db, PayrollService payrollService, ILogger<IndexModel> logger)
         {
-            _context = context;
+            _db = db;
+            _payrollService = payrollService;
+            _logger = logger;
         }
-        public IList<otherPay> OtherPayments { get; set; } = default!;
 
-        // Summary properties for the dashboard
-        public decimal TotalGross { get; set; }
-        public decimal TotalNet { get; set; }
+        public IList<payrollModel> Payrolls { get; set; } = new List<payrollModel>();
 
         public async Task OnGetAsync()
         {
-            OtherPayments = await _context.OtherPayments
-                .Include(o => o.earningModel).ThenInclude(e => e.EmploymentModel).ThenInclude(e => e.personModel)
-                .Include(e => e.earningModel).ThenInclude(e => e.earningType)
-                .OrderByDescending(o => o.paymentID)
-                .ToListAsync();
+            Payrolls = await _db.Payrolls.Include(p => p.companyModel).Where(p => !p.IsPayroll).ToListAsync();
+        }
 
-            TotalGross = OtherPayments.Sum(x => x.GrossPay);
-            TotalNet = OtherPayments.Sum(x => x.NetPay);
+        
+        public async Task<IActionResult> OnPostPostAsync(int id)
+        {
+            if (!User.IsInRole("MIE\\PMS_HRMANAGER")) return RedirectToPage("/Shared/AccessDenied");
+            var selectedPayroll = await _db.Payrolls.FirstOrDefaultAsync(r => r.payrollID == id);
+            if (selectedPayroll.payrollStatus != Enums.payrollStatus.PROCESSED)
+            {
+                _logger.LogError("Error: Payment is not Processed. PaymentID: {ID} UserName: {UserName}", id, User.Identity.Name);
+                return new JsonResult(new { success = true, message = "Payemnt is not Processed!" });
+            }
+            
+            // mark as posted
+            await _payrollService.PostPayrollAsync(id, User.Identity.Name ?? "system");
+            
+            return RedirectToPage();
+        }
+        public async Task<IActionResult> OnPostCompleteAsync(int id)
+        {
+            if (!User.IsInRole("MIE\\PMS_FINANCE")) return RedirectToPage("/Shared/AccessDenied");
+            var selectedPayroll = await _db.Payrolls.FirstOrDefaultAsync(r => r.payrollID == id);
+            if (selectedPayroll.payrollStatus != Enums.payrollStatus.POSTED)
+            {
+                _logger.LogError("Error: Payment is not Posted. PaymentID: {ID} UserName: {UserName}", id, User.Identity.Name);
+                return new JsonResult(new { success = true, message = "Payemnt is not Posted!" });
+            }
+            await _payrollService.CompletePayrollAsync(id, User.Identity.Name);
+            return RedirectToPage();
+        }
+        public async Task<IActionResult> OnPostApproveAsync(int id)
+        {
+            if (!User.IsInRole("MIE\\PMS_HRMANAGER")) return RedirectToPage("/Shared/AccessDenied");
+            var payroll = await _db.Payrolls.FirstOrDefaultAsync(p => p.payrollID == id);
+            if (payroll == null) return NotFound();
+            var selectedPayroll = await _db.Payrolls.FirstOrDefaultAsync(r => r.payrollID == id);
+            if (selectedPayroll.payrollStatus != Enums.payrollStatus.PENDING)
+            {
+                _logger.LogError("Error: Payment is not Pending. PaymentID: {ID} UserName: {UserName}", id, User.Identity.Name);
+                return new JsonResult(new { success = true, message = "Payemnt is not Pending!" });
+            }
+            payroll.payrollStatus = Enums.payrollStatus.APPROVED;
+            payroll.modifiedBy = User.Identity.Name ?? "system";
+            await _db.SaveChangesAsync();
+
+            return RedirectToPage(new { id });
         }
     }
+
 }

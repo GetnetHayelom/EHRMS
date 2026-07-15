@@ -56,7 +56,7 @@
             </div>
             <div class="form-group">
                 <label asp-for="experienceModel.experienceType" class="control-label">Experience Type</label>
-                <select asp-for="experienceModel.experienceType" class="form-control" asp-items="@Html.GetEnumSelectList<Models.Ex_In>()"></select>
+                <select asp-for="experienceModel.experienceType" class="form-control" asp-items="@Html.GetEnumSelectList<Enums.Ex_In>()"></select>
                 <span asp-validation-for="experienceModel.experienceType" class="text-danger"></span>
             </div>
             <div class="form-group">

@@ -28,7 +28,11 @@
             @foreach(var aps in Model.Applicants.GroupBy(a => a.VacancyID))
             {
                 <tr>
-                    <td class="fw-bold table-secondary" colspan="5">@aps?.FirstOrDefault()?.VacancyModel?.VacancyTitle</td>
+                    <td class="fw-bold table-secondary" colspan="5">
+                        <a class="text-decoration-none" asp-page="/Vacancy/Details" asp-route-id="@aps.FirstOrDefault()?.VacancyID">
+                            <span class="text-dark fw-bold">@aps?.FirstOrDefault()?.VacancyModel?.VacancyTitle</span>
+                        </a>
+                    </td>
                 </tr>
                 @foreach (var applicant in aps)
                 {
@@ -38,11 +42,11 @@
                         <td>@applicant.AppliedDate.ToString("MM/dd/yyyy")</td>
                         <td>
                             <span class="badge @(
-                                  applicant.Status == Models.ApplicantStatus.Pending ? "bg-warning" :
-                                    applicant.Status == Models.ApplicantStatus.ScreenPass ? "bg-info" :
-                                    applicant.Status == Models.ApplicantStatus.InterviewPass ? "bg-info" :
-                                    applicant.Status == Models.ApplicantStatus.ExamPass ? "bg-info" :
-                                    applicant.Status == Models.ApplicantStatus.Accepted ? "bg-success" : "bg-danger"
+                                  applicant.Status == Enums.ApplicantStatus.Pending ? "bg-warning" :
+                                    applicant.Status == Enums.ApplicantStatus.ScreenPass ? "bg-info" :
+                                    applicant.Status == Enums.ApplicantStatus.InterviewPass ? "bg-info" :
+                                    applicant.Status == Enums.ApplicantStatus.ExamPass ? "bg-info" :
+                                    applicant.Status == Enums.ApplicantStatus.Accepted ? "bg-success" : "bg-danger"
                                             )">@applicant.Status</span>
                     </td>
                     <td>

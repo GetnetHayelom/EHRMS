@@ -4,7 +4,9 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using PIS2.Data;
+using PIS2.Enums;
 using PIS2.Models;
+using PIS2.Services;
 using System.ComponentModel;
 
 
@@ -14,10 +16,12 @@ namespace PIS2.Pages.EarningRecord
     public class CreateModel : PageModel
     {
         private readonly PISContext _db;
+        private readonly Global_S _global;
 
-        public CreateModel(PISContext db)
+        public CreateModel(PISContext db, Global_S global)
         {
             _db = db;
+            _global = global;
         }
 
         [BindProperty]
@@ -25,13 +29,11 @@ namespace PIS2.Pages.EarningRecord
 
         public List<earningType> EarningTypes { get; set; }
 
-    
-
         public async Task OnGet(int? id)
         {
             Earning = new earningModel();
 
-            EarningTypes = await _db.EarningTypes.Where(e => !new[] { "salary", "allowance","overtime" }.Contains(e.earningTypeName.ToLower())).ToListAsync();
+            EarningTypes = await _db.EarningTypes.Where(e => !new[] { _global.SalaryEarningType, _global.AllowanceEarningType, _global.OtEarningType }.Contains(e.earningTypeID)).ToListAsync();
 
             // If id is passed, auto-load employee
             if (id.HasValue)
@@ -55,7 +57,7 @@ namespace PIS2.Pages.EarningRecord
             ModelState.Clear();
 
             Earning.modifiedBy = User.Identity.Name;
-            var earninType = await _db.EarningTypes.FirstOrDefaultAsync(e => e.earningTypeID == Earning.earningTypeID);
+            var earninType = await _db.EarningTypes.AsNoTracking().FirstOrDefaultAsync(e => e.earningTypeID == Earning.earningTypeID);
             if (!earninType.isPayroll)
             {
                 Earning.IsPercentage = false;
@@ -79,7 +81,7 @@ namespace PIS2.Pages.EarningRecord
             }
 
             Earning.modifiedBy = User.Identity?.Name ?? "System";
-
+            _db.ChangeTracker.Clear();
             _db.Earnings.Add(Earning);
             await _db.SaveChangesAsync();
 

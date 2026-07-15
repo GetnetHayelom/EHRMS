@@ -1,4 +1,5 @@
 ﻿@page
+@using PIS2.Enums
 @model PIS2.Pages.TaxRate.IndexModel
 @{
     ViewData["Title"] = "Tax Rates";
@@ -37,7 +38,7 @@
                                 <td>@rate.deduction.ToString("N2")</td>
                                 <td>@rate.reference</td>
                                 <td>
-                                    <span class="badge @(rate.taxStatus == Models.mainStatus.Active ? "bg-success" : "bg-secondary")">
+                                    <span class="badge @(rate.taxStatus == mainStatus.Active ? "bg-success" : "bg-secondary")">
                                         @rate.taxStatus
                                     </span>
                                 </td>

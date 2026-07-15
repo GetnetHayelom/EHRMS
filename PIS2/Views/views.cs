@@ -1,5 +1,6 @@
 ﻿using Microsoft.Build.ObjectModelRemoting;
 using Microsoft.EntityFrameworkCore;
+using PIS2.Enums;
 using PIS2.Models;
 using PIS2.Pages.Management;
 using PIS2.Pages.OvertimeHistory;
@@ -138,6 +139,8 @@ namespace PIS2.Views
         public mainStatus EmploymentStatus { get; set; }
         public DateTime EmploymentDate { get; set; }
         public EmploymentPositions EmploymentPosition { get; set; }
+        [Precision(18, 2)]
+        public decimal? Salary { get; set; }
     }
 
     ///<summary>

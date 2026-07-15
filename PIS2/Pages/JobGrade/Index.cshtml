@@ -1,4 +1,5 @@
 ﻿@page
+@using PIS2.Enums
 @model PIS2.Pages.JobGrade.IndexModel
 
 @{
@@ -17,7 +18,7 @@
             <div class="d-flex justify-content-end d-print-none">
                 <form method="get" class="d-flex align-items-end">
                     <label class="form-label fw-bold m-2">Status</label>
-                    <select asp-for="JobGradeStatus" class="form-control m-2" asp-items="@Html.GetEnumSelectList<Models.mainStatus>()" onchange="this.form.submit()">
+                    <select asp-for="JobGradeStatus" class="form-control m-2" asp-items="@Html.GetEnumSelectList<mainStatus>()" onchange="this.form.submit()">
                         <option value="" selected> All</option>
                     </select>
                 </form>
@@ -72,12 +73,12 @@
                     @Html.DisplayFor(modelItem => item.jobGradeMaxSalary)
                 </td>
             <td>
-                @if (item.jobGradeStatus == Models.mainStatus.Active)
+                @if (item.jobGradeStatus == mainStatus.Active)
                 {
                     <span class="badge bg-success">@Html.DisplayFor(modelItem => item.jobGradeStatus)</span>
 
                 }
-                else if (item.jobGradeStatus == Models.mainStatus.Suspended)
+                else if (item.jobGradeStatus == mainStatus.Suspended)
                 {
                     <span class="badge bg-warning">@Html.DisplayFor(modelItem => item.jobGradeStatus)</span>
                 }

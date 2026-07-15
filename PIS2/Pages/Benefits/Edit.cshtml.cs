@@ -21,7 +21,7 @@ namespace PIS2.Pages.Benefits
             _payrollService = payrollService;
         }
         [BindProperty]
-        public otherPay OtherPay { get; set; } = default!;
+        public payrollModel OtherPay { get; set; } = default!;
 
         public SelectList EarningOptions { get; set; }
 
@@ -29,10 +29,9 @@ namespace PIS2.Pages.Benefits
         {
             if (id == null) return NotFound();
 
-            OtherPay = await _context.OtherPayments
-                .Include(p => p.earningModel).ThenInclude(e => e.EmploymentModel).ThenInclude(e => e.personModel)
-                .Include(p => p.earningModel).ThenInclude(e => e.earningType)
-                .FirstOrDefaultAsync(m => m.paymentID == id);
+            OtherPay = await _context.Payrolls
+                .Include(p => p.PayrollPays).ThenInclude(e => e.EmploymentModel).ThenInclude(e => e.personModel)
+                .FirstOrDefaultAsync(m => m.payrollID == id);
 
             if (OtherPay == null) return NotFound();
  
@@ -41,19 +40,19 @@ namespace PIS2.Pages.Benefits
 
         public async Task<IActionResult> OnPostAsync()
         {
-            var existing = await _context.OtherPayments.FirstOrDefaultAsync(e => e.paymentID == OtherPay.paymentID);
+            var existing = await _context.Payrolls.FirstOrDefaultAsync(e => e.payrollID == OtherPay.payrollID);
             
             if(existing == null) { return NotFound(); }
 
-            switch (existing.paymentStatus)
+            switch (existing.payrollStatus)
             {
-                case payrollStatus.PENDING:
+                case Enums.payrollStatus.PENDING:
 
                     if (User.IsInRole("MIE\\PMS_HRMANAGER"))
                     {
                         
-                        if (OtherPay.paymentStatus == payrollStatus.APPROVED)
-                            existing.paymentStatus = payrollStatus.APPROVED;
+                        if (OtherPay.payrollStatus == Enums.payrollStatus.APPROVED)
+                            existing.payrollStatus = Enums.payrollStatus.APPROVED;
                     }
                     else
                     {
@@ -62,43 +61,39 @@ namespace PIS2.Pages.Benefits
 
                     break;
 
-                case payrollStatus.APPROVED:
+                case Enums.payrollStatus.APPROVED:
 
                     if (!User.IsInRole("MIE\\PMS_HRMANAGER"))
                         return RedirectToPage("/Shared/AccessDenied");
 
-                    if (OtherPay.paymentStatus == payrollStatus.POSTED)
-                        existing.paymentStatus = payrollStatus.POSTED;
+                    if (OtherPay.payrollStatus == Enums.payrollStatus.POSTED)
+                        existing.payrollStatus = Enums.payrollStatus.POSTED;
 
                     break;
 
-                case payrollStatus.POSTED:
+                case Enums.payrollStatus.POSTED:
 
                     if (!User.IsInRole("MIE\\PMS_FINANCE"))
                         return RedirectToPage("/Shared/AccessDenied");
 
-                    if (OtherPay.paymentStatus == payrollStatus.COMPLETED)
+                    if (OtherPay.payrollStatus == Enums.payrollStatus.COMPLETED)
                     {
-                        if(OtherPay.invoiceNo =="" || OtherPay.invoiceNo == "Empty")
-                        {
-                            TempData["message"] = ("Error", "Invoice No is required!");
-                            return Page();
-                        }
-                        existing.paymentStatus = payrollStatus.COMPLETED;
-                        existing.NetPay = OtherPay.NetPay;
+                        
+                        existing.payrollStatus = Enums.payrollStatus.COMPLETED;
+                        existing.totalNet = OtherPay.totalNet;
                         existing.remark = OtherPay.remark;
-                        existing.invoiceNo = OtherPay.invoiceNo;
+                        existing.reference = OtherPay.reference;
                     }
                         
                     break;
 
-                case payrollStatus.COMPLETED:
+                case Enums.payrollStatus.COMPLETED:
 
                     TempData["message"] = ("Error", "Payment already completed.");
                     return Page();
             }
             existing.modifiedBy = User.Identity.Name;
-            existing.modifiedDate = DateTime.Now;
+            
 
             try
             {
@@ -109,7 +104,7 @@ namespace PIS2.Pages.Benefits
                 throw;
             }
 
-            return RedirectToPage("./Details", new {id = OtherPay.paymentID});
+            return RedirectToPage("./Details", new {id = OtherPay.payrollID});
         }
 
         public async Task<IActionResult> OnPostApproveAsync(int id)
@@ -118,7 +113,7 @@ namespace PIS2.Pages.Benefits
             var payroll = await _context.Payrolls.FirstOrDefaultAsync(p => p.payrollID == id);
             if (payroll == null) return NotFound();
 
-            payroll.payrollStatus = payrollStatus.APPROVED;
+            payroll.payrollStatus = Enums.payrollStatus.APPROVED;
             payroll.modifiedBy = User.Identity.Name ?? "system";
             await _context.SaveChangesAsync();
 
@@ -130,7 +125,7 @@ namespace PIS2.Pages.Benefits
             if (!User.IsInRole("MIE\\PMS_PAYROLL")) return RedirectToPage("/Shared/AccessDenied");
             var payroll = await _context.Payrolls.FirstOrDefaultAsync(p => p.payrollID == id);
             if (payroll == null) return NotFound();
-            if (payroll.payrollStatus == payrollStatus.PENDING) return BadRequest("Payroll must be approved first.");
+            if (payroll.payrollStatus == Enums.payrollStatus.PENDING) return BadRequest("Payroll must be approved first.");
 
             // mark as posted
             await _payrollService.PostPayrollAsync(payroll.payrollID, User.Identity.Name ?? "system");

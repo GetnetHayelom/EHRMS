@@ -1,4 +1,5 @@
 ﻿@page
+@using PIS2.Enums
 @model PIS2.Pages.Earning.DetailsModel
 @{
     ViewData["Title"] = "Earning Type Details";
@@ -40,7 +41,7 @@
                 <div class="col-md-4">
                     <label class="text-muted small text-uppercase fw-bold">Status</label>
                     <div>
-                        @if (Model.EarningType.earningTypeStatus == Models.mainStatus.Active)
+                        @if (Model.EarningType.earningTypeStatus == mainStatus.Active)
                         {
                             <span class="badge bg-success rounded-pill px-3">Active</span>
                         }

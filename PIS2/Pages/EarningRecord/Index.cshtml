@@ -1,4 +1,5 @@
 ﻿@page
+@using PIS2.Enums
 @model PIS2.Pages.EarningRecord.IndexModel
 @{
     ViewData["Title"] = "Earnings";
@@ -32,45 +33,66 @@
                     @{
                         int sn = 1;
                     }
-                    @foreach (var item in Model.Earnings)
-                {
-                    <tr>
-                        <td>@sn</td>
-                        <td>@item.EmploymentModel?.givenID</td>
-                        <td>@item.EmploymentModel?.personModel?.personFullName</td>
-                        <td>@item.earningType?.earningTypeName</td>
-                        <td>@item.earningIteration</td>
-                        <td>@item.earningAmount</td>
-                        <td>@(item.IsPercentage ? "Yes" : "No")</td>
-                        <td>@item.earningBase</td>
-                        <td>
-                                @if (item.earningStatus == Models.mainStatus.Active)
-                                {
-                                    <span class="badge bg-success">@Html.DisplayFor(modelItem => item.earningStatus)</span>
-
-                                }
-                                else if (item.earningStatus == Models.mainStatus.Suspended)
-                                {
-                                    <span class="badge bg-warning">@Html.DisplayFor(modelItem => item.earningStatus)</span>
-                                }
-                                else
-                                {
-                                    <span class="badge bg-secondary">@Html.DisplayFor(modelItem => item.earningStatus)</span>
-                                }
+                    @foreach (var e in Model.Earnings.GroupBy(e => e.employmentID))
+                    {
+                        <tr>
+                            <td>@sn</td>
+                            <td>@e.FirstOrDefault().EmploymentModel?.givenID</td>
+                            <td>@e.FirstOrDefault().EmploymentModel?.personModel?.personFullName</td>
+                            <td></td>
+                            <td></td>
+                            <td><strong>@e?.Sum(e => e.earningAmount).ToString("N2")</strong></td>
+                            <td></td>
+                            <td></td>
+                            <td>
+                                
 
                             </td>
-                        <td>
-                            
-                                <div class="btn-group" role="group">
-                                    <a asp-page="./Details" asp-route-id="@item.earningID" class="btn btn-sm btn-outline-primary" title="View Details">
-                                        <i class="bi bi-eye"></i>
-                                    </a>
-                                    <a asp-page="./Edit" asp-route-id="@item.earningID" class="btn btn-sm btn-outline-success" title="Edit">
-                                        <i class="bi bi-pencil-square"></i>
-                                    </a>
-                                </div>
-                        </td>
+                            <td>
+
+                               
+                            </td>
                         </tr>
+                        @foreach (var item in e)
+                        {
+                            <tr>
+                                <td>@sn</td>
+                                <td></td>
+                                <td></td>
+                                <td>@item.earningType?.earningTypeName</td>
+                                <td>@item.earningIteration</td>
+                                <td>@item.earningAmount</td>
+                                <td>@(item.IsPercentage ? "Yes" : "No")</td>
+                                <td>@item.earningBase</td>
+                                <td>
+                                        @if (item.earningStatus == mainStatus.Active)
+                                        {
+                                            <span class="badge bg-success">@Html.DisplayFor(modelItem => item.earningStatus)</span>
+
+                                        }
+                                        else if (item.earningStatus == mainStatus.Suspended)
+                                        {
+                                            <span class="badge bg-warning">@Html.DisplayFor(modelItem => item.earningStatus)</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-secondary">@Html.DisplayFor(modelItem => item.earningStatus)</span>
+                                        }
+
+                                    </td>
+                                <td>
+                            
+                                        <div class="btn-group" role="group">
+                                            <a asp-page="./Details" asp-route-id="@item.earningID" class="btn btn-sm btn-outline-primary" title="View Details">
+                                                <i class="bi bi-eye"></i>
+                                            </a>
+                                            <a asp-page="./Edit" asp-route-id="@item.earningID" class="btn btn-sm btn-outline-success" title="Edit">
+                                                <i class="bi bi-pencil-square"></i>
+                                            </a>
+                                        </div>
+                                </td>
+                            </tr>
+                        }
                         sn++;
                     }
                 </tbody>

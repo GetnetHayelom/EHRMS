@@ -37,7 +37,7 @@ namespace PIS2.Pages.Vacancy
         {
             Vacancy = await _context.Vacancies.FindAsync(id);
 
-            if (Vacancy == null || Vacancy.Status != VacancyStatus.Open)
+            if (Vacancy == null || Vacancy.Status != Enums.VacancyStatus.Open)
             {
                 TempData["message"] =("Error", "This vacancy is no longer open!");
                 return RedirectToPage(new { id });
@@ -56,7 +56,7 @@ namespace PIS2.Pages.Vacancy
                 VacancyID = id,
                 personID = personID,
                 AppliedDate = DateTime.Now,
-                Status = ApplicantStatus.Pending,
+                Status = Enums.ApplicantStatus.Pending,
                 modifiedBy = User.Identity?.Name ?? "System",
                 modifiedDate = DateTime.Now
             };

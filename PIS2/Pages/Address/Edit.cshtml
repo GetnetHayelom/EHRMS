@@ -1,4 +1,5 @@
 ﻿@page
+@using PIS2.Enums
 @model PIS2.Pages.Address.EditModel
 
 @{
@@ -18,7 +19,7 @@
             <div class="form-group">
                 <span class="text-danger">*</span>
                 <label asp-for="addressModel.addressCountry" class="control-label">Country</label>
-                <select asp-for="addressModel.addressCountry" class="form-control" asp-items="Html.GetEnumSelectList<Models.Country>()"></select>
+                <select asp-for="addressModel.addressCountry" class="form-control" asp-items="Html.GetEnumSelectList<Country>()"></select>
                 <span asp-validation-for="addressModel.addressCountry" class="text-danger"></span>
             </div>
             <div class="form-group">
@@ -48,7 +49,7 @@
             <div class="form-group">
                 <span class="text-danger">*</span>
                 <label asp-for="addressModel.addressStatus" class="control-label">Status</label>
-                <select asp-for="addressModel.addressStatus" class="form-control" asp-items="Html.GetEnumSelectList<Models.mainStatus>()"></select>
+                <select asp-for="addressModel.addressStatus" class="form-control" asp-items="Html.GetEnumSelectList<mainStatus>()"></select>
                 <span asp-validation-for="addressModel.addressStatus" class="text-danger"></span>
             </div>
             <div class="form-group d-flex justify-content-end">

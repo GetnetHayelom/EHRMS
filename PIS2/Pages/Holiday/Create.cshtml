@@ -1,4 +1,5 @@
 ﻿@page
+@using PIS2.Enums
 @model PIS2.Pages.Holiday.CreateModel
 
 @{
@@ -43,7 +44,7 @@
             </div>
             <div class="form-group">
                 <label asp-for="holidayModel.holidayStatus" class="control-label">Status</label>
-                <select asp-for="holidayModel.holidayStatus" class="form-control" asp-items="Html.GetEnumSelectList<Models.mainStatus>()"></select>
+                <select asp-for="holidayModel.holidayStatus" class="form-control" asp-items="Html.GetEnumSelectList<mainStatus>()"></select>
                 <span asp-validation-for="holidayModel.holidayStatus" class="text-danger"></span>
             </div>
             <div class="form-group d-flex justify-content-end m-2">

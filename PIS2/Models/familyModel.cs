@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using PIS2.Enums;
 
 namespace PIS2.Models
 {
@@ -16,22 +17,5 @@ namespace PIS2.Models
         public familyModel() { }
     }
 
-    public enum familyRelation
-    {
-        Father,
-        Mother,
-        Son,
-        Daughter,
-        Sister,
-        Brother,
-        GrandFather,
-        GrandMother,
-        CareTaker,
-        Uncle,
-        Aunty,
-        GrandSon,
-        GrandDaughter,
-        EmergencyContact,
-        Other
-    }
+    
 }

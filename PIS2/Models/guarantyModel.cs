@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using PIS2.Enums;
+using System.ComponentModel.DataAnnotations;
 
 namespace PIS2.Models
 {
@@ -42,16 +43,5 @@ namespace PIS2.Models
         public DateTime modifiedDate { get; }
         public guarantyHistoryModel() { }
     }
-     public enum GuarantyTypes{
-        [Display(Name = "Internal Loan")]
-        Internal_Loan,
-        [Display(Name = "External Loan")]
-        External_Loan,
-        [Display(Name = "Employment")]
-        Employment,
-        [Display(Name = "Collateral")]
-        Collateral,
-        [Display(Name = "Other")]
-        Other
-    }
+     
 }

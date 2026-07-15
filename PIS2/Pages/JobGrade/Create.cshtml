@@ -1,4 +1,5 @@
 ﻿@page
+@using PIS2.Enums
 @model PIS2.Pages.JobGrade.CreateModel
 
 @{
@@ -36,7 +37,7 @@
             </div>
             <div class="form-group">
                 <label asp-for="jobGradeModel.jobGradeStatus" class="control-label">Status</label>
-                <select asp-for="jobGradeModel.jobGradeStatus" class="form-control" asp-items="Html.GetEnumSelectList<Models.mainStatus>()"></select>
+                <select asp-for="jobGradeModel.jobGradeStatus" class="form-control" asp-items="Html.GetEnumSelectList<mainStatus>()"></select>
                 <span asp-validation-for="jobGradeModel.jobGradeStatus" class="text-danger"></span>
             </div>
             <div class="form-group justify-content-end m-2 d-flex">

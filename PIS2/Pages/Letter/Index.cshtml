@@ -48,11 +48,11 @@
                 <td>@l.letterDate.ToShortDateString()</td>
                 <td>
                     
-                        @if (l.letterStatus == Models.LetterStatus.Draft)
+                        @if (l.letterStatus == Enums.LetterStatus.Draft)
                         {
                             <span class="badge bg-warning">@Html.DisplayFor(modelItem => l.letterStatus)</span>
                         }
-                        else if (l.letterStatus == Models.LetterStatus.Approved)
+                        else if (l.letterStatus == Enums.LetterStatus.Approved)
                         {
                             <span class="badge bg-success">@Html.DisplayFor(modelItem => l.letterStatus)</span>
                         }

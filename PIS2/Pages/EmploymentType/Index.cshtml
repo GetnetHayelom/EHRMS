@@ -1,4 +1,5 @@
 ﻿@page
+@using PIS2.Enums
 @model PIS2.Pages.EmploymentType.IndexModel
 
 @{
@@ -110,12 +111,12 @@
                 </td>
             <td>
 
-                @if (item.employmentTypeStatus == Models.mainStatus.Active)
+                @if (item.employmentTypeStatus == mainStatus.Active)
                 {
                     <span class="badge bg-success">@Html.DisplayFor(modelItem => item.employmentTypeStatus)</span>
 
                 }
-                else if (item.employmentTypeStatus == Models.mainStatus.Suspended)
+                else if (item.employmentTypeStatus == mainStatus.Suspended)
                 {
                     <span class="badge bg-warning">@Html.DisplayFor(modelItem => item.employmentTypeStatus)</span>
                 }

@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ValueGeneration.Internal;
 using PIS2.Data;
 using PIS2.Models;
+using PIS2.Enums;
 
 namespace PIS2.Pages.Notice
 {

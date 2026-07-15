@@ -1,4 +1,5 @@
-﻿@model PIS2.Models.personModel
+﻿@using PIS2.Enums
+@model PIS2.Models.personModel
 @{
 }
 <div class="card shadow-sm border-0 mb-4">
@@ -10,7 +11,7 @@
         <div class="text-center mb-3">
             <div class="avatar-lg bg-light rounded-circle d-inline-flex align-items-center justify-content-center mb-2">
                 <img src="/api/attachments/viewprofile/@Model?.personID" class="rounded-circle border shadow-sm" style="width: 120px; height: 120px; object-fit: cover;" alt="Profile Picture"
-                     onerror="this.onerror=null; this.src='/images/@(Model.personGender == Models.Gender.Female ? "female-default.png" : "male-default.png")';">
+                     onerror="this.onerror=null; this.src='/images/@(Model.personGender == Gender.Female ? "female-default.png" : "male-default.png")';">
             </div>
             <h5 class="fw-bold mb-0">
                 <a href="@Url.Page("/Person/Details", new { id = Model.personID })" class="text-decoration-none">
@@ -19,14 +20,13 @@
             </h5>
             @if (Model.Employments?.Any() == true)
             {
-                <a href="/Employment/Details?id=@(Model.Employments?.FirstOrDefault(e => e.employmentStatus == Models.mainStatus.Active)?.employmentID)">
-                    <span class="badge @(Model.Employments.Any(e => e.employmentStatus == Models.mainStatus.Active) ? "bg-success" : "bg-danger") rounded-pill">
+                <a href="/Employment/Details?id=@(Model.Employments?.FirstOrDefault(e => e.employmentStatus == mainStatus.Active)?.employmentID)">
+                    <span class="badge @(Model.Employments.Any(e => e.employmentStatus == mainStatus.Active) ? "bg-success" : "bg-danger") rounded-pill">
                         @(Model.Employments?.OrderByDescending(e => e.employmentDate).FirstOrDefault()?.employmentStatus.ToString() ?? "Not Employed")
                     </span>
                 </a>
             }
-            
-            
+                        
         </div>
 
         <!--PERSON INFORMATION-->

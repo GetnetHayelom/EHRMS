@@ -1,4 +1,5 @@
 ﻿@page
+@using PIS2.Enums
 @model PIS2.Pages.LeaveType.IndexModel
 @{
     ViewData["Title"] = "Leave Types";
@@ -99,9 +100,9 @@
                     <label class="form-label fw-semibold">Status</label>
                     <select name="StatusFilter" class="form-select" onchange="this.form.submit()">
                         <option value="">All</option>
-                        @foreach (var s in Enum.GetValues(typeof(Models.mainStatus)))
+                        @foreach (var s in Enum.GetValues(typeof(mainStatus)))
                         {
-                            <option value="@s" selected="@(Model.StatusFilter == (Models.mainStatus)s)">
+                            <option value="@s" selected="@(Model.StatusFilter == (mainStatus)s)">
                                 @s
                             </option>
                         }
@@ -112,9 +113,9 @@
                     <label class="form-label fw-semibold">Leave Group</label>
                     <select name="GroupFilter" class="form-select" onchange="this.form.submit()">
                         <option value="">All</option>
-                        @foreach (var g in Enum.GetValues(typeof(Models.leaveGroup)))
+                        @foreach (var g in Enum.GetValues(typeof(Enums.leaveGroup)))
                         {
-                            <option value="@g" selected="@(Model.GroupFilter == (Models.leaveGroup)g)">
+                            <option value="@g" selected="@(Model.GroupFilter == (Enums.leaveGroup)g)">
                                 @g
                             </option>
                         }
@@ -125,9 +126,9 @@
                     <label class="form-label fw-semibold">Impact</label>
                     <select name="ImpactFilter" class="form-select" onchange="this.form.submit()">
                         <option value="">All</option>
-                        @foreach (var i in Enum.GetValues(typeof(Models.leaveTypeImpact)))
+                        @foreach (var i in Enum.GetValues(typeof(leaveTypeImpact)))
                         {
-                            <option value="@i" selected="@(Model.ImpactFilter == (Models.leaveTypeImpact)i)">
+                            <option value="@i" selected="@(Model.ImpactFilter == (leaveTypeImpact)i)">
                                 @i
                             </option>
                         }
@@ -203,8 +204,8 @@
                                     }
                                 </td>
                                 <td>
-                                    <span class="badge bg-@(item.leaveTypeStatus == Models.mainStatus.Active ? "success" :
-                                                                                   item.leaveTypeStatus == Models.mainStatus.Suspended ? "warning" : "secondary")">
+                                    <span class="badge bg-@(item.leaveTypeStatus == mainStatus.Active ? "success" :
+                                                                                   item.leaveTypeStatus == mainStatus.Suspended ? "warning" : "secondary")">
                                 @item.leaveTypeStatus
                             </span>
                         </td>

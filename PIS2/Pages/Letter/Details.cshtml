@@ -59,11 +59,11 @@
         <div class="d-flex justify-content-end d-print-none">
             <a asp-page="Index" class="btn btn-secondary m-2">Back</a>
           
-        @if(Model.Letter?.letterStatus == Models.LetterStatus.Draft)
+        @if(Model.Letter?.letterStatus == Enums.LetterStatus.Draft)
         {
             <a asp-page="Edit" asp-route-id="@Model.Letter?.letterID" class="btn btn-warning m-2">Edit</a>
         }
-        @if (User.IsInRole("MIE\\PMS_HRMANAGER") && Model.Letter?.letterStatus == Models.LetterStatus.Draft)
+        @if (User.IsInRole("MIE\\PMS_HRMANAGER") && Model.Letter?.letterStatus == Enums.LetterStatus.Draft)
         {
             <form method="post" asp-page-handler="Approve">
                 <input type="hidden" asp-for="LetterId" value="@Model.Letter.letterID"/>
@@ -72,7 +72,7 @@
                 </button>
             </form>
         }
-        @if(User.IsInRole("MIE\\PMS_HRCLERK") && Model.Letter?.letterStatus == Models.LetterStatus.Approved)
+        @if(User.IsInRole("MIE\\PMS_HRCLERK") && Model.Letter?.letterStatus == Enums.LetterStatus.Approved)
         {
             <a asp-page="/Archive/Create" asp-route-id="@Model.Letter?.letterID" class="btn btn-primary m-2">Archive</a>
         }

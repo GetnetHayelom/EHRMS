@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using PIS2.Enums;
 using PIS2.Pages.EmployeeService;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.Contracts;
@@ -30,7 +31,12 @@ namespace PIS2.Models
         public payrollStatus payrollStatus { get; set; }
         public ICollection<payrollHistory>? payrollHistories { get; set; } = new List<payrollHistory>();
         public virtual ICollection<payrollPay>? PayrollPays { get; set; }
+        public bool IsPayroll { get; set; } = true;
         public string modifiedBy { get; set; }
+        public DateTime modifiedDate { get; set; } = DateTime.Now;
+        public string? remark { get; set; }
+        public string? referenceType { get; set; }
+        public string? reference { get; set; }
         public decimal TotalPension => (totalPensionEmployee + totalPensionEmployer) ?? 0;
     
         public payrollModel() { }
@@ -85,30 +91,7 @@ namespace PIS2.Models
         public payrollPay() { }
     }
 
-    public class otherPay
-    {
-        [Key]
-        public int paymentID { get; set; }
-        public string invoiceNo { get; set; } = "";
-        public int earningID { get; set; }
-        public virtual earningModel? earningModel { get; set; }
-        [Precision(18, 2)]
-        public decimal GrossPay { get; set; }
-        [Display(Name = "Credit Account")]
-        public int CreditAccountID { get; set; }
-        public virtual subAccountModel? CreditAccount { get; set; }
-        [Display(Name = "Debit Account")]
-        public int DebitAccountID { get; set; }
-        public virtual subAccountModel? DebitAccount { get; set; }
-        [Precision(18, 2)]
-        public decimal NetPay { get; set; }
-        public string? remark { get; set; }
-        public payrollStatus paymentStatus { get; set; }
-        public string modifiedBy { get; set; }
-        public DateTime modifiedDate { get; set; }
-
-        public otherPay() { }
-    }
+    
     public class earningModel {
         [Key]
         public int earningID { get; set; }
@@ -127,7 +110,6 @@ namespace PIS2.Models
         public decimal earningAmount { get; set; }// e.g. 7 for 7%, or 500 for fixed
         public string modifiedBy { get; set; }
         public virtual List<earningHistoryModel>? EarningHistories { get; set; }
-        public virtual List<otherPay>? OtherPayments { get; set; }
         public earningModel() { }
     }
     public class earningHistoryModel
@@ -174,6 +156,7 @@ namespace PIS2.Models
         public virtual accountModel? Account{get; set;}
         public string modifiedBy { get; set; }
         public DateTime modifiedDate { get; set; } = DateTime.Now;
+        public virtual List<allowanceModel>? Allowances { get; set; }
 
         public virtual ICollection<earningRecordModel>? Earnings { get; set; }
     }
@@ -267,33 +250,5 @@ namespace PIS2.Models
         public string modifiedBy { get; set; }
         public taxRateModel() { }
     }
-    public enum payrollStatus
-    {
-        PENDING = 0,
-        APPROVED = 1,
-        PROCESSED = 2,
-        POSTED = 3,
-        COMPLETED = 4,
-        DISCARDED = 5
-    }
-    public enum deductionBase
-    {
-        SALARY,
-        ALLOWANCE,
-        NET,
-        GROSS,
-        NONE
-    }
-    public enum earningBase
-    {
-        SALARY,
-        ALLOWANCE,
-        NONE
-    }
-    public enum earningGroup
-    {
-        EARNING,
-        COMPENSATION,
-        BENEFIT
-    }
+    
 }

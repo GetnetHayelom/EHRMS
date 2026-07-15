@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using PIS2.Data;
+using PIS2.Enums;
 using PIS2.Models;
 using PIS2.Views;
 using System;

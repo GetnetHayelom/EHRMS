@@ -1,4 +1,5 @@
 ﻿@page
+@using PIS2.Enums
 @model PIS2.Pages.PenaltyType.CreateModel
 
 @{
@@ -21,7 +22,7 @@
             </div>
             <div class="form-group">
                 <label asp-for="penaltyTypeModel.penaltyTypeStatus" class="control-label">Status</label>
-                <select asp-for="penaltyTypeModel.penaltyTypeStatus" class="form-control" asp-items="@Html.GetEnumSelectList<Models.mainStatus>()"></select>
+                <select asp-for="penaltyTypeModel.penaltyTypeStatus" class="form-control" asp-items="@Html.GetEnumSelectList<mainStatus>()"></select>
                 <span asp-validation-for="penaltyTypeModel.penaltyTypeStatus" class="text-danger"></span>
             </div>
             

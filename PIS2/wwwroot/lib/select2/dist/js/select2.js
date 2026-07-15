@@ -28,7 +28,7 @@
       return jQuery;
     };
   } else {
-    // Browser globals
+    // Browser Global_S
     factory(jQuery);
   }
 } (function (jQuery) {

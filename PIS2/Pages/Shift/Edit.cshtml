@@ -1,4 +1,5 @@
 ﻿@page
+@using PIS2.Enums
 @model PIS2.Pages.Shift.EditModel
 
 @{
@@ -33,7 +34,7 @@
             </div>
             <div class="form-group">
                 <label asp-for="shiftModel.shiftStatus" class="control-label">Status</label>
-                <select asp-for="shiftModel.shiftStatus" class="form-control" asp-items="Html.GetEnumSelectList<Models.mainStatus>()"></select>
+                <select asp-for="shiftModel.shiftStatus" class="form-control" asp-items="Html.GetEnumSelectList<mainStatus>()"></select>
                 <span asp-validation-for="shiftModel.shiftStatus" class="text-danger"></span>
             </div>
             <div class="form-group d-flex justify-content-end m-2">

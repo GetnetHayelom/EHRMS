@@ -1,4 +1,5 @@
 ﻿@page
+@using PIS2.Enums
 @model PIS2.Pages.Absentism.CreateModel
 
 @{
@@ -52,11 +53,11 @@
                 {
                     <div class="bg-info p-4 text-white"><h4>Select Employee</h4></div>
                 }
-                else if(Model.Employment != null && Model.Employment.employmentStatus == Models.mainStatus.Inactive)
+                else if(Model.Employment != null && Model.Employment.employmentStatus == mainStatus.Inactive)
                 {
                     <div class="bg-danger p-4 text-white"><h4>Employee Is Inactive</h4></div>
                 }
-                else if(Model.Employment != null && Model.Employment.employmentStatus == Models.mainStatus.Active)
+                else if(Model.Employment != null && Model.Employment.employmentStatus == mainStatus.Active)
                 {
                     <form method="post" asp-page-handler="Create">
                         <div asp-validation-summary="ModelOnly" class="text-danger"></div>

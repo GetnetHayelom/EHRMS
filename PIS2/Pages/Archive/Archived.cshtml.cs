@@ -21,7 +21,7 @@ namespace PIS2.Pages.Archive
             Letters = _db.Letters
                 .Include(l => l.LetterType)
                 .Include(l => l.Archive)
-                .Where(l => l.letterStatus == LetterStatus.Archived)
+                .Where(l => l.letterStatus == Enums.LetterStatus.Archived)
                 .OrderByDescending(l => l.letterDate)
                 .ToList();
         }

@@ -81,7 +81,7 @@
                                 <td>@item.LeaveDays</td>
                                 <td>@item.LeaveType</td>
                                 <td>
-                                    @if (item.LeaveStatus == Models.leaveStatus.Approved)
+                                    @if (item.LeaveStatus == Enums.leaveStatus.Approved)
                                     {
                                         <span class="badge bg-success">@item.LeaveStatus</span>
                                     }
@@ -165,7 +165,7 @@
                                                         <td>@item.LeaveDays</td>
                                                         <td>@item.LeaveType</td>
                                                         <td>
-                                                            @if (item.LeaveStatus == Models.leaveStatus.Approved)
+                                                            @if (item.LeaveStatus == Enums.leaveStatus.Approved)
                                                             {
                                                                 <span class="badge bg-success">@item.LeaveStatus</span>
                                                             }
@@ -256,7 +256,7 @@
                                                         <td>@item.LeaveDays</td>
                                                         <td>@item.LeaveType</td>
                                                         <td>
-                                                            @if (item.LeaveStatus == Models.leaveStatus.Approved)
+                                                            @if (item.LeaveStatus == Enums.leaveStatus.Approved)
                                                             {
                                                                 <span class="badge bg-success">@item.LeaveStatus</span>
                                                             }
@@ -286,54 +286,58 @@
         </div>
 
         <!-- TO EXPIRE VIEW -->
-        <div id="toExpire" class="tab-pane" data-bs-parent="#parentDiv">
+        <div class="tab-pane fade" id="ExpiringLeaveView">
+            <h4 class="fw-bold mt-3 text-primary">Expiring Leaves</h4>
             <div class="d-flex justify-content-between align-items-end">
-                <h4 class="fw-bold mt-3 text-primary">Expiring Leaves</h4>
-                <excel-export table="typeTable" filename="Unposted_Leave_Types_@(DateTime.Now).xlsx"></excel-export>
+                <div class="d-flex gap-2">
+                    <div class="col-md-3">
+                        <div class="form-floating">
+                            <select class="form-select" id="filter-ex-company" onchange="loadDepartments('#filter-ex-company', '#filter-ex-department')">
+                                <option value="">All</option>
+                                @foreach (var company in Model.Companies)
+                                {
+                                    <option value="@company.companyID">@company.companyName</option>
+                                }
+                            </select>
+                            <label for="filter-company">Company</label>
+                        </div>
+                    </div>
+
+                    <div class="col-md-3">
+                        <div class="form-floating">
+                            <select class="form-select" id="filter-ex-department">
+                                <option value="">All</option>
+                            </select>
+                            <label for="filter-department">Department</label>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-floating">
+                            <select class="form-select" asp-items="@Html.GetEnumSelectList<Enums.EmploymentPositions>()" id="filter-ex-position">
+                                <option value="">All</option>
+                            </select>
+                            <label class="form-control-sm">Position</label>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-floating">
+                            <input class="form-control" type="number" step="1" id="filter-ex-years" value="2">
+                            <label class="form-control-sm">Years</label>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="btn-group m-2">
+                            <button class="btn btn-primary my-2" onclick="filterExpiredLeaves()"><i class="bi bi-filter-circle me-2"></i>Filter</button>
+                            <excel-export table="typeTable" filename="Unposted_Leave_Types_@(DateTime.Now).xlsx"></excel-export>
+                        </div>
+                    </div>
+                </div>
+
             </div>
-            <table class="table table-striped table-hover" id="expireTable">
-                <thead class="table-dark">
-                    <tr>
-                        <th>S/No</th>
-                        <th>Emp.ID</th>
-                        <th>Full Name</th>
-                        <th>Gender</th>
-                        <th>Department</th>
-                        <th>Days</th>
-                        <th>Expire Date</th>
-                        <th class="d-print-none text-end px-2">Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @{
-                        int expIndex = 1;
-                    }
-                    @foreach(var exp in Model.ExpiringLeaves.OrderBy(e => e.CompanyName).GroupBy(e => e.CompanyName))
-                    { 
-                        <tr><th colspan="8">@exp.Key (@exp.Count())</th></tr>
-                        @foreach (var e in exp.OrderBy(e => e.DepartmentName).ThenBy(e => e.givenID))
-                        {
-                            <tr>
-                                <td>@expIndex</td>
-                                <td>@e.givenID</td>
-                                <td>@e.FullName</td>
-                                <td>@e.Gender</td>
-                                <td>@e.DepartmentName</td>
-                                <td>@e.days</td>
-                                <td>@e.expDate.ToString("MM/dd/yy")</td>
-                                <td class="d-print-none text-end px-2">
-                                    <a asp-page="/Leave/Create" asp-route-id="@e.employmentID" class="btn btn-sm btn-outline-primary" title="View Details">
-                                        <i class="bi bi-eye"></i>
-                                    </a>
-                                </td>
-                            </tr>
-                            expIndex++; 
-                        }
-                        
-                    }
-                   
-                </tbody>
-            </table>
+            <div id="expiring_leave_table">
+                @await Html.PartialAsync("_ExpiringLeaves", Model.ExpiringLeaves)
+            </div>
+
         </div>
     </div>
 

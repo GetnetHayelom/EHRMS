@@ -11,7 +11,7 @@
             <div class="col-md-6">
                 <label>Letter Group</label>
                 <select asp-for="Letter.letterGroup"
-                        asp-items="Html.GetEnumSelectList<Models.LetterGroup>()"
+                        asp-items="Html.GetEnumSelectList<Enums.LetterGroup>()"
                         class="form-select"></select>
             </div>
 
@@ -45,18 +45,18 @@
             <div class="col-md-6 align-items-center">
                 <label>Status:</label><br />
                 
-                @if (Model.Letter.letterStatus == Models.LetterStatus.Draft)
+                @if (Model.Letter.letterStatus == Enums.LetterStatus.Draft)
                 {
                     <span class="badge bg-warning">@Model.Letter.letterStatus</span>
 
                 }
-                else if (Model.Letter.letterStatus == Models.LetterStatus.Approved)
+                else if (Model.Letter.letterStatus == Enums.LetterStatus.Approved)
                 {
                     <span class="badge bg-success">@Model.Letter.letterStatus</span>
                 }
                 else
                 {
-                    <span class="badge bg-secondary">@Models.LetterStatus.Draft</span>
+                    <span class="badge bg-secondary">@Enums.LetterStatus.Draft</span>
                 }
             </div>
             <div class="col-md-6 align-items-center">

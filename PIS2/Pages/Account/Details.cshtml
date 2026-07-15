@@ -1,4 +1,5 @@
 ﻿@page
+@using PIS2.Enums
 @model PIS2.Pages.Account.DetailsModel
 
 @{
@@ -158,12 +159,12 @@
                                 <td>@s.subAccountName</td>
                                 <td>@s.subAccountDescription</td>
                                 <td>
-                                    @if (s.subAccountStatus == Models.mainStatus.Active)
+                                    @if (s.subAccountStatus == mainStatus.Active)
                                     {
                                         <span class="badge bg-success">@Html.DisplayFor(modelItem => s.subAccountStatus)</span>
 
                                     }
-                                    else if (s.subAccountStatus == Models.mainStatus.Suspended)
+                                    else if (s.subAccountStatus == mainStatus.Suspended)
                                     {
                                         <span class="badge bg-warning">@Html.DisplayFor(modelItem => s.subAccountStatus)</span>
                                     }

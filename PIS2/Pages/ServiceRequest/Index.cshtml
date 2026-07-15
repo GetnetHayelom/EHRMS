@@ -40,7 +40,7 @@
             <div class="col-md-2">
                 <label class="form-label fw-semibold">Status</label>
                 <select class="form-select" id="filter-status"
-                        asp-items="Html.GetEnumSelectList<Models.ServiceRequestStatus>()" onchange=" filter()">
+                        asp-items="Html.GetEnumSelectList<Enums.ServiceRequestStatus>()" onchange=" filter()">
                     <option value="">All</option>
                 </select>
             </div>
@@ -84,9 +84,9 @@
                 { 
                     string badgeClass = item.serviceRequestStatus switch
                     {
-                        Models.ServiceRequestStatus.Hold => "bg-warning text-dark",
-                        Models.ServiceRequestStatus.Completed => "bg-success",
-                        Models.ServiceRequestStatus.Reviewed => "bg-primary",
+                        Enums.ServiceRequestStatus.Hold => "bg-warning text-dark",
+                        Enums.ServiceRequestStatus.Completed => "bg-success",
+                        Enums.ServiceRequestStatus.Reviewed => "bg-primary",
                         _ => "bg-secondary"
                     };
 

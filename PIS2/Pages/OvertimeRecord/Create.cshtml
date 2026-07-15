@@ -1,4 +1,5 @@
 ﻿@page
+@using PIS2.Enums
 @model PIS2.Pages.OvertimeRecord.CreateModel
 
 @{
@@ -25,7 +26,7 @@
                 </div>
             </form>
         </div>
-        @if(Model.Employment.employmentStatus == Models.mainStatus.Active)
+        @if(Model.Employment.employmentStatus == mainStatus.Active)
         {
             <form method="post">
                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
@@ -64,7 +65,7 @@
                 }
             </form>
         }
-        else if (Model.Employment.employmentStatus == Models.mainStatus.Inactive)
+        else if (Model.Employment.employmentStatus == mainStatus.Inactive)
         {
             <div class="bg-danger p-4 text-white"><h4>Employee is not Active</h4></div>
         }

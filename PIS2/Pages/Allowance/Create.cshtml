@@ -1,4 +1,5 @@
 ﻿@page
+@using PIS2.Enums
 @model PIS2.Pages.Allowance.CreateModel
 
 @{
@@ -37,12 +38,27 @@
             </div>
             <div class="form-group">
                 <label asp-for="allowanceModel.allowanceDuration" class="control-label">Status</label>
-                <select asp-for="allowanceModel.allowanceDuration" class="form-control" asp-items="Html.GetEnumSelectList<Models.allowanceDuration>()"></select>
+                <select asp-for="allowanceModel.allowanceDuration" class="form-control" asp-items="Html.GetEnumSelectList<Enums.allowanceDuration>()"></select>
                 <span asp-validation-for="allowanceModel.allowanceDuration" class="text-danger"></span>
+            </div>
+            <!-- Selector -->
+            <div class="form-group">
+                <label asp-for="allowanceModel.earningTypeID" class="form-label fw-semibold">
+                    <span class="text-danger">*</span> Earning Type
+                </label>
+                <input type="text" class="form-control" list="earningTypeList" placeholder="Type to search..." oninput="selector(this, 'earningTypeIDHidden')" />
+                <input type="hidden" asp-for="allowanceModel.earningTypeID" id="earningTypeIDHidden" />
+                <datalist id="earningTypeList">
+                    @foreach (var earningType in Model.EarningType)
+                    {
+                        <option data-id="@earningType.Value" value="@earningType.Text"></option>
+                    }
+                </datalist>
+                <span asp-validation-for="allowanceModel.earningTypeID" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="allowanceModel.allowanceStatus" class="control-label">Status</label>
-                <select asp-for="allowanceModel.allowanceStatus" class="form-control" asp-items="Html.GetEnumSelectList<Models.mainStatus>()"></select>
+                <select asp-for="allowanceModel.allowanceStatus" class="form-control" asp-items="Html.GetEnumSelectList<mainStatus>()"></select>
                 <span asp-validation-for="allowanceModel.allowanceStatus" class="text-danger"></span>
             </div>
             <div class="form-group d-flex justify-content-end">

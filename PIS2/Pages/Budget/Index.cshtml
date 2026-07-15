@@ -75,10 +75,10 @@
                                 @{
                                     var badgeClass = item.Plan.Status switch
                                     {
-                                        Models.BudgetStatus.ACTIVE => "bg-success",
-                                        Models.BudgetStatus.HOLD => "bg-warning",
-                                        Models.BudgetStatus.CLOSED => "bg-secondary",
-                                        Models.BudgetStatus.DECLINED => "bg-danger",
+                                        Enums.BudgetStatus.ACTIVE => "bg-success",
+                                        Enums.BudgetStatus.HOLD => "bg-warning",
+                                        Enums.BudgetStatus.CLOSED => "bg-secondary",
+                                        Enums.BudgetStatus.DECLINED => "bg-danger",
                                         _ => "badge-info"
                                     };
                                 }

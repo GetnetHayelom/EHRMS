@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using PIS2.Data;
+using PIS2.Enums;
 using PIS2.Models;
 
 namespace PIS2.Pages.JobGrade
@@ -21,6 +22,8 @@ namespace PIS2.Pages.JobGrade
 
         public jobGradeModel jobGradeModel { get; set; } = default!;
         public List<Models.AuditLog> History { get; set; } = new();
+        public List<jobModel> Jobs { get; set; }
+        public List<jobStepModel> JobSteps { get; set; }
         public async Task<IActionResult> OnGetAsync(int? id)
         {
             if (id == null)
@@ -40,6 +43,16 @@ namespace PIS2.Pages.JobGrade
                     .Where(a => a.TableName == "JobGrades" && a.RecordID == id)
                     .OrderByDescending(a => a.ModifiedDate)
                     .ToListAsync();
+
+                var jobs = await _context.Jobs
+                    .Include(j => j.jobClassModel)
+                    .Include(j => j.jobCategoryModel)
+                    .Where(j => j.jobGradeID == id && j.jobStatus == mainStatus.Active).ToListAsync();
+                    Jobs = jobs;
+
+                var jobSteps = await _context.JobSteps
+                    .Where(j => j.jobGradeID == id && j.jobStepStatus == mainStatus.Active).ToListAsync();
+                JobSteps = jobSteps;
             }
             return Page();
         }

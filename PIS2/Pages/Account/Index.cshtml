@@ -1,4 +1,5 @@
 ﻿@page
+@using PIS2.Enums
 @model PIS2.Pages.Account.IndexModel
 
 @{
@@ -90,11 +91,11 @@
                         @Html.DisplayFor(modelItem => item.accountType)
                     </td>
                     <td>
-                        @if (item.accountStatus == Models.mainStatus.Active)
+                        @if (item.accountStatus == mainStatus.Active)
                             {
                                 <span class="badge bg-success">@Html.DisplayFor(modelItem => item.accountStatus)</span>
                             }
-                            else if (item.accountStatus == Models.mainStatus.Suspended)
+                            else if (item.accountStatus == mainStatus.Suspended)
                             {
                                 <span class="badge bg-warning">@Html.DisplayFor(modelItem => item.accountStatus)</span>
                             }

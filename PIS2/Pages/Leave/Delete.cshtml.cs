@@ -56,7 +56,7 @@ namespace PIS2.Pages.Leave
             if (leavemodel != null)
             {
                 leaveModel = leavemodel;
-                if (leaveModel.leaveStatus != leaveStatus.Hold) throw new ArgumentException("Only leave on hols status can be deleted!");
+                if (leaveModel.leaveStatus != Enums.leaveStatus.Hold) throw new ArgumentException("Only leave on hols status can be deleted!");
                     _context.Leaves.Remove(leaveModel);
                 await _context.SaveChangesAsync();
             }

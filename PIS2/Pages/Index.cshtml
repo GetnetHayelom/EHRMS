@@ -1,4 +1,5 @@
 ﻿@page
+@using PIS2.Enums
 @model IndexModel
 @{
     ViewData["Title"] = "Welcome";
@@ -41,7 +42,7 @@
                 </li>               
 
                 <!--leave report-->
-                @if (Model.Leaves != null && Model.Leaves.Any() && Model.isSelf)
+                @if (Model.Leaves != null && Model.Leaves.Any() && (Model.isSelf || User.IsInRole("MIE\\PMS_HRCLERK")))
                 {
                     <li class="nav-item flex-fill" role="presentation">
                         <a role="button" class="btn btn-outline-primary rounded-0 border-0 w-100" data-bs-toggle="tab" data-bs-target="#leaveAggrigate"><i class="bi bi-pie-chart"></i>Leave Summary</a>
@@ -60,7 +61,7 @@
                     </li>
                 }
 
-                @if (Model.Employment.employmentStatus == Models.mainStatus.Active)
+                @if (Model.Employment.employmentStatus == mainStatus.Active)
                 {
                     <!--Leave Request button-->
                     @if (Model.IsLeaveAllow)
@@ -130,7 +131,7 @@
                         <div class="card-body text-center p-3">
 
                             <img src="/api/attachments/viewprofile/@Model?.Person?.personID" class="rounded-circle border shadow-sm" style="width: 120px; height: 120px; object-fit: cover;" alt="Profile Picture"
-                                 onerror="this.onerror=null; this.src='/images/@(Model.Person.personGender == Models.Gender.Female ? "female-default.png" : "male-default.png")';">
+                                 onerror="this.onerror=null; this.src='/images/@(Model.Person.personGender == Gender.Female ? "female-default.png" : "male-default.png")';">
                             
                             <h6 class="fw-bold mb-1 text-primary">
                                 @if (Model.Employment != null)
@@ -324,7 +325,7 @@
                         </div>
                     </div>
                 </div>
-               @if(Model.isSelf)
+                @if (Model.isSelf || User.IsInRole("MIE\\PMS_HRCLERK"))
                 {
                     @if (Model.Leaves != null && Model.Leaves.Any())
                     {
@@ -398,7 +399,7 @@
                         <div class="card shadow-sm border-0 mb-4">
                             <div class="card-header bg-white border-bottom">
                                 <h3 class="fw-bold col-md-6">Employment History</h3>
-                                @if (Model.isSelf && Model.Employment?.employmentStatus == Models.mainStatus.Active)
+                                @if (Model.isSelf && Model.Employment?.employmentStatus == mainStatus.Active)
                                 {
                                 
                                 <div class="d-flex p-2 m-2">
@@ -561,7 +562,6 @@
                         <div class="card shadow-sm p-2">
                             @if (Model.Requests.Any())
                             {
-
                                 <h4 class="fw-bold">Requested Services Status</h4>
                                 <table class="table table-striped table-hover">
                                     <thead class="bg-dark text-white">
@@ -581,9 +581,9 @@
                                         {
                                             bg = req.serviceRequestStatus switch
                                                 {
-                                                Models.ServiceRequestStatus.Hold => "bg-warning",
-                                                Models.ServiceRequestStatus.Reviewed => "bg-success",
-                                                Models.ServiceRequestStatus.Completed => "bg-secondary",
+                                                Enums.ServiceRequestStatus.Hold => "bg-warning",
+                                                Enums.ServiceRequestStatus.Reviewed => "bg-success",
+                                                Enums.ServiceRequestStatus.Completed => "bg-secondary",
                                                 _ => "bg-danger"
                                                 };
 
@@ -612,9 +612,6 @@
     </div>
 
 </div>
-
-
-
 
 <script>
    

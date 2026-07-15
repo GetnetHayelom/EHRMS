@@ -5,8 +5,10 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Hosting;
 using PIS2.Data;
+using PIS2.Enums;
 using PIS2.Models;
 using PIS2.Pages.Employment;
+using PIS2.Pages.Report;
 using PIS2.Services;
 using PIS2.Views;
 using System;
@@ -23,6 +25,7 @@ namespace PIS2.Pages.Leave
         private readonly PISContext _context;
         private readonly Core _core;
         private readonly LeaveService _leave;
+     
         public IndexModel(PISContext context, Core core, LeaveService leave)
         {
             _context = context;
@@ -30,27 +33,19 @@ namespace PIS2.Pages.Leave
             _leave = leave;
         }
         public List<LeaveGroup> GroupedDepLeaves { get; set; } = new();
-        public List<LeaveGroup> GroupedTypeLeaves { get; set; } = new();
-
-        public class LeaveGroup
-        {
-            public string? CompanyName { get; set; }
-            public string DepartmentName { get; set; } = string.Empty;
-            public int Count { get; set; }
-            public decimal SumDays { get; set; }
-            public List<LeaveReportView> Records { get; set; } = new();
-        }
-        
+        public List<LeaveGroup> GroupedTypeLeaves { get; set; } = new();            
         public List<ExpiringLeaveDto> ExpiringLeaves{ get; set; }
-
         public IList<LeaveReportView> leaveModel { get;set; } = default!;
 
         [BindProperty]
         public decimal totalUnposted {  get; set; }= default!;
         [BindProperty]
         public decimal CountUnposted { get; set; } = default!;
-        
-
+        [BindProperty(SupportsGet = true)]
+        public EmploymentPositions Position { get; set; }
+        [BindProperty(SupportsGet = true)]
+        public int Years { get; set; } = 2;
+        public IList<companyModel> Companies { get; set; } = default!;
         public async Task OnGetAsync()
         {
             var userID = _context.Users.FirstOrDefault(u => u.userName == User.Identity.Name)?.userID ?? 0;
@@ -65,6 +60,7 @@ namespace PIS2.Pages.Leave
                 .Select(a => a.companyID)
                 .ToList();
 
+            Companies = _context.Companies.Where(c => accessibleCompanies.Contains(c.companyID)).ToList();
             var allowedCompanies = accessibleCompanies
                 .Append(company)
                 .Where(c => c != null)
@@ -106,7 +102,9 @@ namespace PIS2.Pages.Leave
 
             totalUnposted = leaveModel?.Sum(l => l.LeaveDays) ?? 0;
             CountUnposted = leaveModel.Count();
-            var exps = await _leave.GetAllExpiringLeaves(myEmps, 2);
+
+            if(Position != null) { myEmps = myEmps.Where(e => e.EmploymentPosition == Position).ToList(); }
+            var exps = await _leave.GetAllExpiringLeaves(myEmps, Years);
             ExpiringLeaves =exps.Where(e => e.days >0).ToList(); 
         }
         // Post handler
@@ -130,6 +128,28 @@ namespace PIS2.Pages.Leave
 
             return new JsonResult(new { success = true, message = "Leave posted successfully." });
         }
-        
+
+        //Expiring Leaves Filter
+        //Expiring Leaves Filter
+        public async Task<IActionResult> OnGetExpiringLeave(Filter_Ex_Leaves_DTO filter)
+        {
+            var emps = _context.EmployeeDetailViews.AsQueryable();
+            if (filter.company.HasValue && filter.company.Value > 0)
+            {
+                emps = emps.Where(e => e.CompanyID == filter.company);
+            }
+            if (filter.department.HasValue && filter.department.Value > 0)
+            {
+                emps = emps.Where(e => e.DepartmentID == filter.department);
+            }
+            if (filter.position.HasValue && filter.position.Value > 0)
+            {
+                emps = emps.Where(e => e.EmploymentPosition == (EmploymentPositions)filter.position);
+            }
+            var filtered = emps.ToList();
+            var exps = await _leave.GetAllExpiringLeaves(filtered, filter.years ?? 2);
+            exps = exps.Where(e => e.days > 0).ToList();
+            return Partial("_ExpiringLeaves", exps);
+        }
     }
 }

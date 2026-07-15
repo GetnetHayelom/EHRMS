@@ -1,4 +1,5 @@
 ﻿@page
+@using PIS2.Enums
 @model PIS2.Pages.Department.DetailsModel
 
 @{
@@ -20,11 +21,11 @@
      BUTTONS
     ======================= 
 -->
-@if (Model.departmentModel.departmentStatus == Models.mainStatus.Active && (Model.isManager || Model.Delegations.Any() || Model.isMember))
+@if (Model.departmentModel.departmentStatus == mainStatus.Active && (Model.isManager || Model.Delegations.Any() || Model.isMember))
 {
     <div class="mb-3">
         <div class="d-flex flex-wrap gap-2 border-top border-bottom border-1 border-primary p-2">
-            @if (Model.Delegations.Any(d => d == Models.delegationScopes.Fulldelegation || d == Models.delegationScopes.LeaveApprove))
+            @if (Model.Delegations.Any(d => d == Enums.delegationScopes.Fulldelegation || d == Enums.delegationScopes.LeaveApprove))
             {
                 <button type="button" class="btn btn-primary flex-fill position-relative" data-bs-toggle="modal" data-bs-target="#LeaveModal">
                     Leaves
@@ -36,7 +37,7 @@
                     }
                 </button>
             }
-            @if (Model.Delegations.Any(d => d == Models.delegationScopes.Fulldelegation || d == Models.delegationScopes.OTApprove))
+            @if (Model.Delegations.Any(d => d == Enums.delegationScopes.Fulldelegation || d == Enums.delegationScopes.OTApprove))
             {
              <button type="button" class="btn btn-primary flex-fill position-relative" data-bs-toggle="modal" data-bs-target="#OTModal">
                 Overtime
@@ -49,12 +50,12 @@
 
                 </button>
             }
-            @if (Model.Delegations.Any(d => d == Models.delegationScopes.Fulldelegation || d == Models.delegationScopes.WorkSiteAssignment || d == Models.delegationScopes.ShiftAssignment))
+            @if (Model.Delegations.Any(d => d == Enums.delegationScopes.Fulldelegation || d == Enums.delegationScopes.WorkSiteAssignment || d == Enums.delegationScopes.ShiftAssignment))
             {
                 <a asp-page="ShiftSite" asp-route-id="@Model.departmentModel.departmentID" class="btn btn-primary flex-fill">Shift & Work Location</a> 
             }
             
-            @if (Model.Delegations.Any(d => d == Models.delegationScopes.Fulldelegation))
+            @if (Model.Delegations.Any(d => d == Enums.delegationScopes.Fulldelegation))
             {
                 <a asp-page="/Penalty/Create" class="btn btn-primary flex-fill">Penalty</a>
                 <a asp-page="/Evaluation/Index" asp-route-department="@Model.departmentModel.departmentID" class="btn btn-primary flex-fill">Evaluation</a>
@@ -79,7 +80,7 @@
                         <dd class="col-6">@Html.DisplayFor(m => m.departmentModel.departmentName)</dd>
 
                         <dt class="col-6">Status:</dt>
-                        <dd class="col-6 badge @((Model.departmentModel.departmentStatus == Models.mainStatus.Active) ? "bg-success" : "bg-danger")">
+                        <dd class="col-6 badge @((Model.departmentModel.departmentStatus == mainStatus.Active) ? "bg-success" : "bg-danger")">
                             @Html.DisplayFor(m => m.departmentModel.departmentStatus)
                         </dd>
 
@@ -98,7 +99,7 @@
         </div>
 
         <!-- Payable Summary -->
-        @if (Model.departmentModel.departmentStatus == Models.mainStatus.Active)
+        @if (Model.departmentModel.departmentStatus == mainStatus.Active)
         {
             <div class="col-md-4 mb-3">
                 <div class="card shadow-sm">
@@ -115,7 +116,7 @@
         }
 
         <!-- Employment Summary -->
-        @if (Model.departmentModel.departmentStatus == Models.mainStatus.Active)
+        @if (Model.departmentModel.departmentStatus == mainStatus.Active)
         {
             <div class="col-md-4 mb-3">
                 <div class="card shadow-sm">
@@ -141,7 +142,7 @@
 
 
 <!-- Active Employees Table -->
-@if (Model.departmentModel.departmentStatus == Models.mainStatus.Active)
+@if (Model.departmentModel.departmentStatus == mainStatus.Active)
 {
     <div class="card shadow-sm mb-3">
         <div class="card-header bg-dark text-white fw-bold">Active Employees</div> <div class="card-body p-0">
@@ -158,7 +159,7 @@
                             <td>@Math.Round(item.Leave.AllowedLeave, 2)</td>
                             <td>
                                 <div class="position-relative d-inline-block shift-wrapper">
-                                    <select class="form-select shift-selector" data-focus="1" data-employment="@item.Employment.employmentID" @(Model.isManager || Model.Delegations.Any(d => d == Models.delegationScopes.ShiftAssignment) ? "" : "disabled")>
+                                    <select class="form-select shift-selector" data-focus="1" data-employment="@item.Employment.employmentID" @(Model.isManager || Model.Delegations.Any(d => d == Enums.delegationScopes.ShiftAssignment) ? "" : "disabled")>
                                         <option value="">-- Select Shift --</option>
                                         @foreach (var shift in Model.Shifts)
                                         {
@@ -169,7 +170,7 @@
                             </td>
                             <td>
                                 <div class="position-relative d-inline-block shift-wrapper">
-                                    <select class="form-select shift-selector" data-focus="2" data-employment="@item.Employment.employmentID" @(Model.isManager || Model.Delegations.Any(d => d == Models.delegationScopes.WorkSiteAssignment) ? "" : "disabled")>
+                                    <select class="form-select shift-selector" data-focus="2" data-employment="@item.Employment.employmentID" @(Model.isManager || Model.Delegations.Any(d => d == Enums.delegationScopes.WorkSiteAssignment) ? "" : "disabled")>
                                         <option value="">-- Select Site --</option>
                                         @foreach (var site in Model.WorkSites)
                                         {

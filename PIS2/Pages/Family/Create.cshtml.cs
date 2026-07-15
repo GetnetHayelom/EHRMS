@@ -55,9 +55,9 @@ namespace PIS2.Pages.Family
             }
 
             // Enforce relation constraints
-            if (familyModel.relation == familyRelation.Father)
+            if (familyModel.relation == Enums.familyRelation.Father)
             {
-                bool exists = _context.Families.Any(f => f.personID == familyModel.personID && f.relation == familyRelation.Father);
+                bool exists = _context.Families.Any(f => f.personID == familyModel.personID && f.relation == Enums.familyRelation.Father);
                 if (exists)
                 {
                     ModelState.AddModelError("", "This person already has a father assigned.");
@@ -65,9 +65,9 @@ namespace PIS2.Pages.Family
                 }
             }
 
-            if (familyModel.relation == familyRelation.Mother)
+            if (familyModel.relation == Enums.familyRelation.Mother)
             {
-                bool exists = _context.Families.Any(f => f.personID == familyModel.personID && f.relation == familyRelation.Mother);
+                bool exists = _context.Families.Any(f => f.personID == familyModel.personID && f.relation == Enums.familyRelation.Mother);
                 if (exists)
                 {
                     ModelState.AddModelError("", "This person already has a mother assigned.");

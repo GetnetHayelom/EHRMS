@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using PIS2.Data;
+using PIS2.Enums;
 using PIS2.Models;
 using PIS2.Services;
 using PIS2.Views;
@@ -12,6 +13,7 @@ using System.Threading.Tasks;
 
 namespace PIS2.Pages.Employment
 {
+    [IgnoreAntiforgeryToken(Order = 1001)]
     public class DetailsModel : PageModel
     {
         private readonly PISContext _context;
@@ -78,11 +80,11 @@ namespace PIS2.Pages.Employment
                 .Include(e => e.personModel).ThenInclude(p => p.PersonEducationLevels).ThenInclude(pe => pe.educationLevelModel)
                 .Include(e => e.employmentTypeModel)
                 .Include(e => e.Leaves)
-                .Include(e => e.JobPlacements).ThenInclude(j => j.jobStepModel)
-                .Include(e => e.JobPlacements).ThenInclude(jp => jp.jobModel).ThenInclude(j => j.jobGradeModel)
+                .Include(e => e.JobPlacements).ThenInclude(j => j.jobStepModel).ThenInclude(j => j.jobGradeModel)
                 .Include(e => e.JobPlacements).ThenInclude(jp => jp.jobModel).ThenInclude(j => j.jobCategoryModel)
                 .Include(e => e.JobPlacements).ThenInclude(jp => jp.jobModel).ThenInclude(j => j.jobClassModel)
-                .Include(e => e.JobPlacements).ThenInclude(jp => jp.departmentModel).ThenInclude(d => d.companyModel).FirstOrDefaultAsync(m => m.employmentID == id);
+                .Include(e => e.JobPlacements).ThenInclude(jp => jp.departmentModel).ThenInclude(d => d.companyModel)
+                .FirstOrDefaultAsync(m => m.employmentID == id);
             if (employmentmodel == null)
             {
                 return NotFound();
@@ -124,7 +126,115 @@ namespace PIS2.Pages.Employment
 
             return Page();
         }
+        public async Task<JsonResult> OnGetEmployeeProgress(int employmentId)
+        {
+            // 1. Get Employee Placement History
+            var history = await _context.JobPlacements
+                .Include(p => p.jobStepModel)
+                .ThenInclude(s => s.jobGradeModel)
+                .Where(p => p.employmentID == employmentId)
+                .OrderBy(p => p.jobPlacementDate)
+                .ToListAsync();
 
-   
+            // 2. Prepare Data Lists
+            var dates = history.Select(h => h.jobPlacementDate.ToString("MM/dd/yyyy")).ToList();
+            var empSalaries = history.Select(h => h.jobPlacementSalary).ToList();
+
+            // 3. Calculate Peer Averages & Grade Path
+            var avgSalaries = new List<decimal>();
+            var gradeMids = new List<double>();
+            var gradeMax = new List<double>();
+
+            foreach (var placement in history)
+            {
+                // Average salary of all employees in the same department at the time of this placement
+                var avg = _context.JobPlacements
+                    .Where(p => p.departmentID == placement.departmentID && p.jobPlacementDate <= placement.jobPlacementDate)
+                    .Average(p => (decimal?)p.jobPlacementSalary) ?? 0;
+
+                avgSalaries.Add(Math.Round(avg, 2));
+
+                // Get the Grade boundaries for the path line
+                if (placement.jobStepModel?.jobGradeModel != null)
+                {
+                    gradeMids.Add(placement.jobStepModel.jobGradeModel.jobGradeMidSalary/12);
+                    gradeMax.Add(placement.jobStepModel.jobGradeModel.jobGradeMaxSalary/12);
+                }
+            }
+
+            var model = new CareerProgressionViewModel
+            {
+                Dates = dates,
+                EmployeeSalaries = empSalaries,
+                AverageSalaries = avgSalaries,
+                GradeMidpoints = gradeMids,
+                GradeMax = gradeMax
+            };
+
+            return new JsonResult(model);
+        }
+        public async Task<JsonResult> OnGetCareerPath(int employmentId)
+        {
+            // 1. Get the current placement to identify the starting point
+            var currentPlacement = await _context.JobPlacements
+                .Include(p => p.jobModel)
+                .Where(p => p.employmentID == employmentId)
+                .OrderByDescending(p => p.jobPlacementDate)
+                .FirstOrDefaultAsync();
+
+            if (currentPlacement == null || currentPlacement.jobModel == null)
+                return new JsonResult(new { error = "No placement history found" });
+
+            var currentJob = currentPlacement.jobModel;
+            var careerPath = new List<object>();
+
+            // 2. Start traversing the Grades
+            int? nextGradeId = currentJob.jobGradeID;
+            var processedGrades = new HashSet<int>(); // Prevent infinite loops
+
+            while (nextGradeId.HasValue && !processedGrades.Contains(nextGradeId.Value))
+            {
+                processedGrades.Add(nextGradeId.Value);
+
+                // Fetch the Grade details and the potential jobs in this grade
+                // filtered by the SAME Class and Category
+                var gradeWithJobs = await _context.JobGrades
+                    .Where(g => g.jobGradeID == nextGradeId)
+                    .Select(g => new
+                    {
+                        GradeName = g.jobGradeName,
+                        SalaryRange = $"${g.jobGradeBasicSalary/12} - ${g.jobGradeMaxSalary/12}",
+                        PotentialTitles = _context.Jobs
+                            .Where(j => j.jobGradeID == g.jobGradeID &&
+                                        j.jobClassID == currentJob.jobClassID &&
+                                        j.jobStatus == mainStatus.Active)
+                            .Select(j => j.jobTitle)
+                            .ToList(),
+                        NextGradeID = g.NextJobGradeID
+                    })
+                    .FirstOrDefaultAsync();
+
+                if (gradeWithJobs != null)
+                {
+                    careerPath.Add(gradeWithJobs);
+                    nextGradeId = gradeWithJobs.NextGradeID;
+                }
+                else
+                {
+                    break;
+                }
+            }
+
+            return new JsonResult(careerPath);
+        }
+    }
+    public class CareerProgressionViewModel
+    {
+        public List<string> Dates { get; set; }
+        public List<decimal> EmployeeSalaries { get; set; }
+        public List<decimal> AverageSalaries { get; set; }
+        public List<double> GradeMidpoints { get; set; }
+        public List<double> GradeMax { get; set; }
+        public List<double> GradeMin { get; set; }
     }
 }

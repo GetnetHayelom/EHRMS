@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.Blazor;
 using PIS2.Data;
+using PIS2.Enums;
 using PIS2.Models;
 
 namespace PIS2.Pages.Vacancy

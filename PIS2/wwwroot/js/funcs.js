@@ -512,5 +512,14 @@ function updateMinDate() {
     }
 }
 
+//Column sorting for tables
+$(document).ready(function () {
+    let table = $('#dataTable').DataTable({
+        paging: false,
+        seaching: false,
+        "order": []
+    });
+});
+
 
 

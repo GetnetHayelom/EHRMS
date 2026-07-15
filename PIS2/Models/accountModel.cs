@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using PIS2.Enums;
+using System.ComponentModel.DataAnnotations;
 
 namespace PIS2.Models
 {
@@ -19,7 +20,6 @@ namespace PIS2.Models
         public virtual ICollection<deductionType>? DeductionTypes { get; set; }
         public virtual ICollection<earningType>? EarningTypes { get; set; }
         public virtual ICollection<payrollPay>? PayrollPays { get; set; }
-        public virtual ICollection<otherPay>? PtherPays { get; set; }
         public string modifiedBy { get; set; }
         public DateTime modifiedDate { get; set; } = DateTime.Now;
         public accountModel() { }
@@ -52,8 +52,7 @@ namespace PIS2.Models
         public virtual ICollection<workSiteModel>? WorkSites { get; set; } = null!;
         public virtual ICollection<payrollPay>? DPayrollPays { get; set; } = null!;
         public virtual ICollection<payrollPay>? CPayrollPays { get; set; } = null!;
-        public virtual ICollection<otherPay>? DOtherPayments { get; set; } = null!;
-        public virtual ICollection<otherPay>? COtherPayments { get; set; } = null!;
+
 
 
         public subAccountModel() { }
@@ -94,12 +93,5 @@ namespace PIS2.Models
         public decimal Debit { get; set; }
         public decimal Credit { get; set; }
     }
-    public enum AccountType
-        {
-            Asset,
-            Liability,
-            Equity,
-            Revenue,
-            Expense
-        }
+    
 }

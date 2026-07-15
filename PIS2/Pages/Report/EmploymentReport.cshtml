@@ -1,4 +1,5 @@
 ﻿@page
+@using PIS2.Enums
 @model PIS2.Pages.Report.EmploymentReportModel
 
 @{
@@ -47,8 +48,8 @@
                     <tr class="bg-secondary fw-bold">
                         <td>@index</td>
                         <td>@item.FirstOrDefault()?.CompanyName</td>
-                        <td>@item.Where(i => i.PersonGender == Models.Gender.Male).Count()</td>
-                        <td>@item.Where(i => i.PersonGender == Models.Gender.Female).Count()</td>
+                        <td>@item.Where(i => i.PersonGender == Gender.Male).Count()</td>
+                        <td>@item.Where(i => i.PersonGender == Gender.Female).Count()</td>
                         <td>@item.Count()</td>
                     </tr>
                     <tr class="fw-bold bg-light">
@@ -69,8 +70,8 @@
                         <tr class="bg-light">
                             <td>@index.@index2</td>
                             <td>@dept.FirstOrDefault()?.DepartmentName</td>
-                            <td>@dept.Where(i => i.PersonGender == Models.Gender.Male).Count()</td>
-                            <td>@dept.Where(i => i.PersonGender == Models.Gender.Female).Count()</td>
+                            <td>@dept.Where(i => i.PersonGender == Gender.Male).Count()</td>
+                            <td>@dept.Where(i => i.PersonGender == Gender.Female).Count()</td>
                             <td>@dept.Count()</td>
                         </tr>
                         index2++;
@@ -88,10 +89,10 @@
         <div class="card shadow-sm p-2 mb-4">
             <div class="d-flex gap-3 mb-4 d-print-flex flex-wrap">
                 @{
-                    int activeEmployees = Model.employmentModel.Where(e => e.EmploymentStatus == Models.mainStatus.Active).Count();
-                    int maleCountTotal = Model.employmentModel.Where(e => e.PersonGender == Models.Gender.Male).Count();
-                    int femaleCountTotal = Model.employmentModel.Where(e => e.PersonGender == Models.Gender.Female).Count();
-                    int managementCountTotal = Model.employmentModel.Where(e => e.EmploymentPosition == Models.EmploymentPositions.Management).Count();
+                    int activeEmployees = Model.employmentModel.Where(e => e.EmploymentStatus == mainStatus.Active).Count();
+                    int maleCountTotal = Model.employmentModel.Where(e => e.PersonGender == Gender.Male).Count();
+                    int femaleCountTotal = Model.employmentModel.Where(e => e.PersonGender == Gender.Female).Count();
+                    int managementCountTotal = Model.employmentModel.Where(e => e.EmploymentPosition == Enums.EmploymentPositions.Management).Count();
                 }
 
                 <div class="flex-fill">
@@ -197,7 +198,7 @@
 
                     <div class="flex-fill d-print-flex">
                         <label for="filter-status">Status:</label>
-                        <select class="form-select" aria-label="Default select example" id="filter-status" asp-items="Html.GetEnumSelectList<Models.mainStatus>()">
+                        <select class="form-select" aria-label="Default select example" id="filter-status" asp-items="Html.GetEnumSelectList<mainStatus>()">
                             <option value="">All</option>
                         </select>
                     </div>
@@ -213,13 +214,13 @@
                     </div>
                     <div class="flex-fill d-print-flex">
                         <label for="filter-status">Gender:</label>
-                        <select class="form-select" aria-label="Default select example" id="filter-gender" asp-items="Html.GetEnumSelectList<Models.Gender>()">
+                        <select class="form-select" aria-label="Default select example" id="filter-gender" asp-items="Html.GetEnumSelectList<Gender>()">
                             <option value="">All</option>
                         </select>
                     </div>
                     <div class="flex-fill d-print-flex">
                         <label for="filter-status">Position:</label>
-                        <select class="form-select" aria-label="Default select example" id="filter-position" asp-items="Html.GetEnumSelectList<Models.EmploymentPositions>()">
+                        <select class="form-select" aria-label="Default select example" id="filter-position" asp-items="Html.GetEnumSelectList<Enums.EmploymentPositions>()">
                             <option value="">All</option>
                         </select>
                     </div>

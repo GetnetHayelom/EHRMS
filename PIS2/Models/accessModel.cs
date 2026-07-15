@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel;
 using System.Configuration;
 using System.ComponentModel.DataAnnotations;
+using PIS2.Enums;
 
 namespace PIS2.Models
 {
@@ -34,22 +35,6 @@ namespace PIS2.Models
     }
 
    
-    public enum UserGroups
-    {
-        [Display(Name = "HR Personnel")]
-        PMS_HRCLERK,
-
-        [Display(Name = "HR Admins")]
-        PMS_HRMANAGER,
-
-        //[Display(Name = "System Admin")]
-        //PMS_ADMIN,
-
-        //[Display(Name = "Management")]
-        //PMS_MANAGEMENT,
-
-        //[Display(Name = "Clinic")]
-        //PMS_CLINIC
-    }
+    
 
 }

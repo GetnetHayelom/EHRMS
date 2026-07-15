@@ -224,7 +224,7 @@
                             <div>
                                 <p class="small mb-1 text-success">Total</p>
                                 <h4 class="fw-bold mb-0">
-                                    $@Math.Round((decimal)(Model.CompanySummaries.Sum(c => c.Salary + c.Allowance + c.Overtime + c.SeverancePayable + c.payableLeaves)), 2).ToString("N0")
+                                    $@Math.Round((decimal)(Model.CompanySummaries.Sum(c => c.Salary + c.Allowance + c.Overtime + c.SeverancePayable + c.payableLeaves) + Model.AnnualLeaveSummaries.Sum(als => als.PayableLeave)), 2).ToString("N0")
                                 </h4>
                             </div>
                             <i class="bi bi-clipboard-data fs-2 text-success"></i>

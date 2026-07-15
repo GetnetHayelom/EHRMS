@@ -63,7 +63,7 @@
                 <h5 class="mb-0">Under-Staffed Positions (Gaps)</h5>
             </div>
             <div class="card-body p-0">
-                <table class="table table-hover mb-0">
+                <table class="table table-hover mb-0 print-full-width">
                     <thead class="table-light">
                         <tr>
                             <th>Classification</th>
@@ -116,7 +116,7 @@
                 <h5 class="mb-0">Over-Staffed Positions (Risk)</h5>
             </div>
             <div class="card-body p-0">
-                <table class="table table-hover mb-0">
+                <table class="table table-hover mb-0 print-full-width">
                     <thead class="table-light">
                         <tr>
                             <th>Classification</th>
@@ -168,7 +168,7 @@
                 <h5 class="mb-0">Unstructured Placements</h5>
             </div>
             <div class="card-body p-0">
-                <table class="table table-hover mb-0">
+                <table class="table table-hover mb-0 print-full-width">
                     @{
                         int comp = 1;
                     }
@@ -183,7 +183,7 @@
                         {
                             var udID = $"uns_d_{comp}{dept}";
                             <tr class="collapse @ucID table-light fw-semibold clickable" data-bs-toggle="collapse" data-bs-target=".@udID">
-                                <td colspan="4" class="ps-4 text-secondary"><i class="bi bi-arrow-return-right me-2"></i> @gitem.Key (gitem.Count())</td>
+                                <td colspan="4" class="ps-4 text-secondary"><i class="bi bi-arrow-return-right me-2"></i> @gitem.Key (@gitem.Count())</td>
                             </tr>
                             @foreach (var item in gitem)
                             {

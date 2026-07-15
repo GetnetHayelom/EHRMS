@@ -39,9 +39,9 @@
                                 @{
                                     var badgeClass = item.result switch
                                     {
-                                        Models.trainingResult.Passed => "bg-success",
-                                        Models.trainingResult.Failed => "bg-danger",
-                                        Models.trainingResult.InProgress => "bg-warning text-dark",
+                                        Enums.trainingResult.Passed => "bg-success",
+                                        Enums.trainingResult.Failed => "bg-danger",
+                                        Enums.trainingResult.InProgress => "bg-warning text-dark",
                                         _ => "bg-secondary"
                                     };
                                 }

@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using PIS2.Enums;
 
 namespace PIS2.Models
 {
@@ -64,12 +65,5 @@ namespace PIS2.Models
         [Precision(18, 2)]
         public decimal UtilizationRate => Budgeted > 0 ? (ActualSpent / Budgeted) * 100 : 0;
     }
-    public enum BudgetStatus 
-    {
-        HOLD,
-        APPROVED,
-        ACTIVE,
-        CLOSED,
-        DECLINED
-    }
+    
 }

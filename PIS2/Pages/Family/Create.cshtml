@@ -55,7 +55,7 @@
                 <label asp-for="familyModel.relation" class="form-label fw-semibold">
                     <span class="text-danger">*</span> Relation
                 </label>
-                <select asp-for="familyModel.relation" class="form-select" asp-items="@Html.GetEnumSelectList<Models.familyRelation>()"></select>
+                <select asp-for="familyModel.relation" class="form-select" asp-items="@Html.GetEnumSelectList<Enums.familyRelation>()"></select>
                 <span asp-validation-for="familyModel.relation" class="text-danger"></span>
             </div>
 

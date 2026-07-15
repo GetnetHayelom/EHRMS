@@ -1,4 +1,5 @@
-﻿using PIS2.Models;
+﻿using PIS2.Enums;
+using PIS2.Models;
 
 namespace PIS2.Views
 {

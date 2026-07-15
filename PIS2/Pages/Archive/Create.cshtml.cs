@@ -76,7 +76,7 @@ namespace PIS2.Pages.Archive
             letter.letterNumber =await GenerateLetterNumber(letter);
 
             // Update letter status
-            letter.letterStatus = LetterStatus.Archived;
+            letter.letterStatus = Enums.LetterStatus.Archived;
             letter.modifiedBy = User.Identity?.Name;
             letter.modifiedDate = DateTime.Now;
 
@@ -114,9 +114,9 @@ namespace PIS2.Pages.Archive
 
             string prefix = letter.letterGroup switch
             {
-                LetterGroup.Incoming => "01",
-                LetterGroup.Outgoing => "02",
-                LetterGroup.Internal => "03",
+                Enums.LetterGroup.Incoming => "01",
+                Enums.LetterGroup.Outgoing => "02",
+                Enums.LetterGroup.Internal => "03",
                 _ => "04"
             };
 

@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using PIS2.Data;
+using PIS2.Enums;
 using PIS2.Models;
 using PIS2.Services;
 using PIS2.Views;
@@ -73,58 +74,14 @@ namespace PIS2.Pages.EmployeeService
                 .ToList();
             
             Company = _context.Companies.Where(e => allowedCompanies.Contains(e.companyID)).Select(e => e.companyName).ToList() ?? new List<string>();
-            var employees = _context.Employments
-                .Include(e => e.JobPlacements).ThenInclude(jp => jp.departmentModel).ThenInclude(d => d.companyModel)
-                .Include(e => e.JobPlacements).ThenInclude(jp => jp.jobModel)
-                .Where(e => e.employmentStatus == mainStatus.Active
-                && e.JobPlacements.Any(j => j.jobPlacementStatus == mainStatus.Active && allowedCompanies.Contains(j.departmentModel.companyID)))
-                .OrderBy(e => e.givenID)
-                .Select(e => new
-                {
-                    empID=e.employmentID,
-                    EmployeeID = e.givenID,
-                    Name = e.personModel.personFullName,
+            var earns =await _context.EarningView
+                .OrderBy(e => e.givenID).ToListAsync() ?? new List<EarningView>();
 
-                    // Pick the active job placement once
-                    ActiveJobPlacement = e.JobPlacements
-                        .Where(jp => jp.jobPlacementStatus == mainStatus.Active)
-                        .OrderByDescending(jp => jp.jobPlacementDate) // if multiple active, take latest
-                        .FirstOrDefault(),
+            EarningView =earns.ToList();
 
-                    // Sum active allowances safely
-                    Allowance = e.AllowanceAssignments
-                        .Where(aa => aa.allowanceStatus == mainStatus.Active)
-                        .Select(aa => (decimal?)aa.allowanceAssignmentAmount) // cast to nullable
-                        .Sum() ?? 0
-                })
-                .AsEnumerable() // switch to LINQ-to-objects to safely use null-conditional
-                .Select(e => new EarningView
-                {
-                    empID =e.empID,
-                    EmployeeID =e.EmployeeID,
-                    EmployeeName=e.Name,
-                    JobTitle = e.ActiveJobPlacement?.jobModel?.jobTitle,
-                    Department = e.ActiveJobPlacement?.departmentModel?.departmentName,
-                    Company = e.ActiveJobPlacement?.departmentModel?.companyModel?.companyName,
-                    Salary = e.ActiveJobPlacement?.jobPlacementSalary ?? 0,
-                    Allowance = e.Allowance
-                })
-                .ToList() ?? new List<EarningView>();
 
-            EarningView =employees.ToList();
-
-            GroupedEarning = EarningView.GroupBy(l => l.Department)
-                .Select(g => new GroupedEarningByDep
-                {
-                    Name = g.Key ?? "Unknown",
-                    Salary = g.Sum(e => e.Salary),
-                    Allowance = g.Sum(e => e.Allowance),
-                    Records = g.ToList()
-                   
-                }).ToList() ?? new List<GroupedEarningByDep>();
-          
-            allowanceSum = EarningView.Sum(e => e.Allowance);
-            SalarySum = EarningView.Sum(e => e.Salary);
+            allowanceSum = EarningView.Where(e => !e.earningTypeName.Contains("Salary")).Sum(e => e.earningAmount);
+            SalarySum = EarningView.Where(e => e.earningTypeName.Contains("Salary")).Sum(e => e.earningAmount);
 
             //Payroll Pay
             var today = DateTime.Today;

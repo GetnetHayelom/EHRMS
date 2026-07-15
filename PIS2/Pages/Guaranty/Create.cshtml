@@ -1,4 +1,5 @@
 ﻿@page
+@using PIS2.Enums
 @model PIS2.Pages.Guaranty.CreateModel
 
 @{
@@ -57,7 +58,7 @@
             }
             <div class="form-group">
                 <label asp-for="guarantyModel.guarantyType" class="control-label">Guaranty Type</label>
-                <select asp-for="guarantyModel.guarantyType" class="form-control mb-2" asp-items="Html.GetEnumSelectList<Models.GuarantyTypes>()"></select>
+                <select asp-for="guarantyModel.guarantyType" class="form-control mb-2" asp-items="Html.GetEnumSelectList<Enums.GuarantyTypes>()"></select>
                 <span asp-validation-for="guarantyModel.guarantyType" class="text-danger"></span>
             </div>
             <div class="form-group">
@@ -128,11 +129,11 @@
                         </td>
                         @{
                             string bg_color;
-                            if (item.guarantyStatus == Models.mainStatus.Suspended)
+                            if (item.guarantyStatus == mainStatus.Suspended)
                             {
                                 bg_color = "bg-warning text-black";
                             }
-                            else if (item.guarantyStatus == Models.mainStatus.Active)
+                            else if (item.guarantyStatus == mainStatus.Active)
                             {
                                 bg_color = "bg-success text-white";
                             }

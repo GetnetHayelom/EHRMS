@@ -16,7 +16,7 @@ namespace PIS2.Pages.Benefits
         }
 
         [BindProperty]
-        public otherPay OtherPay { get; set; } = default!;
+        public payrollModel OtherPay { get; set; } = default!;
 
         public IActionResult OnGet()
         {
@@ -36,12 +36,11 @@ namespace PIS2.Pages.Benefits
             }
 
             // Set system-managed fields
-            OtherPay.modifiedDate = DateTime.Now;
-            OtherPay.paymentStatus = payrollStatus.PENDING;
+            OtherPay.payrollStatus = Enums.payrollStatus.PENDING;
             // Assuming you have a way to get the current user, e.g., User.Identity.Name
             OtherPay.modifiedBy = User.Identity?.Name ?? "System";
 
-            _context.OtherPayments.Add(OtherPay);
+            _context.Payrolls.Add(OtherPay);
             await _context.SaveChangesAsync();
 
             return RedirectToPage("./Index");

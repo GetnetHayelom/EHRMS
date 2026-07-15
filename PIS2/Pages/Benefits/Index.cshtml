@@ -1,106 +1,93 @@
 ﻿@page
 @model PIS2.Pages.Benefits.IndexModel
-@{
-}
+@using PIS2.Models
+@using PIS2.Services
+@inject PayrollService PayrollService
 
-<div class="container-fluid mt-4">
-    <div class="d-flex justify-content-between align-items-center mb-2">
-        <div><h2 class="fw-bold"><i class="bi bi-wallet2"></i>Payments</h2><h6 class="text-muted">Payments not included in payroll</h6></div>
-        
-        <a asp-page="Create" class="btn btn-primary">
-            <i class="bi bi-plus-circle"></i> New Payment
-        </a>
+<div class="d-flex justify-content-between align-items-end mb-2">
+    <div>
+        <h2 class="fw-bold mb-0">Payrolls</h2>
+        <p class="text-muted mb-0">Maintain payroll</p>
     </div>
-    <div class="card shadow-sm p-2 mb-2">
-        <div class="row">
-            <div class="col-md-3">
-                <div class="card border-0 shadow-sm bg-primary text-white">
-                    <div class="card-body">
-                        <h6 class="text-uppercase small">Total Gross Pay</h6>
-                        <h3 class="mb-0">@Model.TotalGross.ToString("C")</h3>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="card border-0 shadow-sm bg-success text-white">
-                    <div class="card-body">
-                        <h6 class="text-uppercase small">Total Net Pay</h6>
-                        <h3 class="mb-0">@Model.TotalNet.ToString("C")</h3>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="card border-0 shadow-sm bg-light">
-                    <div class="card-body">
-                        <h6 class="text-uppercase small">Total Records</h6>
-                        <h3 class="mb-0">@Model.OtherPayments.Count</h3>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-  
-    <div class="card border-0 shadow-sm">
-        <div class="card-body p-0">
-            <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0">
-                    <thead class="bg-light">
-                        <tr>
-                            <th class="ps-3">Invoice No.</th>
-                            <th>Earning Type</th>
-                            <th>Beneficiary</th>
-                            <th class="text-end">Gross Pay</th>
-                            <th class="text-end">Net Pay</th>
-                            <th>Status</th>
-                            <th>Last Modified</th>
-                            <th class="text-center">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var item in Model.OtherPayments)
-                        {
-                            <tr>
-                                <td class="ps-3 fw-bold">@item.invoiceNo</td>
-                                <td>
-                                    <span class="text-muted">@item.earningModel?.earningType?.earningTypeName</span>
-                                </td>
-                                <td>
-                                    <div class="small">@item.earningModel?.EmploymentModel?.personModel?.personFullName</div>
-                                    <div class="text-muted extra-small" style="font-size: 0.75rem;">@item.earningModel?.EmploymentModel?.givenID</div>
-                                </td>
-                                <td class="text-end">@item.GrossPay.ToString("N2")</td>
-                                <td class="text-end fw-bold">@item.NetPay.ToString("N2")</td>
-                                <td>
-                                    @Html.Raw(GetStatusBadge(item.paymentStatus))
-                                </td>
-                                <td>
-                                    <div class="small">@item.modifiedBy</div>
-                                    <div class="text-muted extra-small" style="font-size: 0.75rem;">@item.modifiedDate</div>
-                                </td>
-                                <td class="text-center">
-                                    <div class="btn-group btn-group-sm">
-                                        <a asp-page="./Edit" asp-route-id="@item.paymentID" class="btn btn-outline-secondary" title="Edit"><i class="bi bi-pencil"></i></a>
-                                        <a asp-page="./Details" asp-route-id="@item.paymentID" class="btn btn-outline-info" title="Details"><i class="bi bi-eye"></i></a>
-                                    </div>
-                                </td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-            </div>
-        </div>
+    <div class="d-flex justify-content-end">
+        @await Html.PartialAsync("back")
+        <a class="btn btn-primary m-2" asp-page="Create"><i class="bi bi-plus-circle"></i> New Payroll</a>
     </div>
 </div>
 
-@functions {
-    public string GetStatusBadge(PIS2.Models.payrollStatus status)
-    {
-        return status switch
-        {
-            Models.payrollStatus.APPROVED => "<span class='badge bg-success-subtle text-success border border-success'>Approved</span>",
-            Models.payrollStatus.PENDING => "<span class='badge bg-warning-subtle text-warning border border-warning'>Pending</span>",
-            Models.payrollStatus.POSTED => "<span class='badge bg-danger-subtle text-danger border border-danger'>Rejected</span>",
-            _ => $"<span class='badge bg-secondary'>{status}</span>"
-        };
-    }
-}
+<div class="card shadow-sm p-2">
+    <div class="d-flex justify-content-end align-items-end">
+        <div class="me-2">@await Html.PartialAsync("filter")</div>
+        <excel-export table="dataTable" filename="Payrolls_List_@DateTime.Now"></excel-export>
+        @await Html.PartialAsync("print")
+    </div>
+    <table class="table table-bordered table-hover table-striped">
+        <thead class="bg-dark text-white">
+            <tr>
+                <th>S/No</th>
+                <th>Name</th>
+                <th>Company</th>
+                <th>Period</th>
+                <th>Status</th>
+                <th>Total Gross</th>
+                <th>Total Net</th>
+                <th class="d-print-none text-end px-2">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @{
+                int index = 1;
+            }
+            @foreach (var payroll in Model.Payrolls)
+            {
+                <tr onclick="location.href='@Url.Page("Details", new { id = payroll.payrollID })'" style="cursor:pointer;">
+                    <td>@(index++)</td>
+                    <td>@payroll.payrollName</td>
+                    <td>@(payroll.companyModel?.companyName ?? "All")</td>
+                    <td>@payroll.StartDate.ToShortDateString() - @payroll.EndDate.ToShortDateString()</td>
+                    <td>@payroll.payrollStatus</td>
+                    <td>@payroll.totalGross?.ToString("C")</td>
+                    <td>@payroll.totalNet?.ToString("C")</td>
+                    <td class="d-print-none text-end px-2">
+                        <div class="btn-group me-2" role="group">
+                            <a asp-page="./Details" asp-route-id="@payroll.payrollID" class="btn btn-outline-success"><i class="bi bi-eye"></i></a>
+                            @if (payroll.payrollStatus == Enums.payrollStatus.PENDING)
+                            {
+                                <a asp-page="Edit" asp-route-id="@payroll.payrollID" class="btn btn-outline-primary"><i class="bi bi-pencil-square"></i></a>
+                            }
+                        </div>
+                        @if (payroll.payrollStatus == Enums.payrollStatus.PENDING)
+                        {
+                            <form method="post" asp-page-handler="Approve" asp-route-id="@payroll.payrollID" style="display:inline">
+                                <button class="btn btn-sm btn-primary" onclick="return confirm('Are you sure you want to APPROVE this payment?');"><i class="bi bi-check-circle me-2"></i>Approve</button>
+                            </form>
+                        }
+                        @if (payroll.payrollStatus == Enums.payrollStatus.APPROVED)
+                        {
+                            <form method="post" asp-page-handler="Generate" asp-route-id="@payroll.payrollID" style="display:inline">
+                                <button class="btn btn-sm btn-primary" onclick="return confirm('Are you sure you want to PROCCESS this payment?');"><i class="bi bi-gear-fill me-2"></i>Generate</button>
+                            </form>
+                        }
+                        @if (payroll.payrollStatus == Enums.payrollStatus.PROCESSED)
+                        {
+
+                            <form method="post" asp-page-handler="Post" asp-route-id="@payroll.payrollID" style="display:inline">
+                                <button class="btn btn-sm btn-warning" onclick="return confirm('Are you sure you want to POST this payment?');"><i class="bi bi-airplane me-2"></i>Post</button>
+                            </form>
+                        }
+                        @if (payroll.payrollStatus == Enums.payrollStatus.POSTED)
+                        {
+                            <form method="post" asp-page-handler="Complete" asp-route-id="@payroll.payrollID" style="display:inline">
+                                <button class="btn btn-sm btn-success" onclick="return confirm('Are you sure you want to COMPLETE this payment?');"><i class="bi bi-door-closed me-2"></i>Complete</button>
+                            </form>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+<div class="d-flex justify-content-end m-2 align-items-end">
+    @await Html.PartialAsync("back")
+    @await Html.PartialAsync("print")
+</div>

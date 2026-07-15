@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using PIS2.Data;
+using PIS2.Enums;
 using PIS2.Models;
 using PIS2.Pages.Management;
 using PIS2.Services;
@@ -23,11 +24,12 @@ namespace PIS2.Pages.Report
     {
         private readonly PISContext _context;
         private readonly Core _core;
-
-        public LeaveReportModel(PISContext context, Core core)
+        private readonly LeaveService _leaveService;
+        public LeaveReportModel(PISContext context, Core core, LeaveService leaveService)
         {
             _context = context;
             _core = core;
+            _leaveService = leaveService;
         }
 
         [BindProperty(SupportsGet = true)]
@@ -66,6 +68,7 @@ namespace PIS2.Pages.Report
         public int CountUnposted { get; set; } = default!;
        
         public List<LeaveBalanceDepartmentView> AnnualLeaveSummaries { get; set; }
+        public List<ExpiringLeaveDto> ExpiringLeaves { get; set; }
         public async Task OnGetAsync()
         {
             //Custom Report 
@@ -124,68 +127,72 @@ namespace PIS2.Pages.Report
             AnnualLeaveSummaries = new List<LeaveBalanceDepartmentView>();
             AnnualLeaveSummaries = await _context.LeaveBalanceDepartmentView
                 .OrderByDescending(d => d.PayableLeave).ToListAsync();
+
+            var emps = await _context.EmployeeDetailViews.Where(e => e.EmploymentStatus == mainStatus.Active).ToListAsync();
+            var exps = await _leaveService.GetAllExpiringLeaves(emps, 2);
+            ExpiringLeaves = exps.Where(e => e.days > 0).ToList();
         }
 
         // Post handler
-        public IActionResult OnGetFilter(int? department,int? leaveGroup, int? leaveStatus, int? leaveType, int? company, DateTime? dateStart, DateTime? dateEnd, string? empEp)
+        public IActionResult OnGetFilter([FromQuery] LeaveReportFilter filter)
         {
             var leaveModel = _context.LeaveReportView.AsQueryable();
             
             // Filter by company (if provided)
-            if (company.HasValue && company != null)
+            if (filter.company.HasValue && filter.company != null)
             {
-                leaveModel = leaveModel.Where(e => e.CompanyID == company);
+                leaveModel = leaveModel.Where(e => e.CompanyID == filter.company);
 
             }
 
             // Filter by Department (if provided)
-            if (department.HasValue && department != null)
+            if (filter.department.HasValue && filter.department != null)
             {
-                leaveModel = leaveModel.Where(e => e.DepartmentID == department);
+                leaveModel = leaveModel.Where(e => e.DepartmentID == filter.department);
 
             }
 
             // Filter by Status (if provided)
-            if (leaveStatus.HasValue)
+            if (filter.leaveStatus.HasValue)
             {
-                leaveModel = leaveModel.Where(e => e.LeaveStatus == (leaveStatus)leaveStatus);
+                leaveModel = leaveModel.Where(e => e.LeaveStatus == (leaveStatus)filter.leaveStatus);
 
             }
 
             // Filter by group (if provided)
-            if (leaveGroup.HasValue)
+            if (filter.leaveGroup.HasValue)
             {
-                leaveModel = leaveModel.Where(e => e.LeaveGroup == (leaveGroup)leaveGroup);
+                leaveModel = leaveModel.Where(e => e.LeaveGroup == (leaveGroup)filter.leaveGroup);
 
             }
 
 
             // Filter by type (if provided)
-            if (leaveType.HasValue && leaveType != null)
+            if (filter.leaveType.HasValue && filter.leaveType != null)
             {
 
-                leaveModel = leaveModel.Where(e => e.LeaveTypeID == leaveType);
+                leaveModel = leaveModel.Where(e => e.LeaveTypeID == filter.leaveType);
             }
 
 
             // Filter by Start TIme (if provided)
-            if (dateStart.HasValue && dateStart != null)
+            if (filter.dateStart.HasValue && filter.dateStart != null)
             {
                 leaveModel = leaveModel
-                    .Where(e => e.LeaveStart >= dateStart);
+                    .Where(e => e.LeaveStart >= filter.dateStart);
             }
             // Filter by end TIme (if provided)
-            if (dateEnd.HasValue && dateEnd != null)
+            if (filter.dateEnd.HasValue && filter.dateEnd != null)
             {
                 leaveModel = leaveModel
-                    .Where(e => e.LeaveEnd <= dateEnd);
+                    .Where(e => e.LeaveEnd <= filter.dateEnd);
             }
 
             // Filter by Employee Ep
-            if (!String.IsNullOrEmpty(empEp))
+            if (!String.IsNullOrEmpty(filter.empEp))
             {
                 leaveModel = leaveModel
-                    .Where(e => e.GivenID == empEp);
+                    .Where(e => e.GivenID == filter.empEp);
             }
 
 
@@ -193,7 +200,7 @@ namespace PIS2.Pages.Report
             var filteredLeaves = leaveModel.OrderBy(e => e.LeaveRequestDate).ToList();
             filteredCount = filteredLeaves.Count;
             totalDays = filteredLeaves?.Sum(l => l.LeaveDays) ?? 0;
-            CountUnposted = filteredLeaves.Count(l => l.LeaveStatus == Models.leaveStatus.Hold);
+            CountUnposted = filteredLeaves.Count(l => l.LeaveStatus == Enums.leaveStatus.Hold);
             totalCount = filteredLeaves?.Count() ?? 0;
             totalCost = filteredLeaves?.Sum(l => l.LeaveValue) ?? 0;
             filteredCount = filteredLeaves?.GroupBy(l => l.EmploymentID).Count() ?? 0;
@@ -202,7 +209,7 @@ namespace PIS2.Pages.Report
 
 
             // DETERMINE THE FLEXIBLE GROUPING
-            double totalDaysDiff = (dateEnd ?? DateTime.Now).Subtract(dateStart ?? DateTime.Now.AddYears(-1)).TotalDays;
+            double totalDaysDiff = (filter.dateEnd ?? DateTime.Now).Subtract(filter.dateStart ?? DateTime.Now.AddYears(-1)).TotalDays;
 
             var flexibleSummary = filteredLeaves
                 .GroupBy(l => {
@@ -364,9 +371,7 @@ namespace PIS2.Pages.Report
                 });
             }
 
-            
             var workingDays = _core.GetWorkingDays(filteredLeave.Min(g => g.LeaveStart), filteredLeave.Max(g => g.LeaveEnd));
-
 
             Leaves = filteredLeave.GroupBy(r => r.CompanyID)
                 .Select(g => new LeaveReportCompany
@@ -399,8 +404,6 @@ namespace PIS2.Pages.Report
                         }).OrderByDescending(lg => lg.LeaveTypeCount).Take(3).ToList()
                     }).OrderByDescending(dg => dg.DepartmentSum).ToList()
                 }).OrderByDescending(g => g.CompanySum).ToList();
-
-            
 
             var tableHtml = new StringBuilder();
 
@@ -508,39 +511,45 @@ namespace PIS2.Pages.Report
             return new JsonResult(new { tableHtml = tableHtml.ToString(), employees, totalDays, perEmployee, countAbsenteesm, absenteesmRate, absenteesmCost, trendData = trendList, deptData, typeData});
         }
 
+        //Expiring Leaves Filter
+        public async Task<IActionResult> OnGetExpiringLeave(Filter_Ex_Leaves_DTO filter)
+        {
+            var emps = _context.EmployeeDetailViews.AsQueryable();
+            if (filter.company.HasValue && filter.company.Value > 0)
+            {
+                emps = emps.Where(e => e.CompanyID == filter.company);
+            }
+            if (filter.department.HasValue && filter.department.Value > 0)
+            {
+                emps = emps.Where(e => e.DepartmentID == filter.department);
+            }
+            if (filter.position.HasValue && filter.position.Value > 0)
+            {
+                emps = emps.Where(e => e.EmploymentPosition == (EmploymentPositions) filter.position);
+            }
+            var filtered = emps.ToList();
+            var exps = await _leaveService.GetAllExpiringLeaves(filtered, filter.years ?? 2);
+            exps = exps.Where(e => e.days > 0).ToList();
+            return Partial("_ExpiringLeaves", exps);
+        }
     }
-    public class LeaveReportCompany
+
+    public class LeaveReportFilter
     {
-        public int CompanyID { get; set; }
-        public string CompanyName { get; set; }       
-        public int EmployeeTotal { get; set; }
-        public decimal WorkingDays { get; set; }
-        public int CompanyTotal { get; set; }
-        public decimal? CompanySum { get; set; }
-        public decimal? CompanyCost { get; set; }
-        public DateTime StartDate { get; set; }
-        public DateTime EndDate { get; set; }
-        public List<LeaveReportDepartment>? Departments { get; set; }
+        public int? department { get; set; }
+        public leaveStatus? leaveStatus { get; set; }
+        public leaveGroup? leaveGroup { get; set; }
+        public int? leaveType { get; set; }
+        public int? company { get; set; }
+        public DateTime? dateStart { get; set; } // Use DateTime for auto-parsing
+        public DateTime? dateEnd { get; set; }
+        public string? empEp { get; set; }
     }
-
-    public class LeaveReportDepartment
+    public class Filter_Ex_Leaves_DTO
     {
-        public string DepartmentName { get; set; }
-        public int DepartmentID { get; set; }
-        public int DepartmentTotal { get; set; }
-        public int EmployeeTotal { get; set; }
-        public decimal? DepartmentSum { get; set; }
-        public decimal? DepartmentCost { get; set; }
-        public List<LeaveReportType>? LeaveTypes { get; set; }
+        public int? department { get; set; }
+        public int? company { get; set; }
+        public int? position { get; set; }
+        public int? years { get; set; }
     }
-
-    public class LeaveReportType
-    {
-        public string LeaveType { get; set; }
-        public int LeaveTypeCount { get; set; }
-        public decimal? LeaveTypeSum { get; set; }
-        public decimal? LeaveTypeCost { get; set; }
-    }
-
-
 }

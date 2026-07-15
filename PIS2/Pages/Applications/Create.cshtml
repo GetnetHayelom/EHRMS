@@ -43,12 +43,6 @@
             </datalist>
             <span asp-validation-for="Applicant.personID" class="text-danger"></span>
         </div>
-
-        <div class="mb-3">
-            <label asp-for="Applicant.ResumeFilePath" class="form-label">Upload Resume</label>
-            <input asp-for="Applicant.ResumeFilePath" class="form-control" type="file"/>
-        </div>
-
    
         <button type="submit" class="btn btn-success">Save Applicant</button>
         <a asp-page="Index" class="btn btn-secondary ms-2">Cancel</a>

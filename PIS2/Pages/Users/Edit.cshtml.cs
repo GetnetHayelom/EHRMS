@@ -9,6 +9,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Text.Json;
 using PIS2.Data;
+using PIS2.Enums;
 
 namespace PIS2.Pages.Users
 {

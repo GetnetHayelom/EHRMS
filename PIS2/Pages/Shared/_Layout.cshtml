@@ -8,7 +8,6 @@
     <link href="~/lib/quill/quill.snow.css" rel="stylesheet" />
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link href="~/icons/bootstrap-icons.css" rel="stylesheet" />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/PIS2.styles.css" asp-append-version="true" />
     <script src="~/js/chart.umd.js"></script>
@@ -310,8 +309,8 @@
                 <a class="nav-link" data-bs-toggle="collapse" href="#payroll"><i class="bi bi-cash-coin"></i> Payroll Management</a>
                 <div class="collapse submenu" id="payroll">
                     <a class="nav-link" asp-page="/Payroll/Index">Process Payroll</a>
-                    <a class="nav-link" asp-page="/EarningRecord/Create">Manual Earnings</a>
-                    <a class="nav-link" asp-page="/DeductionRecord/Create">Manual Deductions</a>
+                    <a class="nav-link" asp-page="/EarningRecord/Index">Manual Earnings</a>
+                    <a class="nav-link" asp-page="/DeductionRecord/Index">Manual Deductions</a>
                     <a class="nav-link" asp-page="/Benefits/Index">Other Payments</a>
                 </div>
             }
@@ -448,6 +447,8 @@
 
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/jquery/dist/jquery.dataTables.min.js"></script>
+    <link rel="stylesheet" src="~/lib/jquery/dist/jquery.dataTables.min.css" />
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js"></script>
     <script src="~/js/funcs.js"></script>
@@ -543,7 +544,7 @@
                 data: form.serialize(),
 
                 success: function (response) {
-                    // handled globally (your toast handler)
+                    // handled globally (the toast handler)
                 },
 
                 error: function (xhr) {
@@ -561,8 +562,10 @@
 
                 if (response) {
                     console.log("Global JSON handler:", response);
-
-                    showToast(response.success, response.message);
+                    if(Object.prototype.hasOwnProperty.call(response, "success"))
+                    {
+                        showToast(response.success, response.message);
+                    }                   
                 }
             } catch (e) {
                 console.log("Not JSON response");

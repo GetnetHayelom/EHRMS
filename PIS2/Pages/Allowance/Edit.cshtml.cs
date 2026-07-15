@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using PIS2.Data;
+using PIS2.Enums;
 using PIS2.Models;
 
 namespace PIS2.Pages.Allowance
@@ -22,7 +23,7 @@ namespace PIS2.Pages.Allowance
 
         [BindProperty]
         public allowanceModel allowanceModel { get; set; } = default!;
-
+        public SelectList EarningType { get; set; }
         public async Task<IActionResult> OnGetAsync(int? id)
         {
             if (!User.IsInRole("MIE\\PMS_HRADMIN"))
@@ -34,11 +35,14 @@ namespace PIS2.Pages.Allowance
                 return NotFound();
             }
 
-            var allowancemodel =  await _context.Allowances.FirstOrDefaultAsync(m => m.allowanceID == id);
+            var allowancemodel =  await _context.Allowances.Include(e => e.EarningType).FirstOrDefaultAsync(m => m.allowanceID == id);
             if (allowancemodel == null)
             {
                 return NotFound();
             }
+
+            var earn = await _context.EarningTypes.Where(e => e.earningTypeStatus == mainStatus.Active).ToListAsync();
+            EarningType = new SelectList(earn, "earningTypeID", "earningTypeName");
             allowanceModel = allowancemodel;
             return Page();
         }

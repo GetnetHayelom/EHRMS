@@ -49,7 +49,7 @@ namespace PIS2.Pages.JobRequirement
         {
             ModelState.Clear();
 
-            jobReqStatus newStatsus = jobRequirementModel.jobRequirementStatus;
+            Enums.jobReqStatus newStatsus = jobRequirementModel.jobRequirementStatus;
 
             var exRow = await _context.JobRequirements.FirstOrDefaultAsync(j => j.jobRequirementID == jobRequirementModel.jobRequirementID);
             if (exRow == null)
@@ -58,7 +58,7 @@ namespace PIS2.Pages.JobRequirement
             }
 
             int reqID = exRow.jobRequirementID;
-            jobReqStatus oldStatus = exRow.jobRequirementStatus;
+            Enums.jobReqStatus oldStatus = exRow.jobRequirementStatus;
 
             exRow.modifiedBy = User.Identity.Name;
             exRow.modifiedDate = DateTime.Now;
@@ -82,7 +82,7 @@ namespace PIS2.Pages.JobRequirement
             }
             
             var isPublished = await _context.Vacancies.AnyAsync(v => v.jobRequirementID == reqID);
-            if(!isPublished && (oldStatus == jobReqStatus.Hold && newStatsus == jobReqStatus.Approved))
+            if(!isPublished && (oldStatus == Enums.jobReqStatus.Hold && newStatsus == Enums.jobReqStatus.Approved))
             {
                 return RedirectToPage("/Vacancy/Create", new { id = reqID });
             }

@@ -23,8 +23,10 @@ namespace PIS2.Pages.EarningRecord
         public async Task OnGet()
         {
             Earnings = new List<earningModel>();
-            Earnings = await _db.Earnings.Include(e => e.earningType)
+            Earnings = await _db.Earnings
+                .Include(e => e.earningType)
                 .Include(e => e.EmploymentModel).ThenInclude(e => e.personModel)
+                .Where(e => !e.earningType.isPayroll)
                 .ToListAsync();
         }
     }

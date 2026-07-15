@@ -30,7 +30,7 @@ namespace PIS2.Pages.Training
             ModelState.Clear();
             Training.modifiedBy = User.Identity.Name;
             Training.modifiedDate = DateTime.Now;
-            Training.trainingStatus = trainingStatus.Planned;
+            Training.trainingStatus = Enums.trainingStatus.Planned;
 
             if (!ModelState.IsValid || _context.Trainings == null || Training == null)
             {

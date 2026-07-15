@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using PIS2.Data;
+using PIS2.Enums;
 using PIS2.Models;
 using PIS2.Views;
 using System;
@@ -40,7 +41,7 @@ namespace PIS2.Pages.Absentism
 
         public async Task OnGetAsync(int? id)
         {
-            var absLeaveIDs =await _context.LeaveTypes.Where(l => l.leaveGroup == leaveGroup.Absentism).Select(l => l.leaveTypeID).ToListAsync();
+            var absLeaveIDs =await _context.LeaveTypes.Where(l => l.leaveGroup == leaveGroup.Absenteeism).Select(l => l.leaveTypeID).ToListAsync();
             var leaves= _context.LeaveReportView.Where(l => absLeaveIDs.Contains(l.LeaveTypeID ?? 0)).AsQueryable();
 
             Companies = await _context.Companies.Where(d => d.companyStatus == mainStatus.Active).OrderBy(c => c.companyName).ToListAsync();

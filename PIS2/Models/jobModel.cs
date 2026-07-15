@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using PIS2.Enums;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Drawing;

@@ -4,13 +4,16 @@ using PIS2.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
 using PIS2.Data;
+using PIS2.Enums;
 
 namespace PIS2.Pages.Payroll
 {
+    [Authorize(Roles = @"MIE\PMS_HRCLERK,MIE\PMS_HRMANAGER,MIE\PMS_PAYROLL")]
     public class CreateModel : PageModel
     {
         private readonly PISContext _db;
 
+        
         public CreateModel(PISContext db)
         {
             _db = db;
@@ -21,7 +24,7 @@ namespace PIS2.Pages.Payroll
 
         public IList<companyModel> Companies { get; set; } = new List<companyModel>();
 
-        [Authorize(Roles = @"MIE\PMS_HRCLERK,MIE\PMS_HRMANAGER,MIE\PMS_PAYROLL")]
+        
         public async Task OnGetAsync()
         {
             var lastPayroll = await _db.Payrolls.Where(p => p.payrollStatus == payrollStatus.COMPLETED).OrderBy(p => p.EndDate).LastOrDefaultAsync();
@@ -41,13 +44,13 @@ namespace PIS2.Pages.Payroll
             ModelState.Remove("Payroll.modifiedBy");
             Payroll.modifiedBy = User.Identity.Name ?? "system";
             Payroll.payrollMonth = Payroll.StartDate.Month.ToString();
-            
+            Payroll.IsPayroll = true;
+
             if (!ModelState.IsValid)
             {
                 Companies = await _db.Companies.Where(c => c.companyStatus == mainStatus.Active).ToListAsync();
                 return Page();
             }
-
             
             _db.Payrolls.Add(Payroll);
             await _db.SaveChangesAsync();

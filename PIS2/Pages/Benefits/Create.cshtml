@@ -17,38 +17,35 @@
                 <div class="row">
                     <div class="col-md-6 border-right">
                         <div class="form-group mb-3">
-                            <label asp-for="OtherPay.invoiceNo" class="form-label font-weight-bold">Invoice Number</label>
-                            <input asp-for="OtherPay.invoiceNo" class="form-control" placeholder="REF-0000" />
-                            <span asp-validation-for="OtherPay.invoiceNo" class="text-danger"></span>
+                            <label asp-for="OtherPay.referenceType" class="form-label font-weight-bold">Invoice Number</label>
+                            <input asp-for="OtherPay.referenceType" class="form-control" placeholder="Invoice, Cheque No" />
+                            <span asp-validation-for="OtherPay.referenceType" class="text-danger"></span>
                         </div>
-
                         <div class="form-group mb-3">
-                            <label asp-for="OtherPay.earningID" class="form-label font-weight-bold">Earning Link</label>
-                            <select asp-for="OtherPay.earningID" class="form-control" asp-items="ViewBag.earningID">
-                                <option value="">-- Select Earning --</option>
-                            </select>
-                            <span asp-validation-for="OtherPay.earningID" class="text-danger"></span>
+                            <label asp-for="OtherPay.reference" class="form-label font-weight-bold">Invoice Number</label>
+                            <input asp-for="OtherPay.reference" class="form-control" placeholder="REF-0000" />
+                            <span asp-validation-for="OtherPay.reference" class="text-danger"></span>
                         </div>
 
                     </div>
 
                     <div class="col-md-6">
                         <div class="form-group mb-3">
-                            <label asp-for="OtherPay.GrossPay" class="form-label font-weight-bold">Gross Amount</label>
+                            <label asp-for="OtherPay.totalGross" class="form-label font-weight-bold">Gross Amount</label>
                             <div class="input-group">
                                 <span class="input-group-text">$</span>
-                                <input asp-for="OtherPay.GrossPay" id="gross" class="form-control" type="number" step="0.01" />
+                                <input asp-for="OtherPay.totalGross" id="gross" class="form-control" type="number" step="0.01" />
                             </div>
-                            <span asp-validation-for="OtherPay.GrossPay" class="text-danger"></span>
+                            <span asp-validation-for="OtherPay.totalGross" class="text-danger"></span>
                         </div>
 
                         <div class="form-group mb-3">
-                            <label asp-for="OtherPay.NetPay" class="form-label font-weight-bold">Net Amount</label>
+                            <label asp-for="OtherPay.totalNet" class="form-label font-weight-bold">Net Amount</label>
                             <div class="input-group">
                                 <span class="input-group-text">$</span>
-                                <input asp-for="OtherPay.NetPay" id="net" class="form-control" type="number" step="0.01" />
+                                <input asp-for="OtherPay.totalNet" id="net" class="form-control" type="number" step="0.01" />
                             </div>
-                            <span asp-validation-for="OtherPay.NetPay" class="text-danger"></span>
+                            <span asp-validation-for="OtherPay.totalNet" class="text-danger"></span>
                         </div>
 
                         <div class="form-group mb-3">

@@ -21,7 +21,7 @@ namespace PIS2.Pages.Archive
         {
             Letters = await _db.Letters
                 .Include(l => l.LetterType)
-                .Where(l => l.letterStatus == LetterStatus.Approved)
+                .Where(l => l.letterStatus == Enums.LetterStatus.Approved)
                 .OrderByDescending(l => l.letterDate)
                 .ToListAsync();
         }

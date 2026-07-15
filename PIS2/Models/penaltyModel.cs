@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using PIS2.Enums;
+using System.ComponentModel.DataAnnotations;
 
 namespace PIS2.Models
 {
@@ -54,27 +55,5 @@ namespace PIS2.Models
         public penaltyTypeModel() { }
     }
 
-    public enum penaltyStatus
-    {
-        Hold,
-        Post,
-        Pending,
-        Complete,
-        Void
-    }
-
-    public enum penaltyCategory
-    {
-        Deciplinary,
-        PerformanceRelated,
-        PolicyViolation
-    }
-    public enum penaltyBase
-    {
-        SALARY,
-        ALLOWANCE,
-        NET,
-        GROSS,
-        NONE
-    }
+    
 }

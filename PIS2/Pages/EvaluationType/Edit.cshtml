@@ -1,15 +1,16 @@
 ﻿@page "{id:int}"
+@using PIS2.Enums
 @model PIS2.Pages.EvaluationType.EditModel
 @{
     ViewData["Title"] = "Edit Evaluation Type";
 }
 
-<h1 class="fw-bold">Evaluation Type</h1>
-<h4 class="fw-bold">Update Evaluation Type</h4>
+<h2 class="fw-bold mb-0">Evaluation Type</h2>
+<p class="text-muted mb-0">Update Evaluation Type #@Model.EvaluationType.evaluationTypeID</p>
 
 <form method="post" class="card shadow-sm">
     <input type="hidden" asp-for="EvaluationType.evaluationTypeID" />
-    <div class="d-flex p-2 gap-4">
+    <div class="d-flex p-2 gap-4 align-items-end">
         <div class="mb-3 col-md-3">
             <label asp-for="EvaluationType.evaluationTypeName" class="form-label">Evaluation Name</label>
             <input asp-for="EvaluationType.evaluationTypeName" class="form-control" />
@@ -28,12 +29,12 @@
         <div class="mb-3 col-md-1">
             <label asp-for="EvaluationType.evaluationTypeStatus" class="form-label">Status</label>
             <select asp-for="EvaluationType.evaluationTypeStatus" class="form-select"
-                    asp-items="Html.GetEnumSelectList<Models.mainStatus>()"></select>
+                    asp-items="Html.GetEnumSelectList<mainStatus>()"></select>
         </div>
         <div class="mb-3 col-md-2">
             <label asp-for="EvaluationType.Position" class="form-label">Target Position</label>
             <select asp-for="EvaluationType.Position" class="form-select"
-                    asp-items="Html.GetEnumSelectList<Models.EmploymentPositions>()">
+                    asp-items="Html.GetEnumSelectList<Enums.EmploymentPositions>()">
                 <option value=""> All</option>
             </select>
         </div>

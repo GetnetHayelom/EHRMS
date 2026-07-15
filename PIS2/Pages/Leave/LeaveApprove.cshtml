@@ -69,7 +69,7 @@
                 @Html.DisplayFor(modelItem => item.leaveStatus)
             </td>
             <td class="d-flex justify-content-between flex-grow-1">
-                    @if (item.leaveStatus == Models.leaveStatus.Posted)
+                    @if (item.leaveStatus == Enums.leaveStatus.Posted)
                     {
                         <p>Leave is posted; No further action.</p>
                     }

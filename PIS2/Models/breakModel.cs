@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authentication;
+using PIS2.Enums;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 

@@ -1,6 +1,7 @@
 ﻿
 using Microsoft.EntityFrameworkCore;
 using PIS2.Data;
+using PIS2.Enums;
 using PIS2.Models;
 using PIS2.Views;
 
@@ -95,23 +96,12 @@ namespace PIS2.Services
                 CompanyID = emp.CompanyID,
                 CompanyName = emp.CompanyName,
                 DepartmentName = emp.DepartmentName,
-                DepartmentID = emp.DepartmentID
+                DepartmentID = emp.DepartmentID,
+                Cost = expiringDays * emp.Salary/Global_C.DAYS_PER_MONTH
             };
             return expireDto;
         }
     }
 
-    public class ExpiringLeaveDto
-    {
-        public int employmentID { get; set; }
-        public string givenID { get; set; }
-        public string FullName { get; set; }
-        public decimal days { get; set; }
-        public DateTime expDate { get; set; }
-        public Gender Gender { get; set; }
-        public string? CompanyName { get; set; }
-        public int? CompanyID { get; set; }
-        public string? DepartmentName { get; set; }
-        public int? DepartmentID { get; set; }
-    }
+    
 }

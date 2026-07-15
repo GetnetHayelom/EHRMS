@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using PIS2.Data;
+using PIS2.Enums;
 using PIS2.Models;
 
 namespace PIS2.Pages.LeaveType
@@ -74,7 +75,7 @@ namespace PIS2.Pages.LeaveType
 
             AnnualLeaveCount = all.Count(l => l.leaveGroup == leaveGroup.AnnualLeave);
             AllowedLeaveCount = all.Count(l => l.leaveGroup == leaveGroup.AllowedLeave);
-            AbsentismCount = all.Count(l => l.leaveGroup == leaveGroup.Absentism);
+            AbsentismCount = all.Count(l => l.leaveGroup == leaveGroup.Absenteeism);
         }
     }
 }

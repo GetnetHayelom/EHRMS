@@ -141,7 +141,7 @@
                                                         <td class="fw-medium" readonly><input value="@sub.evaluationSubTaskWeight" class="v-weight"/></td>
                                                         <td>
                                                             <select class="form-select form-select-sm v-time" onchange="saveValuation(this)"
-                                                                    asp-items="@Html.GetEnumSelectList<Models.ProficiencyLevel>().OrderByDescending(x => x.Value)">
+                                                                    asp-items="@Html.GetEnumSelectList<Enums.ProficiencyLevel>().OrderByDescending(x => x.Value)">
 
                                                                 <option value="" selected disabled>-- Select Score --</option>
 
@@ -150,7 +150,7 @@
 
                                                         <td>
                                                             <select class="form-select form-select-sm v-res" onchange="saveValuation(this)"
-                                                                    asp-items="@Html.GetEnumSelectList<Models.ProficiencyLevel>().OrderByDescending(x => x.Value)">
+                                                                    asp-items="@Html.GetEnumSelectList<Enums.ProficiencyLevel>().OrderByDescending(x => x.Value)">
                                                                 <option value="" selected disabled>-- Select Score --</option>
 
                                                             </select>
@@ -158,7 +158,7 @@
 
                                                         <td>
                                                             <select class="form-select form-select-sm v-perf" onchange="saveValuation(this)"
-                                                                    asp-items="@Html.GetEnumSelectList<Models.ProficiencyLevel>().OrderByDescending(x => x.Value)">
+                                                                    asp-items="@Html.GetEnumSelectList<Enums.ProficiencyLevel>().OrderByDescending(x => x.Value)">
                                                                 <option value="" selected disabled>-- Select Score --</option>
 
                                                             </select>
@@ -233,7 +233,7 @@
         <td><input type="number" class="v-weight form-control form-control-sm " placeholder="Subtask weight" onchange="addSubTask(this)" /></td>
         <td>
             <select class="form-select form-select-sm v-time" onchange="saveValuation(this)"
-                    asp-items="@Html.GetEnumSelectList<Models.ProficiencyLevel>().OrderByDescending(x => x.Value)">
+                    asp-items="@Html.GetEnumSelectList<Enums.ProficiencyLevel>().OrderByDescending(x => x.Value)">
                 
                 <option value="" selected disabled>-- Select Score --</option>
                 
@@ -242,7 +242,7 @@
 
         <td>
             <select class="form-select form-select-sm v-res" onchange="saveValuation(this)"
-            asp-items="@Html.GetEnumSelectList<Models.ProficiencyLevel>().OrderByDescending(x => x.Value)">
+            asp-items="@Html.GetEnumSelectList<Enums.ProficiencyLevel>().OrderByDescending(x => x.Value)">
                 <option value="" selected disabled>-- Select Score --</option>
                 
             </select>
@@ -250,7 +250,7 @@
 
         <td>
             <select class="form-select form-select-sm v-perf" onchange="saveValuation(this)"
-                    asp-items="@Html.GetEnumSelectList<Models.ProficiencyLevel>().OrderByDescending(x => x.Value)">
+                    asp-items="@Html.GetEnumSelectList<Enums.ProficiencyLevel>().OrderByDescending(x => x.Value)">
                 <option value="" selected disabled>-- Select Score --</option>
                 
             </select>

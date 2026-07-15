@@ -1,4 +1,5 @@
 ﻿@page
+@using PIS2.Enums
 @model PIS2.Pages.SubAccount.EditModel
 
 @{
@@ -23,6 +24,12 @@
             </div>
             <div class="form-group">
                 <span class="text-danger">*</span>
+                <label asp-for="subAccountModel.subAccountNumber" class="control-label">Sub-Account Number</label>
+                <input asp-for="subAccountModel.subAccountNumber" class="form-control" />
+                <span asp-validation-for="subAccountModel.subAccountNumber" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <span class="text-danger">*</span>
                 <label asp-for="subAccountModel.subAccountName" class="control-label">Sub-Account Name</label>
                 <input asp-for="subAccountModel.subAccountName" class="form-control" />
                 <span asp-validation-for="subAccountModel.subAccountName" class="text-danger"></span>
@@ -36,7 +43,7 @@
             <div class="form-group">
                 <span class="text-danger">*</span>
                 <label asp-for="subAccountModel.subAccountStatus" class="control-label">Status</label>
-                <select asp-for="subAccountModel.subAccountStatus" class="form-control" asp-items="Html.GetEnumSelectList<Models.mainStatus>()"></select>
+                <select asp-for="subAccountModel.subAccountStatus" class="form-control" asp-items="Html.GetEnumSelectList<mainStatus>()"></select>
                 <span asp-validation-for="subAccountModel.subAccountStatus" class="text-danger"></span>
             </div>
             <div class="form-group justify-content-end m-2">

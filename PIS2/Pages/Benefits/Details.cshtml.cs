@@ -17,18 +17,21 @@ namespace PIS2.Pages.Benefits
             _context = context;
         }
 
-        public otherPay OtherPay { get; set; } = default!;
+        public payrollModel OtherPay { get; set; } = default!;
         public List<Models.AuditLog> History { get; set; } = new();
+        public List<earningType> EarningTypes { get; set; }
+        public List<deductionType> DeductionTypes { get; set; }
 
         public async Task<IActionResult> OnGetAsync(int? id)
         {
+            EarningTypes = await _context.EarningTypes.ToListAsync();
+            DeductionTypes = await _context.DeductionTypes.ToListAsync();
             if (id == null) return NotFound();
 
             // Fetch the main record
-            OtherPay = await _context.OtherPayments
-                .Include(o => o.earningModel).ThenInclude(e => e.EmploymentModel).ThenInclude(e => e.personModel)
-                .Include(e => e.earningModel).ThenInclude(e => e.earningType)
-                .FirstOrDefaultAsync(m => m.paymentID == id);
+            OtherPay = await _context.Payrolls
+                .Include(o => o.PayrollPays).ThenInclude(e => e.EmploymentModel).ThenInclude(e => e.personModel)
+                .FirstOrDefaultAsync(m => m.payrollID == id);
 
             if (OtherPay == null) return NotFound();
 
@@ -53,12 +56,12 @@ namespace PIS2.Pages.Benefits
             }
 
             // Handle Enums (assuming mainStatus is 0=Active, 1=Inactive, etc.)
-            if (columnName == "paymentStatus")
+            if (columnName == "payrollStatus")
             {
                 if (int.TryParse(value, out int enumValue))
                 {
                     // Cast the integer back to the Enum to get the name (e.g., 0 -> "Active")
-                    return ((payrollStatus)enumValue).ToString();
+                    return ((Enums.payrollStatus)enumValue).ToString();
                 }
                 return value;
             }

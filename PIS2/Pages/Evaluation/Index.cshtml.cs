@@ -6,6 +6,7 @@ using PIS2.Data;
 using PIS2.Models;
 using PIS2.Views;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
+using PIS2.Enums;
 
 namespace PIS2.Pages.Evaluation
 {

@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using PIS2.Data;
+using PIS2.Enums;
 using PIS2.Models;
 using PIS2.Services;
 using PIS2.Views;
@@ -227,8 +228,8 @@ namespace PIS2.Pages.Department
                     {
                         leave.modifiedBy = User.Identity.Name!;
                         leave.leaveStatus = action == 1
-                            ? Models.leaveStatus.Approved
-                            : Models.leaveStatus.Declined;
+                            ? Enums.leaveStatus.Approved
+                            : Enums.leaveStatus.Declined;
                     }
 
                     _context.Attach(leave).State = EntityState.Modified;
@@ -243,8 +244,8 @@ namespace PIS2.Pages.Department
                     {
                         OTR.modifiedBy = User.Identity.Name!;
                         OTR.overtimeRecordStatus = action == 1
-                            ? Models.overtimeStatus.Approved
-                            : Models.overtimeStatus.Void;
+                            ? Enums.overtimeStatus.Approved
+                            : Enums.overtimeStatus.Void;
                     }
                     _context.Attach(OTR).State = EntityState.Modified;
                     await _context.SaveChangesAsync();

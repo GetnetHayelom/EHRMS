@@ -10,6 +10,7 @@ using System;
 using PIS2.Views;
 using System.Threading.Tasks;
 using PIS2.Data;
+using PIS2.Enums;
 
 namespace PIS2.Services
 {
@@ -27,7 +28,7 @@ namespace PIS2.Services
         const decimal weeksInAMonth = 4.33m;
         const int daysPerMonth = 26;
         const int workHoursPerDay = 8;
-
+        const int severanceStartYear = 5;
         
         //IS Self
         public int getUserEmp(string userName)
@@ -126,8 +127,6 @@ namespace PIS2.Services
         public List<overtimeRecordModel> getAllOvertime(string selectBy, int ID)
         {
             List<overtimeRecordModel> overtimes = new List<overtimeRecordModel>();
-            
-           
 
             switch (selectBy)
             {
@@ -589,25 +588,26 @@ namespace PIS2.Services
             var termination = await _context.Terminations.FirstOrDefaultAsync(e => e.employmentID == empID);
             var jobPlacement = await _context.JobPlacements
                 .Where(j => j.employmentID == empID)
-                .OrderByDescending(j => j.jobPlacementDate)
+                .OrderByDescending(j => j.jobPlacementStatus == mainStatus.Active) // Active first
+                .ThenByDescending(j => j.jobPlacementDate) // Then latest
                 .FirstOrDefaultAsync();
 
-            if (jobPlacement == null || jobPlacement.jobPlacementSalary <= 0)
-                return 0;
+            if (jobPlacement == null || jobPlacement.jobPlacementSalary <= 0) return 0;
 
             DateTime startDate = employment.employmentDate;
             DateTime endDate = termination?.terminationDate ?? DateTime.Now;
 
             if (startDate >= endDate) return 0;
-
+            
             decimal salary = jobPlacement.jobPlacementSalary;
             decimal yearsOfService = (decimal) (endDate - startDate).TotalDays/365.25m;
 
+            if (yearsOfService < Global_C.SEVERANCE_LEGIBILITY_YEAR) return 0;
             var severance = 0.0m;
 
             if(yearsOfService >= 1)
             {
-                var additionalYears = Math.Max(0, yearsOfService - 1);
+                var additionalYears = Math.Max(0, Math.Floor(yearsOfService) - 1);
                 severance = salary + additionalYears * (salary / 3);
             }
 

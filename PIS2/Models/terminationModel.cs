@@ -1,5 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
-
+using PIS2.Enums;
 namespace PIS2.Models
 {
     public class terminationModel
@@ -18,11 +18,5 @@ namespace PIS2.Models
 
         }
     }
-    public enum terminationStatus
-    {
-        Hold,
-        Approved,
-        Posted,
-        Complete
-    }
+    
 }

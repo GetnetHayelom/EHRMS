@@ -49,7 +49,7 @@ namespace PIS2.Pages.EarningRecord
                 
                 Earning.IsPercentage = false;
                 Earning.earningIteration = 1;
-                Earning.earningBase = earningBase.NONE;
+                Earning.earningBase = Enums.earningBase.NONE;
             }
             
             

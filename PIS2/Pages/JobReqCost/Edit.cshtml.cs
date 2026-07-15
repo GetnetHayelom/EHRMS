@@ -35,7 +35,7 @@ namespace PIS2.Pages.JobReqCost
             ModelState.Remove("JobReqCost.modifiedBy");
             JobReqCost.modifiedBy = User?.Identity?.Name ?? "System";
             JobReqCost.modifiedDate = DateTime.Now;
-            JobReqCost.jobReqStatus = jobReqStatus.Hold;
+            JobReqCost.jobReqStatus = Enums.jobReqStatus.Hold;
             
             if (!ModelState.IsValid)
                 return Page();

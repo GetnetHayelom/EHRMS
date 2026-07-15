@@ -1,4 +1,5 @@
 ﻿@page
+@using PIS2.Enums
 @model PIS2.Pages.Payroll.PayableModel
 @{
 }
@@ -41,11 +42,11 @@
                             <td>@(item.IsPercentage ? "Yes" : "No")</td>
                             <td>@item.earningBase</td>
                             <td>
-                                @if (item.earningStatus == Models.mainStatus.Active)
+                                @if (item.earningStatus == mainStatus.Active)
                                 {
                                     <span class="badge bg-success">@Html.DisplayFor(modelItem => item.earningStatus)</span>
                                 }
-                                else if (item.earningStatus == Models.mainStatus.Suspended)
+                                else if (item.earningStatus == mainStatus.Suspended)
                                 {
                                     <span class="badge bg-warning">@Html.DisplayFor(modelItem => item.earningStatus)</span>
                                 }

@@ -1,11 +1,12 @@
-﻿
-@model Models.mainStatus;
-@if (Model == Models.mainStatus.Active)
+﻿@using PIS2.Enums
+
+@model mainStatus;
+@if (Model == mainStatus.Active)
 {
     <span class="badge bg-success">@Model</span>
 
 }
-else if (Model == Models.mainStatus.Suspended)
+else if (Model == mainStatus.Suspended)
 {
     <span class="badge bg-warning">@Model</span>
 }

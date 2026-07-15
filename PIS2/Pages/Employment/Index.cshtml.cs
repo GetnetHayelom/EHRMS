@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using PIS2.Data;
+using PIS2.Enums;
 using PIS2.Models;
 using PIS2.Services;
 using System;

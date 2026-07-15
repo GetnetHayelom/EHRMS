@@ -1,4 +1,5 @@
 ﻿@page
+@using PIS2.Enums
 @model PIS2.Pages.Prohibition.CreateModel
 @{
     ViewData["Title"] = "Create Prohibition";
@@ -61,13 +62,13 @@
                         <h5>Select an Employee</h5>
                     </div>
                 }
-                else if (Model.Employment?.employmentStatus == Models.mainStatus.Inactive)
+                else if (Model.Employment?.employmentStatus == mainStatus.Inactive)
                 {
                     <div class="bg-danger text-white p-3 rounded">
                         <h5>Employee is Inactive</h5>
                     </div>
                 }
-                else if (Model.Employment?.employmentStatus == Models.mainStatus.Active)
+                else if (Model.Employment?.employmentStatus == mainStatus.Active)
                 {
                     <form method="post">
                         @Html.AntiForgeryToken()
@@ -98,7 +99,7 @@
                             <label asp-for="prohibitionModel.prohibitionType" class="form-label">Type</label>
                             <select asp-for="prohibitionModel.prohibitionType"
                                     class="form-select"
-                                    asp-items="Html.GetEnumSelectList<Models.ProhibitionType>()"></select>
+                                    asp-items="Html.GetEnumSelectList<Enums.ProhibitionType>()"></select>
                             <span asp-validation-for="prohibitionModel.prohibitionType" class="text-danger"></span>
                         </div>
 
@@ -166,7 +167,7 @@
                                     <td>@prob.prohibitionStart.ToString("MM/dd/yyyy")</td>
                                     <td>@prob.prohibitionEnd.ToString("MM/dd/yyyy")</td>
                                     <td>
-                                        @if (prob.prohibitionStatus == Models.mainStatus.Active)
+                                        @if (prob.prohibitionStatus == mainStatus.Active)
                                         {
                                             <span class="badge bg-success">@prob.prohibitionStatus</span>
                                         }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using PIS2.Enums;
 
 namespace PIS2.Models;
 
@@ -18,14 +19,4 @@ public class overtimeHistoryModel
 
     }
 
-}
-public enum overtimeStatus
-{
-    Hold,
-    Approved,
-    Posted,
-    Released,
-    Completed,
-    Cancelled,
-    Void
 }

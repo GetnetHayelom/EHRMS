@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using PIS2.Enums;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace PIS2.Models
@@ -17,7 +18,6 @@ namespace PIS2.Models
         public string? bankBranch { get; set; }
         public mainStatus bankInfoStatus { get; set; }
         public ICollection<payrollPay>? PayrollPays { get; set; } = null!;
-        public ICollection<otherPay>? OtherPayments { get; set; } = null!;
         public string modifiedBy { get; set; }
         public DateTime modifiedDate { get; set; } = DateTime.Now;
 

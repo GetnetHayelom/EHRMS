@@ -10,8 +10,8 @@
     <!-- Header -->
     <div class="d-flex justify-content-between align-items-center mb-2">
         <div>
-            <h1 class="fw-bold mb-0">Earnings</h1>
-            <h5 class="text-muted">@string.Join(", ", Model.Company)</h5>
+            <h2 class="fw-bold mb-0">Earnings</h2>
+            <p class="text-muted mb-0">@string.Join(", ", Model.Company)</p>
         </div>
 
         <div class="d-flex gap-2">
@@ -100,111 +100,163 @@
     <!-- TAB CONTENT -->
     <div class="card shadow-sm p-2 tab-content" id="mainTabsContent">
 
-       
         <!-- TAB 2: LIST VIEW -->
-        <div class="tab-pane fade" id="list-content" role="tabpanel">
-            @await Html.PartialAsync("filter")
-
-            <table class="table table-striped table-hover mt-3 print-full-width">
-                <thead class="bg-dark text-white">
-                    <tr>
-                        <th>Emp-ID</th>
-                        <th>Employee Name</th>
-                        <th>Job Title</th>
-                        <th>Department</th>
-                        <th>Salary</th>
-                        <th>Allowance</th>
-                        <th>Total</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var item in Model.EarningView)
-                    {
-                        <tr onclick="location.href='@Url.Page("Earning", new { id = item.empID })'" style="cursor:pointer">
-                            <td>@item.EmployeeID</td>
-                            <td>@item.EmployeeName</td>
-                            <td>@item.JobTitle</td>
-                            <td>@item.Department</td>
-                            <td>@item.Salary.ToString("N2")</td>
-                            <td>@item.Allowance.ToString("N2")</td>
-                            <td class="fw-bold">@Math.Round(item.Allowance + item.Salary, 2).ToString("N2")</td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
+        <div class="tab-pane fade show active" id="list-content" role="tabpanel">
             <div class="d-flex justify-content-end gap-3 d-print-none">
+                @await Html.PartialAsync("filter")
                 <excel-export table="list-content" filename="Earnings_Employees_Report_@(DateTime.UtcNow).xlsx"></excel-export>
                 @await Html.PartialAsync("print")
             </div>
+
+                <table class="table table-striped table-hover" id="dataTable">
+                    <thead class="bg-dark text-white">
+                        <tr>
+                            <th>S/No</th>
+                            <th>
+                                Emp-ID & Name
+                            </th>
+                            <th>
+                                Job Title
+                            </th>
+                            <th>
+                                Department/Company
+                            </th>
+
+                            <th>
+                                Earnings
+                            </th>
+
+                            <th>
+                                Total
+                            </th>
+                            <th class="d-print-none text-end px-2">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @{
+                            int index = 1;
+                        }
+                        @foreach (var item in Model.EarningView.GroupBy(e => e.employmentID))
+                        {                            
+                            var rowNumb = $"rowNumb{index}";
+                            <tr class="" data-bs-toggle="collapse" data-bs-target=".@rowNumb" style="cursor:pointer;">
+                                <td>@(index++)</td>
+                                <td>
+                                    <p class="m-0">@item.FirstOrDefault()?.givenID</p>
+                                    <p class="text-muted m-0">@item.FirstOrDefault()?.FullName</p>
+                                </td>
+                                <td>
+                                    @item.FirstOrDefault()?.jobTitle
+                                </td>
+                                <td>
+                                    <p class="m-0">@item.FirstOrDefault()?.departmentName</p>
+                                    <p class="text-muted m-0">@item.FirstOrDefault()?.companyName</p>
+                                </td>
+                                <td>
+                                </td>
+
+                                <td>
+                                    @item.Sum(e => e.earningAmount).ToString("N2")
+                                </td>
+
+                                <td class="d-print-none text-end px-2">
+                                    <a asp-page="/EmployeeService/Earning" asp-route-id="@item.FirstOrDefault()?.employmentID" class="btn btn-outline-primary">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                            foreach (var items2 in item)
+                            {
+                                <tr class="collapse @rowNumb">
+                                    <td>@(index++)</td>
+                                    <td colspan="3">
+                                    </td>
+                                    <td>@items2.earningTypeName</td>
+                                    <td>
+                                        @items2.earningAmount
+                                    </td>
+
+                                    <td>
+                                    </td>
+
+                                </tr>
+                            }
+                        }
+                        
+                       
+                    </tbody>
+                </table>
+                <div class="d-flex justify-content-end">
+                    @await Html.PartialAsync("print")
+                </div>
            
         </div>
         
         <!-- TAB 3: DEPARTMENT VIEW -->
         <div class="tab-pane fade" id="dep-content" role="tabpanel">
 
-            <table class="table table-striped table-hover mt-3 print-full-width">
-                <thead class="bg-dark text-white">
-                    <tr>
-                        <th>S/No</th>
-                        <th>Department Name</th>
-                        <th>Salary</th>
-                        <th>Allowance</th>
-                        <th>Total</th>
-                    </tr>
-                </thead>
-                <tbody id="departmentsAccordion">
-                    @{
-                        int index = 0;
-                        int rowNo = 1;
-                    }
-                    @foreach (var dep in Model.GroupedEarning)
-                    {
-                        var collapseId = $"collapse{index}";
-                        <tr data-bs-toggle="collapse" data-bs-target="#@collapseId" style="cursor:pointer;">
-                            <td><strong>@rowNo</strong></td>
-                            <td>@dep.Name</td>
-                            <td>@Math.Round(dep.Salary, 2).ToString("N2")</td>
-                            <td>@Math.Round(dep.Allowance, 2).ToString("N2")</td>
-                            <td class="fw-bold">@Math.Round(dep.Salary + dep.Allowance, 2).ToString("N2")</td>
-                        </tr>
-
+            <table class="table table-striped table-hover">
+                    <thead class="table-dark">
                         <tr>
-                            <td colspan="5" class="p-0">
-                                <div id="@collapseId" class="collapse" data-bs-parent="#departmentsAccordion">
-                                    <table class="table table-hover mb-0">
-                                        <thead class="bg-secondary text-white">
-                                            <tr>
-                                                <th>Employment ID</th>
-                                                <th>Employee Name</th>
-                                                <th>Job Title</th>
-                                                <th>Salary</th>
-                                                <th>Allowance</th>
-                                                <th>Total</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            @foreach (var item in dep.Records)
-                                            {
-                                                <tr onclick="location.href='@Url.Page("Earning", new { id = item.empID })'" style="cursor:pointer">
-                                                    <td>@item.EmployeeID</td>
-                                                    <td>@item.EmployeeName</td>
-                                                    <td>@item.JobTitle</td>
-                                                    <td>@item.Salary.ToString("N2")</td>
-                                                    <td>@item.Allowance.ToString("N2")</td>
-                                                    <td>@Math.Round(item.Salary + item.Allowance, 2).ToString("N2")</td>
-                                                </tr>
-                                            }
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </td>
+                            <th>S/No</th>
+                            <th>Company/Department Name</th>
+                            <th></th>
+                            <th>Salary</th>
+                            <th>Allowance</th>
+                            <th>Total</th>
                         </tr>
+                    </thead>
+                    <tbody id="departmentsAccordion">
+                        @{
+                            int index1 = 0;
+                            int rowNo = 1;
+                        }
+                        @foreach (var dep in Model.EarningView.GroupBy(e => e.companyID))
+                        {
+                            var collapseId = $"clps{index1}";
+                            <tr data-bs-toggle="collapse"
+                                data-bs-target=".@collapseId"
+                                style="cursor:pointer;">
+                                <td><p>@rowNo</p></td>
+                                <td colspan="2">                                  
+                                        @dep.FirstOrDefault()?.companyName
+                                </td>
+                                <td colspan="1">                                   
+                                        @Math.Round(dep.Where(e => e.earningTypeName.ToLower().Contains("salary")).Sum(e => e.earningAmount), 2).ToString("N2")                                   
+                                </td>
+                                <td colspan="1">                                    
+                                        @Math.Round(dep.Where(e => !e.earningTypeName.ToLower().Contains("salary")).Sum(e => e.earningAmount), 2).ToString("N2")                                  
+                                </td>
+                                <td colspan="2">                                 
+                                        @Math.Round(dep.Sum(e => e.earningAmount), 2).ToString("N2")
+                                </td>
+                            </tr>
+                            @foreach (var item in dep.GroupBy(d => d.departmentID))
+                            {
+                                <tr class="accordion-collapse collapse @collapseId">
+                                    <td></td>
+                                    <td colspan="2">
+                                        @item.FirstOrDefault()?.departmentName
+                                    </td>
 
-                        index++;
-                        rowNo++;
-                    }
-                </tbody>
-            </table>
+                                    <td colspan="1">
+                                        @Math.Round(item.Where(e => e.earningTypeName.ToLower().Contains("salary")).Sum(e => e.earningAmount), 2).ToString("N2")
+                                    </td>
+                                    <td colspan="1">
+                                        @Math.Round(item.Where(e => !e.earningTypeName.ToLower().Contains("salary")).Sum(e => e.earningAmount), 2).ToString("N2")
+                                    </td>
+                                    <td colspan="2">
+                                        @Math.Round(item.Sum(e => e.earningAmount), 2).ToString("N2")
+                                    </td>
+
+                                </tr>
+                            }
+                            index++;
+                            rowNo++;
+                        }
+                    </tbody>
+                </table>
+            
             <div class="d-flex justify-content-end gap-3 d-print-none">
                 <excel-export table="dep-content" filename="Earning_Department_Report_@(DateTime.UtcNow).xlsx"></excel-export>
                 @await Html.PartialAsync("print")

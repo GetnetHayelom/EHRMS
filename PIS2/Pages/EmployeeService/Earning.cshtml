@@ -112,7 +112,9 @@
                                         @foreach (var item in Model.payrollPay.EarningRecords)
                                         {
                                             <tr>
-                                                <td>@(Model.EarningTypes.First(e => e.earningTypeID == item.earningTypeID).earningTypeName)</td>
+                                                <td>@(item.earningType?.earningTypeName)<br />
+                                                    <p class="text-secondary small mb-0">@item.earningReference</p>
+                                                </td>
                                                 <td class="text-end fw-bold">@item.earningAmount.ToString("N2")</td>
                                             </tr>
                                         }
@@ -156,7 +158,9 @@
                                         @foreach (var item in Model.payrollPay.DeductionRecords)
                                         {
                                             <tr>
-                                                <td>@(Model.DeductionTypes.First(e => e.deductionTypeID == item.deductionTypeID).deductionName)</td>
+                                                <td>@(item.DeductionType?.deductionName)
+                                                    <p class="text-secondary small mb-0">@item.deductionReference</p>
+                                                </td>
                                                 <td class="text-end fw-bold">@item.deductionAmount?.ToString("N2")</td>
                                             </tr>
                                         }
@@ -257,7 +261,7 @@
                     <canvas id="summaryChart"></canvas>
                 </div>
                 <div class="text-center mt-2">
-                    <small class="text-muted">Gross: @(Model.payrollPay?.GrossPay.ToString("N2") ?? "0") Br | Net: @(Model.payrollPay?.NetPay.ToString("N2") ?? "0") Br</small>
+                    <small class="text-muted">Gross: @(Model.Gross.ToString("N2") ?? "0") Br | Net: @(Model.payrollPay?.NetPay.ToString("N2") ?? "0") Br</small>
                 </div>
             </div>
         </div>
@@ -302,7 +306,7 @@
                         foreach (var earning in Model.payrollPay.EarningRecords)
                         {
                                 <text>@Html.Raw(Json.Serialize(
-                                                        Model.EarningTypes.First(e => e.earningTypeID == earning.earningTypeID).earningTypeName
+                                                        earning?.earningType?.earningTypeName
                                                 )),</text>
                         }
                 }
@@ -325,7 +329,7 @@
                         foreach (var deduction in Model.payrollPay.DeductionRecords)
                         {
                                 <text>@Html.Raw(Json.Serialize(
-                                                        Model.DeductionTypes.First(d => d.deductionTypeID == deduction.deductionTypeID).deductionName
+                                                        deduction?.DeductionType?.deductionName
                                                 )),</text>
                         }
                 }

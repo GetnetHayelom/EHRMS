@@ -30,9 +30,7 @@
                     </div>
                     <div class="col-md-6">
                         <!-- Selector -->
-                        
-                            <label asp-for="VacancyModel.jobRequirementID" class="form-label fw-semibold">Job Request Reference
-                            </label>
+                        <label asp-for="VacancyModel.jobRequirementID" class="form-label fw-semibold">Job Request Reference</label>
                         <input type="text" class="form-control" list="requestList" placeholder="Type to search..." oninput="selector(this, 'requestIDHidden')"  />
                             <input type="hidden" asp-for="VacancyModel.jobRequirementID" id="requestIDHidden" onchange="loadInfo()" value="@Model.JobReq?.jobRequirementID"/>
                             <datalist id="requestList">
@@ -64,7 +62,7 @@
                             <datalist id="jobList">
                                 @foreach (var job in Model.JobList)
                                 {
-                                    <option data-id="@job.jobID" value="@job.jobTitle">@job.jobTitle</option>
+                                    <option data-id="@job.Value" value="@job.Text"></option>
                                 }
                             </datalist>
                             <span asp-validation-for="VacancyModel.jobID" class="text-danger small"></span>
@@ -113,7 +111,7 @@
                     </div>
                     <div class="col-md-4">
                         <label asp-for="VacancyModel.VacancyType" class="form-label fw-semibold small"><span class="text-danger">*</span> Vacancy Type</label>
-                        <select asp-for="VacancyModel.VacancyType" class="form-select" asp-items="@Html.GetEnumSelectList<Models.VacancyTypes>()">
+                        <select asp-for="VacancyModel.VacancyType" class="form-select" asp-items="@Html.GetEnumSelectList<Enums.VacancyTypes>()">
                             <option value="">-- Select Type --</option>
                         </select>
                         <span asp-validation-for="VacancyModel.VacancyType" class="text-danger small"></span>

@@ -53,10 +53,10 @@ else
                         {
                             bg = item.leaveStatus switch
                             {
-                                Models.leaveStatus.Hold => "bg-warning",
-                                Models.leaveStatus.Approved => "bg-success",
-                                Models.leaveStatus.Posted => "bg-secondary",
-                                Models.leaveStatus.Completed => "bg-secondary",
+                                Enums.leaveStatus.Hold => "bg-warning",
+                                Enums.leaveStatus.Approved => "bg-success",
+                                Enums.leaveStatus.Posted => "bg-secondary",
+                                Enums.leaveStatus.Completed => "bg-secondary",
                                 _ => "bg-danger"
                             };
 

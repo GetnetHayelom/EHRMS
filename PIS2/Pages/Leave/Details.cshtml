@@ -32,7 +32,7 @@
                         </div>
                         <div class="col-sm-6">
                             <label class="small text-muted text-uppercase">Request Date</label>
-                            <p class="small">@Model.leaveModel?.leaveRequestDate.ToString("MMM dd, yyyy")</p>
+                            <p class="small">@Model.leaveModel?.leaveRequestDate.ToString("MM/dd/yyyy")</p>
                         </div>
                     </div>
                     <div class="d-flex mb-3">
@@ -43,7 +43,7 @@
                         <div class="col-sm-6 mb-3">
                             <label class="small text-uppercase text-muted fw-bold">Status</label>
                             <div>
-                                <span class="badge @(Model.leaveModel?.leaveStatus == Models.leaveStatus.Approved ? "bg-success" : "bg-warning")">@Model.leaveModel?.leaveStatus</span>
+                                <span class="badge @(Model.leaveModel?.leaveStatus == Enums.leaveStatus.Approved ? "bg-success" : "bg-warning")">@Model.leaveModel?.leaveStatus</span>
                             </div>
                         </div>
                     </div>
@@ -51,7 +51,7 @@
                     <div class="d-flex justify-content-around bg-light rounded p-3 mb-3 mx-0">
                         <div class="col-md-4">
                             <label class="small text-muted d-block text-uppercase">Start Date</label>
-                            <strong>@Model.leaveModel?.leaveStartDate.ToString("MMM dd, yyyy")</strong>
+                            <strong>@Model.leaveModel?.leaveStartDate.ToString("MM/dd/yyyy")</strong>
                         </div>
                         <div class="col-md-4 text-center">
                             <label class="small text-muted d-block text-uppercase">Days</label>
@@ -59,7 +59,7 @@
                         </div>
                         <div class="col-md-4 text-end">
                             <label class="small text-muted d-block text-uppercase">End Date</label>
-                            <strong>@Model.leaveModel?.leaveEndDate.ToString("MMM dd, yyyy")</strong>
+                            <strong>@Model.leaveModel?.leaveEndDate.ToString("MM/dd/yyyy")</strong>
                         </div>
                     </div>
 
@@ -122,7 +122,7 @@
     </div>
 
     <div class="d-none print-full-width d-print-block mt-5">
-        <table class="table table-bordered border-dark text-center">
+        <table class="table table-bordered border-dark text-center print-full-width">
             <thead class="table-light border-dark">
                 <tr>
                     <th width="25%">Action</th>
@@ -133,19 +133,19 @@
             </thead>
             <tbody>
                 <tr>
-                    <td class="fw-bold">Requested By:</td>
-                    <td>@Model.leaveModel.employmentModel.personModel.personFullName</td>
+                    <td class="fw-bold text-start">Requested By:</td>
+                    <td class=" text-start">@Model.leaveModel.employmentModel.personModel.personFullName</td>
                     <td class="border-bottom-2 border-dark"></td>
-                    <td>@Model.leaveModel.leaveRequestDate.ToString("MMM dd, yyyy")</td>
+                    <td class=" text-start">@Model.leaveModel.leaveRequestDate.ToString("MM/dd/yyyy")</td>
                 </tr>
                 <tr>
                     <td class="fw-bold">Approved By:</td>
-                    @if (Model.leaveModel.leaveStatus == Models.leaveStatus.Approved)
+                    @if (Model.leaveModel.leaveStatus == Enums.leaveStatus.Approved)
                     {
-                        var lastApproved = Model.leaveModel.LeaveHistories.LastOrDefault(lh => lh.leaveHistoryAction == Models.leaveStatus.Approved);
-                        <td>@(lastApproved?.modifiedBy ?? "")</td>
+                        var lastApproved = Model.leaveModel.LeaveHistories.LastOrDefault(lh => lh.leaveHistoryAction == Enums.leaveStatus.Approved);
+                        <td class=" text-start">@(lastApproved?.modifiedBy ?? "")</td>
                         <td></td>
-                        <td>@(lastApproved?.modifiedDate.ToString("MMM dd, yyyy") ?? "")</td>
+                        <td class=" text-start">@(lastApproved?.modifiedDate.ToString("MM/dd/yyyy") ?? "")</td>
                     }
                     else
                     {
@@ -156,12 +156,12 @@
                 </tr>
                 <tr>
                     <td class="fw-bold">Posted By:</td>
-                    @if (Model.leaveModel.leaveStatus == Models.leaveStatus.Posted)
+                    @if (Model.leaveModel.leaveStatus == Enums.leaveStatus.Posted)
                     {
-                        var lastPosted = Model.leaveModel.LeaveHistories.LastOrDefault(lh => lh.leaveHistoryAction == Models.leaveStatus.Posted);
-                        <td>@(lastPosted?.modifiedBy ?? "")</td>
+                        var lastPosted = Model.leaveModel.LeaveHistories.LastOrDefault(lh => lh.leaveHistoryAction == Enums.leaveStatus.Posted);
+                        <td class=" text-start">@(lastPosted?.modifiedBy ?? "")</td>
                         <td></td>
-                        <td>@(lastPosted?.modifiedDate.ToString("MMM dd, yyyy") ?? "")</td>
+                        <td class=" text-start">@(lastPosted?.modifiedDate.ToString("MM/dd/yyyy") ?? "")</td>
                     }
                     else
                     {
@@ -175,7 +175,7 @@
     </div>
 
     <div class="d-print-none mt-4 d-flex justify-content-end gap-2">
-        @if (User.IsInRole("MIE\\PMS_HRCLERK") && (Model.leaveModel.leaveStatus == Models.leaveStatus.Hold || Model.leaveModel.leaveStatus == Models.leaveStatus.Approved))
+        @if (User.IsInRole("MIE\\PMS_HRCLERK") && (Model.leaveModel.leaveStatus == Enums.leaveStatus.Hold || Model.leaveModel.leaveStatus == Enums.leaveStatus.Approved))
         {
             <form method="post">
                 <input asp-for="leaveModel.leaveID" name="leaveId" type="hidden" />

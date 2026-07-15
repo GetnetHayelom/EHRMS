@@ -29,7 +29,7 @@ namespace PIS2.Pages.Evaluation
 
             if (Evaluation == null) return NotFound();
 
-            if(Evaluation.modifiedBy != User.Identity.Name && Evaluation.evaluationStatus != evaluationStatus.Pending) { return RedirectToPage("/Shared/AccessDenied"); }
+            if(Evaluation.modifiedBy != User.Identity.Name && Evaluation.evaluationStatus != Enums.evaluationStatus.Pending) { return RedirectToPage("/Shared/AccessDenied"); }
             // 2. Load the Valuation entries for this specific evaluation
             // These records bridge the Evaluation to the Subtasks
             ExistingValuations = await _context.EvaluationValuations
@@ -70,7 +70,7 @@ namespace PIS2.Pages.Evaluation
         {
             var eval = await _context.Evaluations.FindAsync(dto.id);
             if(eval.modifiedBy != User.Identity.Name) { return new JsonResult(new { success = false, message = "Only the creater of this owner can update evaluations!" }); }
-            if (eval.evaluationStatus != evaluationStatus.Pending) return new JsonResult(new { success = false, message="Evaluation is submitted." });
+            if (eval.evaluationStatus != Enums.evaluationStatus.Pending) return new JsonResult(new { success = false, message="Evaluation is submitted." });
 
             eval.evaluationName = dto.evaluationName;
             eval.evaluationStartDate = dto.evaluationStartDate;
@@ -226,7 +226,7 @@ namespace PIS2.Pages.Evaluation
         public async Task<JsonResult> OnPostPostEvaluation([FromBody] IdDto dto)
         {
             var eval = await _context.Evaluations.FindAsync(dto.id);
-            eval.evaluationStatus = evaluationStatus.Submitted;
+            eval.evaluationStatus = Enums.evaluationStatus.Submitted;
             await _context.SaveChangesAsync();
             return new JsonResult(new { success = true });
         }

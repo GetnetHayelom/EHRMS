@@ -5,6 +5,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
 using PIS2.Data;
+using PIS2.Enums;
 using PIS2.Models;
 using PIS2.Pages.Account.Budgeting;
 using PIS2.Pages.Company;
@@ -85,7 +86,7 @@ namespace PIS2.Pages.HRClerck
 
             leaveCount = _context.Leaves.Where(l => empIDs.Contains(l.employmentID) && l.leaveStatus == leaveStatus.Hold || l.leaveStatus == leaveStatus.Approved).Count();
             
-            absentismCount = _context.Leaves.Include(p => p.leaveTypeModel).Include(l => l.employmentModel).Where(l => l.leaveStatus == leaveStatus.Hold && l.leaveTypeModel.leaveGroup == leaveGroup.Absentism && l.employmentModel.employmentStatus == mainStatus.Active).Count();
+            absentismCount = _context.Leaves.Include(p => p.leaveTypeModel).Include(l => l.employmentModel).Where(l => l.leaveStatus == leaveStatus.Hold && l.leaveTypeModel.leaveGroup == leaveGroup.Absenteeism && l.employmentModel.employmentStatus == mainStatus.Active).Count();
 
             jobPlacements = _context.JobPlacements.Where(j => empIDs.Contains(j.employmentID) && j.jobPlacementStatus == mainStatus.Suspended).Count();
 

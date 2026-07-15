@@ -9,53 +9,52 @@
             <div class="card shadow-sm border-0">
                 <div class="card-header bg-white py-3 border-bottom">
                     <div class="d-flex justify-content-between align-items-center">
-                        <h4 class="fw-bold mb-0 text-dark">Update Payment: @Model.OtherPay.invoiceNo</h4>
-                        <span class="badge bg-secondary">ID: @Model.OtherPay.paymentID</span>
+                        <h4 class="fw-bold mb-0 text-dark">@Model.OtherPay.referenceType: @Model.OtherPay.reference</h4>
+                        <span class="badge bg-secondary">ID: @Model.OtherPay.payrollID</span>
                     </div>
                 </div>
                 <div class="card-body p-4">
                     <form method="post">
                         <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
-                        <input type="hidden" asp-for="OtherPay.paymentID" />
+                        <input type="hidden" asp-for="OtherPay.payrollID" />
                         
                         <div class="row mb-3">
                             <div class="col-md-6">
-                                <label asp-for="OtherPay.invoiceNo" class="form-label fw-bold">Invoice Number</label>
-                                <input asp-for="OtherPay.invoiceNo" class="form-control" placeholder="INV-0000" value=""/>
-                                <span asp-validation-for="OtherPay.invoiceNo" class="text-danger small"></span>
+                                <label asp-for="OtherPay.referenceType" class="form-label fw-bold">Reference Type</label>
+                                <input asp-for="OtherPay.referenceType" class="form-control" placeholder="INV-0000" value="" />
+                                <span asp-validation-for="OtherPay.referenceType" class="text-danger small"></span>
                             </div>
                             <div class="col-md-6">
-                                <label asp-for="OtherPay.earningID" class="form-label fw-bold">Earning Category</label>
-                                <input asp-for="OtherPay.earningID" class="form-select" readonly hidden/>
-                                <input class="form-control" value="@Model.OtherPay?.earningModel?.earningType?.earningTypeName" readonly />
-
-                                <span asp-validation-for="OtherPay.earningID" class="text-danger small"></span>
+                                <label asp-for="OtherPay.reference" class="form-label fw-bold">Reference</label>
+                                <input asp-for="OtherPay.reference" class="form-control" placeholder="INV-0000" value=""/>
+                                <span asp-validation-for="OtherPay.reference" class="text-danger small"></span>
                             </div>
+                            
                         </div>
 
                         <div class="row mb-3">
                             <div class="col-md-6">
-                                <label asp-for="OtherPay.GrossPay" class="form-label fw-bold">Gross Amount</label>
+                                <label asp-for="OtherPay.totalGross" class="form-label fw-bold">Gross Amount</label>
                                 <div class="input-group">
                                     <span class="input-group-text">$</span>
-                                    <input asp-for="OtherPay.GrossPay" class="form-control" type="number" step="0.01" readonly/>
+                                    <input asp-for="OtherPay.totalGross" class="form-control" type="number" step="0.01" readonly />
                                 </div>
-                                <span asp-validation-for="OtherPay.GrossPay" class="text-danger small"></span>
+                                <span asp-validation-for="OtherPay.totalGross" class="text-danger small"></span>
                             </div>
                             <div class="col-md-6">
-                                <label asp-for="OtherPay.NetPay" class="form-label fw-bold">Net Amount</label>
+                                <label asp-for="OtherPay.totalNet" class="form-label fw-bold">Net Amount</label>
                                 <div class="input-group">
                                     <span class="input-group-text bg-success-subtle">$</span>
-                                    <input asp-for="OtherPay.NetPay" class="form-control border-success" type="number" step="0.01" />
+                                    <input asp-for="OtherPay.totalNet" class="form-control border-success" type="number" step="0.01" />
                                 </div>
-                                <span asp-validation-for="OtherPay.NetPay" class="text-danger small"></span>
+                                <span asp-validation-for="OtherPay.totalNet" class="text-danger small"></span>
                             </div>
                         </div>
 
                         <div class="row mb-4">
                             <div class="col-md-6">
-                                <label asp-for="OtherPay.paymentStatus" class="form-label fw-bold">Payment Status</label>
-                                <select asp-for="OtherPay.paymentStatus" class="form-select" asp-items="Html.GetEnumSelectList<PIS2.Models.payrollStatus>()"></select>
+                                <label asp-for="OtherPay.payrollStatus" class="form-label fw-bold">Payment Status</label>
+                                <select asp-for="OtherPay.payrollStatus" class="form-select" asp-items="Html.GetEnumSelectList<PIS2.Enums.payrollStatus>()"></select>
                             </div>
                         </div>
 
@@ -69,9 +68,7 @@
                                 <div class="col-6">
                                     <strong>Last Modified By:</strong> @Model.OtherPay?.modifiedBy
                                 </div>
-                                <div class="col-6">
-                                    <strong>Last Date:</strong> @Model.OtherPay?.modifiedDate
-                                </div>
+                                
                             </div>
                         </div>
                         
@@ -80,7 +77,7 @@
                             <a asp-page="./Index" class="btn btn-outline-secondary">
                                 <i class="bi bi-arrow-left"></i> Back to List
                             </a>
-                            @if (User.IsInRole("MIE\\PMS_HRMANAGER") && Model.OtherPay?.paymentStatus == Models.payrollStatus.PENDING)
+                            @if (User.IsInRole("MIE\\PMS_HRMANAGER") && Model.OtherPay?.payrollStatus == Enums.payrollStatus.PENDING)
                             {
                                 <button type="submit" class="btn btn-primary px-4">
                                     <i class="bi bi-save"></i> Save Changes
@@ -90,15 +87,15 @@
                         </div>
                     </form>
                 </div>
-                @switch (Model.OtherPay?.paymentStatus)
+                @switch (Model.OtherPay?.payrollStatus)
                 {
-                    case Models.payrollStatus.PENDING:
+                    case Enums.payrollStatus.PENDING:
 
                         if (User.IsInRole("MIE\\PMS_HRMANAGER"))
                         {
                             <div class="d-flex justify-content-end gap-2">
                                 <form method="post" asp-page-handler="Approve">
-                                    <input type="hidden" name="id" value="@Model.OtherPay.paymentID" />
+                                    <input type="hidden" name="id" value="@Model.OtherPay.payrollID" />
                                     <button class="btn btn-success">Approve</button>
                                 </form>
                             </div>
@@ -106,12 +103,12 @@
 
                         break;
 
-                    case Models.payrollStatus.APPROVED:
+                    case Enums.payrollStatus.APPROVED:
                         if (User.IsInRole("MIE\\PMS_PAYROLL"))
                         {
                             <div class="d-flex justify-content-end gap-2">
                                 <form method="post" asp-page-handler="Post">
-                                    <input type="hidden" name="id" value="@Model.OtherPay.paymentID" />
+                                    <input type="hidden" name="id" value="@Model.OtherPay.payrollID" />
                                     <button class="btn btn-success">Post</button>
                                 </form>
                             </div>
@@ -119,12 +116,12 @@
 
                         break;
 
-                    case Models.payrollStatus.POSTED:
+                    case Enums.payrollStatus.POSTED:
                         if (User.IsInRole("MIE\\PMS_FINANCE"))
                         {
                             <div class="d-flex justify-content-end gap-2">
                                 <form method="post" asp-page-handler="Post">
-                                    <input type="hidden" name="id" value="@Model.OtherPay.paymentID" />
+                                    <input type="hidden" name="id" value="@Model.OtherPay.payrollID" />
                                     <button class="btn btn-success">Post</button>
                                 </form>
                             </div>
@@ -132,12 +129,12 @@
 
                         break;
 
-                    case Models.payrollStatus.COMPLETED:
+                    case Enums.payrollStatus.COMPLETED:
                         <div class="d-flex justify-content-end gap-2">
                             <p class="badge bg-success">Completed</p>
                         </div>
                         break;
-                    case Models.payrollStatus.DISCARDED:
+                    case Enums.payrollStatus.DISCARDED:
                         <div class="d-flex justify-content-end gap-2">
                             <p class="badge bg-danger">Void</p>
                         </div>

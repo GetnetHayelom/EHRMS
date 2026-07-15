@@ -85,9 +85,9 @@
                                     @{
                                         var statusClass = item.sessionStatus switch
                                         {
-                                            Models.trainingStatus.Planned => "bg-info",
-                                            Models.trainingStatus.Ongoing => "bg-warning",
-                                            Models.trainingStatus.Completed => "bg-success",
+                                            Enums.trainingStatus.Planned => "bg-info",
+                                            Enums.trainingStatus.Ongoing => "bg-warning",
+                                            Enums.trainingStatus.Completed => "bg-success",
                                             _ => "bg-secondary"
                                         };
                                     }

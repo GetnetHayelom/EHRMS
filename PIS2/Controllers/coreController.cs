@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PIS2.Data;
-using PIS2.Models;
+using PIS2.Enums;
 using static PIS2.Pages.Forms.SLAccessModel;
 
 namespace PIS2.Controllers
@@ -24,7 +24,7 @@ namespace PIS2.Controllers
             var departments = _context.Departments
                 .Where(d => d.companyID == companyID && d.departmentStatus == mainStatus.Active)
                 .OrderBy(d => d.departmentName)
-                .Select(d => new { d.departmentID, d.departmentName })
+                .Select(d => new { d.departmentID, d.departmentName }).Distinct()
                 .ToList();
 
             return Ok(departments);

@@ -1,4 +1,5 @@
 ﻿@page
+@using PIS2.Enums
 @model PIS2.Pages.JobClass.DetailsModel
 
 @{
@@ -29,12 +30,12 @@
             </dt>
             <dd class="col-6">
 
-                @if (Model.jobClassModel.jobClassStatus == Models.mainStatus.Active)
+                @if (Model.jobClassModel.jobClassStatus == mainStatus.Active)
                 {
                     <span class="badge bg-success">@Html.DisplayFor(modelItem => Model.jobClassModel.jobClassStatus)</span>
 
                 }
-                else if (Model.jobClassModel.jobClassStatus == Models.mainStatus.Suspended)
+                else if (Model.jobClassModel.jobClassStatus == mainStatus.Suspended)
                 {
                     <span class="badge bg-warning">@Html.DisplayFor(modelItem => Model.jobClassModel.jobClassStatus)</span>
                 }

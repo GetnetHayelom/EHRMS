@@ -1,4 +1,5 @@
 ﻿@page
+@using PIS2.Enums
 @model PIS2.Pages.Users.DetailsModel
 
 @{
@@ -37,7 +38,7 @@
 
                 <dt class="col-sm-3 text-muted">Status:</dt>
                 <dd class="col-sm-9 fw-semibold">
-                    @if (Model.userModel.userStatus == Models.mainStatus.Active)
+                    @if (Model.userModel.userStatus == mainStatus.Active)
                     {
                         <span class="badge bg-success">Active</span>
                     }
@@ -78,7 +79,7 @@
                             <tr>
                                 <td>@item.userName</td>
                                 <td>
-                                    @if (item.userStatus == Models.mainStatus.Active)
+                                    @if (item.userStatus == mainStatus.Active)
                                     {
                                         <span class="badge bg-success">Active</span>
                                     }

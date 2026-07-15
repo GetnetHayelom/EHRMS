@@ -4,8 +4,18 @@
 @{
     ViewData["Title"] = "Edit Applicant";
 }
+<div class="d-flex justify-content-between align-items-end">
+    <div>
+        <h2 class="fw-bold mb-0">Applicants</h2>
+        <p class="text-muted mb-0">Update Applicant Details #@Model.Applicant.ApplicantID</p>
+    </div>
+    <a asp-page="/Applications/Create"
+       asp-route-vacancyId="@Model.Applicant.VacancyID"
+       class="btn btn-primary">
+        <i class="bi bi-person-plus me-2"></i> Add Applicant
+    </a>
+</div>
 
-<h1 class="fw-bold">Edit Applicant</h1>
 
 <div class="card shadow-sm p-3">
     <form method="post" enctype="multipart/form-data">
@@ -19,12 +29,12 @@
 
         <div class="mb-3">
             <label class="form-label">Applicant</label>
-            <input value="@Model.Applicant.personModel?.personFullName" readonly />
+            <input class="form-control" value="@Model.Applicant.personModel?.personFullName" readonly />
         </div>
 
         <div class="mb-3">
             <label asp-for="Applicant.Status" class="form-label">Status</label>
-            <select asp-for="Applicant.Status" class="form-select" asp-items="@Html.GetEnumSelectList<Models.ApplicantStatus>()"></select>
+            <select asp-for="Applicant.Status" class="form-select" asp-items="@Html.GetEnumSelectList<Enums.ApplicantStatus>()"></select>
         </div>
 
         <button type="submit" class="btn btn-success">Update Applicant</button>
@@ -112,3 +122,9 @@ else
 {
     <p class="text-muted">No experience records found.</p>
 }
+@await Html.PartialAsync("_AttachmentPartial",
+new Pages.Shared.AttachmentPartialModel
+{
+    tableName = "Applicants",
+    recordId = Model.Applicant.ApplicantID
+})

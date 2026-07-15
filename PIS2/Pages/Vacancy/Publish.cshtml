@@ -14,8 +14,8 @@
         <h2>@Model.Vacancy.VacancyTitle</h2>
 
         <span class="badge fs-6 d-print-none
-            @(Model.Vacancy.Status == Models.VacancyStatus.Open ? "bg-success" :
-                            Model.Vacancy.Status == Models.VacancyStatus.Closed ? "bg-danger" : "bg-warning")">
+            @(Model.Vacancy.Status == Enums.VacancyStatus.Open ? "bg-success" :
+                            Model.Vacancy.Status == Enums.VacancyStatus.Closed ? "bg-danger" : "bg-warning")">
             @Model.Vacancy.Status
         </span>
     </div>
@@ -68,7 +68,7 @@
     </div>
     <!-- ACTIONS -->
     <div class="d-flex gap-2 no-print">
-        @if (Model.Vacancy?.Status == Models.VacancyStatus.Open)
+        @if (Model.Vacancy?.Status == Enums.VacancyStatus.Open)
         {
             <a asp-page="/Applications/Create"
                asp-route-vacancyId="@Model.Vacancy.VacancyID"

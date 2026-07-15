@@ -5,6 +5,7 @@ using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.Blazor;
 using PIS2.Data;
 using PIS2.Models;
 using PIS2.Views;
+using PIS2.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -148,7 +149,7 @@ namespace PIS2.Pages.Report
 
             var filteredOvertime = otDetails1?.ToList() ?? new List<OvertimeDetailView>();
 
-            MonthlySummary = filteredOvertime?.Where(o => o.OvertimeStatus == Models.overtimeStatus.Completed)
+            MonthlySummary = filteredOvertime?.Where(o => o.OvertimeStatus == Enums.overtimeStatus.Completed)
                 .GroupBy(o => o.OvertimeDate.Value.Year)
                 .Select(g => new OvertimeSummaryVM
                 {
@@ -199,7 +200,7 @@ namespace PIS2.Pages.Report
             // Filter by Status (if provided)
             if (overtimeStatus.HasValue)
             {
-                otDetails = otDetails.Where(e => e.OvertimeStatus == (Models.overtimeStatus) overtimeStatus);
+                otDetails = otDetails.Where(e => e.OvertimeStatus == (Enums.overtimeStatus) overtimeStatus);
             }
 
             // Filter by type (if provided)
@@ -320,7 +321,7 @@ namespace PIS2.Pages.Report
             // Filter by Status (if provided)
             if (overtimeStatus.HasValue)
             {
-                otDetails = otDetails.Where(e => e.OvertimeStatus == (Models.overtimeStatus)overtimeStatus);
+                otDetails = otDetails.Where(e => e.OvertimeStatus == (Enums.overtimeStatus)overtimeStatus);
 
             }
 

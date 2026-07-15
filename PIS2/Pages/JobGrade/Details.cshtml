@@ -1,4 +1,5 @@
 @page
+@using PIS2.Enums
 @model PIS2.Pages.JobGrade.DetailsModel
 
 @{
@@ -93,6 +94,132 @@
         </div>
     </div>
   
+</div>
+<div class="card shadow-sm mt-2">
+    <div class="card-header"><h5 class="fw-bold">Job Steps in Grade</h5></div>
+    <table class="card-body table table-striped table-hover" id="dataTable">
+        <thead class="bg-dark text-white">
+            <tr>
+                <th>
+                    Job Step Name
+                </th>
+
+                <th>Job Step Number</th>
+                <th>
+                    Job Step Salary
+                </th>
+                <th>
+                    Job Step Status
+                </th>
+                <th>
+                    Modified By
+                </th>
+                <th class="d-print-none">Action</th>
+
+            </tr>
+        </thead>
+        <tbody>
+           
+            @foreach (var item in Model.JobSteps.OrderBy(j => j.jobStepSalary))
+            {
+                    <tr onclick="location.href='@Url.Page("Details", new { id = item.jobStepID })'" style="cursor:pointer">
+                        <td>
+                            @Html.DisplayFor(modelItem => item.jobStepName)
+                        </td>
+
+                        <td>
+                            @Html.DisplayFor(modelItem => item.jobStepNumber)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.jobStepSalary)
+                        </td>
+                        <td>
+                            @if (item.jobStepStatus == mainStatus.Active)
+                            {
+                                <span class="badge bg-success">@Html.DisplayFor(modelItem => item.jobStepStatus)</span>
+
+                            }
+                            else if (item.jobStepStatus == mainStatus.Suspended)
+                            {
+                                <span class="badge bg-warning">@Html.DisplayFor(modelItem => item.jobStepStatus)</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-secondary">@Html.DisplayFor(modelItem => item.jobStepStatus)</span>
+                            }
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.modifiedBy)
+                        </td>
+                        <td class="d-print-none">
+                            <div class="btn-group" role="group">
+                                <a asp-page="/JobStep/Details" asp-route-id="@item.jobStepID" class="btn btn-sm btn-outline-primary" title="View Details">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                                <a asp-page="/JobStep/Edit" asp-route-id="@item.jobStepID" class="btn btn-sm btn-outline-success" title="Edit">
+                                    <i class="bi bi-pencil-square"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                }
+
+            
+        </tbody>
+    </table>
+    </div>
+<div class="card shadow-sm mt-2">
+    <div class="card-header"><h5 class="fw-bold">Jobs in Grade</h5></div>
+    <table class="card-body table table-hover align-middle" id="dataTable">
+        <thead class="table-dark text-white">
+            <tr>
+                <th>Job Title</th>
+                <th>Job Grade</th>
+                <th>Job Category</th>
+                <th>Job Class</th>
+                <th>Experience</th>
+                <th>Status</th>
+                <th class="no-print text-center">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.Jobs.OrderBy(j => j.jobTitle))
+            {
+                <tr>
+                    <td>@item.jobTitle</td>
+                    <td>@item.jobGradeModel?.jobGradeName</td>
+                    <td>@item.jobCategoryModel?.jobCategoryName</td>
+                    <td>@item.jobClassModel?.jobClassName</td>
+                    <td>@item.jobExperience</td>
+                    <td>
+                        @if (item.jobStatus.ToString() == "Active")
+                        {
+                            <span class="badge bg-success">Active</span>
+                        }
+                        else if (item.jobStatus.ToString() == "Inactive")
+                        {
+                            <span class="badge bg-secondary">Inactive</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-info">@item.jobStatus</span>
+                        }
+                    </td>
+                    <td class="no-print text-center">
+                        <div class="btn-group" role="group">
+                            <a asp-page="/Job/Details" asp-route-id="@item.jobID" class="btn btn-sm btn-outline-primary" title="View Details">
+                                <i class="bi bi-eye"></i>
+                            </a>
+                            <a asp-page="/Job/Edit" asp-route-id="@item.jobID" class="btn btn-sm btn-outline-success" title="Edit">
+                                <i class="bi bi-pencil-square"></i>
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+            }
+
+        </tbody>
+    </table>
 </div>
 <div>
     <a asp-page="./Edit" asp-route-id="@Model.jobGradeModel.jobGradeID" class="btn btn-primary me-2"><i class="bi bi-pencil-square me-2"></i>Edit</a> 

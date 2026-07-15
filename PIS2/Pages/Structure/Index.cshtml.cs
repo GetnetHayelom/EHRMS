@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using PIS2.Data;
+using PIS2.Enums;
 using PIS2.Models;
 using PIS2.Pages.Management;
 using PIS2.Views;
@@ -12,6 +13,7 @@ using System.Threading.Tasks;
 
 namespace PIS2.Pages.Structure
 {
+    
     public class IndexModel : PageModel
     {
         private readonly PISContext _context;

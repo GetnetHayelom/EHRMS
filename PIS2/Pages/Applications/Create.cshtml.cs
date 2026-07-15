@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using PIS2.Data;
 using PIS2.Models;
+using PIS2.Enums;
 
 namespace PIS2.Pages.Applications
 {   
@@ -98,7 +99,7 @@ namespace PIS2.Pages.Applications
         }
 
 
-        public async Task<IActionResult> OnPostAsync(IFormFile ResumeFile)
+        public async Task<IActionResult> OnPostAsync()
         {
             var existing = await _context.Applicants.FirstOrDefaultAsync(a => a.personID == Applicant.personID && a.VacancyID == Applicant.VacancyID);
 
@@ -108,7 +109,7 @@ namespace PIS2.Pages.Applications
                 OnGet(Applicant.VacancyID, Applicant.personID);
                 return Page();
             }
-            ModelState.Remove("ResumeFile");
+            
             ModelState.Remove("Applicant.modifiedBy");
             Applicant.Status = ApplicantStatus.Pending;
             Applicant.modifiedBy = User.Identity.Name;
@@ -127,21 +128,9 @@ namespace PIS2.Pages.Applications
                 OnGet(Applicant.VacancyID, Applicant.personID);
                 return Page();
             }
-
-
-            if (ResumeFile != null)
-            {
-                var filePath = Path.Combine(_env.WebRootPath, "resumes", ResumeFile.FileName);
-                using (var stream = new FileStream(filePath, FileMode.Create))
-                {
-                    await ResumeFile.CopyToAsync(stream);
-                }
-                Applicant.ResumeFilePath = "/resumes/" + ResumeFile.FileName;
-            }
-
             _context.Applicants.Add(Applicant);
             await _context.SaveChangesAsync();
-            return RedirectToPage("Index");
+            return RedirectToPage("Details", new { id = Applicant.ApplicantID });
         }
     }
 

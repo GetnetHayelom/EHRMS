@@ -1,4 +1,5 @@
 ﻿@page
+@using PIS2.Enums
 @model PIS2.Pages.EvaluationType.IndexModel
 @{
     ViewData["Title"] = "Evaluation Types";
@@ -62,12 +63,12 @@
                         }
                     </td>
                     <td>
-                        @if (item.evaluationTypeStatus == Models.mainStatus.Active)
+                        @if (item.evaluationTypeStatus == mainStatus.Active)
                         {
                             <span class="badge bg-success">@Html.DisplayFor(modelItem => item.evaluationTypeStatus)</span>
 
                         }
-                        else if (item.evaluationTypeStatus == Models.mainStatus.Suspended)
+                        else if (item.evaluationTypeStatus == mainStatus.Suspended)
                         {
                             <span class="badge bg-warning">@Html.DisplayFor(modelItem => item.evaluationTypeStatus)</span>
                         }

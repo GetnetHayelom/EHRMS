@@ -1,4 +1,5 @@
 ﻿@page
+@using PIS2.Enums
 @model PIS2.Pages.JobPlacement.IndexModel
 
 @{
@@ -10,10 +11,7 @@
         <h2 class="fw-bold mb-0">Job Placements</h2>
         <p class="text-muted">Active Job Placements Catalog - Total:@Model.jpCount</p>
     </div>
-    
-
-    <a asp-page="Create" class="btn btn-primary">Add New Job Placement</a>
-    
+    <a asp-page="Create" class="btn btn-primary"><i  class="bi bi-plus-circle me-2"></i>Add New Job Placement</a>    
 </div>
 <hr />
 <div class="card shadow-sm m-2">
@@ -21,6 +19,7 @@
         @await Html.PartialAsync("filter")
         @await Html.PartialAsync("back")
         @await Html.PartialAsync("print")
+        <excel-export table="dataTable" filename="Active_Job_Placements_@(DateTime.Now).xlsx"></excel-export>
     </div>
 </div>
 
@@ -50,8 +49,7 @@
                 <th>
                     Status
                 </th>
-                <th>Grade</th>
-                <th>Step</th>
+                <th>Grade & Step</th>
                 <th class="d-print-none px-4 text-end">Action</th>
             </tr>
         </thead>
@@ -61,34 +59,35 @@
             }
             @foreach (var item in Model.jobPlacementModel)
             {
-                <tr onclick="location.href='@Url.Page("Details", new { id = item.jobPlacementID })'" style="cursor:pointer">
+                <tr>
                     <td>@(index++)</td>
                     <td>
-                        @Html.DisplayFor(modelItem => item.employmentModel.givenID)
+                        @Html.DisplayFor(modelItem => item.givenID)
+                        <p class="text-secondary small m-0">@item.FullName</p>
                     </td>
                     <td>
-                        @Html.DisplayFor(modelItem => item.departmentModel.departmentName)
+                        @Html.DisplayFor(modelItem => item.departmentName)
                     </td>
                     <td>
-                        @Html.DisplayFor(modelItem => item.jobModel.jobTitle)
+                        @Html.DisplayFor(modelItem => item.jobTitle)
                     </td>
                     <td>
-                        @Html.DisplayFor(modelItem => item.jobModel.jobClassModel.jobClassName)
+                        @Html.DisplayFor(modelItem => item.jobClassName)
                     </td>
                     <td>
-                        @Html.DisplayFor(modelItem => item.jobPlacementSalary)
+                        @item.jobPlacementSalary.ToString("N2")
                     </td>
                     <td>
-                        @item.jobPlacementDate.ToString("yyyy-MM-dd")
+                        @item.jobPlacementDate.ToString("MM/dd/yyyy")
                     </td>
                     <td>
                         
-                        @if (item.jobPlacementStatus == Models.mainStatus.Active)
+                        @if (item.jobPlacementStatus == mainStatus.Active)
                         {
                             <span class="badge bg-success">@Html.DisplayFor(modelItem => item.jobPlacementStatus)</span>
 
                         }
-                        else if (item.jobPlacementStatus == Models.mainStatus.Suspended)
+                        else if (item.jobPlacementStatus == mainStatus.Suspended)
                         {
                             <span class="badge bg-warning">@Html.DisplayFor(modelItem => item.jobPlacementStatus)</span>
                         }
@@ -98,11 +97,10 @@
                         }
                     </td>
                     <td>
-                        @item.jobStepModel?.jobGradeModel?.jobGradeName
+                        @item.jobGradeName
+                        <p class="text-secondary small m-0">@item.jobStepName</p>
                     </td>
-                    <td>
-                        @item.jobStepModel?.jobStepName
-                    </td>
+                   
                     <td class="d-print-none px-4 text-end">
                         <div class="btn-group" role="group">
                             <a asp-page="./Details" asp-route-id="@item.jobPlacementID" class="btn btn-sm btn-outline-primary" title="View Details">
@@ -123,3 +121,6 @@
     @await Html.PartialAsync("back")
     @await Html.PartialAsync("print")
 </div>
+<script>
+   
+</script>

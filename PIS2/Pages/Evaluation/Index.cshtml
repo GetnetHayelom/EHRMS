@@ -63,7 +63,7 @@
                 </div>
                 <div class="col-md-2">
                     <label class="form-label small fw-bold">Status</label>
-                    <select asp-for="Status" asp-items="Html.GetEnumSelectList<PIS2.Models.evaluationStatus>()" class="form-select form-select-sm">
+                    <select asp-for="Status" asp-items="Html.GetEnumSelectList<PIS2.Enums.evaluationStatus>()" class="form-select form-select-sm">
                         <option value="">All</option>
                     </select>
                 </div>
@@ -121,9 +121,9 @@
                                     @{
                                         var badgeClass = item.evaluationStatus switch
                                         {
-                                            PIS2.Models.evaluationStatus.Submitted => "bg-success",
-                                            PIS2.Models.evaluationStatus.Pending => "bg-warning text-dark",
-                                            PIS2.Models.evaluationStatus.Void => "bg-danger",
+                                            PIS2.Enums.evaluationStatus.Submitted => "bg-success",
+                                            PIS2.Enums.evaluationStatus.Pending => "bg-warning text-dark",
+                                            PIS2.Enums.evaluationStatus.Void => "bg-danger",
                                             _ => "bg-secondary"
                                         };
                                     }
@@ -139,7 +139,7 @@
                                         <a asp-page="./Details" asp-route-id="@item.evaluationID" class="btn btn-sm btn-outline-secondary" title="View">
                                             <i class="bi bi-eye"></i>
                                         </a>
-                                        @if(item.evaluationStatus == Models.evaluationStatus.Pending)
+                                        @if(item.evaluationStatus == Enums.evaluationStatus.Pending)
                                         {
                                             <a asp-page="./Edit" asp-route-id="@item.evaluationID" class="btn btn-sm btn-outline-primary" title="Edit">
                                                 <i class="bi bi-pencil"></i>

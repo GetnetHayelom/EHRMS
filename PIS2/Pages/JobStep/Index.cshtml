@@ -1,4 +1,5 @@
 ﻿@page
+@using PIS2.Enums
 @model PIS2.Pages.JobStep.IndexModel
 
 @{
@@ -94,9 +95,9 @@
             <label>Status</label>
             <select name="Status" class="form-select">
                 <option value="">All</option>
-                @foreach (var s in Enum.GetValues(typeof(Models.mainStatus)))
+                @foreach (var s in Enum.GetValues(typeof(mainStatus)))
                 {
-                    <option value="@s" selected="@(Model.Status == (Models.mainStatus)s)">
+                    <option value="@s" selected="@(Model.Status == (mainStatus)s)">
                         @s
                     </option>
                 }
@@ -185,12 +186,12 @@
                         @Html.DisplayFor(modelItem => item.jobStepSalary)
                     </td>
                     <td>
-                            @if (item.jobStepStatus == Models.mainStatus.Active)
+                            @if (item.jobStepStatus == mainStatus.Active)
                             {
                                 <span class="badge bg-success">@Html.DisplayFor(modelItem => item.jobStepStatus)</span>
 
                             }
-                            else if (item.jobStepStatus == Models.mainStatus.Suspended)
+                            else if (item.jobStepStatus == mainStatus.Suspended)
                             {
                                 <span class="badge bg-warning">@Html.DisplayFor(modelItem => item.jobStepStatus)</span>
                             }

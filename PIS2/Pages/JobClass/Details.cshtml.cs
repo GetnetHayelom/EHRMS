@@ -68,7 +68,7 @@ namespace PIS2.Pages.JobClass
                 if (int.TryParse(value, out int enumValue))
                 {
                     // Cast the integer back to the Enum to get the name (e.g., 0 -> "Active")
-                    return ((payrollStatus)enumValue).ToString();
+                    return ((Enums.payrollStatus)enumValue).ToString();
                 }
                 return value;
             }

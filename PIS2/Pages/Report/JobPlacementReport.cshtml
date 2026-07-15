@@ -1,4 +1,5 @@
 ﻿@page
+@using PIS2.Enums
 @model PIS2.Pages.Report.JobPlacementReportModel
 @{
     ViewData["Title"] = "Job Placements";
@@ -19,7 +20,7 @@
                         <div class="d-flex justify-content-between align-items-center">
                             <div>
                                 <small class="text-muted">Active Placements</small>
-                                <h3 id="summaryActive" class="mb-0" asp-for="active">@Model.active.ToString("N2")</h3>
+                                <h3 id="summaryActive" class="mb-0" asp-for="active">@Model.active.ToString("N0")</h3>
                             </div>
                             <div><i class="bi bi-person-check fs-2 text-success"></i></div>
                         </div>
@@ -33,7 +34,7 @@
                         <div class="d-flex justify-content-between align-items-center">
                             <div>
                                 <small class="text-muted">Transfers This Month</small>
-                                <h3 id="summaryTransfers" class="mb-0" asp-for="transfersThisMonth">@Model.transfersThisMonth.ToString("N2")</h3>
+                                <h3 id="summaryTransfers" class="mb-0" asp-for="transfersThisMonth">@Model.transfersThisMonth.ToString("N0")</h3>
                             </div>
                             <div><i class="bi bi-arrow-left-right fs-2 text-warning"></i></div>
                         </div>
@@ -62,7 +63,7 @@
                         <div class="d-flex justify-content-between align-items-center">
                             <div>
                                 <small class="text-muted">Total Placements</small>
-                                <h3 id="summaryTotal" class="mb-0" asp-for="total">@Model.total.ToString("N2")</h3>
+                                <h3 id="summaryTotal" class="mb-0" asp-for="total">@Model.total.ToString("N0")</h3>
                             </div>
                             <div><i class="bi bi-people fs-2 text-info"></i></div>
                         </div>
@@ -74,9 +75,9 @@
             <span class="fw-bold "><u>Job Grade Distribution:</u></span>
 
             @foreach (var item in Model.jobPlacementModel
-                                        .GroupBy(j => j.jobStepModel.jobGradeID)
+                                        .GroupBy(j => j.jobGradeID)
                                         .Select(g => new { 
-                                            Name = g.First().jobStepModel.jobGradeModel.jobGradeName, 
+                                            Name = g.First().jobGradeName, 
                                             Count = g.Count() 
                                         })
                                         .OrderByDescending(g => g.Count))
@@ -89,7 +90,7 @@
     
 
     <div class="card p-3 mb-3">
-        <form method="GET" id="filterForm" class="row g-3 align-items-end d-print-flex">
+        <form method="GET" id="filterForm" class="d-flex flex-wrap gap-3 align-items-end d-print-flex">
             <div class="col-auto mb-2">
                 <label class="form-label fw-bold" for="companySelect">Company</label>
                 <select id="filter-company" asp-for="CompanyID" class="form-select">
@@ -115,7 +116,7 @@
                 <label class="form-label fw-bold" for="statusSelect">Status</label>
                 <select id="statusSelect" asp-for="jStatus" class="form-select">
                     <option value="">All</option>
-                    @foreach (var s in Enum.GetValues(typeof(PIS2.Models.mainStatus)).Cast<PIS2.Models.mainStatus>())
+                    @foreach (var s in Enum.GetValues(typeof(mainStatus)).Cast<mainStatus>())
                     {
                         <option value="@( (int)s )">@s</option>
                     }
@@ -162,20 +163,14 @@
                 <input id="toDate" asp-for="To" class="form-control" type="date" />
             </div>
 
-            <div class="col-auto mb-2">
-
-                <button id="loadBtn" type="submit" class="btn btn-primary">Load</button>
-            </div><div class="col-auto">@await Html.PartialAsync("filter")</div>
-            <div class="col-auto mb-2">
-                <button id="resetBtn" type="button" class="btn btn-outline-secondary">Reset</button>
-            </div>
-            <div class="col-auto">
+            <div class="btn-group col-auto mb-2">
+                @await Html.PartialAsync("filter")
+                <button id="loadBtn" type="submit" class="btn btn-primary my-2">Load</button>
+                <button id="resetBtn" type="button" class="btn btn-outline-secondary my-2" onclick="this.reset()">Reset</button>
+                <excel-export table="dataTable" filename="JobPlacement_Report_@(DateTime.Now).xlsx"></excel-export>
                 @await Html.PartialAsync("print")
             </div>
-            <div class="col-auto">
-                <excel-export table="dataTable" filename="JobPlacement_Report_@(DateTime.Now).xlsx"></excel-export>
-            </div>
-            
+ 
         </form>
     </div>
     <!-- Filters -->
@@ -194,49 +189,47 @@
                             <th>Salary</th>
                             <th>Date</th>
                             <th>Status</th>
-                            <th>Grade</th>
-                            <th>Step</th>
+                            <th>Grade & Step</th>
+                            <td class="d-print-none text-end px-2">Actions</td>
                         </tr>
                     </thead>
                     <tbody id="placementsBody">
                         @* initial server render to show something on first load *@
-                        @foreach (var item in Model.jobPlacementModel.GroupBy(j => j.departmentModel?.companyModel?.companyID ?? 0))
+                        @foreach (var item in Model.jobPlacementModel.GroupBy(j => j.companyID))
                         {
                             <tr class="table-group-header table-primary">
-                                <td colspan="9" class="fw-bold">@((item.First().departmentModel?.companyModel?.companyName) ?? "—")</td>
+                                <td colspan="9" class="fw-bold">@((item.First().companyName) ?? "—")</td>
                             </tr>
                             foreach(var dep in item.GroupBy(i => i.departmentID))
                             {
                                 <tr class="table-group-header table-secondary">
                                     <td></td>
-                                    <td colspan="8" class="fw-bold">@((dep.First().departmentModel?.departmentName) ?? "—")</td>
+                                    <td colspan="8" class="fw-bold">@((dep.First().departmentName) ?? "—")</td>
                                 </tr>
                                 foreach (var p in dep)
                                 {
                                     <tr data-id="@p.jobPlacementID" style="cursor:pointer" onclick="location.href='@Url.Page("/JobPlacement/Details", new { id = p.jobPlacementID })'">
-                                        <td>@p.employmentModel?.givenID</td>
-                                        <td>@p.jobModel?.jobTitle</td>
-                                        <td>@p.jobModel?.jobClassModel?.jobClassName</td>
+                                        <td>@p.givenID<br /><span class="text-muted small">@p.FullName</span></td>
+                                        <td>@p.jobTitle</td>
+                                        <td>@p.jobClassName</td>
                                         <td>@p.jobPlacementSalary.ToString("N2")</td>
-                                        <td>@p.jobPlacementDate.ToString("yyyy-MM-dd")</td>
-                                        <td>
-                                            @if(p.jobPlacementStatus == Models.mainStatus.Active)
-                                            {
-                                                <span class="badge bg-success">@p.jobPlacementStatus</span>
-                                            }
-                                            else if(p.jobPlacementStatus == Models.mainStatus.Suspended)
-                                            {
-                                                <span class="badge bg-secondary">@p.jobPlacementStatus</span>
-                                            }
-                                            else
-                                            {
-                                                <span class="badge bg-danger">@p.jobPlacementStatus</span>
-                                            }
+                                        <td>@p.jobPlacementDate.ToString("MM/dd/yyyy")</td>
+                                        <td>                                            
+                                            @await Html.PartialAsync("_StatusBadges", p.jobPlacementStatus)
                                         </td>
 
-
-                                        <td>@p.jobStepModel?.jobGradeModel?.jobGradeName</td>
-                                        <td>@p.jobStepModel?.jobStepName</td>
+                                        <td>@p.jobGradeName <br /><span class="text-muted small">@p.jobStepName</span></td>
+                                        <td class="d-print-none text-end px-2">
+                                            <div class="btn-group" role="group">
+                                                <a asp-page="/JobPlacement/Details" asp-route-id="@p.jobPlacementID" class="btn btn-sm btn-outline-primary" title="View Details">
+                                                    <i class="bi bi-eye"></i>
+                                                </a>
+                                                <a asp-page="/Jobplacement/Edit" asp-route-id="@p.jobPlacementID" class="btn btn-sm btn-outline-success" title="Edit">
+                                                    <i class="bi bi-pencil-square"></i>
+                                                </a>
+                                            </div>
+                                        </td>
+                                        
                                     </tr>
                                 }
                             }

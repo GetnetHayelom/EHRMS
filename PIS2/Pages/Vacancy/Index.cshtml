@@ -55,12 +55,12 @@
                 <td>@vacancy.Location</td>
                 <td>@vacancy.VacancyRequiredNumber</td>
                 <td>
-                    @if (vacancy.Status == Models.VacancyStatus.Open)
+                    @if (vacancy.Status == Enums.VacancyStatus.Open)
                     {
                         <span class="badge bg-success">@Html.DisplayFor(modelItem => vacancy.Status)</span>
 
                     }
-                    else if (vacancy.Status == Models.VacancyStatus.OnHold)
+                    else if (vacancy.Status == Enums.VacancyStatus.OnHold)
                     {
                         <span class="badge bg-warning">@Html.DisplayFor(modelItem => vacancy.Status)</span>
                     }

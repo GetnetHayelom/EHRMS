@@ -51,24 +51,24 @@
                     <td class="d-print-none text-end px-2">
                         <div class="btn-group me-2" role="group">
                             <a asp-page="./Details" asp-route-id="@payroll.payrollID" class="btn btn-outline-success"><i class="bi bi-eye"></i></a>
-                            @if (payroll.payrollStatus == payrollStatus.PENDING)
+                            @if (payroll.payrollStatus == Enums.payrollStatus.PENDING)
                             {
                                 <a asp-page="Edit" asp-route-id="@payroll.payrollID" class="btn btn-outline-primary"><i class="bi bi-pencil-square"></i></a>
                             }
                         </div>
-                        @if (payroll.payrollStatus == payrollStatus.PENDING)
+                        @if (payroll.payrollStatus == Enums.payrollStatus.PENDING)
                         {
                             <form method="post" asp-page-handler="Approve" asp-route-id="@payroll.payrollID" style="display:inline">
                                 <button class="btn btn-sm btn-primary" onclick="return confirm('Are you sure you want to APPROVE this payroll?');"><i class="bi bi-check-circle me-2"></i>Approve</button>
                             </form>
                         }
-                        @if (payroll.payrollStatus == payrollStatus.APPROVED)
+                        @if (payroll.payrollStatus == Enums.payrollStatus.APPROVED)
                         {
                             <form method="post" asp-page-handler="Generate" asp-route-id="@payroll.payrollID" style="display:inline">
                                 <button class="btn btn-sm btn-primary" onclick="return confirm('Are you sure you want to PROCCESS this payroll?');"><i class="bi bi-gear-fill me-2"></i>Generate</button>
                             </form>
                         }
-                        @if (payroll.payrollStatus == payrollStatus.PROCESSED)
+                        @if (payroll.payrollStatus == Enums.payrollStatus.PROCESSED)
                         {
                             <form method="post" asp-page-handler="Generate" asp-route-id="@payroll.payrollID" style="display:inline">
                                 <button class="btn btn-sm btn-primary" onclick="return confirm('Are you sure you want to PROCCESS this payroll?');"><i class="bi bi-gear-fill me-2"></i>Re-Generate</button>
@@ -77,7 +77,7 @@
                                 <button class="btn btn-sm btn-warning" onclick="return confirm('Are you sure you want to POST this payroll?');"><i class="bi bi-airplane me-2"></i>Post</button>
                             </form>
                         }
-                        @if (payroll.payrollStatus == payrollStatus.POSTED)
+                        @if (payroll.payrollStatus == Enums.payrollStatus.POSTED)
                         {
                             <form method="post" asp-page-handler="Complete" asp-route-id="@payroll.payrollID" style="display:inline">
                                 <button class="btn btn-sm btn-success" onclick="return confirm('Are you sure you want to COMPLETE this payroll?');"><i class="bi bi-door-closed me-2"></i>Complete</button>

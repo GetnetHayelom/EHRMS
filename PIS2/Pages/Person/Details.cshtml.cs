@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Hosting;
 using PIS2.Data;
+using PIS2.Enums;
 using PIS2.Models;
 using System;
 using System.Collections.Generic;
@@ -36,6 +37,8 @@ namespace PIS2.Pages.Person
         public List<personEducationLevelModel>? personCertifications { get; set; } = default!;
         public List<familyModel>? familyRelations { get; set; } = default!;
         public bool isSelf { get; set; }
+        public jobPlacementModel currentJob { get; set; }
+        public employmentModel currentEmployment { get; set; }
         public SelectList PersonList
         {
             get; set;
@@ -81,7 +84,9 @@ namespace PIS2.Pages.Person
                     .Include(f => f.personModel2).Where(f => f.personID == id || f.personID2 == id).ToList();
 
                 isPersonActiveEmployee = personEmployments?.Any(e => e.employmentStatus == mainStatus.Active) ?? false;
-                
+
+                currentEmployment = isPersonActiveEmployee ? personEmployments.Find(e => e.employmentStatus == mainStatus.Active) : new employmentModel();
+                currentJob = isPersonActiveEmployee ? _context.JobPlacements.FirstOrDefault(e => e.employmentID == currentEmployment.employmentID && e.jobPlacementStatus == mainStatus.Active) : new jobPlacementModel();
                 //Check if photo is available
                 var imagesFolder = Path.Combine(_environment.WebRootPath, "images");
                 var fileName = $"{personModel.personID}.jpg";

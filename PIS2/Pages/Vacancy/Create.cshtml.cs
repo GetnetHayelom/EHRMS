@@ -5,6 +5,7 @@ using PIS2.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ValueGeneration.Internal;
 using PIS2.Data;
+using PIS2.Enums;
 
 namespace PIS2.Pages.Vacancy
 {
@@ -20,17 +21,17 @@ namespace PIS2.Pages.Vacancy
         [BindProperty]
         public VacancyModel VacancyModel { get; set; }
 
-        public List<jobModel> JobList { get; set; }
+        public SelectList JobList { get; set; }
         public SelectList CompanyList { get; set; }
         public SelectList EmploymentType { get; set; }
         public SelectList JobRequests { get; set; }
         public SelectList EmploymentMethods { get; set; }
         public jobRequirementModel? JobReq { get; set; }
         
-        public void OnGet(int? id)
+        public async Task OnGet(int? id)
         {
-            var jobReq = _context.JobRequirements.Include(j => j.JobModel)
-                .Include(j => j.DepartmentModel).FirstOrDefault(j => j.jobRequirementID == id);
+            var jobReq =await _context.JobRequirements.Include(j => j.JobModel)
+                .Include(j => j.DepartmentModel).FirstOrDefaultAsync(j => j.jobRequirementID == id);
             JobReq = jobReq ?? new jobRequirementModel();
 
             if(JobReq != null)
@@ -39,16 +40,8 @@ namespace PIS2.Pages.Vacancy
                 VacancyModel.departmentID = JobReq.departmentID;
             }
 
-            JobList = _context.Jobs.Where(j => j.jobStatus == mainStatus.Active).ToList();
-            CompanyList =new SelectList(_context.Companies.Where(d => d.companyStatus == mainStatus.Active).ToList(), "companyID", "companyName");
-            EmploymentType = new SelectList(_context.EmploymentTypes.Where(d => d.employmentTypeStatus == mainStatus.Active).ToList(), "employmentTypeID", "employmentTypeName");
-            var jReqs = _context.JobRequirements.Include(j => j.JobModel).Include(j => j.DepartmentModel).Where(j => j.jobRequirementStatus == jobReqStatus.Approved).Select(j => new
-            {
-                jrID= j.jobRequirementID,
-                jrTitle = $"{j.JobModel.jobTitle}, {j.DepartmentModel.departmentName}"
-            }).ToList();
-            JobRequests = new SelectList(jReqs, "jrID", "jrTitle", id);
-            EmploymentMethods = new SelectList(_context.EmploymentMethods.Where(j => j.employmentMethodStatus == mainStatus.Active).ToList(), "employmentMethodID", "employmentMethodName");
+            await Populate(id ?? 0);
+            
         }
 
         public async Task<IActionResult> OnPostAsync()
@@ -65,10 +58,10 @@ namespace PIS2.Pages.Vacancy
             var vacancy = new VacancyModel()
             {
                 ClosingDate = VacancyModel.ClosingDate,
-                jobID =jobID !=0 ? VacancyModel.jobID : jobID,
+                jobID = VacancyModel.jobRequirementID > 0 ? jobID : VacancyModel.jobID,
                 jobRequirementID =VacancyModel.jobRequirementID > 0? VacancyModel.jobRequirementID : null,
                 VacancyTitle = VacancyModel.VacancyTitle,
-                departmentID = depID != 0? depID : VacancyModel.departmentID,
+                departmentID = VacancyModel.jobRequirementID > 0 ? depID : VacancyModel.departmentID,
                 employmentTypeID = VacancyModel.employmentTypeID,
                 employmentMethodID = VacancyModel.employmentMethodID,
                 Location = VacancyModel.Location,
@@ -98,25 +91,37 @@ namespace PIS2.Pages.Vacancy
                     }
                     Console.WriteLine(kv.ToString());
                 }
-                var jobReq = _context.JobRequirements.Include(j => j.JobModel)
-               .Include(j => j.DepartmentModel).FirstOrDefault(j => j.jobRequirementID == VacancyModel.jobRequirementID);
-                JobReq = jobReq ?? new jobRequirementModel();
 
-                JobList = _context.Jobs.Where(j => j.jobStatus == mainStatus.Active).ToList();
-                CompanyList = new SelectList(_context.Companies.Where(d => d.companyStatus == mainStatus.Active).OrderBy(c => c.companyName).ToList(), "companyID", "companyName");
-                EmploymentType = new SelectList(_context.EmploymentTypes.Where(d => d.employmentTypeStatus == mainStatus.Active).ToList(), "employmentTypeID", "employmentTypeName");
-                JobRequests = new SelectList(_context.JobRequirements.Where(j => j.jobRequirementStatus == jobReqStatus.Approved).ToList(), "jobRequirementID", "jobRequirementID");
-                EmploymentMethods = new SelectList(_context.EmploymentMethods.Where(j => j.employmentMethodStatus == mainStatus.Active).ToList(), "employmentMethodID", "employmentMethodName");
+                Populate(jobID);
 
                 VacancyModel = vacancy;
-                
-                
+                                
                 return Page();
             }
             _context.Vacancies.Add(vacancy);
             await _context.SaveChangesAsync();
             
             return RedirectToPage("Details", new {id = vacancy.VacancyID});
+        }
+
+        public async Task Populate(int id)
+        {
+            var jobs = await _context.Jobs.Where(j => j.jobStatus == mainStatus.Active).ToListAsync();
+            var comps = await _context.Companies.Where(d => d.companyStatus == mainStatus.Active).ToListAsync();
+            var empTypes = await _context.EmploymentTypes.Where(d => d.employmentTypeStatus == mainStatus.Active).ToListAsync();
+            var empMethods = await _context.EmploymentMethods.Where(j => j.employmentMethodStatus == mainStatus.Active).ToListAsync();
+
+            JobList = new SelectList(jobs, "jobID", "jobTitle");
+            CompanyList = new SelectList(comps, "companyID", "companyName");
+            EmploymentType = new SelectList(empTypes, "employmentTypeID", "employmentTypeName");
+            var jReqs = await _context.JobRequirements.Include(j => j.JobModel).Include(j => j.DepartmentModel).Where(j => j.jobRequirementStatus == jobReqStatus.Approved).Select(j => new
+            {
+                jrID = j.jobRequirementID,
+                jrTitle = $"{j.JobModel.jobTitle}, {j.DepartmentModel.departmentName}"
+            }).ToListAsync();
+
+            JobRequests = new SelectList(jReqs, "jrID", "jrTitle", id);
+            EmploymentMethods = new SelectList(empMethods, "employmentMethodID", "employmentMethodName");
         }
     }
 

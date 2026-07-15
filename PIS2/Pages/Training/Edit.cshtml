@@ -31,7 +31,7 @@
                         </div>
                         <div class="col-md-6 mb-3">
                             <label asp-for="Training.trainingStatus" class="form-label fw-bold">Status</label>
-                            <select asp-for="Training.trainingStatus" asp-items="Html.GetEnumSelectList<Models.trainingStatus>()" class="form-select"></select>
+                            <select asp-for="Training.trainingStatus" asp-items="Html.GetEnumSelectList<Enums.trainingStatus>()" class="form-select"></select>
                         </div>
                         <div class="mb-3">
                             <label asp-for="Training.description" class="form-label fw-bold">Description</label>
@@ -41,7 +41,7 @@
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label asp-for="Training.category" class="form-label fw-bold">Category</label>
-                                <select asp-for="Training.category" asp-items="Html.GetEnumSelectList<Models.trainingCategory>()" class="form-select"></select>
+                                <select asp-for="Training.category" asp-items="Html.GetEnumSelectList<Enums.trainingCategory>()" class="form-select"></select>
                             </div>
                             <div class="col-md-6 mb-3">
                                 <label asp-for="Training.validityMonths" class="form-label fw-bold">Validity (Months)</label>

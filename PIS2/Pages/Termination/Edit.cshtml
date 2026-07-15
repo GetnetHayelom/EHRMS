@@ -39,7 +39,7 @@
             </div>
             <div class="form-group">
                 <label asp-for="terminationModel.terminationStatus" class="control-label">Status</label>
-                <select asp-for="terminationModel.terminationStatus" class="form-control" asp-items="@Html.GetEnumSelectList<Models.terminationStatus>()"></select>
+                <select asp-for="terminationModel.terminationStatus" class="form-control" asp-items="@Html.GetEnumSelectList<Enums.terminationStatus>()"></select>
                 <span asp-validation-for="terminationModel.terminationStatus" class="text-danger"></span>
             </div>
             

@@ -53,7 +53,7 @@ namespace PIS2.Pages.Absentism
             {
                 return RedirectToPage("/Shared/AccessDenied");
             }
-            if(leaveModel.leaveStatus == leaveStatus.Completed) { return Page(); }
+            if(leaveModel.leaveStatus == Enums.leaveStatus.Completed) { return Page(); }
             if (!ModelState.IsValid)
             {
                 foreach (var kv in ModelState)

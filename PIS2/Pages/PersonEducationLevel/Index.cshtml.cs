@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.Blazor;
 using PIS2.Data;
+using PIS2.Enums;
 using PIS2.Models;
 using PIS2.Views;
 using System;
@@ -60,7 +61,6 @@ namespace PIS2.Pages.PersonEducationLevel
             personEducationLevelModel =new List<CertificationDetailsView>();
             personEducationLevelModel = await _context.CertificationDetailsView.ToListAsync();
 
-
             Male = personEducationLevelModel.Count(t => t.PersonGender == Gender.Male);
             Female = personEducationLevelModel.Count(t => t.PersonGender == Gender.Female);
             ActiveEmp = personEducationLevelModel.Count(t => t.EmploymentStatus == mainStatus.Active);
@@ -99,7 +99,6 @@ namespace PIS2.Pages.PersonEducationLevel
             }
 
             var query = _context?.TalentExperienceView.AsQueryable();
-
 
             // Apply filters safely
             if (jobClassID.HasValue)
@@ -141,8 +140,7 @@ namespace PIS2.Pages.PersonEducationLevel
                 }).ToList<object>();
             }
             
-
-                return new JsonResult(new { tableHtml, Male1, Female1, ActiveEmp1, TotalRecords1 });
+            return new JsonResult(new { tableHtml, Male1, Female1, ActiveEmp1, TotalRecords1 });
         }
  
         public JsonResult OnGetEducationReport(int? CompanyID, int? DepartmentID, int? Category, string? Discipline, string? Field, int? EmploymentStatus, DateTime? Start, DateTime? End)

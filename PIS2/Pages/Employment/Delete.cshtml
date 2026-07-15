@@ -1,4 +1,5 @@
 ﻿@page
+@using PIS2.Enums
 @model PIS2.Pages.Employment.DeleteModel
 
 @{
@@ -37,7 +38,7 @@
         <dd class="col-sm-10">
             @Html.DisplayFor(model => model.employmentModel.employmentStatus)
         </dd>
-        @if(Model.employmentModel.employmentStatus == Models.mainStatus.Inactive)
+        @if(Model.employmentModel.employmentStatus == mainStatus.Inactive)
         {
             <dt class="col-sm-2">
                 Termination Date:

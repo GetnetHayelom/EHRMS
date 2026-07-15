@@ -17,7 +17,7 @@
                 <div class="card-header bg-primary text-white">
                     <div class="d-flex justify-content-between">
                         <h4 class="mb-0"><i class="bi bi-pencil-square me-2"></i>Edit Budget Plan</h4>
-                        @if (Model.BudgetPlan.Status == Models.BudgetStatus.HOLD && User.IsInRole("MIE\\PMS_HRMANAGER"))
+                        @if (Model.BudgetPlan.Status == Enums.BudgetStatus.HOLD && User.IsInRole("MIE\\PMS_HRMANAGER"))
                         {
                             <div class="btn-group">
                                 <form method="post" asp-page-handler="Approve">
@@ -31,7 +31,7 @@
                             </div>
 
                         }
-                        else if (Model.BudgetPlan.Status == Models.BudgetStatus.APPROVED && User.IsInRole("MIE\\PMS_HRMANAGER"))
+                        else if (Model.BudgetPlan.Status == Enums.BudgetStatus.APPROVED && User.IsInRole("MIE\\PMS_HRMANAGER"))
                         {
                             if (Model.BudgetPlan.StartDate <= DateTime.Now)
                             {
@@ -41,7 +41,7 @@
                                 </form>
                             }
                         }
-                        else if (Model.BudgetPlan.Status == Models.BudgetStatus.ACTIVE && User.IsInRole("MIE\\PMS_HRMANAGER"))
+                        else if (Model.BudgetPlan.Status == Enums.BudgetStatus.ACTIVE && User.IsInRole("MIE\\PMS_HRMANAGER"))
                         {
                             if(Model.BudgetPlan.EndDate <= DateTime.Now)
                             {
@@ -86,11 +86,11 @@
                                     @{
                                         var badgeClass = Model.BudgetPlan.Status switch
                                         {
-                                            Models.BudgetStatus.APPROVED => "bg-success",
-                                            Models.BudgetStatus.ACTIVE => "bg-success",
-                                            Models.BudgetStatus.HOLD => "bg-warning",
-                                            Models.BudgetStatus.CLOSED => "bg-secondary",
-                                            Models.BudgetStatus.DECLINED => "bg-danger",
+                                            Enums.BudgetStatus.APPROVED => "bg-success",
+                                            Enums.BudgetStatus.ACTIVE => "bg-success",
+                                            Enums.BudgetStatus.HOLD => "bg-warning",
+                                            Enums.BudgetStatus.CLOSED => "bg-secondary",
+                                            Enums.BudgetStatus.DECLINED => "bg-danger",
                                             _ => "badge-info"
                                         };
                                     }

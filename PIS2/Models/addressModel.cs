@@ -1,4 +1,5 @@
-﻿using PIS2.Pages;
+﻿using PIS2.Enums;
+using PIS2.Pages;
 using System.ComponentModel.DataAnnotations;
 
 namespace PIS2.Models

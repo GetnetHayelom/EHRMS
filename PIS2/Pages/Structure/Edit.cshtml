@@ -1,4 +1,5 @@
 ﻿@page
+@using PIS2.Enums
 @model Pages.Structures.EditModel
 
 <h2 class="fw-bold">Structure</h2>
@@ -33,7 +34,7 @@
             </div>
             <div class="form-group">
                 <label asp-for="Structure.structureStatus">Status</label>
-                <select asp-for="Structure.structureStatus" class="form-control d-print-none" asp-items="@Html.GetEnumSelectList<Models.mainStatus>()"></select>
+                <select asp-for="Structure.structureStatus" class="form-control d-print-none" asp-items="@Html.GetEnumSelectList<mainStatus>()"></select>
                 <p class="fw-bold text-decoration-underline d-none d-print-block">@Model.Structure.structureStatus</p>
             </div>
         </div>

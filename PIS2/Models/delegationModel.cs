@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using PIS2.Enums;
+using System.ComponentModel.DataAnnotations;
 
 namespace PIS2.Models
 {
@@ -36,19 +37,5 @@ namespace PIS2.Models
 
         public delegationHistoryModel() { }
     }
-    public enum delegationScopes
-    {
-        [Display(Name = "Leave Approve")]
-        LeaveApprove,
-        [Display(Name = "Overtime Approve")]
-        OTApprove,
-        [Display(Name = "Shift Assignment")]
-        ShiftAssignment,
-        [Display(Name = "Worksite Assignment")]
-        WorkSiteAssignment,
-        [Display(Name = "View Only")]
-        ViewOnly,
-        [Display(Name = "Full Delegation")]
-        Fulldelegation
-    }
+    
 }

@@ -1,4 +1,5 @@
 ﻿@page
+@using PIS2.Enums
 @model PIS2.Pages.Department.IndexModel
 
 @{
@@ -21,7 +22,7 @@
     <div class="d-flex d-print-flex gap-3 align-items-end">
         <div class="flex-fill mb-2">
             <label class="form-label fw-bold">Status</label>
-            <select id="statusFilter" class="form-select" asp-items="@Html.GetEnumSelectList<Models.mainStatus>()">
+            <select id="statusFilter" class="form-select" asp-items="@Html.GetEnumSelectList<mainStatus>()">
                 <option value="" selected>-- All Statuses --</option>
             </select>
         </div>

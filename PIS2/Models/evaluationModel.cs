@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using PIS2.Enums;
+using System.ComponentModel.DataAnnotations;
 using System.Security.Policy;
 
 namespace PIS2.Models
@@ -84,40 +85,5 @@ namespace PIS2.Models
     }
 
 
-    public enum evaluationStatus 
-    {
-        Pending,
-        Submitted,
-        Void
-    }
-    public enum ProficiencyLevel
-    {
-        [Display(Name = "Exceptional (4.0)")]
-        Exceptional = 40,
-
-        [Display(Name = "Very Good (3.5)")]
-        VeryGood = 35,
-
-        [Display(Name = "Good (3.0)")]
-        Good = 30,
-
-        [Display(Name = "Average (2.5)")]
-        Average = 25,
-
-        [Display(Name = "Unsatisfactory (2.0)")]
-        Unsatisfactory = 20,
-
-        [Display(Name = "Poor (1.5)")]
-        Poor = 15,
-
-        [Display(Name = "Very Poor (1.0)")]
-        VeryPoor = 10,
-
-        [Display(Name = "Unacceptable (0.5)")]
-        Unacceptable = 5,
-
-        [Display(Name = "No Output / Zero (0.0)")]
-        Zero = 0
-    }
 
 }

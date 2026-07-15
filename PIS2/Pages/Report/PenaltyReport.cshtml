@@ -8,7 +8,8 @@
 @if(Model.PenaltyRecords == null || !Model.PenaltyRecords.Any())
 {
     <p> No penalty records found!</p>
-}else{<div class="container-fluid mt-4">
+}else{
+    <div class="container-fluid">
     <!--TOP HEADER-->
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
@@ -110,21 +111,21 @@
         <div class="card-body">
             <form method="get" class="d-flex d-print-fl gap-3">
                 <div class="flex-fill">
-                    <label class="form-label small fw-bold">Status</label>
+                    <label class="form-label small fw-bold">Type</label>
                     <select asp-for="TypeFilter" class="form-select" asp-items="Model.PenaltyTypes">
-                        <option value="">All Types</option>
+                        <option value="">All</option>
                     </select>
                 </div>
                 <div class="flex-fill">
                     <label class="form-label small fw-bold">Status</label>
-                    <select asp-for="StatusFilter" asp-items="Html.GetEnumSelectList<PIS2.Models.penaltyStatus>()" class="form-select">
-                        <option value="">All Statuses</option>
+                    <select asp-for="StatusFilter" asp-items="Html.GetEnumSelectList<PIS2.Enums.penaltyStatus>()" class="form-select">
+                        <option value="">All</option>
                     </select>
                 </div>
                 <div class="flex-fill">
                     <label class="form-label small fw-bold">Category</label>
-                    <select asp-for="CategoryFilter" asp-items="Html.GetEnumSelectList<PIS2.Models.penaltyCategory>()" class="form-select">
-                        <option value="">All Categories</option>
+                    <select asp-for="CategoryFilter" asp-items="Html.GetEnumSelectList<PIS2.Enums.penaltyCategory>()" class="form-select">
+                        <option value="">All</option>
                     </select>
                 </div>
                 <div class="flex-fill">
@@ -136,8 +137,8 @@
                     <input type="date" asp-for="EndDate" class="form-control" />
                 </div>
                 <div class="flex-fill d-flex align-items-end d-print-none">
-                    <button type="submit" class="btn btn-dark w-100">Apply Filters</button>
-                    <a asp-page="./Index" class="btn btn-link text-decoration-none">Reset</a>
+                    <button type="submit" class="btn btn-primary w-100">Load</button>
+                    <a asp-page="./Index" class="btn btn-outline-danger text-decoration-none">Reset</a>
                 </div>
             </form>
         </div>
@@ -282,10 +283,10 @@
                                                         @{
                                                             var badgeClass = item.penaltyStatus switch
                                                             {
-                                                                PIS2.Models.penaltyStatus.Complete => "bg-success",
-                                                                PIS2.Models.penaltyStatus.Pending => "bg-warning",
-                                                                PIS2.Models.penaltyStatus.Hold => "bg-secondary",
-                                                                PIS2.Models.penaltyStatus.Void => "bg-danger",
+                                                                PIS2.Enums.penaltyStatus.Complete => "bg-success",
+                                                                PIS2.Enums.penaltyStatus.Pending => "bg-warning",
+                                                                PIS2.Enums.penaltyStatus.Hold => "bg-secondary",
+                                                                PIS2.Enums.penaltyStatus.Void => "bg-danger",
                                                                 _ => "bg-primary"
                                                             };
                                                         }

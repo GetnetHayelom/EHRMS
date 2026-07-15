@@ -48,10 +48,10 @@ builder.Services.AddControllers();
 
 // Add core application services
 builder.Services.AddScoped<Core>();
-builder.Services.AddScoped<PaymentServices>();
 builder.Services.AddScoped<LeaveService>();
 builder.Services.AddScoped<HRDashboardService>();
-builder.Services.AddScoped<Globals>();
+builder.Services.AddScoped<Global_S>();
+builder.Services.AddScoped<Global_C>();
 
 // Configure database context
 builder.Services.AddDbContext<PISContext>(options =>

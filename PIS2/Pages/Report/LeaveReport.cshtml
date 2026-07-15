@@ -23,6 +23,9 @@
             <li class="nav-item">
                 <button class="nav-link" data-bs-toggle="tab" data-bs-target="#detailLeaveView">Custom Attendance Report</button>
             </li>
+            <li class="nav-item">
+                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#ExpiringLeaveView">Expiring Leave Report</button>
+            </li>
             <li>@await Html.PartialAsync("print")</li>
         </ul>
     </div>
@@ -230,7 +233,7 @@
                     <div class="col-3">
                         <div class="form-floating">
 
-                            <select class="form-select" asp-for="LeaveGroup" asp-items="@Html.GetEnumSelectList<Models.leaveGroup>()">
+                            <select class="form-select" asp-for="LeaveGroup" asp-items="@Html.GetEnumSelectList<Enums.leaveGroup>()">
                                 <option value="" selected>All</option>
                             </select>
                             <label for="LeaveGroup">Group:</label>
@@ -363,7 +366,7 @@
                             <div class="d-flex justify-content-between align-items-center">
                                 <div>
                                     <small class="text-muted">Total Records</small>
-                                    <h3 class="fw-bold mb-0"><u id="totalRecords">@Model.totalCount.ToString("N2")</u></h3>
+                                    <h3 class="fw-bold mb-0"><u id="totalRecords">@(Model.totalCount.ToString("N0"))</u></h3>
                                 </div>
                                 <div><i class="bi bi-file-text fs-2 text-info"></i></div>
                             </div>
@@ -377,7 +380,7 @@
                             <div class="d-flex justify-content-between align-items-center">
                                 <div>
                                     <small class="text-muted">Total In Days</small>
-                                    <h3 class="fw-bold mb-0"><u id="totalDays1">@Model.totalDays.ToString("N2")</u></h3>
+                                    <h3 class="fw-bold mb-0"><u id="totalDays1">@(Model.totalDays.ToString("N2"))</u></h3>
                                 </div>
                                 <div><i class="bi bi-calendar fs-2 text-primary"></i></div>
                             </div>
@@ -391,7 +394,7 @@
                             <div class="d-flex justify-content-between align-items-center">
                                 <div>
                                     <small class="text-muted">Unposted</small>
-                                    <h3 class="fw-bold mb-0"><u id="totalUnposted">@Model.CountUnposted.ToString("N2")</u></h3>
+                                    <h3 class="fw-bold mb-0"><u id="totalUnposted">@(Model.CountUnposted.ToString("N0"))</u></h3>
                                 </div>
                                 <div><i class="bi bi-exclamation-circle fs-2 text-warning"></i></div>
                             </div>
@@ -405,7 +408,7 @@
                             <div class="d-flex justify-content-between align-items-center">
                                 <div>
                                     <small class="text-muted">Records/Employee</small>
-                                    <h3 class="fw-bold mb-0"><u id="recordsPerEmployee">@Model.recordsPerEmployee.ToString("N2")</u></h3>
+                                    <h3 class="fw-bold mb-0"><u id="recordsPerEmployee">@(Model.recordsPerEmployee.ToString("N0"))</u></h3>
                                 </div>
                                 <div><i class="bi bi-people fs-2 text-success"></i></div>
                             </div>
@@ -419,7 +422,7 @@
                             <div class="d-flex justify-content-between align-items-center">
                                 <div>
                                     <small class="text-muted">Days/Employee</small>
-                                    <h3 class="fw-bold mb-0"><u id="daysPerEmployee">@Model.daysPerEmployee.ToString("N2")</u></h3>
+                                    <h3 class="fw-bold mb-0"><u id="daysPerEmployee">(@Model.daysPerEmployee.ToString("N2"))</u></h3>
                                 </div>
                                 <div><i class="bi bi-clock fs-2 text-danger"></i></div>
                             </div>
@@ -433,7 +436,7 @@
                             <div class="d-flex justify-content-between align-items-center">
                                 <div>
                                     <small class="text-muted">Cost</small>
-                                    <h3 class="fw-bold mb-0"><u id="totalCost_custom">@Model.totalCost.ToString("N2")</u></h3>
+                                    <h3 class="fw-bold mb-0"><u id="totalCost_custom">@(Model.totalCost.ToString("N2"))</u></h3>
                                 </div>
                                 <div><i class="bi bi-currency-dollar fs-2 text-success"></i></div>
                             </div>
@@ -484,7 +487,7 @@
 
                     <div class="col-md-3">
                         <div class="form-floating">
-                            <select class="form-select" id="filter-group" asp-items="Html.GetEnumSelectList<Models.leaveGroup>()">
+                            <select class="form-select" id="filter-group" asp-items="Html.GetEnumSelectList<Enums.leaveGroup>()">
                                 <option value="">All</option>
                             </select>
                             <label for="filter-group">Leave Group</label>
@@ -493,7 +496,7 @@
 
                     <div class="col-md-3">
                         <div class="form-floating">
-                            <select class="form-select" id="filter-status" asp-items="Html.GetEnumSelectList<Models.leaveStatus>()">
+                            <select class="form-select" id="filter-status" asp-items="Html.GetEnumSelectList<Enums.leaveStatus>()">
                                 <option value="">All</option>
                             </select>
                             <label for="filter-status">Status</label>
@@ -615,6 +618,61 @@
             </div>
         </div>
     </div>
+
+    <!--EXPIRING LEAVE REPORT-->
+    <div class="tab-pane fade" id="ExpiringLeaveView">
+        <h4 class="fw-bold mt-3 text-primary">Expiring Leaves</h4>
+        <div class="d-flex justify-content-between align-items-end">            
+            <div class="d-flex gap-2">
+                <div class="col-md-3">
+                    <div class="form-floating">
+                        <select class="form-select" id="filter-ex-company" onchange="loadDepartments('#filter-ex-company', '#filter-ex-department')">
+                            <option value="">All</option>
+                            @foreach (var company in Model.Companies)
+                            {
+                                <option value="@company.companyID">@company.companyName</option>
+                            }
+                        </select>
+                        <label for="filter-company">Company</label>
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="form-floating">
+                        <select class="form-select" id="filter-ex-department">
+                            <option value="">All</option>
+                        </select>
+                        <label for="filter-department">Department</label>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="form-floating">                        
+                        <select class="form-select" asp-items="@Html.GetEnumSelectList<Enums.EmploymentPositions>()" id="filter-ex-position">
+                            <option value="">All</option>
+                        </select>
+                        <label class="form-control-sm">Position</label>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="form-floating">
+                        <input class="form-control" type="number" step="1" id="filter-ex-years" value="2">
+                        <label class="form-control-sm">Years</label>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="btn-group m-2">
+                        <button class="btn btn-primary my-2" onclick="filterExpiredLeaves()"><i class="bi bi-filter-circle me-2"></i>Filter</button>
+                        <excel-export table="typeTable" filename="Unposted_Leave_Types_@(DateTime.Now).xlsx"></excel-export>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <div id="expiring_leave_table">
+            @await Html.PartialAsync("_ExpiringLeaves", Model.ExpiringLeaves)
+        </div>
+        
+    </div>
 </div>
 
 <!--FOOTER-->
@@ -629,6 +687,34 @@
         // Global chart instances
     let trendChartInstance = null;
     let typeChartInstance = null;
+    function filterExpiredLeaves(){
+        var companyID=$("#filter-ex-company").val();
+        var departmentID = $("#filter-ex-department").val();
+        var position = $("#filter-ex-position").val();
+        var years =$("#filter-ex-years").val();
+
+        departmentID = (!departmentID || departmentID === "") ? null : departmentID;
+        companyID = (!companyID || companyID === "") ? null : companyID;
+        position = (!position || position === "") ? null : position;
+        years = (!years || years === "") ? 2 : years;
+
+        var filter_ex_leave = {
+            company : companyID,
+            department : departmentID,
+            position : position,
+            years : years
+        }
+
+        var url = `/Report/LeaveReport?handler=ExpiringLeave`;
+
+        $.get(url, filter_ex_leave, function(data){
+            $("#expiring_leave_table").html(data);
+            // $("#number_ex_employees").text(data.empCount);
+            // $('#avg_ex_leaves').text(data.avgDays);
+            // $("#cost_ex_leaves").text(data.avgDays);
+        });
+    }
+
     function filterLeaves() {
         var department = $("#filter-department").val();
         var leaveStatus = $("#filter-status").val();
@@ -649,21 +735,22 @@
         dateStart = (!dateStart || dateStart === "") ? null : new Date(dateStart).toISOString();
         dateEnd = (!dateEnd || dateEnd === "") ? null : new Date(dateEnd).toISOString();
         empEp = (!empEp || empEp === "") ? "" : empEp;
-        
 
+            var filterData = {
+                department: department,
+                leaveStatus: leaveStatus,
+                leaveGroup: leaveGroup,
+                leaveType: leaveType,
+                company: company,
+                dateStart: dateStart,
+                dateEnd: dateEnd,
+                empEp: empEp
+            };
         // Build the URL with filters
-        var url = `/Report/LeaveReport?handler=Filter` +
-            `&department=${encodeURIComponent(department)}` +
-            `&leaveStatus=${encodeURIComponent(leaveStatus)}` +
-            `&leaveGroup=${encodeURIComponent(leaveGroup)}` +
-            `&leaveType=${encodeURIComponent(leaveType)}` +
-            `&company=${encodeURIComponent(company)}` +
-            `&dateStart=${encodeURIComponent(dateStart)}` +
-            `&dateEnd=${encodeURIComponent(dateEnd)}`+
-            `&empEp=${encodeURIComponent(empEp)}`;
+        var url = `/Report/LeaveReport?handler=Filter`;
 
         // jQuery AJAX
-        $.getJSON(url, function (data) {
+        $.getJSON(url, filterData, function (data) {
             //console.log("Received Data:", data);
 
             $("#table-body").html(data.tableHtml);

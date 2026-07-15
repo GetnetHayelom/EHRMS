@@ -131,7 +131,7 @@ else
                             @t.PayrollEnd.ToString("MM/dd/yyyy")
                         </td>
                         <td>
-                            <span class="badge @(t.PayrollStatus == Models.payrollStatus.COMPLETED ? "bg-success" : "bg-warning")"> 
+                            <span class="badge @(t.PayrollStatus == Enums.payrollStatus.COMPLETED ? "bg-success" : "bg-warning")"> 
                                 @t.PayrollStatus
                             </span>
                         </td>

@@ -1,4 +1,5 @@
 ﻿@page
+@using PIS2.Enums
 @model PIS2.Pages.JobStep.CreateModel
 
 @{
@@ -30,7 +31,7 @@
             </div>
             <div class="form-group d-none">
                 <label asp-for="jobStepModel.jobStepStatus" class="control-label">Status</label>
-                <select asp-for="jobStepModel.jobStepStatus" class="form-control" value="@Models.mainStatus.Suspended"></select>
+                <select asp-for="jobStepModel.jobStepStatus" class="form-control" value="@mainStatus.Suspended"></select>
                 <span asp-validation-for="jobStepModel.jobStepStatus" class="text-danger"></span>
             </div>
             <div class="form-group d-none">

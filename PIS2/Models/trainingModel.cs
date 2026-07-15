@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
+using PIS2.Enums;
 
 namespace PIS2.Models
 {
@@ -103,39 +104,7 @@ namespace PIS2.Models
     /// Enums for Options
     /// </summary>
 
-    public enum trainingCategory
-    {
-        Technical,
-        HR,
-        Safety,
-        Compliance,
-        Management,
-        Quality,
-        Other
-    }
-
-    public enum trainingDeliveryMode
-    {
-        Online,
-        Onsite,
-        Hybrid
-    }
-
-    public enum trainingStatus
-    {
-        Planned,
-        Ongoing,
-        Completed,
-        Cancelled
-    }
-
-    public enum trainingResult
-    {
-        InProgress,
-        Passed,
-        Failed,
-        Absent
-    }
+    
 
 
 }

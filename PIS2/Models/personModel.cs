@@ -1,4 +1,5 @@
 ﻿using Microsoft.Identity.Client;
+using PIS2.Enums;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 

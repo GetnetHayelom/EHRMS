@@ -53,7 +53,7 @@
                 <div class="row mb-3">
                     <div class="col-md-4">
                         <label asp-for="Notice.noticePriority" class="form-label"></label>
-                        <select asp-for="Notice.noticePriority" asp-items="Html.GetEnumSelectList<Models.Priority>()" class="form-control">
+                        <select asp-for="Notice.noticePriority" asp-items="Html.GetEnumSelectList<Enums.Priority>()" class="form-control">
                             <option value="">Select Priority</option>
                         </select>
                         <span asp-validation-for="Notice.noticePriority" class="text-danger"></span>

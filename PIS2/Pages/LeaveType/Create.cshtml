@@ -1,4 +1,5 @@
 ﻿@page
+@using PIS2.Enums
 @model PIS2.Pages.LeaveType.CreateModel
 
 @{
@@ -21,7 +22,7 @@
             </div>
             <div class="form-group">
                 <label asp-for="leaveTypeModel.leaveTypeImpact" class="control-label">Impact</label>
-                <select asp-for="leaveTypeModel.leaveTypeImpact" class="form-control" asp-items="Html.GetEnumSelectList<Models.leaveTypeImpact>()"></select>
+                <select asp-for="leaveTypeModel.leaveTypeImpact" class="form-control" asp-items="Html.GetEnumSelectList<leaveTypeImpact>()"></select>
                 <span asp-validation-for="leaveTypeModel.leaveTypeImpact" class="text-danger"></span>
             </div>
             <div class="form-group">
@@ -36,12 +37,12 @@
             </div>
             <div class="form-group">
                 <label asp-for="leaveTypeModel.leaveGroup" class="control-label">Group</label>
-                <select asp-for="leaveTypeModel.leaveGroup" class="form-control" asp-items="Html.GetEnumSelectList<Models.leaveGroup>()"></select>
+                <select asp-for="leaveTypeModel.leaveGroup" class="form-control" asp-items="Html.GetEnumSelectList<Enums.leaveGroup>()"></select>
                 <span asp-validation-for="leaveTypeModel.leaveGroup" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="leaveTypeModel.leaveTypeStatus" class="control-label">Status</label>
-                <select asp-for="leaveTypeModel.leaveTypeStatus" class="form-control" asp-items="Html.GetEnumSelectList<Models.mainStatus>()"></select>
+                <select asp-for="leaveTypeModel.leaveTypeStatus" class="form-control" asp-items="Html.GetEnumSelectList<mainStatus>()"></select>
                 <span asp-validation-for="leaveTypeModel.leaveTypeStatus" class="text-danger"></span>
             </div>
             <div class="form-group form-check m-2">

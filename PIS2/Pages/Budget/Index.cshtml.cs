@@ -38,7 +38,7 @@ namespace PIS2.Pages.Account.Budgeting
             }
 
             // Dashboard Aggregates
-            Stats.ActivePlansCount = plans.Count(x => x.Status == BudgetStatus.ACTIVE);
+            Stats.ActivePlansCount = plans.Count(x => x.Status == Enums.BudgetStatus.ACTIVE);
             Stats.TotalGlobalBudget = Plans.Sum(x => x.TotalAllocated);
             Stats.TotalGlobalSpent = Plans.Sum(x => x.TotalSpent);
         }

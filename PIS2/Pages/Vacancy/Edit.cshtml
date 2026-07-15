@@ -74,7 +74,7 @@
 
                     <div class="col-md-4">
                         <label asp-for="VacancyModel.VacancyType" class="form-label fw-semibold small">Recruitment Type</label>
-                        <select asp-for="VacancyModel.VacancyType" class="form-select" asp-items="@Html.GetEnumSelectList<Models.Ex_In>()"></select>
+                        <select asp-for="VacancyModel.VacancyType" class="form-select" asp-items="@Html.GetEnumSelectList<Enums.Ex_In>()"></select>
                     </div>
                     <div class="col-md-4">
                         <label asp-for="VacancyModel.employmentTypeID" class="form-label fw-semibold small">Employment Type</label>
@@ -100,7 +100,7 @@
                     </div>
                     <div class="col-md-4">
                         <label asp-for="VacancyModel.Status" class="form-label fw-semibold small">Current Status</label>
-                        <select asp-for="VacancyModel.Status" class="form-select fw-bold text-primary" asp-items="@Html.GetEnumSelectList<Models.VacancyStatus>()"></select>
+                        <select asp-for="VacancyModel.Status" class="form-select fw-bold text-primary" asp-items="@Html.GetEnumSelectList<Enums.VacancyStatus>()"></select>
                     </div>
 
                     <div class="col-md-6">

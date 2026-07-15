@@ -5,7 +5,7 @@ using PIS2.Models;
 using Microsoft.AspNetCore.Authorization;
 using PIS2.Services;
 using PIS2.Data;
-
+using PIS2.Enums;
 
 namespace PIS2.Pages.Payroll
 {

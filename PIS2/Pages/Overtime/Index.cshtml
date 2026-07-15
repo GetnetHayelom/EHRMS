@@ -1,4 +1,5 @@
 ﻿@page
+@using PIS2.Enums
 @model PIS2.Pages.Overtime.IndexModel
 
 @{
@@ -55,12 +56,12 @@
                         @Html.DisplayFor(modelItem => item.overtimeRate)
                     </td>
                 <td>
-                    @if (item.overtimeStatus == Models.mainStatus.Active)
+                    @if (item.overtimeStatus == mainStatus.Active)
                     {
                         <span class="badge bg-success">@Html.DisplayFor(modelItem => item.overtimeStatus)</span>
 
                     }
-                    else if (item.overtimeStatus == Models.mainStatus.Suspended)
+                    else if (item.overtimeStatus == mainStatus.Suspended)
                     {
                         <span class="badge bg-warning">@Html.DisplayFor(modelItem => item.overtimeStatus)</span>
                     }

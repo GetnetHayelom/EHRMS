@@ -1,4 +1,5 @@
 ﻿@page
+@using PIS2.Enums
 @model PIS2.Pages.DeductionRecord.IndexModel
 @{
 }
@@ -38,12 +39,12 @@
                             <td>@item.deductionAmount</td>
                             <td>@(item.IsPercentage ? "Yes" : "No")</td>
                             <td>
-                                @if (item.deductionStatus == Models.mainStatus.Active)
+                                @if (item.deductionStatus == mainStatus.Active)
                                 {
                                     <span class="badge bg-success">@Html.DisplayFor(modelItem => item.deductionStatus)</span>
 
                                 }
-                                else if (item.deductionStatus == Models.mainStatus.Suspended)
+                                else if (item.deductionStatus == mainStatus.Suspended)
                                 {
                                     <span class="badge bg-warning">@Html.DisplayFor(modelItem => item.deductionStatus)</span>
                                 }

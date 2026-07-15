@@ -1,4 +1,5 @@
 ﻿@page
+@using PIS2.Enums
 @model PIS2.Pages.Company.IndexModel
 
 @{
@@ -18,7 +19,7 @@
 
         <form method="get" class="d-flex">
             <label class="form-label"> Filter by Status</label>
-            <select asp-for="CompanyStatus" class="form-control m-2" asp-items="@Html.GetEnumSelectList<Models.mainStatus>()" onchange="this.form.submit()">
+            <select asp-for="CompanyStatus" class="form-control m-2" asp-items="@Html.GetEnumSelectList<mainStatus>()" onchange="this.form.submit()">
                 <option value="" selected> All</option>
             </select>
         </form>
@@ -71,12 +72,12 @@
                 @Html.DisplayFor(modelItem => item.addressModel.addressFormatted)
             </td>
             <td>
-                    @if (item.companyStatus == Models.mainStatus.Active)
+                    @if (item.companyStatus == mainStatus.Active)
                     {
                         <span class="badge bg-success">@Html.DisplayFor(modelItem => item.companyStatus)</span>
 
                     }
-                    else if (item.companyStatus == Models.mainStatus.Suspended)
+                    else if (item.companyStatus == mainStatus.Suspended)
                     {
                         <span class="badge bg-warning">@Html.DisplayFor(modelItem => item.companyStatus)</span>
                     }

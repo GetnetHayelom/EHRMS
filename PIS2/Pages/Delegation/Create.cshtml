@@ -1,4 +1,5 @@
 ﻿@page
+@using PIS2.Enums
 @model PIS2.Pages.delegation.CreateModel
 
 @{
@@ -56,7 +57,7 @@
             </div>
             <div class="form-group">
                 <label asp-for="delegationModel.delegationScope" class="control-label">Scope</label>
-                <select asp-for="delegationModel.delegationScope" class="form-control" asp-items="@Html.GetEnumSelectList<Models.delegationScopes>()"></select>
+                <select asp-for="delegationModel.delegationScope" class="form-control" asp-items="@Html.GetEnumSelectList<Enums.delegationScopes>()"></select>
                 <span asp-validation-for="delegationModel.delegationScope" class="text-danger"></span>
             </div>
             
@@ -132,12 +133,12 @@
                         </td>
                         <td>
 
-                            @if (item.delegationStatus == Models.mainStatus.Active)
+                            @if (item.delegationStatus == mainStatus.Active)
                             {
                                 <span class="badge bg-success">@Html.DisplayFor(modelItem => item.delegationStatus)</span>
 
                             }
-                            else if (item.delegationStatus == Models.mainStatus.Suspended)
+                            else if (item.delegationStatus == mainStatus.Suspended)
                             {
                                 <span class="badge bg-warning">@Html.DisplayFor(modelItem => item.delegationStatus)</span>
                             }

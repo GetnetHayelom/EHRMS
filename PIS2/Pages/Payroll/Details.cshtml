@@ -13,7 +13,7 @@
     <div class="d-flex justify-content-end gap-2 align-items-end">
         <!-- ============================= Status Buttons ============================= -->
         <div>
-            @if (Model.Payroll.payrollStatus == PIS2.Models.payrollStatus.PENDING)
+            @if (Model.Payroll.payrollStatus == PIS2.Enums.payrollStatus.PENDING)
             {
                 <form method="post" asp-page-handler="Approve">
                     <input type="hidden" name="id" value="@Model.Payroll.payrollID" />
@@ -21,14 +21,14 @@
                     <button class="btn btn-success" onclick="return confirm('Are you sure you want to APPROVE this payroll?');"><i class="bi bi-check-circle me-2"></i>Approve Payroll</button>
                 </form>
             }
-            else if (Model.Payroll.payrollStatus == PIS2.Models.payrollStatus.APPROVED)
+            else if (Model.Payroll.payrollStatus == PIS2.Enums.payrollStatus.APPROVED)
             {
                 <form method="post" asp-page-handler="Process">
                     <input type="hidden" name="id" value="@Model.Payroll.payrollID" />
                     <button class="btn btn-warning" onclick="return confirm('Are you sure you want to PROCCESS this payroll?');"><i class="bi bi-gear-fill me-2"></i>Generate Payroll</button>
                 </form>
             }
-            else if (Model.Payroll.payrollStatus == PIS2.Models.payrollStatus.PROCESSED)
+            else if (Model.Payroll.payrollStatus == PIS2.Enums.payrollStatus.PROCESSED)
             {
                 <div class="d-flex justify-content-end gap-2">
                     <form method="post" asp-page-handler="Post">
@@ -42,7 +42,7 @@
                 </div>
                 
             }
-            else if (Model.Payroll.payrollStatus == PIS2.Models.payrollStatus.POSTED)
+            else if (Model.Payroll.payrollStatus == PIS2.Enums.payrollStatus.POSTED)
             {
                 <form method="post" asp-page-handler="Complete">
                     <input type="hidden" name="id" value="@Model.Payroll.payrollID" />
@@ -70,9 +70,9 @@
             <p>
                 <strong>Status:</strong>
                 <span class="badge
-                @(Model.Payroll.payrollStatus == PIS2.Models.payrollStatus.PENDING ? "bg-warning" :
-                                        Model.Payroll.payrollStatus == PIS2.Models.payrollStatus.APPROVED ? "bg-primary" :
-                                        Model.Payroll.payrollStatus == PIS2.Models.payrollStatus.POSTED ? "bg-info" :
+                @(Model.Payroll.payrollStatus == PIS2.Enums.payrollStatus.PENDING ? "bg-warning" :
+                                        Model.Payroll.payrollStatus == PIS2.Enums.payrollStatus.APPROVED ? "bg-primary" :
+                                        Model.Payroll.payrollStatus == PIS2.Enums.payrollStatus.POSTED ? "bg-info" :
                                         "bg-success")">
                     @Model.Payroll.payrollStatus
                 </span>
@@ -369,8 +369,6 @@
                                 </tr>
                             }
                         }
-                            
-                                
                         </tbody>
                 </table>
             </div>
@@ -413,16 +411,16 @@
                         }else{
                             int otIndex = 1;
                         
-                            @foreach(var p in Model.PayrollPays.OrderBy(p => p.EmploymentModel.givenID))
+                            @foreach(var p in Model.PayrollPays.OrderBy(p => p.EmploymentModel?.givenID))
                             {
-                                if (@p.EarningRecords?.Where(e => e.earningReference == "overtime").Sum(e => e.earningAmount) > 0)
+                                if (@p.EarningRecords?.Where(e => e.earningReference == "overtime")?.Sum(e => e.earningAmount) > 0)
                                 {
                                     <tr>
                                         <td>@(otIndex++)</td>
                                         <td>@p.EmploymentModel?.givenID</td>
                                         <td>@p.EmploymentModel?.personModel?.personFullName</td>
                                         <td>@p.Department?.departmentShort</td>
-                                        <td>@p.EarningRecords?.Where(e => e.earningReference == "overtime").Sum(e => e.earningAmount)</td>
+                                        <td>@p.EarningRecords?.Where(e => e.earningReference == "overtime")?.Sum(e => e.earningAmount)</td>
                                         <td class="d-print-none text-end px-2">
                                             <a asp-page="/OvertimeRecord/PersonOTR" asp-route-empID="@p.employmentID" target="_blank" class="btn btn-sm btn-outline-primary" title="View Details">
                                                 <i class="bi bi-eye"></i>
@@ -438,7 +436,7 @@
             </div>
         </div>
 
-        <!-- ============================= TAB 5 : OVERTIME VIEW ============================= -->
+        <!-- ============================= TAB 5 : ALLOWANCE VIEW ============================= -->
         <div id="allowanceView" class="card shadow-sm p-2 tab-pane fade">
             <div class="d-flex justify-content-between align-items-end">
                 <h4 class="fw-bold">Allowance Pays</h4>

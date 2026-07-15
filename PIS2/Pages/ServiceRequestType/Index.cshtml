@@ -1,4 +1,5 @@
 ﻿@page
+@using PIS2.Enums
 @model PIS2.Pages.ServiceRequestType.IndexModel
 
 @{
@@ -44,12 +45,12 @@
                         <td>@(index++)</td>
                         <td>@item.serviceRequestTypeName</td>
                             <td>
-                                @if (item.serviceRequestTypeStatus == Models.mainStatus.Active)
+                                @if (item.serviceRequestTypeStatus == mainStatus.Active)
                                 {
                                     <span class="badge bg-success">@Html.DisplayFor(modelItem => item.serviceRequestTypeStatus)</span>
 
                                 }
-                                else if (item.serviceRequestTypeStatus == Models.mainStatus.Suspended)
+                                else if (item.serviceRequestTypeStatus == mainStatus.Suspended)
                                 {
                                     <span class="badge bg-warning">@Html.DisplayFor(modelItem => item.serviceRequestTypeStatus)</span>
                                 }

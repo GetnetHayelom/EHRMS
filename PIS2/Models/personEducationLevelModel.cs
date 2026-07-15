@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-
+using PIS2.Enums;
 namespace PIS2.Models
 {
     public class personEducationLevelModel

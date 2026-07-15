@@ -16,7 +16,7 @@
 <div class="row m-2">
     <div class="col-3">
         <label for="filter-status">Status:</label>
-        <select class="form-select" aria-label="Default select example" id="filter-status" onchange="filterLeaves()" asp-items="Html.GetEnumSelectList<Models.leaveStatus>()">
+        <select class="form-select" aria-label="Default select example" id="filter-status" onchange="filterLeaves()" asp-items="Html.GetEnumSelectList<Enums.leaveStatus>()">
             <option value="">All</option>
         </select>
     </div>

@@ -42,7 +42,7 @@
             </div>
             <div class="form-group">
                 <label asp-for="overtimeRecordModel.overtimeRecordStatus" class="control-label">Status</label>
-                <select asp-for="overtimeRecordModel.overtimeRecordStatus" class="form-control" asp-items="@Html.GetEnumSelectList<Models.overtimeStatus>()"></select>
+                <select asp-for="overtimeRecordModel.overtimeRecordStatus" class="form-control" asp-items="@Html.GetEnumSelectList<Enums.overtimeStatus>()"></select>
                 <span asp-validation-for="overtimeRecordModel.overtimeRecordStatus" class="text-danger"></span>
             </div>
             <div class="form-group d-flex justify-content-end">

@@ -28,7 +28,7 @@
       return jQuery;
     };
   } else {
-    // Browser globals
+    // Browser Global_S
     factory(jQuery);
   }
 } (function (jQuery) {
@@ -6534,7 +6534,7 @@ S2.define('select2/selection/stopPropagation',[
         // Node/CommonJS style for Browserify
         module.exports = factory;
     } else {
-        // Browser globals
+        // Browser Global_S
         factory(jQuery);
     }
 }(function ($) {

@@ -1,4 +1,5 @@
 ﻿@page
+@using PIS2.Enums
 @model PIS2.Pages.Earning.CreateModel
 @{
     ViewData["Title"] = "Add New Earning Type";
@@ -76,7 +77,7 @@
                     <!-- Status -->
                     <div class="col-md-6">
                         <label asp-for="EarningType.earningTypeStatus" class="form-label fw-semibold">Status</label>
-                        <select asp-for="EarningType.earningTypeStatus" class="form-select" asp-items="Html.GetEnumSelectList<Models.mainStatus>()">
+                        <select asp-for="EarningType.earningTypeStatus" class="form-select" asp-items="Html.GetEnumSelectList<mainStatus>()">
                             <option value="">-- Select Status --</option>
                         </select>
                         <span asp-validation-for="EarningType.earningTypeStatus" class="text-danger"></span>

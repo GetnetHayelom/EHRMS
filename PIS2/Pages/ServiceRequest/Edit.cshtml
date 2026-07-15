@@ -48,7 +48,7 @@
             </dl>
             <div class="form-group">
                 <label asp-for="serviceRequestModel.serviceRequestStatus" class="control-label">Select Status</label>
-                <select asp-for="serviceRequestModel.serviceRequestStatus" class="form-control" asp-items="@Html.GetEnumSelectList<Models.ServiceRequestStatus>()"></select>
+                <select asp-for="serviceRequestModel.serviceRequestStatus" class="form-control" asp-items="@Html.GetEnumSelectList<Enums.ServiceRequestStatus>()"></select>
                 <span asp-validation-for="serviceRequestModel.serviceRequestStatus" class="text-danger"></span>
             </div>
             

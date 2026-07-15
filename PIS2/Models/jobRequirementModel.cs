@@ -1,5 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
-
+using PIS2.Enums;
 namespace PIS2.Models
 {
     public class jobRequirementModel//request made to hr to employ new employees only managers can request
@@ -76,21 +76,7 @@ namespace PIS2.Models
 
         public jobReqCost() { }
 
-    }
-    public enum jobReqStatus
-    {
-        Hold,
-        Approved,
-        Staged,
-        Published,
-        Recruited,
-        Screened,
-        Exam,
-        Interview,
-        Completed,
-        Declined,
-        Failed
-    }
+    }   
 
     public class VacancyModel
     {
@@ -107,18 +93,18 @@ namespace PIS2.Models
         public virtual jobModel? jobModel {get; set;}// Position name
 
         [StringLength(500)]
-        public string? Remark { get; set; }           // Job description
+        public string? Remark { get; set; }// Job description
 
-        public int? departmentID { get; set; }             // Link to Department
+        public int? departmentID { get; set; }// Link to Department
         public virtual departmentModel? departmentModel { get; set; }
 
-        public string? Location { get; set; }              // Work location
+        public string? Location { get; set; }// Work location
 
         [Required]
         [Display(Name = "Required Number")]
-        public int VacancyRequiredNumber { get; set; }        // How many open slots
+        public int VacancyRequiredNumber { get; set; }// How many open slots
 
-        public VacancyStatus Status { get; set; } = VacancyStatus.OnHold;        // Open, Closed, OnHold
+        public VacancyStatus Status { get; set; } = VacancyStatus.OnHold;// Open, Closed, OnHold
         public jobReqStatus VacancyStage { get; set; } = jobReqStatus.Hold;
         [Required]
         [Display(Name = "Date Posted")]
@@ -145,22 +131,7 @@ namespace PIS2.Models
         public virtual ICollection<ApplicantModel>? Applicants { get; set; } = new List<ApplicantModel>();
         public virtual ICollection<jobReqCost>? JobReqCost { get; set; }
     }
-    public enum VacancyStatus
-    {
-        Open = 1,
-        Closed = 2,
-        OnHold = 3
-    }
-    public enum VacancyTypes
-    {
-        [Display(Name = "Internal")]
-        Internal,
-        [Display(Name = "External")]
-        External,
-        [Display(Name = "Internal\\External")]
-        In_Ex
-    }
-
+    
 
     public class ApplicantModel
     {
@@ -179,19 +150,7 @@ namespace PIS2.Models
         public DateTime modifiedDate { get; set; }
     }
 
-    public enum ApplicantStatus
-    {
-        Pending = 1,
-        ScreenPass =2,
-        ScreenFail =3,
-        InterviewPass = 4,
-        InterviewFail =5,
-        ExamPass =6,
-        ExamFails =7,
-        Accepted = 8,
-        Reserve =9,
-        Rejected = 10
-    }
+    
 
 
 }

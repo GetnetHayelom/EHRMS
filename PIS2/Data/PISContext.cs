@@ -33,15 +33,15 @@ namespace PIS2.Data
             {
                 entity.HasKey(a => a.accessID);
                 entity.HasOne(a => a.userModel).WithMany(u => u.Accesses).HasForeignKey(a => a.userID).OnDelete(DeleteBehavior.NoAction);
-                entity.HasOne(a => a.CompanyModel).WithMany(c => c.Accesses).HasForeignKey(a => a.companyID).OnDelete(DeleteBehavior.NoAction);
+                entity.HasOne(a => a.CompanyModel).WithMany(c => c.Accesses).HasForeignKey(a => a.companyID).OnDelete(DeleteBehavior.SetNull);
                 entity.Property(a => a.modifiedBy).IsRequired().HasMaxLength(100);
 
                 entity.ToTable(t => t.UseSqlOutputClause(false));
             });
 
-            // ------------------------------
-            // accessHistoryModel configuration
-            // ------------------------------
+            ///summary
+            /// accessHistoryModel configuration
+            /// ------------------------------
             modelBuilder.Entity<accessHistoryModel>(entity =>
             {
                 entity.HasKey(h => h.accessHistoryID);
@@ -75,6 +75,7 @@ namespace PIS2.Data
             modelBuilder.Entity<allowanceModel>(entity =>
             {
                 entity.HasMany(e => e.AllowanceAssignments).WithOne(p => p.allowanceModel).HasForeignKey(e => e.allowanceID).OnDelete(DeleteBehavior.NoAction);
+                entity.HasOne(a => a.EarningType).WithMany(e => e.Allowances).HasForeignKey(e => e.earningTypeID).OnDelete(DeleteBehavior.SetNull);
 
                 entity.HasIndex(e => e.allowanceName).IsUnique();
                 entity.ToTable(tb => tb.UseSqlOutputClause(false));
@@ -126,15 +127,16 @@ namespace PIS2.Data
             modelBuilder.Entity<archiveModel>(entity =>
             {
                 entity.HasKey(a => a.archiveID);
-
                 // Relationship: Archive has one Letter
                 entity.HasOne(a => a.Letter).WithOne(l => l.Archive).HasForeignKey<archiveModel>(a => a.letterID).OnDelete(DeleteBehavior.NoAction);
             });
             modelBuilder.Entity<AttachmentModel>(entity =>
-            { });
+            {
+                entity.ToTable(t => t.UseSqlOutputClause(false));
+            });
+
             modelBuilder.Entity<AuditLog>(entity =>
             {});
-
 
             modelBuilder.Entity<bankInfoModel>(entity =>
             {
@@ -1057,13 +1059,13 @@ namespace PIS2.Data
                 entity.HasMany(e => e.WorkSites).WithOne(p => p.subAccountModel).HasForeignKey(d => d.subAccountID).OnDelete(DeleteBehavior.NoAction);
 
                 entity.HasIndex(e => e.subAccountName).IsUnique();
+                entity.ToTable(tb => tb.UseSqlOutputClause(false));
             });
             modelBuilder.Entity<terminationModel>(entity =>
             {
                 entity.HasOne(t => t.EmploymentModel).WithOne(e => e.TerminationModel).HasForeignKey<terminationModel>(d => d.employmentID).OnDelete(DeleteBehavior.NoAction);
 
                 entity.HasIndex(e => e.employmentID).IsUnique();
-                entity.ToTable(tb => tb.UseSqlOutputClause(false));
                 entity.ToTable(tb => tb.UseSqlOutputClause(false));
             });
 
@@ -1160,6 +1162,7 @@ namespace PIS2.Data
                 entity.HasOne(e => e.DebitAccount).WithMany(p => p.DPayrollPays).HasForeignKey(e => e.DebitAccountID).OnDelete(DeleteBehavior.Restrict);
                 entity.HasOne(e => e.Department).WithMany(p => p.PayrollPays).HasForeignKey(e => e.departmentID).OnDelete(DeleteBehavior.SetNull);
                 entity.HasOne(e => e.JobPlacement).WithMany(p => p.PayrollPays).HasForeignKey(e => e.jobPlacementID).OnDelete(DeleteBehavior.SetNull);
+                entity.HasOne(e => e.EmploymentModel).WithMany(p => p.PayrollPays).HasForeignKey(e => e.employmentID).OnDelete(DeleteBehavior.Restrict);
 
                 entity.ToTable(tb => tb.UseSqlOutputClause(false));
             });
@@ -1223,18 +1226,7 @@ namespace PIS2.Data
             modelBuilder.Entity<BudgetLine>(entity =>
             {
                 entity.ToTable(tb => tb.UseSqlOutputClause(false));
-            });
-            //OtherPayments
-            //tax rates
-            modelBuilder.Entity<otherPay>(entity =>
-            {
-                entity.ToTable("OtherPayments");
-                entity.HasOne(p => p.earningModel).WithMany(e => e.OtherPayments).HasForeignKey(e => e.earningID).OnDelete(DeleteBehavior.NoAction);
-                entity.HasOne(e => e.CreditAccount).WithMany(p => p.COtherPayments).HasForeignKey(e => e.CreditAccountID).OnDelete(DeleteBehavior.Restrict);
-                entity.HasOne(e => e.DebitAccount).WithMany(p => p.DOtherPayments).HasForeignKey(e => e.DebitAccountID).OnDelete(DeleteBehavior.Restrict);
-
-                entity.ToTable(tb => tb.UseSqlOutputClause(false));
-            });
+            });            
 
             //account Journal
             modelBuilder.Entity<JournalEntry>()
@@ -1433,6 +1425,41 @@ namespace PIS2.Data
             .HasNoKey()
             .ToView("vw_OvertimeHistoryView");
 
+            /// <summary>
+            /// Earning View
+            ///</summary>
+            modelBuilder.Entity<EarningView>()
+            .HasNoKey()
+            .ToView("vw_EarningsView");
+
+            /// <summary>
+            /// Job Placement View
+            ///</summary>
+            modelBuilder.Entity<JobPlacementView>()
+            .HasNoKey()
+            .ToView("vw_JobPlacementView");
+
+            /// <summary>
+            /// Job Placement Detail View
+            ///</summary>
+            modelBuilder.Entity<JobPlacementDetailView>()
+            .HasNoKey()
+            .ToView("vw_JobPlacementDetails");
+
+            /// <summary>
+            /// Yearly Job PlacementSalary View
+            ///</summary>
+            modelBuilder.Entity<YearlyJobPlacementSalaryView>()
+            .HasNoKey()
+            .ToView("vw_YearlyJobPlacementSummary");
+
+            /// <summary>
+            /// Employee Salary Growth View
+            ///</summary>
+            modelBuilder.Entity<EmployeeSalaryGrowthView>()
+            .HasNoKey()
+            .ToView("vw_EmployeeSalaryGrowth");
+
         }
         
         public DbSet<accessModel> Accesses { get; set; }
@@ -1536,7 +1563,6 @@ namespace PIS2.Data
         public DbSet<deductionRecordModel> DeductionRecords { get; set; }
         public DbSet<deductionType> DeductionTypes { get; set; }
         public DbSet<taxRateModel> TaxRates { get; set; }
-        public DbSet<otherPay> OtherPayments { get; set; }
         public DbSet<JournalEntry> JournalEntries { get; set; }
         public DbSet<JournalEntryLine> JournalEntryLines { get; set; }
         public DbSet<BudgetPlan> BudgetPlans { get; set; }
@@ -1570,6 +1596,11 @@ namespace PIS2.Data
         public DbSet<LeaveBalanceDepartmentView> LeaveBalanceDepartmentView { get; set; } = default!;
         public DbSet<LeaveHistoryView> LeaveHistoryView { get; set; } = default!;
         public DbSet<OvertimeHistoryView> OvertimeHistoryView { get; set; } = default!;
+        public DbSet<EarningView> EarningView { get; set; } = default!;
+        public DbSet<JobPlacementDetailView> JobPlacementDetailView { get; set; } = default!;
+        public DbSet<JobPlacementView> JobPlacementView { get; set; } = default!;
+        public DbSet<YearlyJobPlacementSalaryView> YearlyJobPlacementSalaryView { get; set; } = default!;
+        public DbSet<EmployeeSalaryGrowthView> EmployeeSalaryGrowthView { get; set; } = default!;
 
         /// <summary>
         /// Training Module

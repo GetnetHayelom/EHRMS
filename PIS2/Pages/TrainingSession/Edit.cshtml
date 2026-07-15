@@ -55,7 +55,7 @@
                             </div>
                             <div class="col-md-6">
                                 <label asp-for="Session.deliveryMode" class="form-label fw-bold">Delivery Mode</label>
-                                <select asp-for="Session.deliveryMode" asp-items="Html.GetEnumSelectList<Models.trainingDeliveryMode>()" class="form-select"></select>
+                                <select asp-for="Session.deliveryMode" asp-items="Html.GetEnumSelectList<Enums.trainingDeliveryMode>()" class="form-select"></select>
                             </div>
 
                             <div class="col-md-4">
@@ -71,7 +71,7 @@
                             </div>
                             <div class="col-md-4">
                                 <label asp-for="Session.sessionStatus" class="form-label fw-bold">Status</label>
-                                <select asp-for="Session.sessionStatus" asp-items="Html.GetEnumSelectList<Models.trainingStatus>()" class="form-select"></select>
+                                <select asp-for="Session.sessionStatus" asp-items="Html.GetEnumSelectList<Enums.trainingStatus>()" class="form-select"></select>
                             </div>
                         </div>
 

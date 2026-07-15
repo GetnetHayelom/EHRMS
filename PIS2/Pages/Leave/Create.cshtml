@@ -1,4 +1,5 @@
 ﻿@page
+@using PIS2.Enums
 @model PIS2.Pages.Leave.CreateModel
 
 @{
@@ -41,7 +42,7 @@
                 <h2><u>@Model.LeaveDetail.LastAccrualIncrement</u></h2>
             </div>
         </div>
-        @if(Model.Employment.employmentStatus == Models.mainStatus.Active)
+        @if(Model.Employment.employmentStatus == mainStatus.Active)
         {
             <form method="post">
                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
@@ -75,7 +76,7 @@
                 </div>
             </form>
         }
-        else if(Model.Employment.employmentStatus == Models.mainStatus.Inactive)
+        else if(Model.Employment.employmentStatus == mainStatus.Inactive)
         {
             <div class="bg-danger p-4 text-white"><h4>Employee is not Active</h4></div>
         }else if(Model.EmployeeID == 0)

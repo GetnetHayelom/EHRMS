@@ -1,4 +1,5 @@
 ﻿@page
+@using PIS2.Enums
 @model PIS2.Pages.Prohibition.EditModel
 
 @{
@@ -38,7 +39,7 @@
             </div>
             <div class="form-group">
                 <label asp-for="prohibitionModel.prohibitionStatus" class="control-label">Status</label>
-                <select asp-for="prohibitionModel.prohibitionStatus" class="form-control" asp-items="Html.GetEnumSelectList<Models.mainStatus>()"></select>
+                <select asp-for="prohibitionModel.prohibitionStatus" class="form-control" asp-items="Html.GetEnumSelectList<mainStatus>()"></select>
                 <span asp-validation-for="prohibitionModel.prohibitionStatus" class="text-danger"></span>
             </div>
             <div class="form-group">
@@ -48,7 +49,7 @@
             </div>
             <div class="form-group">
                 <label asp-for="prohibitionModel.prohibitionType" class="control-label">Type</label>
-                <select asp-for="prohibitionModel.prohibitionType" class="form-control" asp-items="Html.GetEnumSelectList<Models.ProhibitionType>()"></select>
+                <select asp-for="prohibitionModel.prohibitionType" class="form-control" asp-items="Html.GetEnumSelectList<Enums.ProhibitionType>()"></select>
                 <span asp-validation-for="prohibitionModel.prohibitionType" class="text-danger"></span>
             </div>
             <div class="form-group">
@@ -83,7 +84,7 @@
                             <td>@item.modifiedDate</td>
                             <td>@item.modifiedBy</td>
                             <td>
-                                @if (item.prohibitionStatus == Models.mainStatus.Active)
+                                @if (item.prohibitionStatus == mainStatus.Active)
                                 {
                                     <span class="badge bg-success">@item.prohibitionStatus</span>
                                 }

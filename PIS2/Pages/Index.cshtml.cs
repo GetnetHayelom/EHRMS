@@ -7,6 +7,7 @@ using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using PIS2.Data;
+using PIS2.Enums;
 using PIS2.Models;
 using PIS2.Services;
 using PIS2.Views;
@@ -285,8 +286,6 @@ namespace PIS2.Pages
                     redirect = Url.Page("/Guaranty/Create", new { id = employmentID })
                 });
             }
-
-
             return new JsonResult(new { success = true });
         }
 

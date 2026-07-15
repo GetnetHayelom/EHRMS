@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using PIS2.Enums;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace PIS2.Models
@@ -18,14 +19,7 @@ namespace PIS2.Models
         public string modifiedBy { get; set; }
         public DateTime modifiedDate { get; set; }
         public leaveTypeModel() { }
-    }
-    public enum leaveGroup
-    {
-        AnnualLeave,
-        Absentism,
-        AllowedLeave
-    }
-
-    
+    }   
+   
 }
 

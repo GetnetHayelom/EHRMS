@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using PIS2.Models;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using PIS2.Data;
+using PIS2.Enums;
 
 namespace PIS2.Pages.Job
 {
@@ -21,6 +22,7 @@ namespace PIS2.Pages.Job
         }
 
         public IList<jobModel> jobModel { get;set; } = default!;
+        public int AssignedJobs { get; set; }
 
         public async Task OnGetAsync()
         {
@@ -32,6 +34,8 @@ namespace PIS2.Pages.Job
                 .Include(j => j.jobCategoryModel)
                 .Include(j => j.jobClassModel)
                 .Include(j => j.jobGradeModel).ToListAsync();
+            var assigned = await _context.JobPlacements.Where(j => j.jobPlacementStatus == mainStatus.Active).Select(j => j.jobID).ToListAsync();
+            AssignedJobs = jobModel.Where(j => assigned.Contains(j.jobID)).Distinct().Count();
         }
         public async Task<IActionResult> OnGetFilterAsync(
             int? jobGrade,
@@ -54,8 +58,8 @@ namespace PIS2.Pages.Job
             if (jobClass.HasValue)
             { query = query.Where(j => j.jobClassID == jobClass); }
 
-            if (jobClass.HasValue && jobClass != null)
-            { query = query.Where(j => (int) j.jobStatus == jobStatus); }
+            if (jobStatus.HasValue && jobStatus != null)
+            { query = query.Where(j => j.jobStatus == (mainStatus) jobStatus); }
 
             var filteredJobs = await query.ToListAsync();
 

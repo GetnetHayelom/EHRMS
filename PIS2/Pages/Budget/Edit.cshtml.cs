@@ -32,7 +32,7 @@ namespace PIS2.Pages.Budget
                 .FirstOrDefaultAsync(m => m.BudgetPlanID == id);
 
             if (budgetplan == null) return NotFound();
-            StatusList = new SelectList(Enum.GetValues(typeof(BudgetStatus)));
+            StatusList = new SelectList(Enum.GetValues(typeof(Enums.BudgetStatus)));
             BudgetPlan = budgetplan;
             return Page();
         }
@@ -56,7 +56,7 @@ namespace PIS2.Pages.Budget
                         _logger.LogError(error.ErrorMessage, $"Error: Validation failed for {kv.Key}: User->{User.Identity.Name}");
                     }
                 }
-                StatusList = new SelectList(Enum.GetValues(typeof(BudgetStatus)));
+                StatusList = new SelectList(Enum.GetValues(typeof(Enums.BudgetStatus)));
                 return Page();
             }
 
@@ -86,7 +86,7 @@ namespace PIS2.Pages.Budget
 
             if (bplan == null) { return new JsonResult(new { success = false, message = "Budget Plan not found!" }); }
 
-            bplan.Status = BudgetStatus.APPROVED;
+            bplan.Status = Enums.BudgetStatus.APPROVED;
             bplan.modifiedBy = User.Identity.Name;
             bplan.modifiedDate = DateTime.Now;
 
@@ -113,7 +113,7 @@ namespace PIS2.Pages.Budget
             var bplan = await _context.BudgetPlans.FirstOrDefaultAsync(b => b.BudgetPlanID == BudgetPlan.BudgetPlanID);
 
             if (bplan == null) {return new JsonResult(new { success = false, message = "Budget Plan not found!" }); }
-            bplan.Status = BudgetStatus.DECLINED;
+            bplan.Status = Enums.BudgetStatus.DECLINED;
             bplan.modifiedBy = User.Identity.Name;
             bplan.modifiedDate = DateTime.Now;
             try
@@ -137,8 +137,8 @@ namespace PIS2.Pages.Budget
             }
             var bplan = await _context.BudgetPlans.FirstOrDefaultAsync(b => b.BudgetPlanID == BudgetPlan.BudgetPlanID);
             if (bplan == null) { return new JsonResult(new { success = false, message = "Budget Plan not found!" }); }
-            if (bplan.Status != BudgetStatus.ACTIVE) { return new JsonResult(new { success = false, message = "Budget plan is not active" }); }
-            bplan.Status = BudgetStatus.CLOSED;
+            if (bplan.Status != Enums.BudgetStatus.ACTIVE) { return new JsonResult(new { success = false, message = "Budget plan is not active" }); }
+            bplan.Status = Enums.BudgetStatus.CLOSED;
             bplan.modifiedBy = User.Identity.Name;
             bplan.modifiedDate = DateTime.Now;
             try
@@ -159,9 +159,9 @@ namespace PIS2.Pages.Budget
         { 
             var bplan = await _context.BudgetPlans.FirstOrDefaultAsync(b => b.BudgetPlanID == BudgetPlan.BudgetPlanID);
             if (bplan == null) { return new JsonResult(new { success = false, message = "Budget Plan not found!" }); }
-            if (bplan.Status != BudgetStatus.APPROVED) { return new JsonResult(new { success = false, message = "Budget plan is not approved" }); }
+            if (bplan.Status != Enums.BudgetStatus.APPROVED) { return new JsonResult(new { success = false, message = "Budget plan is not approved" }); }
 
-            bplan.Status = BudgetStatus.ACTIVE;
+            bplan.Status = Enums.BudgetStatus.ACTIVE;
             bplan.modifiedBy = User.Identity.Name;
             bplan.modifiedDate = DateTime.Now;
 

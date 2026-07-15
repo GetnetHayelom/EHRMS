@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using PIS2.Data;
+using PIS2.Enums;
 using PIS2.Models;
 using PIS2.Views;
 using System;
@@ -132,10 +133,8 @@ namespace PIS2.Pages.Report
             TotalRecords = allowanceModel.Count();
             TotalSum = filteredAllowance.Sum(f => f.AllowanceAmount);
             ActiveCount = filteredAllowance.Count(s => s.AllowanceStatus == mainStatus.Active);
-            Employees = filteredAllowance.Select(e => e.EmployeeID).Distinct().Count();
+            Employees = filteredAllowance.GroupBy(e => e.EmployeeID).Distinct().Count();
             ActiveSum = filteredAllowance.Where(s => s.AllowanceStatus == mainStatus.Active).Sum(s => s.AllowanceAmount);
-
-
 
             var grouped = filteredAllowance
                 .GroupBy(e => e.CompanyID)
@@ -160,7 +159,7 @@ namespace PIS2.Pages.Report
                 // Company header row
                 tableHtml.Append(
                     $"<tr class='table-primary'><td colspan='2'><strong>{com.CompanyName}</strong> " +
-                    $"(Total: {com.Departments.Sum(d => d.Allowances.Count)})</td><td colspan='3'>{com.Departments.Sum(a => a.Allowances.Sum(a => a.AllowanceAmount)).ToString("N2")}</td></tr>"
+                    $"(Total: {com.Departments.Sum(d => d.Allowances.Count)})</td><td colspan='4'>{com.Departments.Sum(a => a.Allowances.Sum(a => a.AllowanceAmount)).ToString("N2")}</td></tr>"
                 );
 
                 foreach (var dept in com.Departments.OrderBy(d => d.DepartmentName))
@@ -169,28 +168,38 @@ namespace PIS2.Pages.Report
                     tableHtml.Append(
                         $"<tr class='table-secondary fw-bold bg-secondary dept-row' style='cursor:pointer;'>" +
                         $"<td colspan='2' style='padding-left:20px;'><em>{dept.DepartmentName}</em> " +
-                        $"(Total: {dept.Allowances.Count})</td><td colspan='3'>{dept.Allowances.Sum(a => a.AllowanceAmount).ToString("N2")}</td></tr>"
+                        $"(Total: {dept.Allowances.Count})</td><td colspan='4'>{dept.Allowances.Sum(a => a.AllowanceAmount).ToString("N2")}</td></tr>"
                     );
 
                     var url ="";
                     //Allowances
                     foreach (var allowance in dept.Allowances.OrderBy(a => a.EmployeeID))
                     {
-                        url= Url.Page("/AllowanceAssignments/Details", new { id = allowance.AllowanceID });
+                        var badgeColor = allowance.AllowanceStatus switch { 
+                            mainStatus.Active => "badge bg-success",
+                            mainStatus.Suspended => "badge bg-warning", 
+                            _=>"badge bg-secondary"
+                        };
+                        
 
-                        tableHtml.Append($"<tr onclick=\"location.href='{url}'\" style=\"cursor:pointer;\" class=\"allowance-row\">" +
+                        tableHtml.Append($"<tr class=\"allowance-row\">" +
                         $"<td>{allowance.EmployeeID}</td>" +
                         $"<td>{allowance.AllowanceTypeName}</td>" +
-                        $"<td>{allowance.AllowanceAmount}</td>" +
-                        $"<td>{allowance.AllowanceStart}</td>" +
-                        $"<td>{allowance.AllowanceStatus}</td></tr>");
+                        $"<td>{allowance.AllowanceAmount.ToString("N2")}</td>" +
+                        $"<td>{allowance.AllowanceStart.ToString("MM/dd/yyyy")}</td>" +
+                        $"<td><span class=\"{badgeColor}\">{allowance.AllowanceStatus}</span></td>" +
+                        $"<td>" +
+                            $"<a asp-page=\"./Details\" asp-route-id=\"{allowance.AllowanceID}\" class=\"btn btn-sm btn-outline-primary\" title=\"View Details\">\r\n <i class=\"bi bi-eye\"></i>\r\n    </a>\r\n    " +
+                            $"<a asp-page=\"./Edit\" asp-route-id=\"{allowance.AllowanceID}\" class=\"btn btn-sm btn-outline-success\" title=\"Edit\">\r\n <i class=\"bi bi-pencil-square\"></i>\r\n    </a>" +
+                            $"</td>" +
+                        $"</tr>");
                     }
 
                 }
 
             }
                         
-            return new JsonResult(new { tableHtml = tableHtml.ToString(), TotalRecords=TotalRecords.ToString("N2"), TotalSum = TotalSum.ToString("N2"), ActiveCount = ActiveCount.ToString("N2"), Employees = Employees.ToString("N2"), ActiveSum=ActiveSum.ToString("N2") });
+            return new JsonResult(new { tableHtml = tableHtml.ToString(), TotalRecords=TotalRecords.ToString("N"), TotalSum = TotalSum.ToString("N2"), ActiveCount = ActiveCount.ToString("N"), Employees = Employees.ToString("N"), ActiveSum=ActiveSum.ToString("N2") });
         }
     }
     

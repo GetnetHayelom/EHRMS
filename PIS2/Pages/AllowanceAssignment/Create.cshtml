@@ -1,4 +1,5 @@
 ﻿@page
+@using PIS2.Enums
 @model PIS2.Pages.AllowanceAssignment.CreateModel
 
 @{
@@ -49,11 +50,11 @@
             {
                 <div class="bg-info p-4 text-white"><h4>Select Employee</h4></div>
             }
-            else if (Model.Employment != null && Model.Employment.employmentStatus == Models.mainStatus.Inactive)
+            else if (Model.Employment != null && Model.Employment.employmentStatus == mainStatus.Inactive)
             {
                 <div class="bg-danger p-4 text-white"><h4>Employee Is Inactive</h4></div>
             }
-            else if (Model.Employment != null && Model.Employment.employmentStatus == Models.mainStatus.Active)
+            else if (Model.Employment != null && Model.Employment.employmentStatus == mainStatus.Active)
             {
                 <form method="post">
                     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
@@ -115,11 +116,11 @@
                             <td>@item.allowanceAssignmentEndDate</td>
                             @{
                                 string bg_color;
-                                if (item.allowanceStatus == Models.mainStatus.Suspended)
+                                if (item.allowanceStatus == mainStatus.Suspended)
                                 {
                                     bg_color = "badge bg-warning";
                                 }
-                                else if (item.allowanceStatus == Models.mainStatus.Active)
+                                else if (item.allowanceStatus == mainStatus.Active)
                                 {
                                     bg_color = "badge bg-success";
                                 }

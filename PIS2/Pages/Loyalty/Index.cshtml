@@ -1,4 +1,5 @@
 ﻿@page
+@using PIS2.Enums
 @model PIS2.Pages.Loyalty.IndexModel
 
 @{
@@ -42,12 +43,12 @@
                 @Html.DisplayFor(modelItem => item.loyaltyCounter)
             </td>
             <td>
-                    @if (item.loyaltyStatus == Models.mainStatus.Active)
+                    @if (item.loyaltyStatus == mainStatus.Active)
                     {
                         <span class="badge bg-success">@Html.DisplayFor(modelItem => item.loyaltyStatus)</span>
 
                     }
-                    else if (item.loyaltyStatus == Models.mainStatus.Suspended)
+                    else if (item.loyaltyStatus == mainStatus.Suspended)
                     {
                         <span class="badge bg-warning">@Html.DisplayFor(modelItem => item.loyaltyStatus)</span>
                     }

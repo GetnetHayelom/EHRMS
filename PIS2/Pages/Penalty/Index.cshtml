@@ -54,10 +54,10 @@
                     @{
                         var badgeClass = item.penaltyStatus switch
                         {
-                            PIS2.Models.penaltyStatus.Complete => "bg-success",
-                            PIS2.Models.penaltyStatus.Pending => "bg-warning",
-                            PIS2.Models.penaltyStatus.Hold => "bg-secondary",
-                            PIS2.Models.penaltyStatus.Void => "bg-danger",
+                            PIS2.Enums.penaltyStatus.Complete => "bg-success",
+                            PIS2.Enums.penaltyStatus.Pending => "bg-warning",
+                            PIS2.Enums.penaltyStatus.Hold => "bg-secondary",
+                            PIS2.Enums.penaltyStatus.Void => "bg-danger",
                             _ => "bg-primary"
                         };
                     }

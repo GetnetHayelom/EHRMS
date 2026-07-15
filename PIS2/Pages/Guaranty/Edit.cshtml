@@ -1,4 +1,5 @@
 ﻿@page
+@using PIS2.Enums
 @model PIS2.Pages.Guaranty.EditModel
 
 @{
@@ -7,7 +8,7 @@
 }
 @{
     bool isReadOnly = !(Model.isSelf &&
-                        Model.guarantyModel.guarantyStatus == Models.mainStatus.Suspended);
+                        Model.guarantyModel.guarantyStatus == mainStatus.Suspended);
 }
 
 <!-- Page Header -->
@@ -38,7 +39,7 @@
 
                         <div class="col-md-6">
                             <label asp-for="guarantyModel.guarantyType" class="form-label fw-semibold">Guaranty Type</label>
-                            <select asp-for="guarantyModel.guarantyType" class="form-control" asp-items="@Html.GetEnumSelectList<Models.GuarantyTypes>()" readonly="@isReadOnly"></select>
+                            <select asp-for="guarantyModel.guarantyType" class="form-control" asp-items="@Html.GetEnumSelectList<Enums.GuarantyTypes>()" readonly="@isReadOnly"></select>
                             <span asp-validation-for="guarantyModel.guarantyType" class="text-danger"></span>
                         </div>
 
@@ -65,7 +66,7 @@
                                 <label asp-for="guarantyModel.guarantyStatus" class="form-label fw-semibold">Status</label>
                                 <select asp-for="guarantyModel.guarantyStatus"
                                         class="form-select"
-                                        asp-items="@Html.GetEnumSelectList<Models.mainStatus>()">
+                                        asp-items="@Html.GetEnumSelectList<mainStatus>()">
                                 </select>
                                 <span asp-validation-for="guarantyModel.guarantyStatus" class="text-danger"></span>
                             </div>

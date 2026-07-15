@@ -86,7 +86,7 @@
                         <i class="bi bi-arrow-left"></i> Back to List
                     </a>
                 </div>
-                @if (User.IsInRole("MIE\\PMS_HRMANAGER") && Model.Notice.noticeStatus == Models.NoticeStatus.Pending)
+                @if (User.IsInRole("MIE\\PMS_HRMANAGER") && Model.Notice.noticeStatus == Enums.NoticeStatus.Pending)
                 {
                     <form method="post" asp-page-handler="Approve">
                         <input type="hidden" asp-for="Notice.noticeID" />
@@ -95,7 +95,7 @@
                         </button>
                     </form>
                 }
-                @if (User.IsInRole("MIE\\PMS_HRMANAGER") && (Model.Notice.noticeStatus == Models.NoticeStatus.Approved || Model.Notice.noticeStatus == Models.NoticeStatus.Posted))
+                @if (User.IsInRole("MIE\\PMS_HRMANAGER") && (Model.Notice.noticeStatus == Enums.NoticeStatus.Approved || Model.Notice.noticeStatus == Enums.NoticeStatus.Posted))
                 {
                     <form method="post" asp-page-handler="Expire">
                         <input type="hidden" asp-for="Notice.noticeID" />
@@ -104,7 +104,7 @@
                         </button>
                     </form>
                 }
-                @if (User.IsInRole("MIE\\PMS_HRCLERK") && Model.Notice.noticeStatus == Models.NoticeStatus.Approved)
+                @if (User.IsInRole("MIE\\PMS_HRCLERK") && Model.Notice.noticeStatus == Enums.NoticeStatus.Approved)
                 {
                     <form method="post" asp-page-handler="Post">
                         <input type="hidden" asp-for="Notice.noticeID" />
@@ -115,7 +115,7 @@
                 }
                 @await Html.PartialAsync("print")
                 <div>
-                    @if (User.IsInRole("MIE\\PMS_HRCLERK") && Model.Notice.noticeStatus == Models.NoticeStatus.Pending)
+                    @if (User.IsInRole("MIE\\PMS_HRCLERK") && Model.Notice.noticeStatus == Enums.NoticeStatus.Pending)
                     {
                         <a asp-page="/Notice/Edit" asp-route-id="@Model.Notice.noticeID" class="btn btn-primary d-print-none m-2">
                             <i class="bi bi-pencil-square me-2"></i> Edit Notice
@@ -130,14 +130,14 @@
 </div>
 
 @functions {
-    string GetPriorityColor(PIS2.Models.Priority priority)
+    string GetPriorityColor(PIS2.Enums.Priority priority)
     {
         return priority switch
         {
-            PIS2.Models.Priority.Low => "success",
-            PIS2.Models.Priority.Medium => "warning",
-            PIS2.Models.Priority.High => "danger",
-            PIS2.Models.Priority.Urgent => "dark",
+            PIS2.Enums.Priority.Low => "success",
+            PIS2.Enums.Priority.Medium => "warning",
+            PIS2.Enums.Priority.High => "danger",
+            PIS2.Enums.Priority.Urgent => "dark",
             _ => "secondary"
         };
     }

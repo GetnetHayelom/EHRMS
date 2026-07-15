@@ -1,4 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using PIS2.Data;
+using PIS2.Enums;
 using PIS2.Models;
 
 namespace PIS2.Views
@@ -105,7 +107,6 @@ namespace PIS2.Views
         public decimal AnnualLeave;
     }
 
-
     public class LeaveTypeView
     {
         public string Type;
@@ -116,5 +117,151 @@ namespace PIS2.Views
         public decimal Absent;
         [Precision(18, 2)]
         public decimal AnnualLeave;
+    }
+
+    public class LeaveReportCompany
+    {
+        public int CompanyID { get; set; }
+        public string CompanyName { get; set; }
+        public int EmployeeTotal { get; set; }
+        [Precision(18, 2)]
+        public decimal WorkingDays { get; set; }
+        public int CompanyTotal { get; set; }
+        [Precision(18, 2)]
+        public decimal? CompanySum { get; set; }
+        [Precision(18, 2)]
+        public decimal? CompanyCost { get; set; }
+        public DateTime StartDate { get; set; }
+        public DateTime EndDate { get; set; }
+        public List<LeaveReportDepartment>? Departments { get; set; }
+    }
+
+    public class LeaveReportDepartment
+    {
+        public string DepartmentName { get; set; }
+        public int DepartmentID { get; set; }
+        public int DepartmentTotal { get; set; }
+        public int EmployeeTotal { get; set; }
+        [Precision(18, 2)]
+        public decimal? DepartmentSum { get; set; }
+        [Precision(18, 2)]
+        public decimal? DepartmentCost { get; set; }
+        public List<LeaveReportType>? LeaveTypes { get; set; }
+    }
+
+    public class LeaveReportType
+    {
+        public string LeaveType { get; set; }
+        public int LeaveTypeCount { get; set; }
+        [Precision(18, 2)]
+        public decimal? LeaveTypeSum { get; set; }
+        [Precision(18, 2)]
+        public decimal? LeaveTypeCost { get; set; }
+    }
+
+    [Keyless]
+    public class leaveDetail
+    {
+
+        public employmentModel Employee;
+        public decimal TotalLeave, AllowedLeave, LastAccrualIncrement, leaveCost;
+        public DateTime LeaveDetailStartDate, LeaveDetailsEndDate;
+        public List<leavePerYear> AnnualLeaveHistory;
+        public companyModel? company;
+        public departmentModel department;
+        public personModel person;
+
+        public leaveDetail(
+            decimal totalLeave, decimal allowedLeave, decimal lastAccrualIncrement,
+            DateTime leaveDetailStartDate, DateTime leaveDetailEndDate,
+            List<leavePerYear> annualLeaveHistory)
+        {
+
+            TotalLeave = totalLeave;
+            AllowedLeave = allowedLeave;
+            LastAccrualIncrement = lastAccrualIncrement;
+            LeaveDetailStartDate = leaveDetailStartDate;
+            LeaveDetailsEndDate = leaveDetailEndDate;
+            AnnualLeaveHistory = annualLeaveHistory;
+
+
+        }
+        public leaveDetail(
+            decimal totalLeave, decimal allowedLeave, decimal lastAccrualIncrement,
+            DateTime leaveDetailStartDate, DateTime leaveDetailEndDate)
+        {
+
+            TotalLeave = totalLeave;
+            AllowedLeave = allowedLeave;
+            LastAccrualIncrement = lastAccrualIncrement;
+            LeaveDetailStartDate = leaveDetailStartDate;
+            LeaveDetailsEndDate = leaveDetailEndDate;
+        }
+        public leaveDetail(
+           decimal totalLeave, decimal allowedLeave, decimal lastAccrualIncrement,
+           DateTime leaveDetailStartDate, DateTime leaveDetailEndDate, decimal lCost, departmentModel dep)
+        {
+
+            TotalLeave = totalLeave;
+            AllowedLeave = allowedLeave;
+            LastAccrualIncrement = lastAccrualIncrement;
+            LeaveDetailStartDate = leaveDetailStartDate;
+            LeaveDetailsEndDate = leaveDetailEndDate;
+            leaveCost = lCost;
+            department = dep;
+            //company = dep.companyModel ?? new companyModel();
+        }
+        public leaveDetail() { }
+    }
+    public class leavePerYear
+    {
+        private readonly PISContext _context;
+
+        public leavePerYear(PISContext context)
+        {
+            _context = context;
+        }
+
+        public DateTime startDate { get; set; }
+        public DateTime endDate { get; set; } = DateTime.Now;
+        public decimal startingLeaveAmount { get; set; } = 0;
+        public decimal accruedLeaveAmount { get; set; } = 0;
+        public decimal usedLeaveAmount { get; set; } = 0;
+        public decimal rollOverLeave { get; set; } = 0;
+        public decimal remainingLeaveAmount
+        {
+            get
+            {
+                return (startingLeaveAmount + accruedLeaveAmount) - usedLeaveAmount;
+            }
+        }
+        public decimal remainingLeaveCost { get; set; }
+
+        public decimal? totalLeaveAmount { get; set; }
+        public leavePerYear() { }
+
+    }
+
+    public class LeaveGroup
+    {
+        public string? CompanyName { get; set; }
+        public string DepartmentName { get; set; } = string.Empty;
+        public int Count { get; set; }
+        public decimal SumDays { get; set; }
+        public List<LeaveReportView> Records { get; set; } = new();
+    }
+    public class ExpiringLeaveDto
+    {
+        public int employmentID { get; set; }
+        public string givenID { get; set; }
+        public string FullName { get; set; }
+        public decimal days { get; set; }
+        public DateTime expDate { get; set; }
+        public Gender Gender { get; set; }
+        public string? CompanyName { get; set; }
+        public int? CompanyID { get; set; }
+        public string? DepartmentName { get; set; }
+        public int? DepartmentID { get; set; }
+        public decimal? Cost { get; set; }
     }
 }

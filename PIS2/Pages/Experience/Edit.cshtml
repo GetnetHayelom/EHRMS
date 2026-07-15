@@ -64,7 +64,7 @@
             </div>
             <div class="form-group m-2">
                 <label asp-for="experienceModel.experienceType" class="control-label">Experience Type</label>
-                <select asp-for="experienceModel.experienceType" class="form-control" asp-items="@Html.GetEnumSelectList<Models.Ex_In>()"></select>
+                <select asp-for="experienceModel.experienceType" class="form-control" asp-items="@Html.GetEnumSelectList<Enums.Ex_In>()"></select>
                 <span asp-validation-for="experienceModel.experienceType" class="text-danger"></span>
             </div>
             <div class="d-flex">
@@ -119,7 +119,7 @@
                 @foreach (var item in Model.Experiences)
                 {
                     <tr onclick="location.href='@Url.Page("/Experience/Edit", new {id = item.experienceID})'" style="cursor:pointer">
-                        <td>@item.experienceStartDate.ToString("dd/MM/yyyy") - @item.experienceEndDate.ToString("dd/MM/yyyy")</td>
+                        <td>@item.experienceStartDate.ToString("MM/dd/yyyy") - @item.experienceEndDate.ToString("MM/dd/yyyy")</td>
                         <td>@item.jobTitle</td>
                         <td>@item.jobSalary</td>
                         <td>@item.experienceType</td>

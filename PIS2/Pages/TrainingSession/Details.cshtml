@@ -74,7 +74,7 @@
                                         <div class="text-muted small">Cert: @(item.certificateNumber ?? "N/A")</div>
                                     </td>
                                     <td>
-                                        <span class="badge @(item.result == PIS2.Models.trainingResult.Passed ? "bg-success" : "bg-warning")">
+                                        <span class="badge @(item.result == PIS2.Enums.trainingResult.Passed ? "bg-success" : "bg-warning")">
                                             @item.result
                                         </span>
                                     </td>
@@ -116,7 +116,7 @@
                     <div class="row">
                         <div class="col-6 mb-3">
                             <label asp-for="NewAttendance.result" class="form-label">Result</label>
-                            <select asp-for="NewAttendance.result" class="form-select" asp-items="Html.GetEnumSelectList<PIS2.Models.trainingResult>()"></select>
+                            <select asp-for="NewAttendance.result" class="form-select" asp-items="Html.GetEnumSelectList<PIS2.Enums.trainingResult>()"></select>
                         </div>
                         <div class="col-6 mb-3">
                             <label asp-for="NewAttendance.score" class="form-label">Score</label>

@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using PIS2.Enums;
 
 namespace PIS2.Models
 {
@@ -51,20 +52,5 @@ namespace PIS2.Models
         public NoticeModel() { }
     }
 
-    public enum Priority
-    {
-        Low,
-        Medium,
-        High,
-        Urgent
-    }
-
-    public enum NoticeStatus
-    {
-        Pending,
-        Approved,
-        Posted,
-        Expired,
-        Void
-    }
+    
 }

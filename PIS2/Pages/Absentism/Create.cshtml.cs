@@ -10,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using PIS2.Data;
+using PIS2.Enums;
 using PIS2.Models;
 using PIS2.Services;
 using static System.Formats.Asn1.AsnWriter;
@@ -58,7 +59,7 @@ namespace PIS2.Pages.Absentism
 
             if (!string.IsNullOrEmpty(searchID))
             {
-                var leaveTypes = _context.LeaveTypes.Where(lt => lt.leaveGroup == leaveGroup.Absentism && lt.leaveTypeStatus == mainStatus.Active).ToList();
+                var leaveTypes = _context.LeaveTypes.Where(lt => lt.leaveGroup == leaveGroup.Absenteeism && lt.leaveTypeStatus == mainStatus.Active).ToList();
 
                 AllowedLeaveTypes = leaveTypes;
                 ViewData["leaveTypeID"] = new SelectList(AllowedLeaveTypes, "leaveTypeID", "leaveTypeName");
@@ -88,7 +89,7 @@ namespace PIS2.Pages.Absentism
                     }
                     else
                     {
-                        Absentism = Employment.Leaves.Where(l => l.leaveTypeModel.leaveGroup == leaveGroup.Absentism).OrderByDescending(l => l.leaveStartDate).ToList();
+                        Absentism = Employment.Leaves.Where(l => l.leaveTypeModel.leaveGroup == leaveGroup.Absenteeism).OrderByDescending(l => l.leaveStartDate).ToList();
                         minDate = Absentism.Min(a => a.leaveStartDate);
                         aCount = Absentism.Count();
                         aSum = Math.Round(Absentism.Sum(a => a.leaveDays), 2);
@@ -105,7 +106,7 @@ namespace PIS2.Pages.Absentism
                 Person = new personModel();
                 Employment = new employmentModel();
                 ViewData["employmentID"] = new SelectList(_context.Employments, "employmentID", "givenID");
-                var leaveTypes = _context.LeaveTypes.Where(lt => lt.leaveGroup == leaveGroup.Absentism && lt.leaveTypeStatus == mainStatus.Active).ToList();
+                var leaveTypes = _context.LeaveTypes.Where(lt => lt.leaveGroup == leaveGroup.Absenteeism && lt.leaveTypeStatus == mainStatus.Active).ToList();
 
                 AllowedLeaveTypes = leaveTypes;
                 ViewData["leaveTypeID"] = new SelectList(AllowedLeaveTypes, "leaveTypeID", "leaveTypeName");
@@ -167,7 +168,7 @@ namespace PIS2.Pages.Absentism
 
             if (!string.IsNullOrEmpty(searchID))
             {
-                var leaveTypes = _context.LeaveTypes.Where(lt => lt.leaveGroup == leaveGroup.Absentism && lt.leaveTypeStatus == mainStatus.Active).ToList();
+                var leaveTypes = _context.LeaveTypes.Where(lt => lt.leaveGroup == leaveGroup.Absenteeism && lt.leaveTypeStatus == mainStatus.Active).ToList();
 
                 AllowedLeaveTypes = leaveTypes;
                 ViewData["leaveTypeID"] = new SelectList(AllowedLeaveTypes, "leaveTypeID", "leaveTypeName");
@@ -197,7 +198,7 @@ namespace PIS2.Pages.Absentism
                     }
                     else
                     {
-                        Absentism = Employment.Leaves.Where(l => l.leaveTypeModel.leaveGroup == leaveGroup.Absentism).OrderByDescending(l => l.leaveStartDate).ToList();
+                        Absentism = Employment.Leaves.Where(l => l.leaveTypeModel.leaveGroup == leaveGroup.Absenteeism).OrderByDescending(l => l.leaveStartDate).ToList();
                         minDate = Absentism.Min(a => a.leaveStartDate);
                         aCount = Absentism.Count();
                         aSum = Math.Round(Absentism.Sum(a => a.leaveDays),2);
@@ -232,7 +233,7 @@ namespace PIS2.Pages.Absentism
                 {
                     Absentism = _context.Leaves
                         .Include(l=>l.leaveTypeModel)
-                        .Where(l => l.leaveStartDate >= start && l.leaveEndDate <= end && l.employmentID == employmentID && l.leaveTypeModel.leaveGroup == leaveGroup.Absentism).OrderByDescending(l => l.leaveStartDate).ToList();
+                        .Where(l => l.leaveStartDate >= start && l.leaveEndDate <= end && l.employmentID == employmentID && l.leaveTypeModel.leaveGroup == leaveGroup.Absenteeism).OrderByDescending(l => l.leaveStartDate).ToList();
                 }
                 else 
                 {

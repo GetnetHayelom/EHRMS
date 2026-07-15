@@ -1,6 +1,7 @@
 ﻿using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.EntityFrameworkCore;
 using PIS2.Data;
+using PIS2.Enums;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -68,7 +69,8 @@ namespace PIS2.Models
         public virtual ICollection<departmentModel>? departmentModel { get; set; }
         public virtual ICollection<companyModel>? companyModel { get; set; }
         public virtual ICollection<evaluationModel>? Evaluations { get; set; }
-        
+        public virtual ICollection<payrollPay>? PayrollPays { get; set; }
+
         public string modifiedBy { get; set; }
         public employmentModel() { }
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
@@ -179,10 +181,6 @@ namespace PIS2.Models
         public employmentMethodHistoryModel(){}
     }
 
-    public enum EmploymentPositions
-    {        
-        Non_Management,
-        Management
-    }
+    
 }
 

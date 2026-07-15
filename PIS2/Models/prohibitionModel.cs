@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using PIS2.Enums;
+using System.ComponentModel.DataAnnotations;
 
 namespace PIS2.Models
 {
@@ -44,15 +45,5 @@ namespace PIS2.Models
         }
     }
 
-    public enum ProhibitionType
-    {
-        Leave,
-        Step,
-        Scale,
-        Transfer,
-        Guaranty,
-        Exprience,
-        Promotion,
-        Overtime
-    }
+    
 }

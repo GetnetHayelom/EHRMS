@@ -32,7 +32,7 @@ namespace PIS2.Pages.Training
         TotalTrainings = await _context.Trainings.CountAsync();
         TotalSessions = await _context.TrainingSessions.CountAsync();
         CompletedSessions = await _context.TrainingSessions
-                                .CountAsync(s => s.sessionStatus == trainingStatus.Completed);
+                                .CountAsync(s => s.sessionStatus == Enums.trainingStatus.Completed);
 
         TotalParticipants = await _context.TrainingAttendances.CountAsync();
 

@@ -178,6 +178,10 @@ DocProject/Help/html
 
 # Click-Once directory
 publish/
+PIS2/Migrations
+PIS/bin
+PIS2/logs
+PIS2/obj
 
 # Publish Web Output
 *.[Pp]ublish.xml
@@ -361,3 +365,5 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+
+# 

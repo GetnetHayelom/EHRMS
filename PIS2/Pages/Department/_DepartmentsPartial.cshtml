@@ -1,4 +1,5 @@
-﻿@model IEnumerable<PIS2.Models.departmentModel>
+﻿@using PIS2.Enums
+@model IEnumerable<PIS2.Models.departmentModel>
 
 @foreach (var companyGroup in Model.OrderBy(d => d.companyModel?.companyName).GroupBy(d => d.companyModel?.companyName))
 {
@@ -15,12 +16,12 @@
             </td>
             
             <td>
-                @if (item.departmentStatus == Models.mainStatus.Active)
+                @if (item.departmentStatus == mainStatus.Active)
                 {
                     <span class="badge bg-success">@Html.DisplayFor(modelItem => item.departmentStatus)</span>
 
                 }
-                else if (item.departmentStatus == Models.mainStatus.Suspended)
+                else if (item.departmentStatus == mainStatus.Suspended)
                 {
                     <span class="badge bg-warning">@Html.DisplayFor(modelItem => item.departmentStatus)</span>
                 }

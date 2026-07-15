@@ -1,12 +1,11 @@
 ﻿using Microsoft.CodeAnalysis.CSharp.Syntax;
+using PIS2.Enums;
 using System.ComponentModel.DataAnnotations;
 
 namespace PIS2.Models
 {
     public class companyModel
     {
-        
-
         [Key]
         public int companyID { get; set; }
         [Required(ErrorMessage = "Company name can not be empty.")]

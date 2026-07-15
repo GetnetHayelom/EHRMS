@@ -151,7 +151,7 @@
                     </div>
                     <div class="flex-fill m-2 d-print-flex">
                         <label for="filter-status">Status:</label>
-                        <select class="form-select" aria-label="Default select example" asp-for="OtStatus" name="OtStatus" asp-items="Html.GetEnumSelectList<Models.overtimeStatus>()">
+                        <select class="form-select" aria-label="Default select example" asp-for="OtStatus" name="OtStatus" asp-items="Html.GetEnumSelectList<Enums.overtimeStatus>()">
                             <option value="" selected>All</option>
                         </select>
                     </div>
@@ -357,7 +357,7 @@
                 </div>
                 <div class="flex-fill d-print-flex p-3">
                     <label for="filter-status">Status:</label>
-                    <select class="form-select" aria-label="Default select example" id="filter-status" asp-items="Html.GetEnumSelectList<Models.overtimeStatus>()">
+                    <select class="form-select" aria-label="Default select example" id="filter-status" asp-items="Html.GetEnumSelectList<Enums.overtimeStatus>()">
                         <option value="">All</option>
                     </select>
                 </div>

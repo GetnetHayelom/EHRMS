@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using PIS2.Enums;
+using System.ComponentModel.DataAnnotations;
 
 namespace PIS2.Models
 {
@@ -48,11 +49,6 @@ namespace PIS2.Models
         public serviceRequestTypeModel() { }
     }
     
-    public enum ServiceRequestStatus
-    {
-        Hold,
-        Reviewed,
-        Completed
-    }
+    
     
 }

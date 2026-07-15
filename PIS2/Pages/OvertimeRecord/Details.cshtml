@@ -91,7 +91,7 @@
                 </dd>
             </div>
         </dl>
-        @if (Model.overtimeRecordModel.overtimeRecordStatus == Models.overtimeStatus.Hold)
+        @if (Model.overtimeRecordModel.overtimeRecordStatus == Enums.overtimeStatus.Hold)
         {
             @await Html.PartialAsync("signature");
         }
@@ -112,7 +112,7 @@
         <hr />
        
         @{
-            var tableClass = Model.overtimeRecordModel.overtimeRecordStatus == Models.overtimeStatus.Hold
+            var tableClass = Model.overtimeRecordModel.overtimeRecordStatus == Enums.overtimeStatus.Hold
             ? "table table-striped table-hover d-print-none"
             : "table table-striped table-hover print-full-width";
         }
@@ -141,7 +141,7 @@
 </div>
 <div class="d-flex justify-content-end">
 
-    @if ((Model.overtimeRecordModel.overtimeRecordStatus == Models.overtimeStatus.Hold || Model.overtimeRecordModel.overtimeRecordStatus == Models.overtimeStatus.Approved)
+    @if ((Model.overtimeRecordModel.overtimeRecordStatus == Enums.overtimeStatus.Hold || Model.overtimeRecordModel.overtimeRecordStatus == Enums.overtimeStatus.Approved)
     && User.IsInRole("MIE\\PMS_HRCLERK"))
     {
         <form method="post">
@@ -150,7 +150,7 @@
         </form>
         
     }
-    @if (Model.overtimeRecordModel.overtimeRecordStatus == Models.overtimeStatus.Hold && (User.IsInRole("MIE\\PMS_HRCLERK") || Model.overtimeRecordModel.overtimeRecordStatus == Models.overtimeStatus.Hold && Model.isSelf))
+    @if (Model.overtimeRecordModel.overtimeRecordStatus == Enums.overtimeStatus.Hold && (User.IsInRole("MIE\\PMS_HRCLERK") || Model.overtimeRecordModel.overtimeRecordStatus == Enums.overtimeStatus.Hold && Model.isSelf))
     {
         <a class="btn btn-primary m-2 d-print-none" asp-page="./Edit" asp-route-id="@Model.overtimeRecordModel.overtimeRecordID">Edit</a>   
         <a asp-page="./Delete" asp-route-id="@Model.overtimeRecordModel.overtimeRecordID" role="button" class="btn btn-danger text-decoration-none m-2">Delete</a>

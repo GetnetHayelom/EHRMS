@@ -1,4 +1,5 @@
 ﻿@page
+@using PIS2.Enums
 @model PIS2.Pages.Employment.CreateModel
 
 @{
@@ -60,7 +61,7 @@
             </div>
             <div class="form-group">
                 <label asp-for="employmentModel.employmentStatus" class="control-label">Employment Status</label>
-                <select asp-for="employmentModel.employmentStatus" class="form-control" asp-items="Html.GetEnumSelectList<Models.mainStatus>()"></select>
+                <select asp-for="employmentModel.employmentStatus" class="form-control" asp-items="Html.GetEnumSelectList<mainStatus>()"></select>
                 <span asp-validation-for="employmentModel.employmentStatus" class="text-danger"></span>
             </div>
             <div class="form-group">
@@ -100,7 +101,7 @@
             </div>
             <div class="form-group">
                 <label asp-for="employmentModel.employmentPosition" class="control-label">Employment Position</label>
-                <select asp-for="employmentModel.employmentPosition" class="form-control" asp-items="Html.GetEnumSelectList<Models.EmploymentPositions>()"></select>
+                <select asp-for="employmentModel.employmentPosition" class="form-control" asp-items="Html.GetEnumSelectList<Enums.EmploymentPositions>()"></select>
                 <span asp-validation-for="employmentModel.employmentPosition" class="text-danger"></span>
             </div>
             <div class="form-group d-flex justify-content-end">

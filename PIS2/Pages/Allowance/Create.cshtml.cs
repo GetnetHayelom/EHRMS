@@ -5,7 +5,9 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 using PIS2.Data;
+using PIS2.Enums;
 using PIS2.Models;
 
 namespace PIS2.Pages.Allowance
@@ -13,10 +15,12 @@ namespace PIS2.Pages.Allowance
     public class CreateModel : PageModel
     {
         private readonly PISContext _context;
+        private readonly ILogger<CreateModel> _logger;
 
-        public CreateModel(PISContext context)
+        public CreateModel(PISContext context, ILogger<CreateModel> logger)
         {
             _context = context;
+            _logger = logger;
         }
 
         public IActionResult OnGet()
@@ -30,12 +34,14 @@ namespace PIS2.Pages.Allowance
 
         [BindProperty]
         public allowanceModel allowanceModel { get; set; } = default!;
+        public SelectList EarningType { get; set; }
 
         // For more information, see https://aka.ms/RazorPagesCRUD.
         public async Task<IActionResult> OnPostAsync()
         {
             if (!User.IsInRole("MIE\\PMS_HRADMIN"))
             {
+                _logger.LogError("Error: Access Denied! {Action} {UserName}", "Create Allowance", User.Identity.Name);
                 return RedirectToPage("/Shared/AccessDenied");
             }
             ModelState.Remove("allowanceModel.modifiedBy");
@@ -47,17 +53,18 @@ namespace PIS2.Pages.Allowance
                 {
                     foreach (var error in kv.Value.Errors)
                     {
-                        Console.WriteLine($"{kv.Key} --> {error.ErrorMessage}");
+                        _logger.LogError(error.ErrorMessage, "Error validation failed for {UserName}", User.Identity.Name); 
                     }
-                    Console.WriteLine(kv.ToString());
+                    return new JsonResult(new { success=false, message="Validation Error. Check all fields are set!"});
                 }
                 return Page();
             }
-
+            var earn = await _context.EarningTypes.Where(e => e.earningTypeStatus == mainStatus.Active).ToListAsync();
+            EarningType = new SelectList(earn, "earningTypeID", "earningTypeName");
             _context.Allowances.Add(allowanceModel);
             await _context.SaveChangesAsync();
 
-            return RedirectToPage("./Index");
+            return RedirectToPage("./Details", new { id = allowanceModel.allowanceID});
         }
     }
 }

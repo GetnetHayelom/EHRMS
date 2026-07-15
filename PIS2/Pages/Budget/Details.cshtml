@@ -6,12 +6,12 @@
     <div class="d-flex justify-content-between align-items-center border-bottom pb-3 mb-4">
         <div>
             <h2>@Model.BudgetPlan.BudgetName</h2>
-            <span class="badge @(Model.BudgetPlan.Status == Models.BudgetStatus.ACTIVE ? "badge-success" : "badge-secondary")">
+            <span class="badge @(Model.BudgetPlan.Status == Enums.BudgetStatus.ACTIVE ? "badge-success" : "badge-secondary")">
                 @Model.BudgetPlan.Status
             </span>
         </div>
         <div class="btn-group align-items-end m-2">
-            @if (Model.BudgetPlan.Status == Models.BudgetStatus.HOLD && User.IsInRole("MIE\\PMS_HRMANAGER"))
+            @if (Model.BudgetPlan.Status == Enums.BudgetStatus.HOLD && User.IsInRole("MIE\\PMS_HRMANAGER"))
             {
                
                     <form method="post" asp-page-handler="Approve">
@@ -25,7 +25,7 @@
                 
 
             }
-            else if (Model.BudgetPlan.Status == Models.BudgetStatus.APPROVED && User.IsInRole("MIE\\PMS_HRMANAGER"))
+            else if (Model.BudgetPlan.Status == Enums.BudgetStatus.APPROVED && User.IsInRole("MIE\\PMS_HRMANAGER"))
             {
                 if (Model.BudgetPlan.StartDate <= DateTime.Now)
                 {
@@ -35,7 +35,7 @@
                     </form>
                 }
             }
-            else if (Model.BudgetPlan.Status == Models.BudgetStatus.ACTIVE && User.IsInRole("MIE\\PMS_HRMANAGER"))
+            else if (Model.BudgetPlan.Status == Enums.BudgetStatus.ACTIVE && User.IsInRole("MIE\\PMS_HRMANAGER"))
             {
                 if (Model.BudgetPlan.EndDate <= DateTime.Now)
                 {
@@ -48,7 +48,7 @@
             }
             <a asp-page="./Index" asp-route-id="@Model.BudgetPlan.BudgetPlanID" class="btn btn-outline-secondary"><i class="bi bi-arrow-left me-2"></i>Back</a>
             <a asp-page="./Edit" asp-route-id="@Model.BudgetPlan.BudgetPlanID" class="btn btn-primary"><i class="bi bi-pencil-square me-2"></i>Edit Plan</a>
-            @if ((Model.BudgetPlan.BudgetLines == null || !Model.BudgetPlan.BudgetLines.Any()) && Model.BudgetPlan.Status == Models.BudgetStatus.APPROVED) 
+            @if ((Model.BudgetPlan.BudgetLines == null || !Model.BudgetPlan.BudgetLines.Any()) && Model.BudgetPlan.Status == Enums.BudgetStatus.APPROVED) 
             {
                 <form method="POST" asp-page-handler="Initialize">
                     <input value="@Model.BudgetPlan.BudgetPlanID" asp-for="BudgetPlan.BudgetPlanID" readonly hidden />

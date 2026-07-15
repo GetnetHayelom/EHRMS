@@ -1,4 +1,5 @@
 ﻿@page
+@using PIS2.Enums
 @model PIS2.Pages.Person.EditModel
 @{
     ViewData["Title"] = "Edit";
@@ -25,7 +26,7 @@
                     <div class="d-flex flex-column justify-content-center align-items-center">
                         <input type="hidden" name="personId" value="@Model.personModel.personID" />
                         <img src="/api/attachments/viewprofile/@Model?.personModel?.personID" class="rounded-circle border shadow-sm" style="max-width: 200px; max-height: 200px; object-fit: cover;" alt="Profile Picture"
-                             onerror="this.onerror=null; this.src='/images/@(Model.personModel.personGender == Models.Gender.Female ? "female-default.png" : "male-default.png")';" id="preview">
+                             onerror="this.onerror=null; this.src='/images/@(Model.personModel.personGender == Gender.Female ? "female-default.png" : "male-default.png")';" id="preview">
                     </div>
 
                 </div>
@@ -77,7 +78,7 @@
                         <div class="form-group">
                             <label asp-for="personModel.personGender">Gender</label>
                             <select asp-for="personModel.personGender" class="form-control"
-                                    asp-items="Html.GetEnumSelectList<Models.Gender>()"></select>
+                                    asp-items="Html.GetEnumSelectList<Gender>()"></select>
                             <span asp-validation-for="personModel.personGender" class="text-danger"></span>
                         </div>
 
@@ -130,7 +131,7 @@
                             <div class="form-group">
                                 <label asp-for="addressModel.addressCountry">Country</label>
                                 <select asp-for="addressModel.addressCountry" class="form-control"
-                                        asp-items="Html.GetEnumSelectList<Models.Country>()"></select>
+                                        asp-items="Html.GetEnumSelectList<Country>()"></select>
                                 <span asp-validation-for="addressModel.addressCountry" class="text-danger"></span>
                             </div>
 

@@ -115,14 +115,14 @@ namespace PIS2.Controllers
 
                 attachment.FilePath = fullPath;
                 await _db.SaveChangesAsync();
-
-                await transaction.CommitAsync();
-
+                
                 _logger.LogInformation(
                     "File uploaded successfully. AttachmentID:{AttachmentID} Size:{Size} UploadedBy:{User}",
                     attachment.AttachmentID,
                     file.Length.Bytes(),
                     User.Identity?.Name);
+
+                await transaction.CommitAsync();
 
                 return Ok(new { id = attachment.AttachmentID, name = fileTitle });
             }
@@ -141,10 +141,10 @@ namespace PIS2.Controllers
                 await transaction.RollbackAsync();
 
                 _logger.LogError(ex,
-                    "Unexpected error during file upload for Table:{Table} RecordId:{RecordId}",
-                    tableName, recordId);
+                    "Unexpected error during file upload for Table:{Table} RecordId:{RecordId} EX:{Exception}",
+                    tableName, recordId,ex.Message);
 
-                return StatusCode(500, "An internal error occurred during upload.");
+                return StatusCode(500, $"An internal error occurred during upload. EX_ {ex.Message}");
             }
         }
 

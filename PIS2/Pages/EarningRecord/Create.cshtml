@@ -1,4 +1,5 @@
 ﻿@page
+@using PIS2.Enums
 @model PIS2.Pages.EarningRecord.CreateModel
 
 @{
@@ -79,7 +80,7 @@
                     <div class="col-md-4">
                         <label class="form-label">Status</label>
                         <select asp-for="Earning.earningStatus" class="form-select">
-                            @foreach (var st in Enum.GetValues(typeof(Models.mainStatus)))
+                            @foreach (var st in Enum.GetValues(typeof(mainStatus)))
                             {
                                 <option value="@st">@st</option>
                             }
@@ -103,7 +104,7 @@
                     <div class="col-md-4">
                         <label class="form-label">Earning Base</label>
                         <select asp-for="Earning.earningBase" class="form-select">
-                            @foreach (var baseVal in Enum.GetValues(typeof(Models.deductionBase)))
+                            @foreach (var baseVal in Enum.GetValues(typeof(Enums.deductionBase)))
                             {
                                 <option value="@baseVal">@baseVal</option>
                             }

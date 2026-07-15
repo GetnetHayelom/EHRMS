@@ -130,7 +130,7 @@
 </div>
 <div class="d-print-none d-flex justify-content-end">
     
-    @if (User.IsInRole("MIE\\PMS_HRCLERK") && (Model.leaveModel.leaveStatus == Models.leaveStatus.Hold))
+    @if (User.IsInRole("MIE\\PMS_HRCLERK") && (Model.leaveModel.leaveStatus == Enums.leaveStatus.Hold))
     {
         <div class="d-flex justify-content-between">
 
