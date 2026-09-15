@@ -26,7 +26,7 @@ namespace PIS2.Pages.Leave
             _core = methods;
         }
         [BindProperty(SupportsGet = true)]
-        public employmentModel Employment { get; set; } = new employmentModel();
+        public employmentModel? Employment { get; set; }
         [BindProperty(SupportsGet = true)]
         public string givenID { get; set; }
         public int EmployeeID { get; set; }
@@ -36,42 +36,45 @@ namespace PIS2.Pages.Leave
         public List<leaveModel> Leaves { get; set; }
         public bool CheckProhibition { get; set; } = false;
         
-        public async Task<IActionResult> OnGet(int id)
+        public async Task<IActionResult> OnGet(int? id)
         {
-            if (id==0)
+            var emps = await _context.Employments.Where(e => e.employmentStatus == mainStatus.Active).ToListAsync();
+            if (!emps.ToList().Any()) 
             {
-                var tempID = await _context.Users.Include(u => u.personModel)
-                    .ThenInclude(p => p.Employments).FirstOrDefaultAsync(u => u.userName == User.Identity.Name);
-
-                id =tempID.personModel.Employments.FirstOrDefault(e => e.employmentStatus == mainStatus.Active).employmentID;
-                Employment = _context.Employments.FirstOrDefault(e => e.employmentID == id) ?? new employmentModel();
-                EmployeeID = id;
-                if (id == 0)
+                TempData["message"] = ("Error", $"There is no an active employment record!");
+                var referenceId = Guid.NewGuid().ToString("N")[..8].ToUpper();
+                return RedirectToPage("Error",
+                new
                 {
-                    Console.WriteLine("ID is still 0");
-                    return NotFound();
-                }
-                    
+                    code = "LEAVE-001",
+                    title = referenceId+"-Unable to Create Leave Request",
+                    message = "No active employment record was found for this employee."
+                });
+            }
+
+            if (!id.HasValue)
+            {
+                var tempID = _context.UserView.FirstOrDefault(u => u.userName == User.Identity.Name);
+
+                if (tempID != null)
+                {
+                    EmployeeID = tempID.employmentID ?? 0;
+                    Employment = _context.Employments.FirstOrDefault(e => e.employmentID == EmployeeID);
+                }               
             }
             else
             {
-                Employment = await _context.Employments.FirstOrDefaultAsync(e => e.employmentID == id) ?? new employmentModel();
-                if (Employment.employmentID == 0)
-                {
-                    return NotFound();
-                }
+                Employment = await _context.Employments.FirstOrDefaultAsync(e => e.employmentID == id);
             }
             if (!string.IsNullOrEmpty(givenID))
             {
-                Employment = await _context.Employments.FirstOrDefaultAsync(e => e.givenID == givenID) ?? new employmentModel();
-                Console.WriteLine("This is right here!!!!!!!!!!!");
+                Employment = await _context.Employments.FirstOrDefaultAsync(e => e.givenID == givenID);
+                
                 if (Employment != null)
                 {
-                    
-                    id = Employment.employmentID;
-                    EmployeeID = id;
+                    EmployeeID = Employment.employmentID;
                     CheckProhibition = await _core.CheckProhibition(EmployeeID, ProhibitionType.Leave);
-                    Console.WriteLine("ID is set from givenID" + id);
+                    
                     // Redirect to the Details page with employmentID
                     return RedirectToPage("Create", new { id = Employment.employmentID });
                 }               
@@ -81,12 +84,12 @@ namespace PIS2.Pages.Leave
             var leaveTypes = new List<leaveTypeModel>();
             leaveTypes = await _context.LeaveTypes.Where(lt => lt.leaveAvailability == "Everyone" && lt.leaveTypeStatus == mainStatus.Active).ToListAsync();
 
-            if (User.IsInRole("MIE\\PMS_CLINIC"))
+            if (User.IsInRole("CLINIC"))
             {
                 leaveTypes.AddRange(await _context.LeaveTypes.Where(lt => (lt.leaveAvailability == "Clinic" || lt.leaveAvailability == "Everyone") && lt.leaveTypeStatus == mainStatus.Active).ToListAsync());
             }
 
-            if (User.IsInRole("MIE\\PMS_HRCLERK"))
+            if (User.IsInRole("HRPERSONNEL"))
             { 
                 var hrLeaves = await _context.LeaveTypes.Where(lt => lt.leaveAvailability == "HR" && lt.leaveTypeStatus == mainStatus.Active).ToListAsync();    
                 leaveTypes.AddRange(hrLeaves);
@@ -95,22 +98,26 @@ namespace PIS2.Pages.Leave
             {
                 
             }
-            //leaveTypes = leaveTypes.Where(lt => lt.leaveTypeStatus == mainStatus.Active).ToList();
-            var isLeaveProhibited = await _core.CheckProhibition(Employment.employmentID, ProhibitionType.Leave);
-            AllowedLeaveTypes = isLeaveProhibited? leaveTypes.Where(l => l.leaveGroup != leaveGroup.AnnualLeave).ToList() : leaveTypes;
-            
+
+            if (Employment != null)
+            {
+                var isLeaveProhibited = await _core.CheckProhibition(Employment.employmentID, ProhibitionType.Leave);
+                AllowedLeaveTypes = isLeaveProhibited ? leaveTypes.Where(l => l.leaveGroup != leaveGroup.AnnualLeave).ToList() : leaveTypes;
+                EmployeeID = Employment.employmentID;
+                TempData["MyNumber"] = EmployeeID;
+                LeaveDetail = await _core.GetLeaveSummary(EmployeeID) != null ? await _core.GetLeaveSummary(EmployeeID) : await _core.GetLeaveSummary(EmployeeID);
+                Leaves = await _context.Leaves.OrderByDescending(l => l.leaveRequestDate).Where(e => e.employmentID == EmployeeID).ToListAsync();
+                Person = await _context.Persons.FirstOrDefaultAsync(e => e.personID == Employment.personID) ?? new personModel();
+            }
+            else 
+            {
+                AllowedLeaveTypes = leaveTypes;
+            }
+
             ViewData["leaveTypeID"] = new SelectList(AllowedLeaveTypes.Distinct().OrderBy(l => l.leaveTypeName), "leaveTypeID", "leaveTypeName");
             var empsList = await _context.Employments.Include(e => e.personModel).Where(e => e.employmentStatus == mainStatus.Active).ToListAsync();
-            ViewData["employmentID"] = new SelectList(empsList, "employmentID", "givenID");
+            ViewData["employmentID"] = new SelectList(empsList, "employmentID", "givenID", id);
 
-            EmployeeID = Employment.employmentID;
-            TempData["MyNumber"] = EmployeeID;
-            
-            LeaveDetail = await _core.GetLeaveSummary(id) != null? await _core.GetLeaveSummary(id):await _core.GetLeaveSummary(EmployeeID);
-            Leaves =await _context.Leaves.OrderByDescending(l => l.leaveRequestDate).Where(e => e.employmentID == EmployeeID).ToListAsync();
-            Person =await _context.Persons.FirstOrDefaultAsync(e => e.personID == Employment.personID)?? new personModel();
-            ViewData["employmentID"] = new SelectList(_context.Employments, "employmentID", "givenID", id);
-            Console.WriteLine("################# Employee ID is " + EmployeeID);
             return Page();
         }
         

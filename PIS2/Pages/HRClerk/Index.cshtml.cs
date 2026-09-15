@@ -19,7 +19,7 @@ using static System.Formats.Asn1.AsnWriter;
 
 namespace PIS2.Pages.HRClerck
 {
-        [Authorize(Roles = "MIE\\PMS_HRMANAGER")]
+        [Authorize(Roles = "HRMANAGER")]
     public class IndexModel : PageModel
     {
         private readonly PISContext _context;
@@ -49,7 +49,7 @@ namespace PIS2.Pages.HRClerck
         public DashboardStats Stats { get; set; } = new();
         public async Task OnGetAsync()
         {
-            var userID = _context.Users.FirstOrDefault(u => u.userName == User.Identity.Name)?.userID ?? 0;
+            var userID = _context.Users.FirstOrDefault(u => u.UserName == User.Identity.Name)?.Id ?? 0;
 
             var empID = _core.getUserEmp(User.Identity.Name);
 
@@ -107,7 +107,7 @@ namespace PIS2.Pages.HRClerck
 
         public async Task<IActionResult> OnGetGetSummary(string sumType)
         {
-            var userID = _context.Users.FirstOrDefault(u => u.userName == User.Identity.Name)?.userID ?? 0;
+            var userID = _context.Users.FirstOrDefault(u => u.UserName == User.Identity.Name)?.Id ?? 0;
 
             var empID = _core.getUserEmp(User.Identity.Name);
 

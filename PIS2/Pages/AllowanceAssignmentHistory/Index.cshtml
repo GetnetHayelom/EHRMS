@@ -39,7 +39,7 @@
                 @Html.DisplayFor(modelItem => item.allowanceAssignmentHistoryStatus)
             </td>
             <td>
-                <a asp-page="./Edit" asp-route-id="@item.allowanceAssignmentHistoryID">Edit</a> |
+                <a asp-page="./Edit" asp-route-id="@item.allowanceAssignmentHistoryID">@L.T("Edit")</a> |
                 <a asp-page="./Details" asp-route-id="@item.allowanceAssignmentHistoryID">Details</a> |
                 <a asp-page="./Delete" asp-route-id="@item.allowanceAssignmentHistoryID">Delete</a>
             </td>

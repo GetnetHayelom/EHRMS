@@ -9,7 +9,7 @@ using PIS2.Enums;
 
 namespace PIS2.Pages.Notice
 {
-    [Authorize(Roles = "MIE\\PMS_HRCLERK")]
+    [Authorize(Roles = "HRPERSONNEL")]
     public class CreateModel : PageModel
     {
         private readonly PISContext _context;

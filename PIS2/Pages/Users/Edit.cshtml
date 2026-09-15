@@ -12,7 +12,7 @@
     @Html.AntiForgeryToken()
 </form>
 <h2 class="fw-bold mb-4">User</h2>
-<h6 class="text-muted">Update User Info & Access</h6>
+<h6 class="text-muted">@L.T("Update") User Info & Access</h6>
 <div class="row">
     <!-- Left Column: User Details -->
     <div class="col-md-5">
@@ -21,7 +21,7 @@
             <div class="card-body" id="UserFormContainer">
                 <form method="post" id="userForm">
                     @Html.AntiForgeryToken()
-                    <input type="hidden" asp-for="userModel.userID" />
+                    <input type="hidden" asp-for="userModel.Id" />
 
                     <div class="mb-3">
                         <label class="form-label fw-bold">Full Name</label>
@@ -29,9 +29,9 @@
                     </div>
 
                     <div class="mb-3">
-                        <label asp-for="userModel.userName" class="form-label">User Name <span class="text-danger">*</span></label>
-                        <input asp-for="userModel.userName" class="form-control" id="userName"/>
-                        <span asp-validation-for="userModel.userName" class="text-danger"></span>
+                        <label asp-for="userModel.UserName" class="form-label">User Name <span class="text-danger">*</span></label>
+                        <input asp-for="userModel.UserName" class="form-control" id="userName"/>
+                        <span asp-validation-for="userModel.UserName" class="text-danger"></span>
                     </div>
 
                     <div class="mb-3">
@@ -42,7 +42,19 @@
 
                     <div class="d-flex justify-content-end mt-4">
                         <a asp-page="Index" class="btn btn-secondary me-2">Cancel</a>
-                        <button type="button" class="btn btn-success" onclick="UpdateUser()">Save</button>
+                        @if (User.IsInRole("ADMIN"))
+                        {
+                            <button type="button"
+                                    class="btn btn-danger"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#resetPasswordModal">
+
+                                <i class="bi bi-key-fill me-2"></i>
+                                Reset Password
+
+                            </button>
+                        }
+                        <button type="button" class="btn btn-success" onclick="UpdateUser()">@L.T("Save")</button>
                     </div>
                 </form>
             </div>
@@ -98,19 +110,20 @@
                         <form id="accessForm" method="POST">
                             @Html.AntiForgeryToken()
                             
-                            <input type="hidden" asp-for="AccessInput.userID" value="@Model.userModel.userID" />
+                            <input type="hidden" asp-for="AccessInput.userID" value="@Model.userModel.Id" />
 
                             <div class="mb-3">
-                                <label class="form-label">User Group</label>
-                                <select asp-for="AccessInput.userGroups" id="userGroups" class="form-select" asp-items="@Html.GetEnumSelectList<Enums.UserGroups>()">
-                                                                    
+                                <label class="form-label">Role</label>
+                                
+                                <select asp-for="AccessInput.roleID" id="userGroups" asp-items="Model.RolesList" class="form-select">
+                                    <option value="">-- Select Role --</option>
                                 </select>
                             </div>
 
                             <div class="mb-3">
                                 <label class="form-label">Company</label>
                                 <select id="companyID" asp-for="AccessInput.companyID" class="form-select">
-                                    <option value="0">All Companies</option>
+                                    <option value="">All Companies</option>
                                     @foreach (var c in Model.CompanySelectList ?? new List<companyModel>())
                                     {
                                         <option value="@c.companyID">@c.companyName</option>
@@ -126,7 +139,7 @@
                             </div>
 
                             <div class="d-flex justify-content-end">
-                                <button type="button" class="btn btn-success" id="btnSaveAccess" onclick="SaveAccess()">Save Access</button>
+                                <button type="button" class="btn btn-success" id="btnSaveAccess" onclick="SaveAccess()">@L.T("Save") Access</button>
                                 <button type="button" class="btn btn-secondary ms-2" id="btnCancelAccess">Cancel</button>
                             </div>
                         </form>
@@ -136,7 +149,100 @@
         </div>
     </div>
 </div>
+@if (User.IsInRole("ADMIN"))
+{
+    <div class="modal fade"
+         id="resetPasswordModal"
+         tabindex="-1"
+         aria-labelledby="resetPasswordModalLabel"
+         aria-hidden="true">
 
+        <div class="modal-dialog modal-dialog-centered">
+
+            <div class="modal-content">
+
+                <div class="modal-header bg-warning">
+
+                    <h5 class="modal-title"
+                        id="resetPasswordModalLabel">
+
+                        <i class="bi bi-key-fill me-2"></i>
+                        Reset Password
+
+                    </h5>
+
+                    <button type="button"
+                            class="btn-close"
+                            data-bs-dismiss="modal">
+                    </button>
+
+                </div>
+
+
+                <div class="modal-body">
+
+                    <div class="alert alert-warning">
+
+                        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+
+                        <strong>Are you sure?</strong>
+
+                        <br />
+
+                        This will reset this user's password to:
+
+                        <br />
+
+                        <strong>123456.aA</strong>
+
+                        <br /><br />
+
+                        The user will be required to change
+                        the password when they log in.
+
+                    </div>
+
+                    <p class="mb-0">
+                        The user's current password will no longer work.
+                    </p>
+
+                </div>
+
+
+                <div class="modal-footer">
+
+                    <button type="button"
+                            class="btn btn-secondary"
+                            data-bs-dismiss="modal">
+
+                        Cancel
+
+                    </button>
+
+
+                    <form method="post"
+                          asp-page-handler="ResetPassword"
+                          asp-route-id="@Model.userModel.Id">
+
+                        <button type="submit"
+                                class="btn btn-warning">
+
+                            <i class="bi bi-key-fill me-1"></i>
+
+                            Yes, Reset Password
+
+                        </button>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+}
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script>

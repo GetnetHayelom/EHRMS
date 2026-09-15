@@ -14,7 +14,7 @@
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb mb-1 small">
                     <li class="breadcrumb-item"><a asp-page="./Index" class="text-decoration-none">Employments</a></li>
-                    <li class="breadcrumb-item active">Edit Master Data</li>
+                    <li class="breadcrumb-item active">@L.T("Edit") Master Data</li>
                 </ol>
             </nav>
             <h2 class="fw-bold text-dark m-0"><i class="bi bi-database-gear me-2 text-primary"></i>Employee Master Record</h2>
@@ -131,7 +131,7 @@
 
                             <div class="mt-3 pt-3 border-top text-end">
                                 <a asp-page="/Person/Details" asp-route-id="@Model.personModel.personID" class="btn btn-link text-decoration-none btn-sm me-2">View Full Profile <i class="bi bi-arrow-up-right"></i></a>
-                                <button type="submit" class="btn btn-success btn-sm px-3 shadow-sm"><i class="bi bi-check2-circle me-1"></i> Save Personal Info</button>
+                                <button type="submit" class="btn btn-success btn-sm px-3 shadow-sm"><i class="bi bi-check2-circle me-1"></i>@L.T("Save") Personal Info</button>
                             </div>
                         </form>
                     </div>
@@ -264,7 +264,7 @@
                                     <div class="mt-3 pt-3 border-top d-flex justify-content-end align-items-center gap-2">
                                         <a asp-page="/JobPlacement/Details" asp-route-id="@Model.jobPlacementModel.jobPlacementID" class="btn btn-link text-decoration-none btn-sm me-2">History <i class="bi bi-arrow-up-right"></i></a>
                                         <a asp-page="/JobPlacement/Create" asp-route-id="@Model.employmentModel.employmentID" class="btn btn-outline-primary btn-sm"><i class="bi bi-plus-lg"></i> New Assignment</a>
-                                        <button type="submit" class="btn btn-success btn-sm px-3 shadow-sm"><i class="bi bi-check2-circle me-1"></i> Save Placement</button>
+                                        <button type="submit" class="btn btn-success btn-sm px-3 shadow-sm"><i class="bi bi-check2-circle me-1"></i>@L.T("Save") Placement</button>
                                     </div>
                                 </form>
                             }
@@ -326,7 +326,7 @@
 
                                 <div class="col-12 text-end mt-2 d-flex justify-content-between">
                                     <button type="submit" name="handler" value="PrintExperience" class="btn btn-outline-secondary btn-sm"><i class="bi bi-printer"></i> Print</button>
-                                    <button type="submit" name="handler" value="AddExperience" class="btn btn-success btn-sm px-3">Save Record</button>
+                                    <button type="submit" name="handler" value="AddExperience" class="btn btn-success btn-sm px-3">@L.T("Save") Record</button>
                                 </div>
                             </form>
                         </div>
@@ -398,7 +398,7 @@
                                 </div>
 
                                 <div class="col-12 text-end mt-2">
-                                    <button type="submit" class="btn btn-success btn-sm px-3">Save Certification</button>
+                                    <button type="submit" class="btn btn-success btn-sm px-3">@L.T("Save") Certification</button>
                                 </div>
                             </form>
                         </div>

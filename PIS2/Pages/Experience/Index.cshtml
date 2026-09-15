@@ -23,10 +23,10 @@
             <!-- Employment Status Filter -->
             <div>
                 <label class="me-2 fw-bold">Experience Type:</label>
-                <input type="radio" name="EmploymentFilter" value="" @(Model.ExperienceTypeFilter == null ? "checked" : "") onchange="this.form.submit()" /> All
+                <input type="radio" name="ExperienceTypeFilter" value="" @(Model.ExperienceTypeFilter == null ? "checked" : "") onchange="this.form.submit()" /> All
                 @foreach (var type in Enum.GetValues<Enums.Ex_In>())
                 {
-                    <input type="radio" name="EmploymentFilter" value="@type" @(Model.ExperienceTypeFilter == type ? "checked" : "") onchange="this.form.submit()" />
+                    <input type="radio" name="ExperienceTypeFilter" value="@type" @(Model.ExperienceTypeFilter == type ? "checked" : "") onchange="this.form.submit()" />
                     @type
                 }
             </div>
@@ -41,7 +41,10 @@
                     @g
                 }
             </div>
-
+            @if (Model.id.HasValue)
+            {
+                <input type="hidden" name="id" value="@Model.id" />
+            }
         </form>
         <div class="d-flex justify-content-end d-print-none align-items-end">
             @await Html.PartialAsync("filter")

@@ -77,10 +77,10 @@
                             <a asp-page="./Index" class="btn btn-outline-secondary">
                                 <i class="bi bi-arrow-left"></i> Back to List
                             </a>
-                            @if (User.IsInRole("MIE\\PMS_HRMANAGER") && Model.OtherPay?.payrollStatus == Enums.payrollStatus.PENDING)
+                            @if (User.IsInRole("HRMANAGER") && Model.OtherPay?.payrollStatus == Enums.payrollStatus.PENDING)
                             {
                                 <button type="submit" class="btn btn-primary px-4">
-                                    <i class="bi bi-save"></i> Save Changes
+                                    <i class="bi bi-save"></i>@L.T("Save") Changes
                                 </button>
                             }
                             
@@ -91,7 +91,7 @@
                 {
                     case Enums.payrollStatus.PENDING:
 
-                        if (User.IsInRole("MIE\\PMS_HRMANAGER"))
+                        if (User.IsInRole("HRMANAGER"))
                         {
                             <div class="d-flex justify-content-end gap-2">
                                 <form method="post" asp-page-handler="Approve">
@@ -104,7 +104,7 @@
                         break;
 
                     case Enums.payrollStatus.APPROVED:
-                        if (User.IsInRole("MIE\\PMS_PAYROLL"))
+                        if (User.IsInRole("PAYROLL"))
                         {
                             <div class="d-flex justify-content-end gap-2">
                                 <form method="post" asp-page-handler="Post">
@@ -117,7 +117,7 @@
                         break;
 
                     case Enums.payrollStatus.POSTED:
-                        if (User.IsInRole("MIE\\PMS_FINANCE"))
+                        if (User.IsInRole("FINANCE"))
                         {
                             <div class="d-flex justify-content-end gap-2">
                                 <form method="post" asp-page-handler="Post">

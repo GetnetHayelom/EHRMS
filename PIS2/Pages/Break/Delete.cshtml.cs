@@ -24,7 +24,7 @@ namespace PIS2.Pages.Break
 
         public async Task<IActionResult> OnGetAsync(int? id)
         {
-            if (!User.IsInRole("MIE\\PMS_HRADMIN"))
+            if (!User.IsInRole("HRADMIN"))
             {
                 return RedirectToPage("/Shared/AccessDenied");
             }
@@ -48,7 +48,7 @@ namespace PIS2.Pages.Break
 
         public async Task<IActionResult> OnPostAsync(int? id)
         {
-            if (!User.IsInRole("MIE\\PMS_HRADMIN"))
+            if (!User.IsInRole("HRADMIN"))
             {
                 return RedirectToPage("/Shared/AccessDenied");
             }

@@ -79,7 +79,7 @@ namespace PIS2.Pages.OvertimeRecord
             if (overtimeRecord == null)
                 return new JsonResult(new { success = false, message = "Overtime Record not found." });
 
-            if (!User.IsInRole("MIE\\PMS_HRCLERK"))
+            if (!User.IsInRole("HRPERSONNEL"))
                 return new JsonResult(new { success = false, message = "Access denied." });
 
             overtimeRecord.overtimeRecordStatus = overtimeStatus.Posted;

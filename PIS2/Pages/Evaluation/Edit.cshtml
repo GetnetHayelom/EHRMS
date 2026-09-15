@@ -5,7 +5,7 @@
 }
 @await Html.PartialAsync("headersimple", "")
 <h1 class="fw-bold ">Evaluation</h1>
-<h6 class="fw-bold text-muted">Update Evaluation</h6>
+<h6 class="fw-bold text-muted">@L.T("Update") Evaluation</h6>
 <div class="container-fluid">
     @Html.AntiForgeryToken()
     <input type="hidden" id="currentEvalID" value="@Model.Evaluation.evaluationID" />
@@ -45,7 +45,7 @@
             <div class="col-12 text-end">
                 <a asp-page="/Evaluation/Create" class="btn btn-primary">New Evaluation</a>
                 <a asp-page="/Evaluation/Details" asp-route-id="@Model.Evaluation.evaluationID" class="btn btn-outline-primary">Preview</a>
-                <button class="btn btn-outline-success" onclick="updateHeader()">Update Eval. Info</button>
+                <button class="btn btn-outline-success" onclick="updateHeader()">@L.T("Update") Eval. Info</button>
             </div>
         </div>
     </div>

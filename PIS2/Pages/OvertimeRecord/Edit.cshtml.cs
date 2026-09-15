@@ -40,7 +40,7 @@ namespace PIS2.Pages.OvertimeRecord
                 return NotFound();
             }
             overtimeRecordModel = overtimerecordmodel;
-             if(overtimeRecordModel.overtimeRecordStatus != overtimeStatus.Hold && !(User.IsInRole("MIE\\PMS_HRCLERCK") || User.IsInRole("MIE\\PMS_HRMANAGER")))
+             if(overtimeRecordModel.overtimeRecordStatus != overtimeStatus.Hold && !(User.IsInRole("HRCLERCK") || User.IsInRole("HRMANAGER")))
             {
                 return RedirectToPage("/Shared/AccessDenied");
             }

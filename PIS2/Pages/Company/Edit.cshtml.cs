@@ -27,7 +27,7 @@ namespace PIS2.Pages.Company
         public List<Models.AuditLog> History { get; set; } = new();
         public async Task<IActionResult> OnGetAsync(int? id)
         {
-            if (!User.IsInRole("MIE\\PMS_HRADMIN"))
+            if (!User.IsInRole("HRADMIN"))
             {
                 return RedirectToPage("/Shared/AccessDenied");
             }
@@ -75,7 +75,7 @@ namespace PIS2.Pages.Company
         // For more information, see https://aka.ms/RazorPagesCRUD.
         public async Task<IActionResult> OnPostAsync()
         {
-            if (!User.IsInRole("MIE\\PMS_HRADMIN"))
+            if (!User.IsInRole("HRADMIN"))
             {
                 return RedirectToPage("/Shared/AccessDenied");
             }

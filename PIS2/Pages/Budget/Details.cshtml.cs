@@ -78,7 +78,7 @@ namespace PIS2.Pages.Budget
         }
         public async Task<IActionResult> OnPostInitializeAsync()
         {
-            if (!(User.IsInRole("MIE\\PMS_HRMANAGER") || User.IsInRole("MIE\\PMS_HRCLERK")))
+            if (!(User.IsInRole("HRMANAGER") || User.IsInRole("HRPERSONNEL")))
             {
                 return new JsonResult(new { success = false, message = "User not authorized to initialize budget plan!" });
             }
@@ -118,7 +118,7 @@ namespace PIS2.Pages.Budget
 
         public async Task<IActionResult> OnPostApprove()
         {
-            if (!User.IsInRole("MIE\\PMS_HRMANAGER"))
+            if (!User.IsInRole("HRMANAGER"))
             {
                 return new JsonResult(new { success = false, message = "User not authorized to approve budget!" });
             }
@@ -146,7 +146,7 @@ namespace PIS2.Pages.Budget
 
         public async Task<IActionResult> OnPostDecline()
         {
-            if (!User.IsInRole("MIE\\PMS_HRMANAGER"))
+            if (!User.IsInRole("HRMANAGER"))
             {
                 return new JsonResult(new { success = false, message = "User not authorized to approve budget!" });
             }
@@ -171,7 +171,7 @@ namespace PIS2.Pages.Budget
         }
         public async Task<IActionResult> OnPostClose()
         {
-            if (!User.IsInRole("MIE\\PMS_HRMANAGER"))
+            if (!User.IsInRole("HRMANAGER"))
             {
                 return new JsonResult(new { success = false, message = "User not authorized to approve budget!" });
             }

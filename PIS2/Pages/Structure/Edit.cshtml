@@ -3,7 +3,7 @@
 @model Pages.Structures.EditModel
 
 <h2 class="fw-bold">Structure</h2>
-<h4 class="fw-bold d-print-none">Update Structure</h4>
+<h4 class="fw-bold d-print-none">@L.T("Update") Structure</h4>
 <h4 class="fw-bold d-print-block d-none">Structure Information</h4>
 <hr/>
 <div>
@@ -69,7 +69,7 @@
             </div>
         
             <div class="d-flex justify-content-end">
-                <button type="submit" class="btn btn-success m-2 d-print-none">Save</button>
+                <button type="submit" class="btn btn-success m-2 d-print-none">@L.T("Save")</button>
                 <a asp-page="Index" class="btn btn-secondary m-2 d-print-none">Cancel</a>
             </div>
         </div>

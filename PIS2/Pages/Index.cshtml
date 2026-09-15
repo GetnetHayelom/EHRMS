@@ -42,7 +42,7 @@
                 </li>               
 
                 <!--leave report-->
-                @if (Model.Leaves != null && Model.Leaves.Any() && (Model.isSelf || User.IsInRole("MIE\\PMS_HRCLERK")))
+                @if (Model.Leaves != null && Model.Leaves.Any() && (Model.isSelf || User.IsInRole("HRPERSONNEL")))
                 {
                     <li class="nav-item flex-fill" role="presentation">
                         <a role="button" class="btn btn-outline-primary rounded-0 border-0 w-100" data-bs-toggle="tab" data-bs-target="#leaveAggrigate"><i class="bi bi-pie-chart"></i>Leave Summary</a>
@@ -136,7 +136,7 @@
                             <h6 class="fw-bold mb-1 text-primary">
                                 @if (Model.Employment != null)
                                 {
-                                    if (User.IsInRole("MIE\\PMS_HRCLERK"))
+                                    if (User.IsInRole("HRPERSONNEL"))
                                     {
                                         <a href="/Employment/Edit?id=@Model.Employment.employmentID"
                                               style="cursor:pointer; text-decoration:underline;">
@@ -325,7 +325,7 @@
                         </div>
                     </div>
                 </div>
-                @if (Model.isSelf || User.IsInRole("MIE\\PMS_HRCLERK"))
+                @if (Model.isSelf || User.IsInRole("HRPERSONNEL"))
                 {
                     @if (Model.Leaves != null && Model.Leaves.Any())
                     {

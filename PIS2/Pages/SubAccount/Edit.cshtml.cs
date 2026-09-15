@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace PIS2.Pages.SubAccount
 {
-    [Authorize(Roles = "MIE\\PMS_FINANCE")]
+    [Authorize(Roles = "FINANCE")]
     public class EditModel : PageModel
     {
         private readonly PISContext _context;

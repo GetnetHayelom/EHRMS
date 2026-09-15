@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace PIS2.Pages.Prohibition
 {
-    [Authorize(Roles = "MIE\\PMS_HRMANAGER")]
+    [Authorize(Roles = "HRMANAGER")]
     public class CreateModel : PageModel
     {
         private readonly PISContext _context;
@@ -35,7 +35,7 @@ namespace PIS2.Pages.Prohibition
         public IActionResult OnGet()
         {
             
-            if (!User.IsInRole("MIE\\PMS_HRCLERK"))
+            if (!User.IsInRole("HRPERSONNEL"))
             {
                 return RedirectToPage("/Shared/AccessDenied");
             }
@@ -66,7 +66,7 @@ namespace PIS2.Pages.Prohibition
         // For more information, see https://aka.ms/RazorPagesCRUD.
         public async Task<IActionResult> OnPostAsync()
         {
-            if (!User.IsInRole("MIE\\PMS_HRCLERK"))
+            if (!User.IsInRole("HRPERSONNEL"))
             {
                 return RedirectToPage("/Shared/AccessDenied");
             }

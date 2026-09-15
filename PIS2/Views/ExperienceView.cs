@@ -16,7 +16,7 @@ namespace PIS2.Views
         public string? jobDepartment { get; set; }
         public string? jobGrade { get; set; }
         [Precision(18, 2)]
-        public decimal jobSalary { get; set; }
+        public decimal? jobSalary { get; set; }
         public string? jobStep { get; set; }
         public DateTime? experienceStartDate { get; set; } = default(DateTime?);
         public DateTime? experienceEndDate { get; set; } = default(DateTime?);

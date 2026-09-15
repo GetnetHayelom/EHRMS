@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace PIS2.Pages.Experience
 {
-    [Authorize(Roles = "MIE\\PMS_HRMANAGER,MIE\\PMS_HRCLERK")]
+    [Authorize(Roles = "HRMANAGER,HRCLERK")]
     public class EditModel : PageModel
     {
         private readonly PISContext _context;
@@ -54,7 +54,7 @@ namespace PIS2.Pages.Experience
         // For more information, see https://aka.ms/RazorPagesCRUD.
         public async Task<IActionResult> OnPostAsync()
         {
-            if (!User.IsInRole("MIE\\PMS_HRCLERK"))
+            if (!User.IsInRole("HRPERSONNEL"))
             {
                 return RedirectToPage("/Shared/AccessDenied");
             }

@@ -9,7 +9,7 @@ using PIS2.Enums;
 
 namespace PIS2.Pages.Letter
 {
-    [Authorize(Roles ="MIE\\PMS_HRCLERK, MIE\\PMS_HRMANAGER")]
+    [Authorize(Roles ="HRCLERK, HRMANAGER")]
     public class EditModel : PageModel
     {
         private readonly PISContext _db;
@@ -48,7 +48,7 @@ namespace PIS2.Pages.Letter
             var existing = await _db.Letters.FirstOrDefaultAsync(l => l.letterID == Letter.letterID);
             if (existing == null) { return NotFound(); }
 
-            bool isAdmin = User.IsInRole("MIE\\PMS_HRMANAGER");
+            bool isAdmin = User.IsInRole("HRMANAGER");
 
             if(existing.letterStatus == LetterStatus.Draft && Letter.letterStatus == LetterStatus.Approved && !isAdmin)
             {
@@ -95,7 +95,7 @@ namespace PIS2.Pages.Letter
         public async Task<IActionResult> OnPostApproveAsync()
         {
             PersonList = new SelectList(_db.Persons, "personFullName", "personFullName");
-            if (!User.IsInRole("MIE\\PMS_HRMANAGER"))
+            if (!User.IsInRole("HRMANAGER"))
             {
                 TempData["message"] = ("Error", "Access Denied!");
                 return Page();

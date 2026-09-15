@@ -7,7 +7,7 @@
 <div class="d-flex justify-content-between align-items-end">
     <div>
         <h2 class="fw-bold mb-0">Applicants</h2>
-        <p class="text-muted mb-0">Update Applicant Details #@Model.Applicant.ApplicantID</p>
+        <p class="text-muted mb-0">@L.T("Update") Applicant Details #@Model.Applicant.ApplicantID</p>
     </div>
     <a asp-page="/Applications/Create"
        asp-route-vacancyId="@Model.Applicant.VacancyID"
@@ -37,7 +37,7 @@
             <select asp-for="Applicant.Status" class="form-select" asp-items="@Html.GetEnumSelectList<Enums.ApplicantStatus>()"></select>
         </div>
 
-        <button type="submit" class="btn btn-success">Update Applicant</button>
+        <button type="submit" class="btn btn-success">@L.T("Update") Applicant</button>
         <a asp-page="Index" class="btn btn-secondary ms-2">Cancel</a>
     </form>
 </div>

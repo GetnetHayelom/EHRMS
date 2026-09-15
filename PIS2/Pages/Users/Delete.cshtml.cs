@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace PIS2.Pages.Users
 {
-    [Authorize(Roles = "MIE\\PMS_ADMIN")]
+    [Authorize(Roles = "ADMIN")]
     public class DeleteModel : PageModel
     {
         private readonly PISContext _context;
@@ -31,7 +31,7 @@ namespace PIS2.Pages.Users
                 return NotFound();
             }
 
-            var usermodel = await _context.Users.Include(u => u.personModel).FirstOrDefaultAsync(m => m.userID == id);
+            var usermodel = await _context.Users.Include(u => u.personModel).FirstOrDefaultAsync(m => m.Id == id);
 
             if (usermodel == null)
             {

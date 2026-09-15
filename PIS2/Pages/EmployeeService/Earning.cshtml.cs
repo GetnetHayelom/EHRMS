@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace PIS2.Pages.EmployeeService
 {
-    [Authorize(Roles = "MIE\\PMS_HRCLERK, MIE\\PMS_HRMANAGER")]
+    [Authorize(Roles = "HRCLERK, HRMANAGER")]
     public class EarningModel : PageModel
     {
         private readonly PISContext _context;
@@ -52,7 +52,7 @@ namespace PIS2.Pages.EmployeeService
         public decimal Net { get; set; }
         public async Task<IActionResult> OnGetAsync(int? id)
         {
-            if (!(User.IsInRole("MIE\\PMS_HRCLERCK") || User.IsInRole("MIE\\PMS_HRMANAGER"))) { return RedirectToPage("/Shared/AccessDenied"); }
+            if (!(User.IsInRole("HRCLERCK") || User.IsInRole("HRMANAGER"))) { return RedirectToPage("/Shared/AccessDenied"); }
             EarningTypes = await _context.EarningTypes.ToListAsync();
             DeductionTypes = await _context.DeductionTypes.ToListAsync();
 

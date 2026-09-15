@@ -27,7 +27,7 @@ namespace PIS2.Pages.delegation
 
         public async Task<IActionResult> OnGetAsync(int? id)
         {
-            if (!(User.IsInRole("MIE\\PMS_MANAGEMENT") || User.IsInRole("MIE\\PMS_HRMANAGER"))) { return RedirectToPage("/Shared/AccessDenied"); }
+            if (!(User.IsInRole("MANAGEMENT") || User.IsInRole("HRMANAGER"))) { return RedirectToPage("/Shared/AccessDenied"); }
 
             if (id == null)
             {
@@ -51,7 +51,7 @@ namespace PIS2.Pages.delegation
         // For more information, see https://aka.ms/RazorPagesCRUD.
         public async Task<IActionResult> OnPostAsync()
         {
-            if (!User.IsInRole("MIE\\PMS_HRMANAGER") || !User.IsInRole("MIE\\PMS_HRCLERK"))
+            if (!User.IsInRole("HRMANAGER") || !User.IsInRole("HRPERSONNEL"))
             {
                 return RedirectToPage("/Shared/AccessDenied");
             }

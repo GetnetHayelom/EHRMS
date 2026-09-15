@@ -34,7 +34,7 @@ namespace PIS2.Pages.OvertimeRecord
             if (id == 0)
             {
                 id = _context.Users.Include(u => u.personModel)
-                    .ThenInclude(p => p.Employments).First(u => u.userName == User.Identity.Name)
+                    .ThenInclude(p => p.Employments).First(u => u.UserName == User.Identity.Name)
                     .personModel.Employments.FirstOrDefault(e => e.employmentStatus == mainStatus.Active).employmentID;
                 Employment = _context.Employments.FirstOrDefault(e => e.employmentID == id) ?? new employmentModel();
                 EmployeeID = id;

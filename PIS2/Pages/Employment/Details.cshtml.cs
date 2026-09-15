@@ -41,9 +41,9 @@ namespace PIS2.Pages.Employment
         {
 
             var isInRole =
-                User.IsInRole("MIE\\PMS_HRCLERK") ||
-                User.IsInRole("MIE\\PMS_HRMANAGER") ||
-                User.IsInRole("MIE\\PMS_MANAGEMENT");
+                User.IsInRole("HRPERSONNEL") ||
+                User.IsInRole("HRMANAGER") ||
+                User.IsInRole("MANAGEMENT");
 
             var isSelf = _core.IsSelf(User.Identity.Name, id);
 
@@ -100,7 +100,7 @@ namespace PIS2.Pages.Employment
                     .Include(p => p.Employments)
                     .Include(p => p.addressModel).FirstOrDefaultAsync(p => p.personID == employmentModel.personID);
             }
-            var currentUser = _context.Users.FirstOrDefault(u => u.userName == User.Identity.Name);
+            var currentUser = _context.Users.FirstOrDefault(u => u.UserName == User.Identity.Name);
 
             if (currentUser != null && currentUser.personID == employmentModel.personID)
             {

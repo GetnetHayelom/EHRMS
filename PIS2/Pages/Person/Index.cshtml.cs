@@ -12,7 +12,7 @@ using PIS2.Models;
 
 namespace PIS2.Pages.Person
 {
-    [Authorize(Roles ="MIE\\PMS_HRCLERK, MIE\\PMS_HRMANAGER, MIE\\PMS_MANAGER")]
+    [Authorize(Roles ="HRCLERK, HRMANAGER, MANAGER")]
     public class IndexModel : PageModel
     {
         private readonly PISContext _context;

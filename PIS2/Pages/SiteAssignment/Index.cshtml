@@ -45,7 +45,7 @@
                 @Html.DisplayFor(modelItem => item.modifiedBy)
             </td>
             <td>
-                <a asp-page="./Edit" asp-route-id="@item.siteAssignmentID">Edit</a> |
+                <a asp-page="./Edit" asp-route-id="@item.siteAssignmentID">@L.T("Edit")</a> |
                 <a asp-page="./Details" asp-route-id="@item.siteAssignmentID">Details</a> |
                 <a asp-page="./Delete" asp-route-id="@item.siteAssignmentID">Delete</a>
             </td>

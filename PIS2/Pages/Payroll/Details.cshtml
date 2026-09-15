@@ -17,7 +17,7 @@
             {
                 <form method="post" asp-page-handler="Approve">
                     <input type="hidden" name="id" value="@Model.Payroll.payrollID" />
-                    <a asp-page="Edit" asp-route-id="@Model.Payroll.payrollID" class="btn btn-primary"><i class="bi bi-pencil-square me-2"></i>Edit</a>
+                    <a asp-page="Edit" asp-route-id="@Model.Payroll.payrollID" class="btn btn-primary"><i class="bi bi-pencil-square me-2"></i>@L.T("Edit")</a>
                     <button class="btn btn-success" onclick="return confirm('Are you sure you want to APPROVE this payroll?');"><i class="bi bi-check-circle me-2"></i>Approve Payroll</button>
                 </form>
             }

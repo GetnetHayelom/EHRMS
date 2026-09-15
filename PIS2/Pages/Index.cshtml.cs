@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -25,15 +26,17 @@ namespace PIS2.Pages
         private readonly Core _core;
         private readonly IWebHostEnvironment _environment;
         private readonly ILogger<IndexModel> _logger;
+        private readonly UserManager<userModel> _userManager;
 
-        public IndexModel(PISContext ctx, Core methods, IWebHostEnvironment environment, ILogger<IndexModel> logger)
+        public IndexModel(PISContext ctx, Core methods, IWebHostEnvironment environment, ILogger<IndexModel> logger, UserManager<userModel> userManager)
         {
             _context = ctx;
             _core = methods;
             _environment = environment;
             _logger = logger;
+            _userManager = userManager;
         }
-
+        
         [BindProperty]
         public List<personModel>? People { get; set; } = default!;
        
@@ -88,9 +91,10 @@ namespace PIS2.Pages
             }
             else
             {
-                var user = await _context.Users.FirstOrDefaultAsync(u => u.userName.ToLower() == User.Identity.Name!.ToLower());
-                
-                if(user != null)
+                //var user = await _context.Users.FirstOrDefaultAsync(u => u.UserName.ToLower() == User.Identity.Name!.ToLower());
+                var user = await _userManager.GetUserAsync(User);
+
+                if (user != null)
                 {   
                     Person = await _context.Persons?.FirstOrDefaultAsync(p => p.personID == user.personID) ?? new personModel();
                     Employment = await _context.Employments.FirstOrDefaultAsync(e => e.personID == Person.personID);
@@ -225,11 +229,12 @@ namespace PIS2.Pages
                 return new JsonResult(new { success = false, message = "Invalid request type." });
             }
 
-            var currentUserName = User.Identity?.Name;
-            if (string.IsNullOrEmpty(currentUserName))
+            
+            if (string.IsNullOrEmpty(User!.Identity.Name))
                 return new JsonResult(new { success = false, message = "User not authenticated." });
 
-            var usr = await _context.Users.AsNoTracking().FirstOrDefaultAsync(u => u.userName.ToLower() == currentUserName.ToLower());
+            var usr = await _userManager.GetUserAsync(User);
+            //var usr = await _context.Users.AsNoTracking().FirstOrDefaultAsync(u => u.UserName.ToLower() == currentUserName.ToLower());
             if (usr == null)
                 return new JsonResult(new { success = false, message = "User record not found." });
 
@@ -265,7 +270,7 @@ namespace PIS2.Pages
                 serviceRequestDate = DateTime.Now,
                 serviceRequestTypeID = request.requestType,
                 serviceRequestStatus = ServiceRequestStatus.Hold, 
-                modifiedBy = currentUserName };
+                modifiedBy = User.Identity.Name };
 
             _context.ServiceRequests.Add(requestModel);
             await _context.SaveChangesAsync();          
@@ -305,7 +310,8 @@ namespace PIS2.Pages
 
             TempData["PersonID"] = Person.personID;
 
-            var theSelf = await _context.Users.FirstOrDefaultAsync(u => u.userName == User.Identity.Name);
+            var theSelf = await _userManager.GetUserAsync(User);
+            //var theSelf = await _context.Users.FirstOrDefaultAsync(u => u.UserName == User.Identity.Name);
             isSelf = theSelf?.personID == Person.personID ? true : false;
             PersonEmployments = await _context.Employments
                 .Include(e => e.Leaves)

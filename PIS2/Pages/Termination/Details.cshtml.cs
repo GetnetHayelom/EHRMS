@@ -16,7 +16,7 @@ using System.Transactions;
 
 namespace PIS2.Pages.Termination
 {
-    [Authorize(Roles = "MIE\\PMS_HRMANAGER,MIE\\PMS_HRCLERK,MIE\\PMS_MANAGEMENT")]
+    [Authorize(Roles = "HRMANAGER,HRCLERK,MANAGEMENT")]
     public class DetailsModel : PageModel
     {
         private readonly PISContext _context;
@@ -99,7 +99,7 @@ namespace PIS2.Pages.Termination
         public int terminationID { get; set; }
         public async Task<IActionResult> OnPostAsync()
         {
-            if(!User.IsInRole("MIE\\PMS_HRCLERK") || !User.IsInRole("MIE\\PMS_HRMANAGER")) 
+            if(!User.IsInRole("HRPERSONNEL") || !User.IsInRole("HRMANAGER")) 
             {
                 _logger.LogError("Error: Access denied! User not allowed posting a termination! {UseName}", User.Identity.Name);
                 return RedirectToPage("/Shared/AccessDenied");
@@ -166,7 +166,7 @@ namespace PIS2.Pages.Termination
 
         public async Task<IActionResult> OnPostApprove()
         {
-            if (!User.IsInRole("MIE\\PMS_HRMANAGER"))
+            if (!User.IsInRole("HRMANAGER"))
             {
                 _logger.LogError("Error: Access denied! User not allowed approving a termination! UserName: {UseName}", User.Identity.Name);
                 return RedirectToPage("/Shared/AccessDenied");

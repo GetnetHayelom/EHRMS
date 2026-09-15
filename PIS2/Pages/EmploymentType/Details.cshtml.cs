@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace PIS2.Pages.EmploymentType
 {
-    [Authorize(Roles = "MIE\\PMS_HRMANAGER,MIE\\PMS_MANAGEMENT")]
+    [Authorize(Roles = "HRMANAGER,MANAGEMENT")]
     public class DetailsModel : PageModel
     {
         private readonly PISContext _context;

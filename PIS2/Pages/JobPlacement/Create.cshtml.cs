@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace PIS2.Pages.JobPlacement
 {
-    [Authorize(Roles = "MIE\\PMS_HRCLERK")]
+    [Authorize(Roles = "HRPERSONNEL")]
     public class CreateModel : PageModel
     {
         private readonly PISContext _context;

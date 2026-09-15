@@ -48,11 +48,11 @@ namespace PIS2.Pages.Person
         {
             PersonList = new SelectList(_context.Persons.OrderBy(p => p.personFirstName).ToList(), "personID", "personFullName", id);
             var username = await _context.Users.FirstOrDefaultAsync(p => p.personID == id);
-            var un=username?.userName;
+            var un=username?.UserName;
             
             isSelf = un == User.Identity.Name ? true : false;
             
-            if(!(User.IsInRole("MIE\\PMS_HRCLERK") || User.IsInRole("MIE\\PMS_HRMANAGER") || User.IsInRole("MIE\\PMS_MANAGEMENT") || isSelf))
+            if(!(User.IsInRole("HRPERSONNEL") || User.IsInRole("HRMANAGER") || User.IsInRole("MANAGEMENT") || isSelf))
             {
                 return RedirectToPage("/Shared/AccessDenied");
             }

@@ -20,7 +20,7 @@ namespace PIS2.Pages.Vacancy
 
         public async Task<IActionResult> OnGetAsync(int id)
         {
-            personId = _context.Users.FirstOrDefault(u => u.userName == User.Identity.Name).personID;
+            personId = _context.Users.FirstOrDefault(u => u.UserName == User.Identity.Name).personID;
 
             Vacancy = await _context.Vacancies
                 .Include(v => v.jobModel)
@@ -43,7 +43,7 @@ namespace PIS2.Pages.Vacancy
                 return RedirectToPage(new { id });
             }
 
-            var personID = _context.Users?.FirstOrDefault(u => u.userName == User.Identity.Name)?.personID ?? 0;
+            var personID = _context.Users?.FirstOrDefault(u => u.UserName == User.Identity.Name)?.personID ?? 0;
 
             if (personID == 0)
             {

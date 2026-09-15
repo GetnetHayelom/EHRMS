@@ -23,7 +23,7 @@ namespace PIS2.Pages.Company
         public SelectList Manager { get; set; }
         public async Task<IActionResult> OnGetAsync()
         {
-            if (!User.IsInRole("MIE\\PMS_HRADMIN"))
+            if (!User.IsInRole("HRADMIN"))
             {
                 return RedirectToPage("/Shared/AccessDenied");
             }
@@ -52,7 +52,7 @@ namespace PIS2.Pages.Company
         // For more information, see https://aka.ms/RazorPagesCRUD.
         public async Task<IActionResult> OnPostAsync()
         {
-            if (!User.IsInRole("MIE\\PMS_HRADMIN"))
+            if (!User.IsInRole("HRADMIN"))
             {
                 return RedirectToPage("/Shared/AccessDenied");
             }

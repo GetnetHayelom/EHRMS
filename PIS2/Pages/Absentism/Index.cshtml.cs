@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace PIS2.Pages.Absentism
 {
-    [Authorize(Roles = "MIE\\PMS_HRMANAGER, MIE\\PMS_HRCLERK, MIE\\PMS_MANAGEMENT")]
+    [Authorize(Roles = "HRMANAGER, HRCLERK, MANAGEMENT")]
     public class IndexModel : PageModel
     {
         private readonly PISContext _context;

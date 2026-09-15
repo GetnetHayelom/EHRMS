@@ -16,7 +16,7 @@
             foreach (var access in Model)
             {
                 <tr>
-                    <td>@(access.userGroups.ToString() ?? "N/A")</td>
+                    <td>@(access.Role?.Name?.ToString() ?? "N/A")</td>
                     <td>@(access.CompanyModel?.companyName ?? "All Companies")</td>
                     <td>@(access.accessStatus.ToString() ?? "Active")</td>
                     <td class="text-center">

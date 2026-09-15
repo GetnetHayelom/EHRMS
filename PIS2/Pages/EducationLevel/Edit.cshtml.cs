@@ -25,7 +25,7 @@ namespace PIS2.Pages.EducationLevel
 
         public async Task<IActionResult> OnGetAsync(int? id)
         {
-            if (!User.IsInRole("MIE\\PMS_HRADMIN"))
+            if (!User.IsInRole("HRADMIN"))
             {
                 return RedirectToPage("/Shared/AccessDenied");
             }
@@ -47,7 +47,7 @@ namespace PIS2.Pages.EducationLevel
         // For more information, see https://aka.ms/RazorPagesCRUD.
         public async Task<IActionResult> OnPostAsync()
         {
-            if (!User.IsInRole("MIE\\PMS_HRADMIN"))
+            if (!User.IsInRole("HRADMIN"))
             {
                 return RedirectToPage("/Shared/AccessDenied");
             }

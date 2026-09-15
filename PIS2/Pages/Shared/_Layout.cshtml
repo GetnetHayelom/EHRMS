@@ -1,9 +1,24 @@
-﻿<!DOCTYPE html>
+﻿@using Microsoft.AspNetCore.Identity
+@inject SignInManager<PIS2.Models.userModel> SignInManager
+@inject UserManager<PIS2.Models.userModel> UserManager
+@using Microsoft.EntityFrameworkCore
+@using PIS2.Data
+@inject PISContext DbContext
+@inject PIS2.Services.LanguageContext LanguageContext
+@{
+    var languages = await DbContext.Languages
+        .AsNoTracking()
+        .Where(x => x.isActive)
+        .OrderByDescending(x => x.isDefault)
+        .ThenBy(x => x.languageName)
+        .ToListAsync();
+}
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - MMEC-HRMS</title>
+    <title>@ViewData["Title"] - CORE-HR</title>
 
     <link href="~/lib/quill/quill.snow.css" rel="stylesheet" />
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
@@ -195,256 +210,312 @@
     </style>
 </head>
 <body>
+    
 
 
-    <aside class="sidebar d-print-none" id="sidebar">
-        <div class="sidebar-header d-flex align-items-center justify-content-center py-4">
-            <a href="/" class="sidebar-brand d-flex flex-column align-items-center text-decoration-none">
-                <img src="~/assets/logo_full.png" alt="MMEC Logo" class="main-logo mb-2" style="max-width: 150px; height: auto;">
-                <span class="brand-text text-uppercase tracking-wider mt-1" style="font-size: 0.85rem; color: var(--accent); font-weight: 700;">
-                    Mesfin-HRMS
-                </span>
-            </a>
+    @if (SignInManager.IsSignedIn(User))
+        {
+            <aside class="sidebar d-print-none" id="sidebar">
+                <div class="sidebar-header d-flex align-items-center justify-content-center py-4">
+                    <a href="/" class="sidebar-brand d-flex flex-column align-items-center text-decoration-none">
+                        <img src="~/assets/logo_full.png" alt="Logo1" class="main-logo mb-2" style="max-width: 150px; height: auto;">
+                        <span class="brand-text text-uppercase tracking-wider mt-1" style="font-size: 0.85rem; color: var(--accent); font-weight: 700;">
+                            Core-HR
+                        </span>
+                    </a>
+                </div>
+
+
+                <nav class="flex-column">
+                    <a class="nav-link" asp-page="/Index"><i class="bi bi-house"></i> Home</a>
+
+                    @if (User.IsInRole("HRADMIN"))
+                    {
+                        <div class="nav-group-title">System Infrastructure</div>
+                        <a class="nav-link" data-bs-toggle="collapse" href="#sysSetup"><i class="bi bi-gear-wide-connected"></i> System Setup</a>
+                        <div class="collapse submenu" id="sysSetup">
+                            <a class="nav-link" asp-page="/Address/Index">Addresses</a>
+                            <a class="nav-link" asp-page="/EducationLevel/Index">Education Levels</a>
+                            <a class="nav-link" asp-page="/Holiday/Index">Holidays</a>
+                            <a class="nav-link" asp-page="/Overtime/Index">Overtime Definitions</a>
+                            <a class="nav-link" asp-page="/JobCategory/Index">Job Categories</a>
+                            <a class="nav-link" asp-page="/JobClass/Index">Job Classes</a>
+                            <a class="nav-link" asp-page="/TaxRate/Index">Tax Rates</a>
+                        </div>
+
+                        <a class="nav-link" data-bs-toggle="collapse" href="#compSetup"><i class="bi bi-building"></i> Company Setup</a>
+                        <div class="collapse submenu" id="compSetup">
+                            <a class="nav-link" asp-page="/Company/Index">Companies</a>
+                            <a class="nav-link" asp-page="/WorkSite/Index">Worksites</a>
+                            <a class="nav-link" asp-page="/Department/Index">Departments</a>
+                            <a class="nav-link" asp-page="/Structure/Index">Org Structure</a>
+                            <a class="nav-link" asp-page="/Shift/Index">Shifts</a>
+                            <a class="nav-link" asp-page="/Account/Index">Chart of Accounts</a>
+                            <a class="nav-link" asp-page="/SubAccount/Index">Sub-Accounts</a>
+                            <a class="nav-link" asp-page="/Earning/Index">Comp & Benefits</a>
+                            <a class="nav-link" asp-page="/Deduction/Index">Deductions</a>
+                            <a class="nav-link" asp-page="/EvaluationType/Index">Evaluation Types</a>
+                        </div>
+
+                        <a class="nav-link" data-bs-toggle="collapse" href="#hrSetup"><i class="bi bi-person-lines-fill"></i> HR Setup</a>
+                        <div class="collapse submenu" id="hrSetup">
+                            <a class="nav-link" asp-page="/Job/Index">Jobs Catalog</a>
+                            <a class="nav-link" asp-page="/JobGrade/Index">Job Grades</a>
+                            <a class="nav-link" asp-page="/JobStep/Index">Job Steps</a>
+                            <a class="nav-link" asp-page="/EmploymentType/Index">Employment Types</a>
+                            <a class="nav-link" asp-page="/EmploymentMethod/Index">Employment Methods</a>
+                            <a class="nav-link" asp-page="/LeaveType/Index">Leave Setup</a>
+                            <a class="nav-link" asp-page="/Allowance/Index">Allowance Setup</a>
+                            <a class="nav-link" asp-page="/Overtime/Index">Overtime Setup</a>
+                            <a class="nav-link" asp-page="/Break/Index">Break Rules</a>
+                            <a class="nav-link" asp-page="/PenaltyType/Create">Penalty Types</a>
+                            <a class="nav-link" asp-page="/Loyalty/Index">Loyalty Programs</a>
+                            <a class="nav-link" asp-page="/LetterType/Index">Letter Templates</a>
+                            <a class="nav-link" asp-page="/ServiceRequestType/Index">Service Types</a>
+                        </div>
+                    }
+
+                    @if (User.IsInRole("HRPERSONNEL"))
+                    {
+                        <div class="nav-group-title">Operations</div>
+                        <a class="nav-link" data-bs-toggle="collapse" href="#hrPersonnel"><i class="bi bi-people"></i> HR Personnel</a>
+                        <div class="collapse submenu" id="hrPersonnel">
+                            <a class="nav-link" asp-page="/Person/Index">Master Person List</a>
+                            <a class="nav-link" asp-page="/Employment/Index">Active Employments</a>
+                            <a class="nav-link" asp-page="/JobPlacement/Index">Job Placements</a>
+                            <a class="nav-link" asp-page="/AllowanceAssignment/Create">Allowance Assignment</a>
+                            <a class="nav-link" asp-page="/Leave/Index">Leave Requests</a>
+                            <a class="nav-link" asp-page="/Absentism/Create">Absenteeism</a>
+                            <a class="nav-link" asp-page="/OvertimeRecord/Index">Overtime Records</a>
+                            <a class="nav-link" asp-page="/EmployeeService/Index">Earnings Record</a>
+                            <a class="nav-link" asp-page="/Penalty/Create">Penalties</a>
+                            <a class="nav-link" asp-page="/BankInfo/Index">Bank Details</a>
+                            <a class="nav-link" asp-page="/Notice/Index">Notice Board</a>
+                            <a class="nav-link" asp-page="/Prohibition/Create">Prohibitions</a>
+                            <a class="nav-link" asp-page="/Experience/Index">Work Experience</a>
+                            <a class="nav-link" asp-page="/ServiceRequest/Index">Service Requests</a>
+                            <a class="nav-link" asp-page="/Letter/Index">Letters & Corresp.</a>
+                            <a class="nav-link" asp-page="/Delegation/Index">Delegations</a>
+                            <a class="nav-link" asp-page="/Budget/Index">Budget</a>
+                            <a class="nav-link" asp-page="/Termination/Create">Termination</a>
+                        </div>
+                    }
+
+                    @if (User.IsInRole("HRMANAGER") || User.IsInRole("HRPERSONNEL"))
+                    {
+                        <div class="nav-group-title">Talent & Training</div>
+                        <a class="nav-link" data-bs-toggle="collapse" href="#talent"><i class="bi bi-award"></i> Recruitment</a>
+                        <div class="collapse submenu" id="talent">
+                            <a class="nav-link" asp-page="/Employment/Create">Hire New</a>
+                            <a class="nav-link" asp-page="/JobRequirement/Index">Employment Requests</a>
+                            <a class="nav-link" asp-page="/Vacancy/Index">Job Vacancies</a>
+                            <a class="nav-link" asp-page="/Applications/Index">Applicant Pool</a>
+                            <a class="nav-link" asp-page="/JobReqCost/Index">Acquisition Costs</a>
+                        </div>
+
+                        <a class="nav-link" data-bs-toggle="collapse" href="#training"><i class="bi bi-book"></i> Training</a>
+                        <div class="collapse submenu" id="training">
+                            <a class="nav-link" asp-page="/Training/TrainingCenter">Training Centers</a>
+                            <a class="nav-link" asp-page="/Training/Index">Training Catalog</a>
+                            <a class="nav-link" asp-page="/TrainingSession/Index">Manage Sessions</a>
+                        </div>
+                    }
+
+                    @if (User.IsInRole("PAYROLL") || User.IsInRole("FINANCE"))
+                    {
+                        <div class="nav-group-title">Finance</div>
+                        <a class="nav-link" data-bs-toggle="collapse" href="#payroll"><i class="bi bi-cash-coin"></i> Payroll Management</a>
+                        <div class="collapse submenu" id="payroll">
+                            <a class="nav-link" asp-page="/Payroll/Index">Process Payroll</a>
+                            <a class="nav-link" asp-page="/EarningRecord/Index">Manual Earnings</a>
+                            <a class="nav-link" asp-page="/DeductionRecord/Index">Manual Deductions</a>
+                            <a class="nav-link" asp-page="/Benefits/Index">Other Payments</a>
+                        </div>
+                    }
+
+                    <div class="nav-group-title">Reporting & Intelligence</div>
+                    <a class="nav-link" data-bs-toggle="collapse" href="#reporting"><i class="bi bi-bar-chart"></i> Reports Hub</a>
+                    <div class="collapse submenu" id="reporting">
+                        <a class="nav-link" asp-page="/Management/Index">Management Overview</a>
+                        <a class="nav-link" asp-page="/Report/LeaveReport">Attendance Reports</a>
+                        <a class="nav-link" asp-page="/Report/OvertimeRecordReport">Overtime Analysis</a>
+                        <a class="nav-link" asp-page="/Report/EmploymentReport">Employment Stats</a>
+                        <a class="nav-link" asp-page="/Termination/Index">Terminations</a>
+                        <a class="nav-link" asp-page="/Report/AllowanceAssignmentReport">Allowance</a>
+                        <a class="nav-link" asp-page="/Report/CostAnalysisReport">Cost Analytics</a>
+                        <a class="nav-link" asp-page="/Report/EvaluationReport">Performance Analytics</a>
+                        <a class="nav-link" asp-page="/Report/PenaltyReport">Penalty Summary</a>
+                        <a class="nav-link" asp-page="/Report/JobPlacementReport">Job Placements</a>
+                        <a class="nav-link" asp-page="/PersonEducationLevel/Index">Training & Certification</a>
+                        <a class="nav-link" asp-page="/Structure/Index">Structure and Job Maping</a>
+                        <a class="nav-link" asp-page="/Structure/JobPlacementAnalysis">Job Gap Analysis</a>
+                    </div>
+
+                    @if (User.IsInRole("ADMIN"))
+                    {
+                        <div class="nav-group-title">Governance</div>
+                        <a class="nav-link" data-bs-toggle="collapse" href="#sysAdmin"><i class="bi bi-shield-lock"></i> Sys Admin</a>
+                        <div class="collapse submenu" id="sysAdmin">
+                            <a class="nav-link" asp-page="/Users/Index">User Management</a>
+                            <a class="nav-link" asp-page="/Localization/Languages/Index"><i class="bi bi-translate me-2"></i> @L.T("Languages")</a>
+                            <a class="nav-link" asp-page="/SysAdmin/BackupDatabase">Database Backup</a>
+                            <a class="nav-link" asp-page="/SysAdmin/RestoreDatabase">Database Restore</a>
+                            <a class="nav-link" asp-page="/SystemLogs/Index">Security Logs</a>
+                        </div>
+                        <a class="nav-link" asp-page="/Auditing/Index"><i class="bi bi-clock-history"></i> Audit</a>
+                    }
+                </nav>
+            </aside>
+        }
+        <div class="main-content">
+            <header class="top-bar d-print-none">
+                <div>
+                    <button class="btn btn-sm d-lg-none" onclick="document.getElementById('sidebar').classList.toggle('active')">
+                        <i class="bi bi-list fs-4"></i>
+                    </button>
+                    <img src="~/assets/logo_full.png" alt="Logo" class="d-lg-none" style="height: 30px;">
+                </div>
+            
+                <div class="search-wrapper d-none d-md-block">
+                    <span class="text-muted fw-medium"><i class="bi bi-calendar3 me-2"></i> @DateTime.Now.ToString("D")</span>
+                </div>
+
+                <div class="user-profile d-flex align-items-center gap-3">
+                    @if (User.IsInRole("MANAGEMENT"))
+                    {
+                        <a class="btn btn-outline-primary btn-sm rounded-pill px-3" asp-page="/Department/Details">My Department</a>
+                    }
+                    @if (User.IsInRole("HRMANAGER"))
+                    {
+                        <a asp-page="/HRClerk/Index" class="btn btn-outline-primary btn-sm rounded-pill px-3">Dashboard</a>
+                    }
+                    <!--PICK LANGUAGE-->
+                    <div class="language-selector">
+                        <i class="bi bi-translate language-icon"></i>
+
+                        <select
+                            class="language-select"
+                            onchange="changeLanguage(this.value)"
+                            aria-label="Select language">
+
+                            @foreach (var language in languages)
+                            {
+                                <option value="@language.languageCode"
+                                        selected="@(language.languageCode == LanguageContext.LanguageCode)">
+                                    @language.nativeName
+                                </option>
+                            }
+                        </select>
+
+                        <i class="bi bi-chevron-down language-arrow"></i>
+                    </div>
+
+                    <div class="dropdown">
+                        <button class="btn btn-link dropdown-toggle"
+                                type="button"
+                                data-bs-toggle="dropdown">
+                            <i class="bi bi-person-circle"></i>
+                            @User.Identity?.Name
+                        </button>
+
+                        <ul class="dropdown-menu dropdown-menu-end">
+
+                            <li>
+                                <a class="dropdown-item"
+                                   asp-page="/Account/ChangePassword">
+                                    <i class="bi bi-key me-2"></i>
+                                    Change Password
+                                </a>
+                            </li>
+
+                            <li>
+                                <hr class="dropdown-divider" />
+                            </li>
+
+                            <li>
+                                <form asp-page="/Account/Logout"
+                                      method="post">
+                                    <button type="submit"
+                                            class="dropdown-item">
+                                        <i class="bi bi-box-arrow-right me-2"></i>
+                                        Logout
+                                    </button>
+                                </form>
+                            </li>
+
+                        </ul>
+                    </div>
+                </div>
+            </header>
+        
+            <main class="page-body">
+                <!--LOADER BODY-->
+                <div id="loader">
+                    <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;"></div>
+                    <div class="mt-3 fw-bold">Core-HR Loading...</div>
+                </div>
+                @RenderBody()
+            </main>
+
+            <footer class="d-print-none">
+                <div class="d-flex justify-content-between align-items-center">
+                    <span>&copy; 2025 <strong>Core-HR</strong> | Developed by Getnet Hayelom</span>
+                    <div class="gap-3 d-flex">
+                        <a asp-page="/Privacy" class="text-decoration-none text-muted">Help & Documentation</a>
+                    </div>
+                </div>
+            </footer>
         </div>
 
 
-        <nav class="flex-column mt-2">
-            <a class="nav-link" asp-page="/Index"><i class="bi bi-house"></i> Home</a>
+        <!--MESSAGE ALERT-->
+        @if (TempData["message"] is ValueTuple<string, string> message)
+        {
+            var type = message.Item1;
+            var text = message.Item2;
 
-            @if (User.IsInRole("mie\\PMS_HRADMIN"))
-            {
-                <div class="nav-group-title">System Infrastructure</div>
-                <a class="nav-link" data-bs-toggle="collapse" href="#sysSetup"><i class="bi bi-gear-wide-connected"></i> System Setup</a>
-                <div class="collapse submenu" id="sysSetup">
-                    <a class="nav-link" asp-page="/Address/Index">Addresses</a>
-                    <a class="nav-link" asp-page="/EducationLevel/Index">Education Levels</a>
-                    <a class="nav-link" asp-page="/Holiday/Index">Holidays</a>
-                    <a class="nav-link" asp-page="/Overtime/Index">Overtime Definitions</a>
-                    <a class="nav-link" asp-page="/JobCategory/Index">Job Categories</a>
-                    <a class="nav-link" asp-page="/JobClass/Index">Job Classes</a>
-                    <a class="nav-link" asp-page="/TaxRate/Index">Tax Rates</a>
-                </div>
+            var bgClass = type == "Success" ? "bg-success" : "bg-danger";
+            var icon = type == "Success" ? "✔" : "⚠";
 
-                <a class="nav-link" data-bs-toggle="collapse" href="#compSetup"><i class="bi bi-building"></i> Company Setup</a>
-                <div class="collapse submenu" id="compSetup">
-                    <a class="nav-link" asp-page="/Company/Index">Companies</a>
-                    <a class="nav-link" asp-page="/WorkSite/Index">Worksites</a>
-                    <a class="nav-link" asp-page="/Department/Index">Departments</a>
-                    <a class="nav-link" asp-page="/Structure/Index">Org Structure</a>
-                    <a class="nav-link" asp-page="/Shift/Index">Shifts</a>
-                    <a class="nav-link" asp-page="/Account/Index">Chart of Accounts</a>
-                    <a class="nav-link" asp-page="/SubAccount/Index">Sub-Accounts</a>
-                    <a class="nav-link" asp-page="/Earning/Index">Comp & Benefits</a>
-                    <a class="nav-link" asp-page="/Deduction/Index">Deductions</a>
-                    <a class="nav-link" asp-page="/EvaluationType/Index">Evaluation Types</a>
-                </div>
+            <div class="toast-container position-fixed top-50 start-50 translate-middle" style="z-index: 1100;">
+                <div id="actionToast1" class="toast text-white @bgClass border-0 shadow" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="4000">
 
-                <a class="nav-link" data-bs-toggle="collapse" href="#hrSetup"><i class="bi bi-person-lines-fill"></i> HR Setup</a>
-                <div class="collapse submenu" id="hrSetup">
-                    <a class="nav-link" asp-page="/Job/Index">Jobs Catalog</a>
-                    <a class="nav-link" asp-page="/JobGrade/Index">Job Grades</a>
-                    <a class="nav-link" asp-page="/JobStep/Index">Job Steps</a>
-                    <a class="nav-link" asp-page="/EmploymentType/Index">Employment Types</a>
-                    <a class="nav-link" asp-page="/EmploymentMethod/Index">Employment Methods</a>
-                    <a class="nav-link" asp-page="/LeaveType/Index">Leave Setup</a>
-                    <a class="nav-link" asp-page="/Allowance/Index">Allowance Setup</a>
-                    <a class="nav-link" asp-page="/Overtime/Index">Overtime Setup</a>
-                    <a class="nav-link" asp-page="/Break/Index">Break Rules</a>
-                    <a class="nav-link" asp-page="/PenaltyType/Create">Penalty Types</a>
-                    <a class="nav-link" asp-page="/Loyalty/Index">Loyalty Programs</a>
-                    <a class="nav-link" asp-page="/LetterType/Index">Letter Templates</a>
-                    <a class="nav-link" asp-page="/ServiceRequestType/Index">Service Types</a>
-                </div>
-            }
+                    <div class="toast-header text-white @bgClass border-0">
+                        <strong class="me-auto">@icon @type</strong>
+                        <small>System</small>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast"></button>
+                    </div>
 
-            @if (User.IsInRole("mie\\PMS_HRCLERK"))
-            {
-                <div class="nav-group-title">Operations</div>
-                <a class="nav-link" data-bs-toggle="collapse" href="#hrPersonnel"><i class="bi bi-people"></i> HR Personnel</a>
-                <div class="collapse submenu" id="hrPersonnel">
-                    <a class="nav-link" asp-page="/Person/Index">Master Person List</a>
-                    <a class="nav-link" asp-page="/Employment/Index">Active Employments</a>
-                    <a class="nav-link" asp-page="/JobPlacement/Index">Job Placements</a>
-                    <a class="nav-link" asp-page="/AllowanceAssignment/Create">Allowance Assignment</a>
-                    <a class="nav-link" asp-page="/Leave/Index">Leave Requests</a>
-                    <a class="nav-link" asp-page="/Absentism/Create">Absenteeism</a>
-                    <a class="nav-link" asp-page="/OvertimeRecord/Index">Overtime Records</a>
-                    <a class="nav-link" asp-page="/EmployeeService/Index">Earnings Record</a>
-                    <a class="nav-link" asp-page="/Penalty/Create">Penalties</a>
-                    <a class="nav-link" asp-page="/BankInfo/Index">Bank Details</a>
-                    <a class="nav-link" asp-page="/Notice/Index">Notice Board</a>
-                    <a class="nav-link" asp-page="/Prohibition/Create">Prohibitions</a>
-                    <a class="nav-link" asp-page="/Experience/Index">Work Experience</a>
-                    <a class="nav-link" asp-page="/ServiceRequest/Index">Service Requests</a>
-                    <a class="nav-link" asp-page="/Letter/Index">Letters & Corresp.</a>
-                    <a class="nav-link" asp-page="/Delegation/Index">Delegations</a>
-                    <a class="nav-link" asp-page="/Budget/Index">Budget</a>
-                    <a class="nav-link" asp-page="/Termination/Create">Termination</a>
-                </div>
-            }
-
-            @if (User.IsInRole("mie\\PMS_HRMANAGER") || User.IsInRole("mie\\PMS_HRCLERK"))
-            {
-                <div class="nav-group-title">Talent & Training</div>
-                <a class="nav-link" data-bs-toggle="collapse" href="#talent"><i class="bi bi-award"></i> Recruitment</a>
-                <div class="collapse submenu" id="talent">
-                    <a class="nav-link" asp-page="/Employment/Create">Hire New</a>
-                    <a class="nav-link" asp-page="/JobRequirement/Index">Employment Requests</a>
-                    <a class="nav-link" asp-page="/Vacancy/Index">Job Vacancies</a>
-                    <a class="nav-link" asp-page="/Applications/Index">Applicant Pool</a>
-                    <a class="nav-link" asp-page="/JobReqCost/Index">Acquisition Costs</a>
-                </div>
-
-                <a class="nav-link" data-bs-toggle="collapse" href="#training"><i class="bi bi-book"></i> Training</a>
-                <div class="collapse submenu" id="training">
-                    <a class="nav-link" asp-page="/Training/TrainingCenter">Training Centers</a>
-                    <a class="nav-link" asp-page="/Training/Index">Training Catalog</a>
-                    <a class="nav-link" asp-page="/TrainingSession/Index">Manage Sessions</a>
-                </div>
-            }
-
-            @if (User.IsInRole("mie\\PMS_PAYROLL") || User.IsInRole("MIE\\PMS_FINANCE"))
-            {
-                <div class="nav-group-title">Finance</div>
-                <a class="nav-link" data-bs-toggle="collapse" href="#payroll"><i class="bi bi-cash-coin"></i> Payroll Management</a>
-                <div class="collapse submenu" id="payroll">
-                    <a class="nav-link" asp-page="/Payroll/Index">Process Payroll</a>
-                    <a class="nav-link" asp-page="/EarningRecord/Index">Manual Earnings</a>
-                    <a class="nav-link" asp-page="/DeductionRecord/Index">Manual Deductions</a>
-                    <a class="nav-link" asp-page="/Benefits/Index">Other Payments</a>
-                </div>
-            }
-
-            <div class="nav-group-title">Reporting & Intelligence</div>
-            <a class="nav-link" data-bs-toggle="collapse" href="#reporting"><i class="bi bi-bar-chart"></i> Reports Hub</a>
-            <div class="collapse submenu" id="reporting">
-                <a class="nav-link" asp-page="/Management/Index">Management Overview</a>
-                <a class="nav-link" asp-page="/Report/LeaveReport">Attendance Reports</a>
-                <a class="nav-link" asp-page="/Report/OvertimeRecordReport">Overtime Analysis</a>
-                <a class="nav-link" asp-page="/Report/EmploymentReport">Employment Stats</a>
-                <a class="nav-link" asp-page="/Termination/Index">Terminations</a>
-                <a class="nav-link" asp-page="/Report/AllowanceAssignmentReport">Allowance</a>
-                <a class="nav-link" asp-page="/Report/CostAnalysisReport">Cost Analytics</a>
-                <a class="nav-link" asp-page="/Report/EvaluationReport">Performance Analytics</a>
-                <a class="nav-link" asp-page="/Report/PenaltyReport">Penalty Summary</a>
-                <a class="nav-link" asp-page="/Report/JobPlacementReport">Job Placements</a>
-                <a class="nav-link" asp-page="/PersonEducationLevel/Index">Training & Certification</a>
-                <a class="nav-link" asp-page="/Structure/Index">Structure and Job Maping</a>
-                <a class="nav-link" asp-page="/Structure/JobPlacementAnalysis">Job Gap Analysis</a>
-            </div>
-
-            @if (User.IsInRole("mie\\PMS_ADMIN"))
-            {
-                <div class="nav-group-title">Governance</div>
-                <a class="nav-link" data-bs-toggle="collapse" href="#sysAdmin"><i class="bi bi-shield-lock"></i> Sys Admin</a>
-                <div class="collapse submenu" id="sysAdmin">
-                    <a class="nav-link" asp-page="/Users/Index">User Management</a>
-                    <a class="nav-link" asp-page="/SysAdmin/BackupDatabase">Database Backup</a>
-                    <a class="nav-link" asp-page="/SysAdmin/RestoreDatabase">Database Restore</a>
-                    <a class="nav-link" asp-page="/SystemLogs/Index">Security Logs</a>
-                </div>
-                <a class="nav-link" asp-page="/Auditing/Index"><i class="bi bi-clock-history"></i> Audit</a>
-            }
-        </nav>
-    </aside>
-
-    <div class="main-content">
-        <header class="top-bar d-print-none">
-            <div>
-                <button class="btn btn-sm d-lg-none" onclick="document.getElementById('sidebar').classList.toggle('active')">
-                    <i class="bi bi-list fs-4"></i>
-                </button>
-                <img src="~/assets/logo_full.png" alt="Logo" class="d-lg-none" style="height: 30px;">
-            </div>
-            
-            <div class="search-wrapper d-none d-md-block">
-                <span class="text-muted fw-medium"><i class="bi bi-calendar3 me-2"></i> @DateTime.Now.ToString("D")</span>
-            </div>
-
-            <div class="user-profile d-flex align-items-center gap-3">
-                @if (User.IsInRole("MIE\\PMS_MANAGEMENT"))
-                {
-                    <a class="btn btn-outline-primary btn-sm rounded-pill px-3" asp-page="/Department/Details">My Department</a>
-                }
-                @if (User.IsInRole("mie\\PMS_HRMANAGER"))
-                {
-                    <a asp-page="/HRClerk/Index" class="btn btn-outline-primary btn-sm rounded-pill px-3">Dashboard</a>
-                }
-                <span class="small fw-semibold text-dark">@User.Identity?.Name</span>
-                <form method="post" asp-page="/Shared/Logout" class="m-0">
-                    <button type="submit" class="btn btn-light btn-sm text-danger border"><i class="bi bi-box-arrow-right"></i></button>
-                </form>
-            </div>
-        </header>
-
-        <main class="page-body">
-            <!--LOADER BODY-->
-            <div id="loader">
-                <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;"></div>
-                <div class="mt-3 fw-bold">MMEC-HRMS Loading...</div>
-            </div>
-            @RenderBody()
-        </main>
-
-        <footer class="d-print-none">
-            <div class="d-flex justify-content-between align-items-center">
-                <span>&copy; 2025 <strong>Mesfin-HRMS</strong> | Developed by Getnet Hayelom</span>
-                <div class="gap-3 d-flex">
-                    <a asp-page="/Privacy" class="text-decoration-none text-muted">Help & Documentation</a>
+                    <div class="toast-body fw-semibold">
+                        @text
+                    </div>
                 </div>
             </div>
-        </footer>
-    </div>
+
+            <script>
+                document.addEventListener('DOMContentLoaded', function () {
+                    var toastEl = document.getElementById('actionToast1');
+                    if (toastEl) {
+                        new bootstrap.Toast(toastEl).show();
+                    }
+                });
+            </script>
+        }
 
 
-    <!--MESSAGE ALERT-->
-    @if (TempData["message"] is ValueTuple<string, string> message)
-    {
-        var type = message.Item1;
-        var text = message.Item2;
-
-        var bgClass = type == "Success" ? "bg-success" : "bg-danger";
-        var icon = type == "Success" ? "✔" : "⚠";
-
-        <div class="toast-container position-fixed top-50 start-50 translate-middle" style="z-index: 1100;">
-            <div id="actionToast1" class="toast text-white @bgClass border-0 shadow" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="4000">
-
-                <div class="toast-header text-white @bgClass border-0">
-                    <strong class="me-auto">@icon @type</strong>
+        <!--AJAX MESSAGE ALERT-->
+        <div class="toast-container position-fixed top-50 start-50 translate-middle d-none" style="z-index:1100;">
+            <div id="actionToast" class="toast text-white border-0 shadow" data-bs-delay="4000">
+                <div class="toast-header text-white border-0">
+                    <strong class="me-auto" id="toastTitle"></strong>
                     <small>System</small>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast"></button>
                 </div>
-
-                <div class="toast-body fw-semibold">
-                    @text
-                </div>
+                <div class="toast-body fw-semibold" id="toastBody"></div>
             </div>
         </div>
 
-        <script>
-            document.addEventListener('DOMContentLoaded', function () {
-                var toastEl = document.getElementById('actionToast1');
-                if (toastEl) {
-                    new bootstrap.Toast(toastEl).show();
-                }
-            });
-        </script>
-    }
-
-
-    <!--AJAX MESSAGE ALERT-->
-    <div class="toast-container position-fixed top-50 start-50 translate-middle d-none" style="z-index:1100;">
-        <div id="actionToast" class="toast text-white border-0 shadow" data-bs-delay="4000">
-            <div class="toast-header text-white border-0">
-                <strong class="me-auto" id="toastTitle"></strong>
-                <small>System</small>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast"></button>
-            </div>
-            <div class="toast-body fw-semibold" id="toastBody"></div>
-        </div>
-    </div>
-
-
+    
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/jquery/dist/jquery.dataTables.min.js"></script>
@@ -577,5 +648,16 @@
         });
     </script>
     @await RenderSectionAsync("Scripts", required: false)
+    <script>
+        function changeLanguage(language) {
+
+            document.cookie =
+                "PIS2.Culture=" +
+                language +
+                ";path=/";
+
+            location.reload();
+        }
+    </script>
 </body>
 </html>

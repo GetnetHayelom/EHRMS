@@ -153,7 +153,7 @@
         <a asp-page="/EmployeeService/Earning" asp-route-id="@Model.allowanceAssignmentModel.employmentID" class="btn btn-outline-primary m-2">View All Earning</a>
         <a asp-page="./Index" class="btn btn-outline-secondary m-2"><i class="bi bi-arrow-left me-2"></i>Back to catalog</a>
         @await Html.PartialAsync("print")
-        <a asp-page="./Edit" asp-route-id="@Model.allowanceAssignmentModel.allowanceAssignmentID" class="btn btn-primary m-2 d-print-none"><i class="bi bi-pencil-square me-2"></i>Edit</a>
+        <a asp-page="./Edit" asp-route-id="@Model.allowanceAssignmentModel.allowanceAssignmentID" class="btn btn-primary m-2 d-print-none"><i class="bi bi-pencil-square me-2"></i>@L.T("Edit")</a>
     </div>
 </div>
 

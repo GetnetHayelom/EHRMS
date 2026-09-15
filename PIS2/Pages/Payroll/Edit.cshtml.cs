@@ -24,7 +24,7 @@ namespace PIS2.Pages.Payroll
 
         public SelectList Companies { get; set; }
 
-        [Authorize(Roles = @"MIE\PMS_HRCLERK,MIE\PMS_HRMANAGER,MIE\PMS_PAYROLL")]
+        [Authorize(Roles = @"MIE\HRCLERK,MIE\HRMANAGER,MIE\PAYROLL")]
         public async Task<IActionResult> OnGetAsync(int? id)
         {
             if (id == null) return NotFound();
@@ -45,7 +45,7 @@ namespace PIS2.Pages.Payroll
 
         public async Task<IActionResult> OnPostAsync()
         {
-            if (!User.IsInRole("MIE\\PMS_PAYROLL")) return RedirectToPage("/Shared/AccessDenied");
+            if (!User.IsInRole("PAYROLL")) return RedirectToPage("/Shared/AccessDenied");
             var payroll = await _db.Payrolls.FirstOrDefaultAsync(m => m.payrollID == Payroll.payrollID);
             if (payroll == null) return NotFound();
 

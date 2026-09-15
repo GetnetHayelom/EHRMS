@@ -1,7 +1,7 @@
 ﻿@page
 @model PIS2.Pages.JobReqCost.EditModel
 
-<h2>Edit Job Request Cost</h2>
+<h2>@L.T("Edit") Job Request Cost</h2>
 
 <form method="post">
     <input type="hidden" asp-for="JobReqCost.jobReqCostID" />
@@ -38,6 +38,6 @@
 
    
 
-    <button class="btn btn-success">Update</button>
+    <button class="btn btn-success">@L.T("Update")</button>
     <a asp-page="Index" class="btn btn-secondary">Cancel</a>
 </form>

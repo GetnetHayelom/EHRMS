@@ -17,7 +17,7 @@
             User Name:
         </dt>
         <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.userModel.userName)
+            @Html.DisplayFor(model => model.userModel.UserName)
         </dd>
         <dt class="col-sm-2">
             Full Name:
@@ -46,7 +46,7 @@
     </dl>
     
     <form method="post" class="d-flex justify-content-end">
-        <input type="hidden" asp-for="userModel.userID" />
+        <input type="hidden" asp-for="userModel.Id" />
         
         <input type="submit" value="Delete" class="btn btn-danger m-2" />
         

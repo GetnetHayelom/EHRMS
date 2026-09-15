@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace PIS2.Pages.Family
 {
-    [Authorize(Roles = "MIE\\PMS_HRCLERK")]
+    [Authorize(Roles = "HRPERSONNEL")]
     public class EditModel : PageModel
     {
         private readonly PISContext _context;
@@ -46,7 +46,7 @@ namespace PIS2.Pages.Family
         // For more information, see https://aka.ms/RazorPagesCRUD.
         public async Task<IActionResult> OnPostAsync()
         {
-            if (!User.IsInRole("MIE\\PMS_HRCLERK"))
+            if (!User.IsInRole("HRPERSONNEL"))
                 return RedirectToPage("/Shared/AccessDenied");
 
             var famrel = _context.Families.FirstOrDefault(f => f.familyID == familyModel.familyID);

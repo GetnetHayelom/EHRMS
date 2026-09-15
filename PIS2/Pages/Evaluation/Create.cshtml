@@ -62,7 +62,7 @@
                 </div>
                 <div id="selectedTypesPills" class="mt-1 d-flex flex-wrap gap-1"></div>
                 <div class="d-flex justify-content-end">
-                    <button class="btn btn-success d-none" onclick="initializeEvaluation()" id="saveEvaluation">Save</button>
+                    <button class="btn btn-success d-none" onclick="initializeEvaluation()" id="saveEvaluation">@L.T("Save")</button>
                 </div>
             </div>
             
@@ -185,7 +185,7 @@
             <div class="col-12 text-end">
                 <a asp-page="/Evaluation/Create" class="btn btn-primary">New Evaluation</a>
                 <a id="previewLink" data-base-url="/Evaluation/Details/" href="" class="btn btn-outline-primary">Preview</a>
-                <button class="btn btn-outline-success" onclick="updateHeader()">Update Eval. Info</button>
+                <button class="btn btn-outline-success" onclick="updateHeader()">@L.T("Update") Eval. Info</button>
                 <button class="btn btn-success" onclick="submitFinal()">Submit</button>
             </div>
         </div>

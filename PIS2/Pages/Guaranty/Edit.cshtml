@@ -13,8 +13,8 @@
 
 <!-- Page Header -->
 <div class="mb-4">
-    <h1 class="fw-bold text-dark">Edit Guaranty</h1>
-    <p class="text-muted mb-0">Update guaranty details for the selected employee</p>
+    <h1 class="fw-bold text-dark">@L.T("Edit") Guaranty</h1>
+    <p class="text-muted mb-0">@L.T("Update") guaranty details for the selected employee</p>
 </div>
 
 <!-- Form Card -->
@@ -60,7 +60,7 @@
                             <input asp-for="guarantyModel.guarantyAmount" class="form-control" readonly="@isReadOnly" />
                             <span asp-validation-for="guarantyModel.guarantyAmount" class="text-danger"></span>
                         </div>
-                        @if (User.IsInRole("MIE\\PMS_HRCLERK"))
+                        @if (User.IsInRole("HRPERSONNEL"))
                         {
                             <div class="col-md-6">
                                 <label asp-for="guarantyModel.guarantyStatus" class="form-label fw-semibold">Status</label>

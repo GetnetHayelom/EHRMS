@@ -66,7 +66,7 @@
                         <li class="nav-item ">
                             <a class="nav-link text-white" asp-area="" asp-page="/Index" style="">Home</a>
                         </li>
-                        @if (User.IsInRole("mie\\PMS_HRADMIN"))
+                        @if (User.IsInRole("HRADMIN"))
                         {
                             <li class="nav-item dropdown">
                                 <a class="nav-link text-white dropdown-toggle" asp-area="" role="button" data-bs-toggle="dropdown">System Setup</a>
@@ -117,7 +117,7 @@
                                 </div>
                             </li>
                         }
-                        @if (User.IsInRole("mie\\PMS_HRCLERK"))
+                        @if (User.IsInRole("HRPERSONNEL"))
                         {
                             <li class="nav-item dropdown">
                                 <a class="nav-link text-white dropdown-toggle" asp-area="" role="button" data-bs-toggle="dropdown">HR Personnel</a>
@@ -141,7 +141,7 @@
                                 </div>
                             </li>
                         }
-                        @if (User.IsInRole("mie\\PMS_HRMANAGER") || User.IsInRole("mie\\PMS_HRCLERK"))
+                        @if (User.IsInRole("HRMANAGER") || User.IsInRole("HRPERSONNEL"))
                         {
                             <li class="nav-item dropdown">
                                 <a class="nav-link text-white dropdown-toggle" asp-area="" role="button" data-bs-toggle="dropdown">Talent Aquisition</a>
@@ -157,7 +157,7 @@
                                 </div>
                             </li>
                         }
-                        @if (User.IsInRole("mie\\PMS_HRMANAGER") || User.IsInRole("mie\\PMS_HRCLERK"))
+                        @if (User.IsInRole("HRMANAGER") || User.IsInRole("HRPERSONNEL"))
                         {
                             <li class="nav-item dropdown">
                                 <a class="nav-link text-white dropdown-toggle" asp-area="" role="button" data-bs-toggle="dropdown">Training</a>
@@ -172,7 +172,7 @@
                                 </div>
                             </li>
                         }
-                        @if (User.IsInRole("mie\\PMS_ADMIN"))
+                        @if (User.IsInRole("ADMIN"))
                         {
                             <li class="nav-item dropdown">
                                 <a class="nav-link text-white dropdown-toggle" role="button" data-bs-toggle="dropdown">Sys Admin</a>
@@ -184,14 +184,14 @@
                             </li>
                         }
 
-                        @if (User.IsInRole("mie\\PMS_HRMANAGER"))
+                        @if (User.IsInRole("HRMANAGER"))
                         {
                             <li class="nav-item">
                                 <a class="nav-link text-white" asp-area="" asp-page="/HRClerk/Index">HR Dashboard</a>
                             </li>
                         }
 
-                        @if (User.IsInRole("mie\\PMS_HRCLERK") || User.IsInRole("MIE\\PMS_HRMANAGER") || User.IsInRole("MIE\\PMS_MANAGEMENT"))
+                        @if (User.IsInRole("HRPERSONNEL") || User.IsInRole("HRMANAGER") || User.IsInRole("MANAGEMENT"))
                         {
                             <li class="nav-item dropdown">
                                 <a class="nav-link text-white dropdown-toggle" asp-area="" role="button" data-bs-toggle="dropdown">Reporting</a>
@@ -211,13 +211,13 @@
                                 </div>
                             </li>
                         }
-                        @if (User.IsInRole("MIE\\PMS_MANAGEMENT"))
+                        @if (User.IsInRole("MANAGEMENT"))
                         {
                             <li class="nav-item">
                                 <a class="nav-link text-white" asp-area="" asp-page="/Department/Details">Department</a>
                             </li>
                         }
-                        @if (User.IsInRole("MIE\\PMS_HRMANAGER") || User.IsInRole("MIE\\PMS_HRMANAGER") || User.IsInRole("MIE\\PMS_PAYROLL") || User.IsInRole("MIE\\PMS_FINANCE"))
+                        @if (User.IsInRole("HRMANAGER") || User.IsInRole("HRMANAGER") || User.IsInRole("PAYROLL") || User.IsInRole("FINANCE"))
                         {
                             <li class="nav-item dropdown">
                                 <a class="nav-link text-white dropdown-toggle" asp-area="" role="button" data-bs-toggle="dropdown">Payroll</a>
@@ -252,26 +252,26 @@
 
                     <div style="width:70%; text-align:center;">
                         <h3 style="margin:0;" class="fw-bold">
-                            መስፍን ብረታ ብረትና ኢንጂነሪንግ <small>ሓ/የተ/የግ/ኩ</small>
+                            Company Name1  <small>Prefix1</small>
                         </h3>
                         <h2 style="margin:0;" class="fw-bold">
-                            Mesfin Metals & Engineering <small>PLC</small>
+                            Company Name2 <small>Prefix2</small>
                         </h2>
 
                         <div class="d-print-flex d-flex justify-content-around">
                             <div style="width:50%;">
-                                <p style="margin:0;">Mekelle Head Office</p>
-                                <p style="margin:0;">Tel: (0)344 40-68-00</p>
-                                <p style="margin:0;">P.O.Box 508 | info@mesfinme.com</p>
+                                <p style="margin:0;">Address Head Office</p>
+                                <p style="margin:0;">Tel: 00000</p>
+                                <p style="margin:0;">P.O.Box 000 | info@company.com</p>
                             </div>
                             <div style="width:50%;">
-                                <p style="margin:0;">Addis Ababa Office</p>
-                                <p style="margin:0;">Tel: 251-11-6 29-85-62</p>
-                                <p style="margin:0;">P.O.Box 24480</p>
+                                <p style="margin:0;">Address2</p>
+                                <p style="margin:0;">Tel: 00000</p>
+                                <p style="margin:0;">P.O.Box 000 | info@company.com</p>
                             </div>
                         </div>
 
-                        <p style="margin:0;">Website: www.mesfinme.com</p>
+                        <p style="margin:0;">Website: www.company.com</p>
                     </div>
 
                     <div style="width:15%; text-align:right;">
@@ -302,11 +302,11 @@
                 <div style="width:20%; border-right:1px solid #000; padding-right:10px;" class="d-none d-print-block">
                     <h6 class="fw-bold">Main Products & Services</h6>
                     <ul class="h-100 d-flex flex-column justify-content-evenly">
-                        <li class="mt-4"><strong>Electromechanical Works</strong></li>
-                        <li class="mt-4"><strong>Industrial Fabrication</strong></li>
-                        <li class="mt-4"><strong>Petroleum Reservoirs</strong></li>
-                        <li class="mt-4"><strong>Trailers & Semi-Trailers</strong></li>
-                        <li class="mt-4"><strong>HVAC Systems</strong></li>
+                        <li class="mt-4"><strong>Product\Service1</strong></li>
+                        <li class="mt-4"><strong>Product\Service2</strong></li>
+                        <li class="mt-4"><strong>Product\Service3</strong></li>
+                        <li class="mt-4"><strong>Product\Service4</strong></li>
+                        <li class="mt-4"><strong>Product\Service5</strong></li>
                     </ul>
                 </div>
                 <!--LETTER BODY-->
@@ -321,7 +321,7 @@
     <div style="position:fixed; bottom:0;" class="d-none print-footer print-full-width w-100">
         <hr class="d-block d-print-block border border-dark border-2 bg-dark" />
         <div class="d-flex d-print-flex justify-content-center">
-            ISO 9001:2000 QMS Certified By BSI – Certificate No. FM512406
+            ISO 9001:2000 QMS Certified By BSI – Certificate No. 000000
         </div>
     </div>
 

@@ -7,7 +7,7 @@ using PIS2.Models;
 
 namespace PIS2.Pages.Benefits
 {
-    [Authorize(Roles = "MIE\\PMS_HRMANAGER, MIE\\PMS_FINANCE, MIE\\PMS_HRCLERK")]
+    [Authorize(Roles = "HRMANAGER, FINANCE, HRCLERK")]
     public class DetailsModel : PageModel
     {
         private readonly PISContext _context;

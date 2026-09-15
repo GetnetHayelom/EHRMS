@@ -1,8 +1,139 @@
-﻿
-@if (TempData["ErrorMessage"] != null)
-{
-    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-        @TempData["ErrorMessage"]
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+﻿@page
+@model PIS2.Pages.Shared.ErrorModel
+
+@{
+    ViewData["Title"] = Model.ErrorTitle;
+}
+
+<div class="container-fluid min-vh-100 d-flex align-items-center justify-content-center bg-light py-5">
+
+    <div class="row w-100 justify-content-center">
+
+        <div class="col-12 col-sm-10 col-md-8 col-lg-6 col-xl-5">
+
+            <div class="card border-0 shadow-lg rounded-4">
+
+                <div class="card-body p-4 p-md-5 text-center">
+
+                    <!-- Error Icon -->
+                    <div class="mb-4">
+
+                        <div class="d-inline-flex align-items-center justify-content-center
+                            bg-danger-subtle rounded-circle p-4">
+
+                            <i class="bi bi-exclamation-triangle-fill
+                                text-danger fs-1">
+                            </i>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- Title -->
+                    <h1 class="h3 fw-bold text-dark mb-3">
+
+                        @Model.ErrorTitle
+
+                    </h1>
+
+
+                    <!-- Error Code -->
+                    <div class="mb-4">
+
+                        <span class="badge bg-danger-subtle text-danger-emphasis
+                            border border-danger-subtle px-3 py-2">
+
+                            Error Code:
+                            <strong>@Model.ErrorCode</strong>
+
+                        </span>
+
+                    </div>
+
+
+                    <!-- Message -->
+                    <div class="alert alert-warning text-start mb-4">
+
+                        <i class="bi bi-info-circle me-2"></i>
+
+                        @Model.ErrorMessage
+
+                    </div>
+
+
+                    <!-- Back -->
+                    <button type="button"
+                            class="btn btn-dark px-4"
+                            onclick="goBack()">
+
+                        <i class="bi bi-arrow-left me-2"></i>
+
+                        Back to Previous Page
+
+                    </button>
+
+                </div>
+
+
+                <!-- Footer -->
+                <div class="card-footer bg-white border-0 border-top
+                    text-center py-3 rounded-bottom-4">
+
+                    <small class="text-secondary">
+
+                        CORE-HR
+
+                        <span class="text-success fw-bold mx-1">
+                            •
+                        </span>
+
+                        People
+
+                        <span class="text-success fw-bold mx-1">
+                            •
+                        </span>
+
+                        Performance
+
+                        <span class="text-success fw-bold mx-1">
+                            •
+                        </span>
+
+                        Purpose
+
+                    </small>
+
+                </div>
+
+            </div>
+
+        </div>
+
     </div>
+
+</div>
+
+
+@section Scripts {
+
+    <script>
+
+        function goBack() {
+
+            if (document.referrer &&
+                document.referrer !== window.location.href) {
+
+                window.history.back();
+
+            }
+            else {
+
+                window.location.href = "/";
+            }
+
+        }
+
+    </script>
+
 }

@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace PIS2.Pages.ShiftAssignment
 {
-    [Authorize(Roles = "MIE\\PMS_HRMANAGER,MIE\\PMS_HRCLERK,MIE\\PMS_MANAGEMENT")]
+    [Authorize(Roles = "HRMANAGER,HRCLERK,MANAGEMENT")]
     public class CreateModel : PageModel
     {
         private readonly PISContext _context;

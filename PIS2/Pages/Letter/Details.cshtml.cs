@@ -35,7 +35,7 @@ namespace PIS2.Pages.Letter
         public async Task<IActionResult> OnPostApproveAsync()
         {
             
-            if (!User.IsInRole("MIE\\PMS_HRMANAGER")) 
+            if (!User.IsInRole("HRMANAGER")) 
             {
                 TempData["message"] = ("Error", "Access Denied!");
             }

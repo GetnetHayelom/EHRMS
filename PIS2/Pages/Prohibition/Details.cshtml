@@ -64,7 +64,7 @@
             
             @await Html.PartialAsync("print")
             <a asp-page="./Edit" asp-route-id="@Model.prohibitionModel.prohibitionID" class="btn btn-success m-2">
-                <i class="bi bi-pencil-square"></i> Edit
+                <i class="bi bi-pencil-square"></i>@L.T("Edit")
             </a>
            
         </div>

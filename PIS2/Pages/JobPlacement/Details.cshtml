@@ -141,21 +141,21 @@
 </div>
 <div class="d-print-none d-flex justify-content-end">
     @await Html.PartialAsync("back")
-    @if (User.IsInRole("MIE\\PMS_HRMANAGER") && Model.jobPlacementModel.jobPlacementStatus == mainStatus.Suspended)
+    @if (User.IsInRole("HRMANAGER") && Model.jobPlacementModel.jobPlacementStatus == mainStatus.Suspended)
     {
          <form method="POST">
             <input type="hidden" asp-for="jobPlacementID" Value="@Model.jobPlacementModel.jobPlacementID" />
             <button type="submit" class="btn btn-success m-2 d-print-none">Approve</button>
         </form>
     }
-    @if (User.IsInRole("MIE\\PMS_HRCLERK"))
+    @if (User.IsInRole("HRPERSONNEL"))
     {
         <a href="/Experience/Index?id=@Model.jobPlacementModel?.employmentModel?.personModel" class="btn btn-outline-primary m-2 d-print-none">View Experience</a>
-        <a asp-page="./Edit" asp-route-id="@Model.jobPlacementModel?.jobPlacementID" class="btn btn-warning m-2 d-print-none">Edit</a>
+        <a asp-page="./Edit" asp-route-id="@Model.jobPlacementModel?.jobPlacementID" class="btn btn-warning m-2 d-print-none">@L.T("Edit")</a>
     }   
     @await Html.PartialAsync("print")
 </div>
-@if (User.IsInRole("MIE\\PMS_HRCLERK"))
+@if (User.IsInRole("HRPERSONNEL"))
     {
         @await Html.PartialAsync("_AttachmentPartial",
         new Pages.Shared.AttachmentPartialModel

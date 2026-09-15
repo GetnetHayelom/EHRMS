@@ -21,7 +21,7 @@
                 </ol>
             </nav>
         </div>
-        @if (User.IsInRole("MIE\\PMS_HRCLERK"))
+        @if (User.IsInRole("HRPERSONNEL"))
         {
              <div class="btn-group d-print-none">
                 <a asp-page="/Penalty/Create" class="btn btn-primary shadow-sm">
@@ -296,7 +296,7 @@
                                                     </td>
                                                     <td class="text-end pe-4 d-print-none">
                                                         <div class="btn-group">
-                                                            @if (User.IsInRole("MIE\\PMS_HRCLERK"))
+                                                            @if (User.IsInRole("HRPERSONNEL"))
                                                             {
                                                                 <a asp-page="/Penalty/Edit" asp-route-id="@item.penaltyID" class="btn btn-sm btn-outline-primary" title="Edit">
                                                                     <i class="bi bi-pencil"></i>

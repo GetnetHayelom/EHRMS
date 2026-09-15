@@ -13,7 +13,7 @@ using PIS2.Enums;
 
 namespace PIS2.Pages.OvertimeRecord
 {
-    [Authorize(Roles = "MIE\\PMS_HRCLERK, MIE\\PMS_HRMANAGER")]
+    [Authorize(Roles = "HRCLERK, HRMANAGER")]
     public class DeleteModel : PageModel
     {
         private readonly PISContext _context;
@@ -61,7 +61,7 @@ namespace PIS2.Pages.OvertimeRecord
             var overtimerecordmodel = await _context.OvertimeRecords.FindAsync(id);
             if (overtimerecordmodel != null)
             {
-                if((!_core.IsSelf(User.Identity?.Name ?? "", overtimerecordmodel.employmentID) ||!(User.IsInRole("MIE\\PMS_HRCLERK") || User.IsInRole("MIE\\PMS_HRMANAGER")) && !(overtimeRecordModel.overtimeRecordStatus == overtimeStatus.Hold)))
+                if((!_core.IsSelf(User.Identity?.Name ?? "", overtimerecordmodel.employmentID) ||!(User.IsInRole("HRPERSONNEL") || User.IsInRole("HRMANAGER")) && !(overtimeRecordModel.overtimeRecordStatus == overtimeStatus.Hold)))
                 overtimeRecordModel = overtimerecordmodel;
                 _context.OvertimeRecords.Remove(overtimeRecordModel);
                 await _context.SaveChangesAsync();

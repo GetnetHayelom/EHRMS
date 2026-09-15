@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace PIS2.Pages.Department
 {
-    [Authorize(Roles = "MIE\\PMS_HRMANAGER,MIE\\PMS_HRCLERK,MIE\\PMS_MANAGEMENT")]
+    [Authorize(Roles = "HRMANAGER,HRCLERK,MANAGEMENT")]
     public class DetailsModel : PageModel
     {
         private readonly PISContext _context;
@@ -60,7 +60,7 @@ namespace PIS2.Pages.Department
             int depID = 0;
             
             
-            var prsn = await _context.Users.Include(u => u.personModel).FirstOrDefaultAsync(u => u.userName == User.Identity.Name);
+            var prsn = await _context.Users.Include(u => u.personModel).FirstOrDefaultAsync(u => u.UserName == User.Identity.Name);
             
             if(prsn != null) {
                 var emp = await _context.Employments.FirstOrDefaultAsync(e => e.personID == prsn.personModel.personID && e.employmentStatus == mainStatus.Active) ?? new employmentModel();
@@ -91,7 +91,7 @@ namespace PIS2.Pages.Department
 
             if (departmentmodel == null) { return NotFound(); }
             departmentModel = departmentmodel ?? new departmentModel();
-                isMember = User.IsInRole("MIE\\PMS_MANAGEMENT") ? true: false;
+                isMember = User.IsInRole("MANAGEMENT") ? true: false;
                 isManager= empID == departmentModel?.employmentID? true: false;
 
             var delegations = await _context.Delegations

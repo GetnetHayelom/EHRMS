@@ -33,7 +33,7 @@ namespace PIS2.Pages.Notice
         }
         public async Task<IActionResult> OnPostApproveAsync()
         {
-            if (!User.IsInRole("MIE\\PMS_HRMANAGER"))
+            if (!User.IsInRole("HRMANAGER"))
             {
                 return RedirectToPage("/Shared/AccessDenied");
             }
@@ -86,7 +86,7 @@ namespace PIS2.Pages.Notice
 
         public async Task<IActionResult> OnPostExpireAsync()
         {
-            if (!User.IsInRole("MIE\\PMS_HRMANAGER") || !User.IsInRole("MIE\\PMS_HRCLERK"))
+            if (!User.IsInRole("HRMANAGER") || !User.IsInRole("HRPERSONNEL"))
             {
                 return RedirectToPage("/Shared/AccessDenied");
             }
@@ -110,7 +110,7 @@ namespace PIS2.Pages.Notice
 
         public async Task<IActionResult> OnPostPostAsync()
         {
-            if (!User.IsInRole("MIE\\PMS_HRMANAGER") || !User.IsInRole("MIE\\PMS_HRCLERK"))
+            if (!User.IsInRole("HRMANAGER") || !User.IsInRole("HRPERSONNEL"))
             {
                 return RedirectToPage("/Shared/AccessDenied");
             }

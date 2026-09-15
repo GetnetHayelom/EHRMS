@@ -90,7 +90,7 @@ namespace PIS2.Pages.ServiceRequest
 
         public async Task<IActionResult> OnPostUpdateAsync(int id)
         {
-            if (!User.IsInRole("MIE\\PMS_HRCLERK")) { return new JsonResult(new { success = false, message = "Redirecting" }); }
+            if (!User.IsInRole("HRPERSONNEL")) { return new JsonResult(new { success = false, message = "Redirecting" }); }
 
             var req = await _context.ServiceRequests.Include(e => e.Employment).FirstOrDefaultAsync(s => s.serviceRequestID == id);
 

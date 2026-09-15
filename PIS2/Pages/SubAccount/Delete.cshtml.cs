@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace PIS2.Pages.SubAccount
 {
-    [Authorize(Roles = "MIE\\PMS_HRMANAGER")]
+    [Authorize(Roles = "HRMANAGER")]
     public class DeleteModel : PageModel
     {
         private readonly PISContext _context;

@@ -16,7 +16,7 @@ using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace PIS2.Pages.Person
 {
-    [Authorize(Roles = "MIE\\PMS_HRCLERK")]
+    [Authorize(Roles = "HRPERSONNEL")]
     public class CreateModel : PageModel
     {
         private readonly PISContext _context;

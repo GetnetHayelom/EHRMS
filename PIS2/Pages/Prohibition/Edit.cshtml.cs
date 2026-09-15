@@ -47,7 +47,7 @@ namespace PIS2.Pages.Prohibition
         // For more information, see https://aka.ms/RazorPagesCRUD.
         public async Task<IActionResult> OnPostAsync()
         {
-            if (!User.IsInRole("MIE\\PMS_HRMANAGER")) return RedirectToPage("/Shared/AccessDenied");
+            if (!User.IsInRole("HRMANAGER")) return RedirectToPage("/Shared/AccessDenied");
             var prob = await _context.Prohibitions.FindAsync(prohibitionModel.prohibitionID);
             if (prob == null)
                 return NotFound();

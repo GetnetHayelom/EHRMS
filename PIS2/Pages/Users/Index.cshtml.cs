@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace PIS2.Pages.Users
 {
-    [Authorize(Roles = "MIE\\PMS_ADMIN")]
+    //[Authorize(Roles = "ADMIN")]
     public class IndexModel : PageModel
     {
         private readonly PISContext _context;

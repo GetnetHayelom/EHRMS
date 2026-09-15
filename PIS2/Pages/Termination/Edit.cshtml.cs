@@ -16,7 +16,7 @@ using static System.Formats.Asn1.AsnWriter;
 
 namespace PIS2.Pages.Termination
 {
-    [Authorize(Roles = "MIE\\PMS_HRMANAGER")]
+    [Authorize(Roles = "HRMANAGER")]
     public class EditModel : PageModel
     {
         private readonly PISContext _context;

@@ -46,7 +46,7 @@ namespace PIS2.Pages.EmploymentMethod
 
         public async Task<IActionResult> OnPostAsync(int? id)
         {
-            if (!User.IsInRole("MIE\\PMS_HRADMIN"))
+            if (!User.IsInRole("HRADMIN"))
             {
                 return RedirectToPage("/Shared/AccessDenied");
             }

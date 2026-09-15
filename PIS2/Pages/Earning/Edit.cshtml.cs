@@ -9,7 +9,7 @@ using PIS2.Models;
 
 namespace PIS2.Pages.Earning
 {
-    [Authorize(Roles = "MIE\\PMS_HRADMIN")]
+    [Authorize(Roles = "HRADMIN")]
     public class EditModel : PageModel
     {
         private readonly PISContext _context;
@@ -25,7 +25,7 @@ namespace PIS2.Pages.Earning
         public SelectList Accounts { get; set; }
         public async Task<IActionResult> OnGetAsync(int id)
         {
-            if (!User.IsInRole("MIE\\PMS_HRADMIN"))
+            if (!User.IsInRole("HRADMIN"))
             {
                 return RedirectToPage("/Shared/AccessDenied");
             }
@@ -41,7 +41,7 @@ namespace PIS2.Pages.Earning
 
         public async Task<IActionResult> OnPostAsync()
         {
-            if (!User.IsInRole("MIE\\PMS_HRADMIN"))
+            if (!User.IsInRole("HRADMIN"))
             {
                 return RedirectToPage("/Shared/AccessDenied");
             }

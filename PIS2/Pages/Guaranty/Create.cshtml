@@ -16,7 +16,7 @@
     <div class="card shadow-sm p-2 col-md-4">
         <form method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            @if (User.IsInRole("MIE\\PMS_HRCLERK"))
+            @if (User.IsInRole("HRPERSONNEL"))
             {
                 
                 <!-- Selector -->
@@ -42,7 +42,7 @@
                 <input asp-for="guarantyModel.guarantyStartDate" class="form-control mb-2" type="date" value="@DateTime.Now.ToString("yyyy-MM-dd")" />
                 <span asp-validation-for="guarantyModel.guarantyStartDate" class="text-danger"></span>
             </div>
-            @if (User.IsInRole("MIE\\PMS_HRCLERK"))
+            @if (User.IsInRole("HRPERSONNEL"))
             {
                    <div class="form-group">
                     <label asp-for="guarantyModel.guarantyEndDate" class="control-label">Guaranty End Date</label>
@@ -73,7 +73,7 @@
             </div>
             
             <div class="form-group d-flex justify-content-end">
-                <input type="submit" value="Save" class="btn btn-success" />
+                <input type="submit" value='@L.T("Save")' class="btn btn-success" />
             </div>
         </form>
     </div>

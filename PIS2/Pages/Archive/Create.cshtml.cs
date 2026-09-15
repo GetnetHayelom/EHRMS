@@ -7,7 +7,7 @@ using PIS2.Models;
 
 namespace PIS2.Pages.Archive
 {
-    [Authorize(Roles ="MIE\\PMS_HRCLERK")]
+    [Authorize(Roles ="HRPERSONNEL")]
     public class CreateModel : PageModel
     {
         private readonly PISContext _context;

@@ -61,9 +61,9 @@
           
         @if(Model.Letter?.letterStatus == Enums.LetterStatus.Draft)
         {
-            <a asp-page="Edit" asp-route-id="@Model.Letter?.letterID" class="btn btn-warning m-2">Edit</a>
+            <a asp-page="Edit" asp-route-id="@Model.Letter?.letterID" class="btn btn-warning m-2">@L.T("Edit")</a>
         }
-        @if (User.IsInRole("MIE\\PMS_HRMANAGER") && Model.Letter?.letterStatus == Enums.LetterStatus.Draft)
+        @if (User.IsInRole("HRMANAGER") && Model.Letter?.letterStatus == Enums.LetterStatus.Draft)
         {
             <form method="post" asp-page-handler="Approve">
                 <input type="hidden" asp-for="LetterId" value="@Model.Letter.letterID"/>
@@ -72,7 +72,7 @@
                 </button>
             </form>
         }
-        @if(User.IsInRole("MIE\\PMS_HRCLERK") && Model.Letter?.letterStatus == Enums.LetterStatus.Approved)
+        @if(User.IsInRole("HRPERSONNEL") && Model.Letter?.letterStatus == Enums.LetterStatus.Approved)
         {
             <a asp-page="/Archive/Create" asp-route-id="@Model.Letter?.letterID" class="btn btn-primary m-2">Archive</a>
         }

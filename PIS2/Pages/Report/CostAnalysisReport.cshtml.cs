@@ -6,7 +6,7 @@ using PIS2.Data;
 
 namespace PIS2.Pages.Report
 {
-    [Authorize(Roles = "MIE\\PMS_HRCLERK, MIE\\PMS_HRMANAGER, MIE\\PMS_MANAGEMENT, MIE\\PMS_FINANCE")]
+    [Authorize(Roles = "HRCLERK, HRMANAGER, MANAGEMENT, FINANCE")]
     public class CostAnalysisReportModel : PageModel
     {
         private readonly PISContext _context;

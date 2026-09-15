@@ -8,7 +8,7 @@
         <div class="col-md-6">
             <div class="card shadow-sm">
                 <div class="card-body">
-                    <h4 class="fw-bold card-title mb-4">Update Attendance</h4>
+                    <h4 class="fw-bold card-title mb-4">@L.T("Update") Attendance</h4>
                     <form method="post">
                         <input type="hidden" asp-for="Attendance.trainingAttendanceID" />
                         <input type="hidden" asp-for="Attendance.trainingSessionID" />
@@ -41,7 +41,7 @@
                         </div>
 
                         <div class="d-grid gap-2">
-                            <button type="submit" class="btn btn-primary">Save Changes</button>
+                            <button type="submit" class="btn btn-primary">@L.T("Save") Changes</button>
                             <a asp-page="/TrainingSessionAttendance/Details" asp-route-id="@Model.Attendance.trainingSessionID" class="btn btn-outline-secondary">Cancel</a>
                         </div>
                     </form>

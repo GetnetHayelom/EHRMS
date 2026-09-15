@@ -45,7 +45,7 @@ namespace PIS2.Pages.DeductionRecord
 
         public async Task<IActionResult> OnPostAsync()
         {
-            if (!User.IsInRole("MIE\\PMS_HRCLERK")) { return RedirectToPage("/Shared/AccessDenied"); }
+            if (!User.IsInRole("HRPERSONNEL")) { return RedirectToPage("/Shared/AccessDenied"); }
             ModelState.Clear();
             Deduction.modifiedBy = User.Identity?.Name ?? "System";
             Deduction.remainingIteration = Deduction.deductionIteration;

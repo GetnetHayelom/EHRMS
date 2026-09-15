@@ -48,10 +48,10 @@ namespace PIS2.Pages.Leave
             var leave = _context.Leaves.FirstOrDefault(l => l.leaveID == leaveModel.leaveID);
 
             if(leave?.leaveStatus== leaveStatus.Completed) { TempData["ErrorMessage"] = "Can not update a complete leave/attendance record!"; return Page(); }
-            if(leave?.leaveStatus == leaveStatus.Approved && !User.IsInRole("MIE\\PMS_HRCLERK")) { TempData["ErrorMessage"] = "Only HR personel can update an approved leave/attendance record!"; return Page(); }
-            if(leave?.leaveStatus == leaveStatus.Posted && !(User.IsInRole("MIE\\PMS_HRCLERK") || User.IsInRole("MIE\\PMS_HRMANAGER"))) { TempData["ErrorMessage"] = "Only hr personel can update an approved leave/attendance record!"; return Page(); }
+            if(leave?.leaveStatus == leaveStatus.Approved && !User.IsInRole("HRPERSONNEL")) { TempData["ErrorMessage"] = "Only HR personel can update an approved leave/attendance record!"; return Page(); }
+            if(leave?.leaveStatus == leaveStatus.Posted && !(User.IsInRole("HRPERSONNEL") || User.IsInRole("HRMANAGER"))) { TempData["ErrorMessage"] = "Only hr personel can update an approved leave/attendance record!"; return Page(); }
             if ((leave?.leaveStatus == leaveStatus.Approved || leave?.leaveStatus == leaveStatus.Approved)
-                && leaveModel.leaveStatus == leaveStatus.Posted && !User.IsInRole("MIE\\PMS_MANAGEMENT"))
+                && leaveModel.leaveStatus == leaveStatus.Posted && !User.IsInRole("MANAGEMENT"))
 
             { TempData["ErrorMessage"] = "Only a member of a management can update an approve leave/attendance record!"; return Page(); }
             
@@ -107,11 +107,11 @@ namespace PIS2.Pages.Leave
             
             var leaveTypes = new List<leaveTypeModel>();
 
-            if (User.IsInRole("MIE\\PMS_CLINIC"))
+            if (User.IsInRole("CLINIC"))
             {
                 leaveTypes = _context.LeaveTypes.Where(lt => lt.leaveAvailability == "Clinic" || lt.leaveAvailability == "Everyone").ToList();
             }
-            else if (User.IsInRole("MIE\\PMS_HRCLERK") )
+            else if (User.IsInRole("HRPERSONNEL") )
             {
                 leaveTypes = _context.LeaveTypes.Where(lt => lt.leaveAvailability == "HR" || lt.leaveAvailability == "Everyone").ToList();
             }
@@ -123,7 +123,7 @@ namespace PIS2.Pages.Leave
             AllowedLeaveTypes = leaveTypes;
             ViewData["leaveTypeID"] = new SelectList(AllowedLeaveTypes, "leaveTypeID", "leaveTypeName");
 
-            if (_context.Users.First(u => u.userName == User.Identity.Name).personID == _context.Employments.First(e => e.employmentID == leaveModel.employmentID).personID)
+            if (_context.Users.First(u => u.UserName == User.Identity.Name).personID == _context.Employments.First(e => e.employmentID == leaveModel.employmentID).personID)
             {
                 isSelf = true;
             }

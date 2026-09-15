@@ -17,7 +17,7 @@ using static System.Formats.Asn1.AsnWriter;
 
 namespace PIS2.Pages.Person
 {
-    [Authorize(Roles = "MIE\\PMS_HRCLERK")]
+    [Authorize(Roles = "HRPERSONNEL")]
     public class EditModel : PageModel
     {
         private readonly PISContext _context;

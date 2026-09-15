@@ -11,7 +11,7 @@
             </span>
         </div>
         <div class="btn-group align-items-end m-2">
-            @if (Model.BudgetPlan.Status == Enums.BudgetStatus.HOLD && User.IsInRole("MIE\\PMS_HRMANAGER"))
+            @if (Model.BudgetPlan.Status == Enums.BudgetStatus.HOLD && User.IsInRole("HRMANAGER"))
             {
                
                     <form method="post" asp-page-handler="Approve">
@@ -25,7 +25,7 @@
                 
 
             }
-            else if (Model.BudgetPlan.Status == Enums.BudgetStatus.APPROVED && User.IsInRole("MIE\\PMS_HRMANAGER"))
+            else if (Model.BudgetPlan.Status == Enums.BudgetStatus.APPROVED && User.IsInRole("HRMANAGER"))
             {
                 if (Model.BudgetPlan.StartDate <= DateTime.Now)
                 {
@@ -35,7 +35,7 @@
                     </form>
                 }
             }
-            else if (Model.BudgetPlan.Status == Enums.BudgetStatus.ACTIVE && User.IsInRole("MIE\\PMS_HRMANAGER"))
+            else if (Model.BudgetPlan.Status == Enums.BudgetStatus.ACTIVE && User.IsInRole("HRMANAGER"))
             {
                 if (Model.BudgetPlan.EndDate <= DateTime.Now)
                 {
@@ -47,7 +47,7 @@
 
             }
             <a asp-page="./Index" asp-route-id="@Model.BudgetPlan.BudgetPlanID" class="btn btn-outline-secondary"><i class="bi bi-arrow-left me-2"></i>Back</a>
-            <a asp-page="./Edit" asp-route-id="@Model.BudgetPlan.BudgetPlanID" class="btn btn-primary"><i class="bi bi-pencil-square me-2"></i>Edit Plan</a>
+            <a asp-page="./Edit" asp-route-id="@Model.BudgetPlan.BudgetPlanID" class="btn btn-primary"><i class="bi bi-pencil-square me-2"></i>@L.T("Edit") Plan</a>
             @if ((Model.BudgetPlan.BudgetLines == null || !Model.BudgetPlan.BudgetLines.Any()) && Model.BudgetPlan.Status == Enums.BudgetStatus.APPROVED) 
             {
                 <form method="POST" asp-page-handler="Initialize">
@@ -111,7 +111,7 @@
             <a class="nav-link active" id="performance-tab" data-bs-toggle="tab" data-bs-target="#performance">Performance (Actual vs Budget)</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" id="entries-tab" data-bs-toggle="tab" data-bs-target="#entries">Edit Budget Entries</a>
+            <a class="nav-link" id="entries-tab" data-bs-toggle="tab" data-bs-target="#entries">@L.T("Edit") Budget Entries</a>
         </li>
     </ul>
 
@@ -220,7 +220,7 @@
                             }
                         </tbody>
                     </table>
-                    <button type="submit" class="btn btn-success">Save Budget Changes</button>
+                    <button type="submit" class="btn btn-success">@L.T("Save") Budget Changes</button>
                 </form>
             }
         </div>

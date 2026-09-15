@@ -14,7 +14,7 @@ using PIS2.Enums;
 
 namespace PIS2.Pages.Penalty
 {
-    [Authorize(Roles = "MIE\\PMS_HRCLERK")]
+    [Authorize(Roles = "HRPERSONNEL")]
     public class EditModel : PageModel
     {
         private readonly PISContext _context;
@@ -55,7 +55,7 @@ namespace PIS2.Pages.Penalty
         // For more information, see https://aka.ms/RazorPagesCRUD.
         public async Task<IActionResult> OnPostAsync()
         {
-            if (!User.IsInRole("MIE\\PMS_HRMANAGER")) return RedirectToPage("/Shared/AccessDenied");
+            if (!User.IsInRole("HRMANAGER")) return RedirectToPage("/Shared/AccessDenied");
 
             var penal = _context.Penalties.FirstOrDefault(p => p.penaltyID == penaltyModel.penaltyID) ?? new penaltyModel();
 

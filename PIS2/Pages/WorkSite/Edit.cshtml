@@ -8,7 +8,7 @@
 }
 
 <h1 class="fw-bold">Work Locations</h1>
-<h6 class="fw-bold text-muted">Update Work Location Details</h6>
+<h6 class="fw-bold text-muted">@L.T("Update") Work Location Details</h6>
 
 <hr />
 <div class="d-flex gap-4">
@@ -73,7 +73,7 @@
             </div>
             <div class="form-group d-flex justify-content-end m-2">
                 @await Html.PartialAsync("back")
-                <input type="submit" value="Save" class="btn btn-success m-2" />
+                <input type="submit" value='@L.T("Save")' class="btn btn-success m-2" />
             </div>
         </form>
     </div>

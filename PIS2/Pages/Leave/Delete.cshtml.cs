@@ -45,7 +45,7 @@ namespace PIS2.Pages.Leave
 
         public async Task<IActionResult> OnPostAsync(int? id)
         {
-            if (User.IsInRole("PMS_HRCLERCK")) return RedirectToPage("/Shared/AccessDenied");
+            if (User.IsInRole("HRCLERCK")) return RedirectToPage("/Shared/AccessDenied");
 
             if (id == null)
             {

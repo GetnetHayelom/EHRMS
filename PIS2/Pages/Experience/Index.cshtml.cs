@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace PIS2.Pages.Exprience
 {
-    [Authorize(Roles = "MIE\\PMS_HRMANAGER,MIE\\PMS_HRCLERK")]
+    [Authorize(Roles = "HRMANAGER,HRCLERK")]
     public class IndexModel : PageModel
     {
         private readonly PISContext _context;
@@ -29,34 +29,37 @@ namespace PIS2.Pages.Exprience
 
         [BindProperty(SupportsGet = true)]
         public Gender? GenderFilter { get; set; }
-        
-        public async Task OnGetAsync(int? id)
+        [BindProperty(SupportsGet = true)]
+        public int? id { get; set; }
+        public async Task OnGetAsync()
         {
-            var expriences =  _context.ExperienceView.OrderBy(e => e.experienceStartDate)
+            var experiences = _context.ExperienceView.OrderBy(e => e.experienceStartDate)
                  .AsQueryable();
 
-            if(id != null)
+            if (experiences != null)
             {
-                expriences = _context.ExperienceView
-                     .Where(e => e.personID == id);
+                if (id != null)
+                {
+                    experiences = _context.ExperienceView
+                         .Where(e => e.personID == id);
+                }
+
+                // Filter by Experience Type
+                if (ExperienceTypeFilter.HasValue)
+                {
+                    experiences = experiences
+                        .Where(e => e.experienceType == ExperienceTypeFilter);
+                }
+
+                // Filter by Gender
+                if (GenderFilter.HasValue)
+                {
+                    experiences = experiences
+                        .Where(e => e.personGender == GenderFilter);
+                }
+                experienceModel = await experiences.ToListAsync();
             }
             
-            // Filter by Experience Type
-            if (ExperienceTypeFilter.HasValue)
-            {
-                expriences = expriences
-                    .Where(e => e.experienceType == ExperienceTypeFilter);
-            }
-
-
-            // Filter by Gender
-            if (GenderFilter.HasValue)
-            {
-                expriences = expriences
-                    .Where(e => e.personGender == GenderFilter);
-            }
-            
-            experienceModel = await expriences.ToListAsync();
         }
     }
 }

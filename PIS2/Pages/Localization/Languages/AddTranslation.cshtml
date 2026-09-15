@@ -1,0 +1,260 @@
+﻿@page
+@model PIS2.Pages.Localization.Languages.AddTranslationModel
+
+@{
+    ViewData["Title"] = "Add Translation Key";
+}
+
+<div class="container-fluid">
+
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <div class="d-flex align-items-center">
+
+            <a asp-page="Index"
+               class="btn btn-outline-secondary me-3">
+
+                <i class="bi bi-arrow-left"></i>
+
+            </a>
+
+            <div>
+
+                <h3 class="mb-1">
+                    <i class="bi bi-plus-circle me-2"></i>
+                    Add Translation Key
+                </h3>
+
+                <div class="text-muted small">
+                    Add a new system or application translation
+                    to the master English dictionary.
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- Validation -->
+    <div asp-validation-summary="ModelOnly"
+         class="alert alert-danger"
+         role="alert">
+    </div>
+
+
+    <!-- Form -->
+    <div class="row justify-content-center">
+
+        <div class="col-12 col-lg-8 col-xl-7">
+
+            <div class="card border-0 shadow-sm">
+
+                <div class="card-header bg-white py-3">
+
+                    <div class="d-flex align-items-center">
+
+                        <div class="bg-success bg-opacity-10
+                                    rounded-circle p-2 me-3">
+
+                            <i class="bi bi-translate text-success"></i>
+
+                        </div>
+
+                        <div>
+
+                            <h5 class="mb-0">
+                                Translation Definition
+                            </h5>
+
+                            <small class="text-muted">
+                                English is the master language.
+                            </small>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <form method="post">
+
+                    <div class="card-body p-4">
+
+                        <!-- Translation Key -->
+                        <div class="mb-4">
+
+                            <label asp-for="Input.TranslationKey"
+                                   class="form-label fw-semibold">
+
+                                Translation Key
+
+                                <span class="text-danger">*</span>
+
+                            </label>
+
+                            <input asp-for="Input.TranslationKey"
+                                   class="form-control"
+                                   placeholder="Example: EmployeeDetails"
+                                   autocomplete="off" />
+
+                            <div class="form-text">
+                                Use a unique, descriptive key.
+                                Example:
+                                <code>EmployeeDetails</code>
+                            </div>
+
+                            <span asp-validation-for="Input.TranslationKey"
+                                  class="text-danger small">
+                            </span>
+
+                        </div>
+
+
+                        <!-- English Value -->
+                        <div class="mb-4">
+
+                            <label asp-for="Input.EnglishValue"
+                                   class="form-label fw-semibold">
+
+                                English Value
+
+                                <span class="text-danger">*</span>
+
+                            </label>
+
+                            <input asp-for="Input.EnglishValue"
+                                   class="form-control"
+                                   placeholder="Example: Employee Details"
+                                   autocomplete="off" />
+
+                            <div class="form-text">
+                                This is the English text displayed
+                                when English is selected.
+                            </div>
+
+                            <span asp-validation-for="Input.EnglishValue"
+                                  class="text-danger small">
+                            </span>
+
+                        </div>
+
+
+                        <!-- Module -->
+                        <div class="mb-4">
+
+                            <label asp-for="Input.Module"
+                                   class="form-label fw-semibold">
+
+                                @L.T("Module")
+
+                                <span class="text-danger">*</span>
+
+                            </label>
+
+                            <select asp-for="Input.Module"
+                                    class="form-select">
+
+                                <option value="">
+                                    -- Select Module --
+                                </option>
+
+                                <option value="System">
+                                    System
+                                </option>
+
+                                <option value="Application">
+                                    Application
+                                </option>
+
+                            </select>
+
+                            <div class="form-text">
+                                Select whether this translation belongs
+                                to the system or application.
+                            </div>
+
+                            <span asp-validation-for="Input.Module"
+                                  class="text-danger small">
+                            </span>
+
+                        </div>
+
+
+                        <!-- Description -->
+                        <div class="mb-3">
+
+                            <label asp-for="Input.Description"
+                                   class="form-label fw-semibold">
+
+                                @L.T("Description")
+
+                            </label>
+
+                            <textarea asp-for="Input.Description"
+                                      class="form-control"
+                                      rows="3"
+                                      placeholder="Describe where or why this translation is used...">
+                            </textarea>
+
+                            <div class="form-text">
+                                Optional. This helps administrators
+                                understand the purpose of the key.
+                            </div>
+
+                            <span asp-validation-for="Input.Description"
+                                  class="text-danger small">
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- Footer -->
+                    <div class="card-footer bg-white p-3">
+
+                        <div class="d-flex justify-content-between">
+
+                            <a asp-page="Index"
+                               class="btn btn-outline-secondary">
+
+                                <i class="bi bi-x-lg me-1"></i>
+
+                                @L.T("Cancel")
+
+                            </a>
+
+
+                            <button type="submit"
+                                    class="btn btn-success">
+
+                                <i class="bi bi-check-lg me-1"></i>
+
+                                @L.T("AddTranslationKey")
+
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                </form>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+@section Scripts {
+
+    <partial name="_ValidationScriptsPartial" />
+
+}

@@ -12,19 +12,19 @@ namespace PIS2.Enums
     public enum UserGroups
     {
         [Display(Name = "HR Personnel")]
-        PMS_HRCLERK,
+        HRCLERK,
 
         [Display(Name = "HR Admins")]
-        PMS_HRMANAGER,
+        HRMANAGER,
 
         //[Display(Name = "System Admin")]
-        //PMS_ADMIN,
+        //ADMIN,
 
         //[Display(Name = "Management")]
-        //PMS_MANAGEMENT,
+        //MANAGEMENT,
 
         //[Display(Name = "Clinic")]
-        //PMS_CLINIC
+        //CLINIC
     }
 
     public enum delegationScopes

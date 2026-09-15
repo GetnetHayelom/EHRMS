@@ -8,7 +8,7 @@
 
 <h1 class="fw-bold">Leaves and Attendance</h1>
 
-<h4 class="fw-bild">Update Details</h4>
+<h4 class="fw-bild">@L.T("Update") Details</h4>
 <hr />
 <div class="row">
     <div class="d-flex">       
@@ -117,7 +117,7 @@
                 </div>
             
             
-                @if (User.IsInRole("MIE\\PMS_HRCLERK") && (Model.leaveModel.leaveStatus == Enums.leaveStatus.Hold || Model.leaveModel.leaveStatus == Enums.leaveStatus.Approved))
+                @if (User.IsInRole("HRPERSONNEL") && (Model.leaveModel.leaveStatus == Enums.leaveStatus.Hold || Model.leaveModel.leaveStatus == Enums.leaveStatus.Approved))
                  {
                     <div class="form-group">
                         <label asp-for="leaveModel.leaveStatus" class="control-label">Leave Status</label>
@@ -128,7 +128,7 @@
                 <div class="form-group d-flex justify-content-end">
                     @if (Model.isHold && Model.isSelf)
                         {
-                            <input type="submit" value="Save" class="btn btn-primary mt-3" />
+                            <input type="submit" value='@L.T("Save")' class="btn btn-primary mt-3" />
                         }
                     <a asp-page="./Details" asp-route-id="@Model.leaveModel?.leaveID" class="btn btn-secondary mt-3 ms-2">Details</a>
                 </div>

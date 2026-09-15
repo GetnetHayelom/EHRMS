@@ -72,7 +72,7 @@
                             @item.overtimeRecordReason
                         </td>
                         <td class="d-flex flex-grow-1">
-                            @if (User.IsInRole("MIE\\PMS_HRCLERK"))
+                            @if (User.IsInRole("HRPERSONNEL"))
                             {
 
                                 <button class="btn btn-success post-button" data-id="@item.overtimeRecordID">Post</button>
@@ -161,7 +161,7 @@
                                                     @item.overtimeRecordReason
                                                 </td>
                                                 <td class="d-flex flex-grow-1">
-                                                    @if (User.IsInRole("MIE\\PMS_HRCLERK"))
+                                                    @if (User.IsInRole("HRPERSONNEL"))
                                                     {
 
                                                         <button class="btn btn-success post-button" data-id="@item.overtimeRecordID">Post</button>

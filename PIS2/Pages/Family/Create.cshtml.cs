@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace PIS2.Pages.Family
 {
-    [Authorize(Roles = "MIE\\PMS_HRCLERK")]
+    [Authorize(Roles = "HRPERSONNEL")]
     public class CreateModel : PageModel
     {
         private readonly PISContext _context;
@@ -38,7 +38,7 @@ namespace PIS2.Pages.Family
 
         public async Task<IActionResult> OnPostAsync()
         {
-            if (!User.IsInRole("MIE\\PMS_HRCLERK"))
+            if (!User.IsInRole("HRPERSONNEL"))
                 return RedirectToPage("/Shared/AccessDenied");
 
             // Ensure hidden inputs are valid integers

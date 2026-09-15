@@ -44,7 +44,7 @@ namespace PIS2.Pages.Guaranty
 
         public async Task<IActionResult> OnPostAsync(int? id)
         {
-            if (!User.IsInRole("MIE\\PMS_HRMANAGER"))
+            if (!User.IsInRole("HRMANAGER"))
             {
                 return RedirectToPage("/Shared/AccessDenied");
             }

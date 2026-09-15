@@ -201,7 +201,7 @@
 
 
 <div class="d-flex justify-content-end mb-2 d-print-none">
-    @if(User.IsInRole("MIE\\PMS_HRCLERK"))
+    @if(User.IsInRole("HRPERSONNEL"))
     {
         <a href="/EarningRecord/Create?id=@Model.employmentModel?.employmentID" class="btn btn-success text-white m-2">
             <i class="bi bi-plus-circle"></i> Add Earning

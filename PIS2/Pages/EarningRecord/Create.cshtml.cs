@@ -12,7 +12,7 @@ using System.ComponentModel;
 
 namespace PIS2.Pages.EarningRecord
 {
-    [Authorize(Roles = "MIE\\PMS_HRCLERK, MIE\\PMS_HRMANAGER")]
+    [Authorize(Roles = "HRCLERK, HRMANAGER")]
     public class CreateModel : PageModel
     {
         private readonly PISContext _db;
@@ -53,7 +53,7 @@ namespace PIS2.Pages.EarningRecord
 
         public async Task<IActionResult> OnPostAsync()
         {
-            if (!(User.IsInRole("MIE\\PMS_HRCLERCK") || User.IsInRole("MIE\\PMS_HRMANAGER"))) { return RedirectToPage("/Shared/AccessDenied"); }
+            if (!(User.IsInRole("HRCLERCK") || User.IsInRole("HRMANAGER"))) { return RedirectToPage("/Shared/AccessDenied"); }
             ModelState.Clear();
 
             Earning.modifiedBy = User.Identity.Name;

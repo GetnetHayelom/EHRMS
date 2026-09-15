@@ -1,0 +1,218 @@
+﻿@page
+@model PIS2.Pages.Localization.Languages.CreateModel
+
+@{
+ViewData["Title"] = "Add Language";
+}
+
+<div class="container-fluid">
+
+```
+<div class="d-flex align-items-center mb-4">
+
+    <a asp-page="Index"
+       class="btn btn-outline-secondary me-3">
+        <i class="bi bi-arrow-left"></i>
+    </a>
+
+    <div>
+        <h3 class="mb-1">
+            <i class="bi bi-translate me-2"></i>
+            @L.T("Add") @L.T("Language")
+        </h3>
+
+        <div class="text-muted">
+            Add a new application language
+        </div>
+    </div>
+
+</div>
+
+
+<div class="card shadow-sm border-0">
+
+    <div class="card-body">
+
+        <form method="post">
+
+            <div asp-validation-summary="ModelOnly"
+                 class="alert alert-danger">
+            </div>
+
+
+            <div class="row g-3">
+
+                <!-- Language Code -->
+
+                <div class="col-md-4">
+
+                    <label asp-for="Language.languageCode"
+                           class="form-label">
+                        Language Code
+                    </label>
+
+                    <input asp-for="Language.languageCode"
+                           class="form-control"
+                           placeholder="e.g. en, am, ti" />
+
+                    <div class="form-text">
+                        Use a standard language code such as
+                        <strong>en</strong>, <strong>am</strong>,
+                        or <strong>ti</strong>.
+                    </div>
+
+                    <span asp-validation-for="Language.languageCode"
+                          class="text-danger">
+                    </span>
+
+                </div>
+
+
+                <!-- Language Name -->
+
+                <div class="col-md-4">
+
+                    <label asp-for="Language.languageName"
+                           class="form-label">
+                        Language Name
+                    </label>
+
+                    <input asp-for="Language.languageName"
+                           class="form-control"
+                           placeholder="e.g. English" />
+
+                    <span asp-validation-for="Language.languageName"
+                          class="text-danger">
+                    </span>
+
+                </div>
+
+
+                <!-- Native Name -->
+
+                <div class="col-md-4">
+
+                    <label asp-for="Language.nativeName"
+                           class="form-label">
+                        Native Name
+                    </label>
+
+                    <input asp-for="Language.nativeName"
+                           class="form-control"
+                           placeholder="e.g. English" />
+
+                    <span asp-validation-for="Language.nativeName"
+                          class="text-danger">
+                    </span>
+
+                </div>
+
+
+                <!-- RTL -->
+
+                <div class="col-md-6">
+
+                    <div class="form-check form-switch mt-3">
+
+                        <input asp-for="Language.isRTL"
+                               class="form-check-input"
+                               role="switch" />
+
+                        <label asp-for="Language.isRTL"
+                               class="form-check-label">
+                            Right-to-left language
+                        </label>
+
+                    </div>
+
+                    <div class="form-text">
+                        Enable this for languages such as Arabic or Hebrew.
+                    </div>
+
+                </div>
+
+
+                <!-- Active -->
+
+                <div class="col-md-6">
+
+                    <div class="form-check form-switch mt-3">
+
+                        <input asp-for="Language.isActive"
+                               class="form-check-input"
+                               role="switch" />
+
+                        <label asp-for="Language.isActive"
+                               class="form-check-label">
+                            Active
+                        </label>
+
+                    </div>
+
+                </div>
+
+
+                <!-- Default -->
+
+                <div class="col-md-6">
+
+                    <div class="form-check form-switch mt-3">
+
+                        <input asp-for="Language.isDefault"
+                               class="form-check-input"
+                               role="switch" />
+
+                        <label asp-for="Language.isDefault"
+                               class="form-check-label">
+                            Default language
+                        </label>
+
+                    </div>
+
+                    <div class="form-text">
+                        Only one language can be the system default.
+                    </div>
+
+                    <span asp-validation-for="Language.isDefault"
+                          class="text-danger">
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <hr class="my-4" />
+
+
+            <div class="d-flex justify-content-end gap-2">
+
+                <a asp-page="Index"
+                   class="btn btn-outline-secondary">
+
+                    <i class="bi bi-x-lg me-1"></i>
+                    @L.T("Cancel")
+
+                </a>
+
+                <button type="submit"
+                        class="btn btn-primary">
+
+                    <i class="bi bi-check-lg me-1"></i>
+                    @L.T("Save")
+
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+```
+
+</div>
+
+@section Scripts { <partial name="_ValidationScriptsPartial" />
+}

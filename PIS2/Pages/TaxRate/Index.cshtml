@@ -45,7 +45,7 @@
                                 <td>@rate.modifiedDate.ToShortDateString()</td>
                                 <td class="text-end">
                                     <a asp-page="Edit" asp-route-id="@rate.taxRateID" class="btn btn-sm btn-outline-primary me-2">
-                                        <i class="bi bi-pencil-square"></i> Edit
+                                        <i class="bi bi-pencil-square"></i>@L.T("Edit")
                                     </a>
                                     <a asp-page="Details" asp-route-id="@rate.taxRateID" class="btn btn-sm btn-outline-info me-2">
                                         <i class="bi bi-eye"></i> View

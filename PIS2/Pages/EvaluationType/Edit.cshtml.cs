@@ -9,7 +9,7 @@ using PIS2.Models;
 
 namespace PIS2.Pages.EvaluationType
 {
-    [Authorize(Roles = "MIE\\PMS_HRADMIN")]
+    [Authorize(Roles = "HRADMIN")]
     public class EditModel : PageModel
     {
         private readonly PISContext _context;

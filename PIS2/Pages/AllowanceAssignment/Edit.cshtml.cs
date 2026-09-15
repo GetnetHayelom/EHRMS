@@ -26,7 +26,7 @@ namespace PIS2.Pages.AllowanceAssignment
 
         public async Task<IActionResult> OnGetAsync(int? id)
         {
-            if (!User.IsInRole("MIE\\PMS_HRMANAGER") || !User.IsInRole("MIE\\PMS_HRCLERK"))
+            if (!User.IsInRole("HRMANAGER") || !User.IsInRole("HRPERSONNEL"))
             {
                 return RedirectToPage("/Shared/AccessDenied");
             }
@@ -53,7 +53,7 @@ namespace PIS2.Pages.AllowanceAssignment
         // For more information, see https://aka.ms/RazorPagesCRUD.
         public async Task<IActionResult> OnPostAsync()
         {
-            if (!User.IsInRole("MIE\\PMS_HRMANAGER") || !User.IsInRole("MIE\\PMS_HRCLERK"))
+            if (!User.IsInRole("HRMANAGER") || !User.IsInRole("HRPERSONNEL"))
             {
                 return RedirectToPage("/Shared/AccessDenied");
             }
@@ -61,7 +61,7 @@ namespace PIS2.Pages.AllowanceAssignment
 
             if(existing == null) { TempData["message"] = ("Error", "Not Found!"); return Page(); }
 
-            if((existing.allowanceStatus == mainStatus.Active || existing.allowanceStatus == mainStatus.Inactive) && !User.IsInRole("MIE\\PMS_HRMANAGER"))
+            if((existing.allowanceStatus == mainStatus.Active || existing.allowanceStatus == mainStatus.Inactive) && !User.IsInRole("HRMANAGER"))
             {
                 return RedirectToPage("/Shared/AccessDenied");
             }

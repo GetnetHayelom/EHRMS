@@ -47,9 +47,9 @@
         </dl>
         <div class="d-flex justify-content-end m-2">
             @await Html.PartialAsync("back")
-            @if (User.IsInRole("MIE\\PMS_HRADMIN"))
+            @if (User.IsInRole("HRADMIN"))
             {
-                <a asp-page="./Edit" asp-route-id="@Model.jobClassModel.jobClassId" class=" btn btn-primary m-2">Edit</a>
+                <a asp-page="./Edit" asp-route-id="@Model.jobClassModel.jobClassId" class=" btn btn-primary m-2">@L.T("Edit")</a>
             }
 
 

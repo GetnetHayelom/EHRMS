@@ -17,10 +17,184 @@ namespace PIS2.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.11")
+                .HasAnnotation("ProductVersion", "8.0.30")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole<int>", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<string>("NormalizedName")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("NormalizedName")
+                        .IsUnique()
+                        .HasDatabaseName("RoleNameIndex")
+                        .HasFilter("[NormalizedName] IS NOT NULL");
+
+                    b.ToTable("AspNetRoles", (string)null);
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<int>", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ClaimType")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ClaimValue")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("RoleId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RoleId");
+
+                    b.ToTable("AspNetRoleClaims", (string)null);
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<int>", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ClaimType")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ClaimValue")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("AspNetUserClaims", (string)null);
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<int>", b =>
+                {
+                    b.Property<string>("LoginProvider")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("ProviderKey")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("ProviderDisplayName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("LoginProvider", "ProviderKey");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("AspNetUserLogins", (string)null);
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<int>", b =>
+                {
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("RoleId")
+                        .HasColumnType("int");
+
+                    b.HasKey("UserId", "RoleId");
+
+                    b.HasIndex("RoleId");
+
+                    b.ToTable("AspNetUserRoles", (string)null);
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<int>", b =>
+                {
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("LoginProvider")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Value")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("UserId", "LoginProvider", "Name");
+
+                    b.ToTable("AspNetUserTokens", (string)null);
+                });
+
+            modelBuilder.Entity("PIS2.Models.AppTranslationModel", b =>
+                {
+                    b.Property<int>("translationID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("translationID"));
+
+                    b.Property<string>("description")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<bool>("isActive")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("languageID")
+                        .HasColumnType("int");
+
+                    b.Property<string>("module")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("translationKey")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("translationValue")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("translationID");
+
+                    b.HasIndex("languageID");
+
+                    b.HasIndex("translationKey", "languageID")
+                        .IsUnique();
+
+                    b.ToTable("AppTranslations");
+                });
 
             modelBuilder.Entity("PIS2.Models.ApplicantModel", b =>
                 {
@@ -103,6 +277,8 @@ namespace PIS2.Migrations
                     b.HasKey("AttachmentID");
 
                     b.ToTable("Attachments");
+
+                    b.HasAnnotation("SqlServer:UseSqlOutputClause", false);
                 });
 
             modelBuilder.Entity("PIS2.Models.AuditLog", b =>
@@ -230,6 +406,44 @@ namespace PIS2.Migrations
                     b.HasAnnotation("SqlServer:UseSqlOutputClause", false);
                 });
 
+            modelBuilder.Entity("PIS2.Models.EntityTranslationModel", b =>
+                {
+                    b.Property<int>("entityTranslationID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("entityTranslationID"));
+
+                    b.Property<int>("entityID")
+                        .HasColumnType("int");
+
+                    b.Property<string>("entityType")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<int>("languageID")
+                        .HasColumnType("int");
+
+                    b.Property<string>("propertyName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("translationValue")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("entityTranslationID");
+
+                    b.HasIndex("languageID");
+
+                    b.HasIndex("entityType", "entityID", "propertyName", "languageID")
+                        .IsUnique();
+
+                    b.ToTable("EntityTranslations");
+                });
+
             modelBuilder.Entity("PIS2.Models.JournalEntry", b =>
                 {
                     b.Property<int>("JournalEntryID")
@@ -295,6 +509,45 @@ namespace PIS2.Migrations
                     b.HasIndex("subAccountID");
 
                     b.ToTable("JournalEntryLines");
+                });
+
+            modelBuilder.Entity("PIS2.Models.LanguageModel", b =>
+                {
+                    b.Property<int>("languageID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("languageID"));
+
+                    b.Property<bool>("isActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("isDefault")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("isRTL")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("languageCode")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
+
+                    b.Property<string>("languageName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("nativeName")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("languageID");
+
+                    b.HasIndex("languageCode")
+                        .IsUnique();
+
+                    b.ToTable("Languages");
                 });
 
             modelBuilder.Entity("PIS2.Models.LetterSequence", b =>
@@ -526,7 +779,10 @@ namespace PIS2.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<int>("userGroups")
+                    b.Property<DateTime>("modifiedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("roleID")
                         .HasColumnType("int");
 
                     b.Property<int>("userID")
@@ -535,6 +791,8 @@ namespace PIS2.Migrations
                     b.HasKey("accessID");
 
                     b.HasIndex("companyID");
+
+                    b.HasIndex("roleID");
 
                     b.HasIndex("userID");
 
@@ -3692,9 +3950,6 @@ namespace PIS2.Migrations
                     b.Property<int>("DebitAccountID")
                         .HasColumnType("int");
 
-                    b.Property<int?>("EmploymentModelemploymentID")
-                        .HasColumnType("int");
-
                     b.Property<decimal>("GrossPay")
                         .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
@@ -3739,13 +3994,13 @@ namespace PIS2.Migrations
 
                     b.HasIndex("DebitAccountID");
 
-                    b.HasIndex("EmploymentModelemploymentID");
-
                     b.HasIndex("accountModelaccountID");
 
                     b.HasIndex("bankInfoModelbankInfoID");
 
                     b.HasIndex("departmentID");
+
+                    b.HasIndex("employmentID");
 
                     b.HasIndex("jobPlacementID");
 
@@ -4021,7 +4276,7 @@ namespace PIS2.Migrations
                         .HasColumnType("int")
                         .HasColumnName("personStatus");
 
-                    b.Property<int?>("userModeluserID")
+                    b.Property<int?>("userModelId")
                         .HasColumnType("int");
 
                     b.HasKey("personHistoryID");
@@ -4030,7 +4285,7 @@ namespace PIS2.Migrations
 
                     b.HasIndex("personID");
 
-                    b.HasIndex("userModeluserID");
+                    b.HasIndex("userModelId");
 
                     b.ToTable("PersonHistories");
                 });
@@ -4586,6 +4841,8 @@ namespace PIS2.Migrations
                     b.HasIndex(new[] { "subAccountID" }, "IX_SubAccounts_accountModelaccountID");
 
                     b.ToTable("SubAccounts");
+
+                    b.HasAnnotation("SqlServer:UseSqlOutputClause", false);
                 });
 
             modelBuilder.Entity("PIS2.Models.taxRateModel", b =>
@@ -4868,6 +5125,10 @@ namespace PIS2.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("userHistoryID"));
 
+                    b.Property<int>("Id")
+                        .HasColumnType("int")
+                        .HasColumnName("Id");
+
                     b.Property<string>("modifiedBy")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)")
@@ -4876,10 +5137,6 @@ namespace PIS2.Migrations
                     b.Property<DateTime>("modifiedDate")
                         .HasColumnType("datetime2")
                         .HasColumnName("modifiedDate");
-
-                    b.Property<int>("userID")
-                        .HasColumnType("int")
-                        .HasColumnName("userID");
 
                     b.Property<string>("userName")
                         .IsRequired()
@@ -4892,19 +5149,69 @@ namespace PIS2.Migrations
 
                     b.HasKey("userHistoryID");
 
-                    b.HasIndex("userID");
+                    b.HasIndex("Id");
 
                     b.ToTable("UserHistories");
                 });
 
             modelBuilder.Entity("PIS2.Models.userModel", b =>
                 {
-                    b.Property<int>("userID")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
-                        .HasColumnName("userID");
+                        .HasColumnName("Id");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("userID"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("AccessFailedCount")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Email")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<bool>("EmailConfirmed")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("LockoutEnabled")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTimeOffset?>("LockoutEnd")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<bool>("MustChangePassword")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("NormalizedEmail")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<string>("NormalizedUserName")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<string>("PasswordHash")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PhoneNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("PhoneNumberConfirmed")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("SecurityStamp")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("TwoFactorEnabled")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("UserName")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
 
                     b.Property<string>("modifiedBy")
                         .IsRequired()
@@ -4915,28 +5222,29 @@ namespace PIS2.Migrations
                         .HasColumnType("datetime2")
                         .HasColumnName("modifiedDate");
 
-                    b.Property<int>("personID")
+                    b.Property<int?>("personID")
                         .HasColumnType("int")
                         .HasColumnName("personID");
-
-                    b.Property<string>("userName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)")
-                        .HasColumnName("userName");
 
                     b.Property<int>("userStatus")
                         .HasColumnType("int")
                         .HasColumnName("userStatus");
 
-                    b.HasKey("userID");
+                    b.HasKey("Id");
+
+                    b.HasIndex("NormalizedEmail")
+                        .HasDatabaseName("EmailIndex");
+
+                    b.HasIndex("NormalizedUserName")
+                        .IsUnique()
+                        .HasDatabaseName("UserNameIndex")
+                        .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.HasIndex("personID")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasFilter("[personID] IS NOT NULL");
 
-                    b.HasIndex("userName")
-                        .IsUnique();
-
-                    b.ToTable("Users");
+                    b.ToTable("AspNetUsers", (string)null);
 
                     b.HasAnnotation("SqlServer:UseSqlOutputClause", false);
                 });
@@ -5461,6 +5769,13 @@ namespace PIS2.Migrations
                     b.ToView("vw_EmploymentDetails", (string)null);
                 });
 
+            modelBuilder.Entity("PIS2.Views.EmployeeSalaryGrowthView", b =>
+                {
+                    b.ToTable((string)null);
+
+                    b.ToView("vw_EmployeeSalaryGrowth", (string)null);
+                });
+
             modelBuilder.Entity("PIS2.Views.EmploymentYearlyStat", b =>
                 {
                     b.Property<int?>("ActiveEmployees")
@@ -5681,7 +5996,7 @@ namespace PIS2.Migrations
                     b.Property<string>("jobGrade")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<decimal>("jobSalary")
+                    b.Property<decimal?>("jobSalary")
                         .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
@@ -5742,6 +6057,188 @@ namespace PIS2.Migrations
                     b.ToTable((string)null);
 
                     b.ToView("vw_JobGapAnalysisView", (string)null);
+                });
+
+            modelBuilder.Entity("PIS2.Views.JobPlacementDetailView", b =>
+                {
+                    b.Property<string>("FullName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("HourlyRate")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("PlacementYear")
+                        .HasColumnType("int");
+
+                    b.Property<int>("companyID")
+                        .HasColumnType("int");
+
+                    b.Property<string>("companyName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("departmentID")
+                        .HasColumnType("int");
+
+                    b.Property<string>("departmentName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("employmentID")
+                        .HasColumnType("int");
+
+                    b.Property<string>("givenID")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("jobCategoryID")
+                        .HasColumnType("int");
+
+                    b.Property<string>("jobCategoryName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("jobClassID")
+                        .HasColumnType("int");
+
+                    b.Property<string>("jobClassName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("jobGradeID")
+                        .HasColumnType("int");
+
+                    b.Property<string>("jobGradeName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("jobID")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("jobPlacementDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("jobPlacementID")
+                        .HasColumnType("int");
+
+                    b.Property<string>("jobPlacementReason")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("jobPlacementSalary")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("jobPlacementStatus")
+                        .HasColumnType("int");
+
+                    b.Property<int>("jobStepID")
+                        .HasColumnType("int");
+
+                    b.Property<string>("jobStepName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("jobTitle")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("modifiedDate")
+                        .HasColumnType("datetime2");
+
+                    b.ToTable((string)null);
+
+                    b.ToView("vw_JobPlacementDetails", (string)null);
+                });
+
+            modelBuilder.Entity("PIS2.Views.JobPlacementView", b =>
+                {
+                    b.Property<string>("FullName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("HourlyRate")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("companyID")
+                        .HasColumnType("int");
+
+                    b.Property<string>("companyName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("departmentID")
+                        .HasColumnType("int");
+
+                    b.Property<string>("departmentName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("employmentID")
+                        .HasColumnType("int");
+
+                    b.Property<string>("givenID")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("jobCategoryID")
+                        .HasColumnType("int");
+
+                    b.Property<string>("jobCategoryName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("jobClassID")
+                        .HasColumnType("int");
+
+                    b.Property<string>("jobClassName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("jobGradeID")
+                        .HasColumnType("int");
+
+                    b.Property<string>("jobGradeName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("jobID")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("jobPlacementDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("jobPlacementID")
+                        .HasColumnType("int");
+
+                    b.Property<string>("jobPlacementReason")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("jobPlacementSalary")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("jobPlacementStatus")
+                        .HasColumnType("int");
+
+                    b.Property<int>("jobStepID")
+                        .HasColumnType("int");
+
+                    b.Property<string>("jobStepName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("jobTitle")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.ToTable((string)null);
+
+                    b.ToView("vw_JobPlacementView", (string)null);
                 });
 
             modelBuilder.Entity("PIS2.Views.LeaveBalanceDepartmentView", b =>
@@ -6245,6 +6742,13 @@ namespace PIS2.Migrations
                     b.ToView("vw_WorksiteSummaryView", (string)null);
                 });
 
+            modelBuilder.Entity("PIS2.Views.YearlyJobPlacementSalaryView", b =>
+                {
+                    b.ToTable((string)null);
+
+                    b.ToView("vw_YearlyJobPlacementSummary", (string)null);
+                });
+
             modelBuilder.Entity("educationLevelModeljobModel", b =>
                 {
                     b.Property<int>("EducationLevelseducationLevelID")
@@ -6258,6 +6762,68 @@ namespace PIS2.Migrations
                     b.HasIndex("JobsjobID");
 
                     b.ToTable("educationLevelModeljobModel");
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<int>", b =>
+                {
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole<int>", null)
+                        .WithMany()
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<int>", b =>
+                {
+                    b.HasOne("PIS2.Models.userModel", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<int>", b =>
+                {
+                    b.HasOne("PIS2.Models.userModel", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<int>", b =>
+                {
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole<int>", null)
+                        .WithMany()
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("PIS2.Models.userModel", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<int>", b =>
+                {
+                    b.HasOne("PIS2.Models.userModel", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("PIS2.Models.AppTranslationModel", b =>
+                {
+                    b.HasOne("PIS2.Models.LanguageModel", "Language")
+                        .WithMany("AppTranslations")
+                        .HasForeignKey("languageID")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Language");
                 });
 
             modelBuilder.Entity("PIS2.Models.ApplicantModel", b =>
@@ -6296,6 +6862,17 @@ namespace PIS2.Migrations
                     b.Navigation("BudgetPlan");
 
                     b.Navigation("SubAccount");
+                });
+
+            modelBuilder.Entity("PIS2.Models.EntityTranslationModel", b =>
+                {
+                    b.HasOne("PIS2.Models.LanguageModel", "Language")
+                        .WithMany("EntityTranslations")
+                        .HasForeignKey("languageID")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Language");
                 });
 
             modelBuilder.Entity("PIS2.Models.JournalEntryLine", b =>
@@ -6380,7 +6957,13 @@ namespace PIS2.Migrations
                     b.HasOne("PIS2.Models.companyModel", "CompanyModel")
                         .WithMany("Accesses")
                         .HasForeignKey("companyID")
-                        .OnDelete(DeleteBehavior.NoAction);
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole<int>", "Role")
+                        .WithMany()
+                        .HasForeignKey("roleID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("PIS2.Models.userModel", "userModel")
                         .WithMany("Accesses")
@@ -6389,6 +6972,8 @@ namespace PIS2.Migrations
                         .IsRequired();
 
                     b.Navigation("CompanyModel");
+
+                    b.Navigation("Role");
 
                     b.Navigation("userModel");
                 });
@@ -7249,10 +7834,6 @@ namespace PIS2.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("PIS2.Models.employmentModel", "EmploymentModel")
-                        .WithMany()
-                        .HasForeignKey("EmploymentModelemploymentID");
-
                     b.HasOne("PIS2.Models.accountModel", null)
                         .WithMany("PayrollPays")
                         .HasForeignKey("accountModelaccountID");
@@ -7265,6 +7846,12 @@ namespace PIS2.Migrations
                         .WithMany("PayrollPays")
                         .HasForeignKey("departmentID")
                         .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("PIS2.Models.employmentModel", "EmploymentModel")
+                        .WithMany("PayrollPays")
+                        .HasForeignKey("employmentID")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("PIS2.Models.jobPlacementModel", "JobPlacement")
                         .WithMany("PayrollPays")
@@ -7361,7 +7948,7 @@ namespace PIS2.Migrations
 
                     b.HasOne("PIS2.Models.userModel", "userModel")
                         .WithMany()
-                        .HasForeignKey("userModeluserID");
+                        .HasForeignKey("userModelId");
 
                     b.Navigation("addressModel");
 
@@ -7585,7 +8172,7 @@ namespace PIS2.Migrations
                 {
                     b.HasOne("PIS2.Models.userModel", "userModel")
                         .WithMany("UserHistories")
-                        .HasForeignKey("userID")
+                        .HasForeignKey("Id")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
@@ -7597,8 +8184,7 @@ namespace PIS2.Migrations
                     b.HasOne("PIS2.Models.personModel", "personModel")
                         .WithOne("userModel")
                         .HasForeignKey("PIS2.Models.userModel", "personID")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.NoAction);
 
                     b.Navigation("personModel");
                 });
@@ -7674,6 +8260,13 @@ namespace PIS2.Migrations
             modelBuilder.Entity("PIS2.Models.JournalEntry", b =>
                 {
                     b.Navigation("Lines");
+                });
+
+            modelBuilder.Entity("PIS2.Models.LanguageModel", b =>
+                {
+                    b.Navigation("AppTranslations");
+
+                    b.Navigation("EntityTranslations");
                 });
 
             modelBuilder.Entity("PIS2.Models.VacancyModel", b =>
@@ -7829,6 +8422,8 @@ namespace PIS2.Migrations
                     b.Navigation("LoyaltyHistories");
 
                     b.Navigation("OvertimeRecords");
+
+                    b.Navigation("PayrollPays");
 
                     b.Navigation("Penalties");
 

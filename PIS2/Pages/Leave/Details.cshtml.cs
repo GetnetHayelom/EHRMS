@@ -45,7 +45,7 @@ namespace PIS2.Pages.Leave
                     .Include(j => j.departmentModel).ThenInclude(d => d.companyModel)
                     .OrderByDescending(j => j.jobPlacementDate).First(j => j.employmentID == leaveModel.employmentID);
 
-                var currentUser = _context.Users.FirstOrDefault(u => u.userName == User.Identity.Name);
+                var currentUser = _context.Users.FirstOrDefault(u => u.UserName == User.Identity.Name);
 
                 if (currentUser != null && currentUser.personID == leaveModel.employmentModel.personID)
                 {

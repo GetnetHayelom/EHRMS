@@ -1,7 +1,9 @@
-﻿using System.ComponentModel;
-using System.Configuration;
-using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Identity;
 using PIS2.Enums;
+using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
+using System.Configuration;
+using Microsoft.AspNetCore.Identity;
 
 namespace PIS2.Models
 {
@@ -9,17 +11,38 @@ namespace PIS2.Models
     {
         [Key]
         public int accessID { get; set; }
+
+        // Identity user
         public int userID { get; set; }
+
         public virtual userModel? userModel { get; set; }
-        public UserGroups userGroups { get; set; }
+
+        // Identity role
+        public int roleID { get; set; }
+
+        public virtual IdentityRole<int>? Role { get; set; }
+
+        // Company scope
         public int? companyID { get; set; }
+
         public virtual companyModel? CompanyModel { get; set; }
+
+        // Access status
         public mainStatus accessStatus { get; set; }
-        public string modifiedBy { get; set; }
+            = mainStatus.Active;
 
-        public virtual List<accessHistoryModel>? AccessHistories { get; set; }
+        public string modifiedBy { get; set; } = "System";
 
-        public accessModel() { }
+        public DateTime modifiedDate { get; set; }
+            = DateTime.Now;
+
+        public virtual List<accessHistoryModel> AccessHistories
+        { get; set; }
+            = new List<accessHistoryModel>();
+
+        public accessModel()
+        {
+        }
     }
 
     public class accessHistoryModel{

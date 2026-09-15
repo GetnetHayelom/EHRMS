@@ -1,13 +1,15 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using PIS2.Models;
 using PIS2.Pages.Report;
 using PIS2.Views;
 
+
 namespace PIS2.Data
 {
-    public class PISContext : DbContext
+    public class PISContext : IdentityDbContext<userModel, IdentityRole<int>, int>
     {
         public PISContext(DbContextOptions options) : base(options) 
         {
@@ -1071,8 +1073,7 @@ namespace PIS2.Data
 
             modelBuilder.Entity<userModel>(entity =>
             {
-                entity.Property(e => e.userID).HasColumnName("userID");
-                entity.Property(e => e.userName).HasColumnName("userName");
+                entity.Property(e => e.Id).HasColumnName("Id");
                 entity.Property(e => e.userStatus).HasColumnName("userStatus");
                 entity.Property(e => e.modifiedBy).HasColumnName("modifiedBy");
                 entity.Property(e => e.personID).HasColumnName("personID");
@@ -1080,23 +1081,21 @@ namespace PIS2.Data
                 entity.Property(e => e.modifiedBy).HasColumnName("modifiedBy");
 
                 entity.HasOne(e => e.personModel).WithOne(p => p.userModel).HasForeignKey<userModel>(d => d.personID).OnDelete(DeleteBehavior.NoAction);
-                entity.HasMany(e => e.UserHistories).WithOne(u => u.userModel).HasForeignKey(d => d.userID).OnDelete(DeleteBehavior.NoAction);
-
-                entity.HasIndex(d => d.userName).IsUnique();
+                entity.HasMany(e => e.UserHistories).WithOne(u => u.userModel).HasForeignKey(d => d.Id).OnDelete(DeleteBehavior.NoAction);
 
                 entity.ToTable(t => t.UseSqlOutputClause(false));
             });
             modelBuilder.Entity<userHistoryModel>(entity =>
             {
                 entity.Property(e => e.userHistoryID).HasColumnName("userHistoryID");
-                entity.Property(e => e.userID).HasColumnName("userID");
+                entity.Property(e => e.Id).HasColumnName("Id");
                 entity.Property(e => e.userName).HasColumnName("userName");
                 entity.Property(e => e.userStatus).HasColumnName("userStatus");
                 entity.Property(e => e.modifiedBy).HasColumnName("modifiedBy");
                 entity.Property(e => e.modifiedDate).HasColumnName("modifiedDate");
                 entity.Property(e => e.modifiedBy).HasColumnName("modifiedBy");
 
-                entity.HasOne(e => e.userModel).WithMany(u => u.UserHistories).HasForeignKey(d => d.userID).OnDelete(DeleteBehavior.NoAction);
+                entity.HasOne(e => e.userModel).WithMany(u => u.UserHistories).HasForeignKey(d => d.Id).OnDelete(DeleteBehavior.NoAction);
             });
 
             modelBuilder.Entity<VacancyModel>(e =>
@@ -1374,6 +1373,7 @@ namespace PIS2.Data
             .HasNoKey()
             .ToView("vw_EvaluationSummary");
 
+
             modelBuilder.Entity<EvalGrandView>()
             .HasNoKey()
             .ToView("vw_EvaluationPersonGrandReport");
@@ -1459,6 +1459,48 @@ namespace PIS2.Data
             modelBuilder.Entity<EmployeeSalaryGrowthView>()
             .HasNoKey()
             .ToView("vw_EmployeeSalaryGrowth");
+
+            ///<summary>
+            ///Users Short View
+            /// </summary>
+            modelBuilder.Entity<UserView>()
+           .HasNoKey()
+           .ToView("vw_UserView");
+
+            ///<summary>
+            ///Language Related
+            /// </summary>
+            modelBuilder.Entity<AppTranslationModel>()
+             .HasOne(x => x.Language)
+             .WithMany(x => x.AppTranslations)
+             .HasForeignKey(x => x.languageID)
+             .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<EntityTranslationModel>(e => 
+            {
+                e.HasOne(x => x.Language).WithMany(x => x.EntityTranslations).HasForeignKey(x => x.languageID).OnDelete(DeleteBehavior.Restrict);
+                e.HasIndex(x => new
+                {
+                    x.entityType,
+                    x.entityID,
+                    x.propertyName,
+                    x.languageID
+                })
+                .IsUnique();
+            });
+                
+
+            modelBuilder.Entity<AppTranslationModel>()
+                .HasIndex(x => new
+                {
+                    x.translationKey,
+                    x.languageID
+                })
+                .IsUnique();
+
+            modelBuilder.Entity<LanguageModel>()
+            .HasIndex(x => x.languageCode)
+            .IsUnique();
 
         }
         
@@ -1601,6 +1643,7 @@ namespace PIS2.Data
         public DbSet<JobPlacementView> JobPlacementView { get; set; } = default!;
         public DbSet<YearlyJobPlacementSalaryView> YearlyJobPlacementSalaryView { get; set; } = default!;
         public DbSet<EmployeeSalaryGrowthView> EmployeeSalaryGrowthView { get; set; } = default!;
+        public DbSet<UserView> UserView { get; set; } = default!;
 
         /// <summary>
         /// Training Module
@@ -1609,6 +1652,16 @@ namespace PIS2.Data
         public DbSet<trainingSessionModel> TrainingSessions { get; set; }
         public DbSet<trainingAttendanceModel> TrainingAttendances { get; set; }
         public DbSet<trainingCostAllocationModel> TrainingCostAllocations { get; set; }
+
+        /// <summary>
+        /// Language Related 
+        /// </summary>
+        /// 
+        public DbSet<LanguageModel> Languages { get; set; }
+
+        public DbSet<AppTranslationModel> AppTranslations { get; set; }
+
+        public DbSet<EntityTranslationModel> EntityTranslations { get; set; }
     }
     
 }

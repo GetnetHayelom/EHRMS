@@ -38,7 +38,7 @@
                 @Html.DisplayFor(modelItem => item.employmentHistoryRemark)
             </td>
             <td>
-                <a asp-page="./Edit" asp-route-id="@item.employmentHistoryID">Edit</a> |
+                <a asp-page="./Edit" asp-route-id="@item.employmentHistoryID">@L.T("Edit")</a> |
                 <a asp-page="./Details" asp-route-id="@item.employmentHistoryID">Details</a> |
                 <a asp-page="./Delete" asp-route-id="@item.employmentHistoryID">Delete</a>
             </td>

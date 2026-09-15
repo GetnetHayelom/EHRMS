@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace PIS2.Pages.JobGrade
 {
-    [Authorize(Roles = "MIE\\PMS_HRADMIN")]
+    [Authorize(Roles = "HRADMIN")]
     public class EditModel : PageModel
     {
         private readonly PISContext _context;
@@ -27,7 +27,7 @@ namespace PIS2.Pages.JobGrade
 
         public async Task<IActionResult> OnGetAsync(int? id)
         {
-            if (!(User.IsInRole("MIE\\PMS_HRADMIN") || User.IsInRole("MIE\\PMS_HRMANAGER"))) { return RedirectToPage("/Shared/AccessDenied"); }
+            if (!(User.IsInRole("HRADMIN") || User.IsInRole("HRMANAGER"))) { return RedirectToPage("/Shared/AccessDenied"); }
 
             if (id == null)
             {
@@ -47,7 +47,7 @@ namespace PIS2.Pages.JobGrade
         // For more information, see https://aka.ms/RazorPagesCRUD.
         public async Task<IActionResult> OnPostAsync()
         {
-            if (!User.IsInRole("MIE\\PMS_HRADMIN")) { return RedirectToPage("/Shared/AccessDenied"); }
+            if (!User.IsInRole("HRADMIN")) { return RedirectToPage("/Shared/AccessDenied"); }
             ModelState.Remove("jobGradeModel.modifiedBy");
             jobGradeModel.modifiedBy = User.Identity.Name;
 

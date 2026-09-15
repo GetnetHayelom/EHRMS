@@ -15,7 +15,7 @@ using PIS2.Services;
 
 namespace PIS2.Pages.Guaranty
 {
-    [Authorize(Roles = "MIE\\PMS_HRCLERK")]
+    [Authorize(Roles = "HRPERSONNEL")]
     public class CreateModel : PageModel
     {
         private readonly PISContext _context;

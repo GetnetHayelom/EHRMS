@@ -28,7 +28,7 @@ namespace PIS2.Pages.BankInfo
 
         public async Task OnGetAsync()
         {
-            if (!User.IsInRole("MIE\\PMS_HRCLERK"))
+            if (!User.IsInRole("HRPERSONNEL"))
             {
                 RedirectToPage("/Shared/AccessDenied");
             }

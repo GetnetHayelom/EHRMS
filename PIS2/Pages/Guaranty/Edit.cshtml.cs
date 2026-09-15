@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace PIS2.Pages.Guaranty
 {
-    [Authorize(Roles = "MIE\\PMS_HRCLERK")]
+    [Authorize(Roles = "HRPERSONNEL")]
     public class EditModel : PageModel
     {
         private readonly PISContext _context;
@@ -57,7 +57,7 @@ namespace PIS2.Pages.Guaranty
         {
             ModelState.Clear();
             
-            if (!User.IsInRole("MIE\\PMS_HRCLERK"))
+            if (!User.IsInRole("HRPERSONNEL"))
             {
                 return RedirectToPage("/Shared/AccessDenied");
             }

@@ -8,7 +8,7 @@ using PIS2.Enums;
 
 namespace PIS2.Pages.Payroll
 {
-    [Authorize(Roles = @"MIE\PMS_HRCLERK,MIE\PMS_HRMANAGER,MIE\PMS_PAYROLL")]
+    [Authorize(Roles = @"MIE\HRCLERK,MIE\HRMANAGER,MIE\PAYROLL")]
     public class CreateModel : PageModel
     {
         private readonly PISContext _db;
@@ -40,7 +40,7 @@ namespace PIS2.Pages.Payroll
 
         public async Task<IActionResult> OnPostAsync()
         {
-            if (!User.IsInRole("MIE\\PMS_PAYROLL")) return RedirectToPage("/Shared/AccessDenied");
+            if (!User.IsInRole("PAYROLL")) return RedirectToPage("/Shared/AccessDenied");
             ModelState.Remove("Payroll.modifiedBy");
             Payroll.modifiedBy = User.Identity.Name ?? "system";
             Payroll.payrollMonth = Payroll.StartDate.Month.ToString();

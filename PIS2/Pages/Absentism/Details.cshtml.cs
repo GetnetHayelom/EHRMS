@@ -57,7 +57,7 @@ namespace PIS2.Pages.Absentism
         [HttpPost]
         public async Task<IActionResult> OnPost(int leaveId)
         {
-            if (!User.IsInRole("MIE\\PMS_HRMANAGER"))
+            if (!User.IsInRole("HRMANAGER"))
             {
                 return RedirectToPage("/Shared/AccessDenied");
             }

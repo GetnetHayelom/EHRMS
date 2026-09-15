@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace PIS2.Pages.Evaluation
 {
-    [Authorize(Roles ="MIE\\PMS_MANAGEMENT")]
+    [Authorize(Roles ="MANAGEMENT")]
     public class EditModel : PageModel
     {
         private readonly PISContext _context;

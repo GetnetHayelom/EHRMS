@@ -8,7 +8,7 @@
         <h2 class="fw-bold m-0">Structure and Job Maping</h2>
         <p class="text-muted m-0">Company structures and job maping catalog</p>
     </div>
-    @if(User.IsInRole("MIE\\PMS_HRADMIN"))
+    @if(User.IsInRole("HRADMIN"))
     {
         <p><a asp-page="Create" class="btn btn-primary d-print-none"><i class="bi bi-plus-circle me-2"></i> New Structure</a></p>
     }
@@ -187,7 +187,7 @@
                 <tr class="table-secondary">
                     <td>@companyIndex.@departmentIndex</td>
                     <td colspan="2"><strong>@departmentGroup.Key</strong>
-                        @if(User.IsInRole("MIE\\PMS_HRADMIN"))
+                        @if(User.IsInRole("HRADMIN"))
                         { 
                             <a href="/Structure/Create?id=@departmentGroup.First().DepartmentID" class="d-print-none"><i class="bi bi-plus-circle"></i>Add Structure</a>
                         }

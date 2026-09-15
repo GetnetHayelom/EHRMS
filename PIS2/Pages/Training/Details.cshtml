@@ -44,7 +44,7 @@
                 </dl>
 
                 <div class="mt-4 pt-3 border-top d-print-none">
-                    <a asp-page="./Edit" asp-route-id="@Model.Training.trainingID" class="btn btn-warning shadow-sm me-2 text-white">Edit Training Info</a>
+                    <a asp-page="./Edit" asp-route-id="@Model.Training.trainingID" class="btn btn-warning shadow-sm me-2 text-white">@L.T("Edit") Training Info</a>
                     <a asp-page="/TrainingSession/Create" asp-route-id="@Model.Training.trainingID" class="btn btn-primary shadow-sm me-2 text-white">Add Session</a>
                     <a asp-page="./Index" class="btn btn-outline-secondary">Back to Trainings</a>
                 </div>

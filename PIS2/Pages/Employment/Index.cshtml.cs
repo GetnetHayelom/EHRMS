@@ -18,7 +18,7 @@ using static System.Formats.Asn1.AsnWriter;
 
 namespace PIS2.Pages.Employment
 {
-    [Authorize(Roles = "MIE\\PMS_HRMANAGER,MIE\\PMS_HRCLERK,MIE\\PMS_MANAGEMENT")]
+    [Authorize(Roles = "HRMANAGER,HRCLERK,MANAGEMENT")]
     public class IndexModel : PageModel
     {
         private readonly PISContext _context;
@@ -47,7 +47,7 @@ namespace PIS2.Pages.Employment
         public string Company { get; set; }
         public async Task OnGetAsync()
         {
-            var userID = _context.Users.FirstOrDefault(u => u.userName == User.Identity.Name)?.userID ?? 0;
+            var userID = _context.Users.FirstOrDefault(u => u.UserName == User.Identity.Name)?.Id ?? 0;
             var empID = _core.getUserEmp(User.Identity.Name);
  
             var company = _context.JobPlacements.Include(j => j.departmentModel)

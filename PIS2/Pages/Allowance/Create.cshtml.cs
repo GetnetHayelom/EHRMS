@@ -25,7 +25,7 @@ namespace PIS2.Pages.Allowance
 
         public IActionResult OnGet()
         {
-            if (!User.IsInRole("MIE\\PMS_HRADMIN"))
+            if (!User.IsInRole("HRADMIN"))
             {
                 return RedirectToPage("/Shared/AccessDenied");
             }
@@ -39,7 +39,7 @@ namespace PIS2.Pages.Allowance
         // For more information, see https://aka.ms/RazorPagesCRUD.
         public async Task<IActionResult> OnPostAsync()
         {
-            if (!User.IsInRole("MIE\\PMS_HRADMIN"))
+            if (!User.IsInRole("HRADMIN"))
             {
                 _logger.LogError("Error: Access Denied! {Action} {UserName}", "Create Allowance", User.Identity.Name);
                 return RedirectToPage("/Shared/AccessDenied");

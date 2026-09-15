@@ -6,7 +6,7 @@ using PIS2.Models;
 
 namespace PIS2.Pages.Earning
 {
-    [Authorize(Roles = "MIE\\PMS_HRCLERK, MIE\\PMS_HRMANAGER, MIE\\PMS_HRADMIN")]
+    [Authorize(Roles = "HRCLERK, HRMANAGER, HRADMIN")]
     public class IndexModel : PageModel
     {
         private readonly PISContext _context;

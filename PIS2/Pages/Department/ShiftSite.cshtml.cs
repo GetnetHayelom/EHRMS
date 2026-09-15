@@ -32,9 +32,13 @@ namespace PIS2.Pages.Department
         {
             Shifts = await _context.Shifts.Where(s => s.shiftStatus == mainStatus.Active).ToListAsync();
             WorkSites = await _context.WorkSites.Where(s => s.workSiteStatus == mainStatus.Active).ToListAsync();
+            
 
-            int personID = _context.Users.FirstOrDefault(u => u.userName == User.Identity.Name).personID;
-
+            int personID = _context.Users.FirstOrDefault(u => u.UserName == User.Identity.Name).personID ?? 0;
+            if (personID == 0) {
+                return RedirectToPage("/Shared/AccessDenied");
+            }
+    
             int empID = _context.Employments.FirstOrDefault(e => e.personID == personID && e.employmentStatus == mainStatus.Active).employmentID;
 
             int depID = _context.JobPlacements.FirstOrDefault(jp => jp.employmentID == empID && jp.jobPlacementStatus == mainStatus.Active).departmentID;
@@ -54,7 +58,7 @@ namespace PIS2.Pages.Department
                 return RedirectToPage("/Department/Index");
             }
             
-            isMember = User.IsInRole("MIE\\PMS_MANAGEMENT") ? true : false;
+            isMember = User.IsInRole("MANAGEMENT") ? true : false;
             isManager = empID == Department?.employmentID ? true : false;
 
             var delegation = _context.Delegations

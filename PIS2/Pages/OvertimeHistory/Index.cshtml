@@ -39,7 +39,7 @@
                 @Html.DisplayFor(modelItem => item.overtimeHistoryAction)
             </td>
             <td>
-                <a asp-page="./Edit" asp-route-id="@item.overtimeHistoryID">Edit</a> |
+                <a asp-page="./Edit" asp-route-id="@item.overtimeHistoryID">@L.T("Edit")</a> |
                 <a asp-page="./Details" asp-route-id="@item.overtimeHistoryID">Details</a> |
                 <a asp-page="./Delete" asp-route-id="@item.overtimeHistoryID">Delete</a>
             </td>

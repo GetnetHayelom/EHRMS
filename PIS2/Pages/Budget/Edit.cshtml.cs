@@ -10,7 +10,7 @@ using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace PIS2.Pages.Budget
 {
-    [Authorize(Roles ="MIE\\PMS_HRCLERCK, MIE\\PMS_HRMANAGER")]
+    [Authorize(Roles ="HRCLERCK, HRMANAGER")]
     public class EditModel : PageModel
     {
         private readonly PISContext _context;
@@ -78,7 +78,7 @@ namespace PIS2.Pages.Budget
 
         public async Task<IActionResult> OnPostApprove()
         {
-            if (!User.IsInRole("MIE\\PMS_HRMANAGER"))
+            if (!User.IsInRole("HRMANAGER"))
             {
                 return new JsonResult(new { success = false, message = "User not authorized to approve budget!" });
             }
@@ -106,7 +106,7 @@ namespace PIS2.Pages.Budget
 
         public async Task<IActionResult> OnPostDecline()
         {
-            if (!User.IsInRole("MIE\\PMS_HRMANAGER")) 
+            if (!User.IsInRole("HRMANAGER")) 
             {
                 return new JsonResult(new { success = false, message = "User not authorized to approve budget!" });
             }
@@ -131,7 +131,7 @@ namespace PIS2.Pages.Budget
         }
         public async Task<IActionResult> OnPostClose()
         {
-            if (!User.IsInRole("MIE\\PMS_HRMANAGER"))
+            if (!User.IsInRole("HRMANAGER"))
             {
                 return new JsonResult(new { success = false, message = "User not authorized to approve budget!" });
             }

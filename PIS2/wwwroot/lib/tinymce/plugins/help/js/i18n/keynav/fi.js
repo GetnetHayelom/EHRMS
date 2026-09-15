@@ -33,7 +33,7 @@ tinymce.Resource.add('tinymce.html-i18n.help-keynav.fi',
   '  <li>Elementin polku alatunnisteessa</li>\n' +
   '  <li>Sanalaskurin vaihtopainike alatunnisteessa</li>\n' +
   '  <li>Brändäyslinkki alatunnisteessa</li>\n' +
-  '  <li>Editorin koon muuttamisen kahva alatunnisteessa</li>\n' +
+  '  <li>@L.T("Edit")orin koon muuttamisen kahva alatunnisteessa</li>\n' +
   '</ol>\n' +
   '\n' +
   '<p>Jos jotakin käyttöliittymän osaa ei ole, se ohitetaan.</p>\n' +

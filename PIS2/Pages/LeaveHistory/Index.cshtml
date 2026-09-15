@@ -39,7 +39,7 @@
                 @Html.DisplayFor(modelItem => item.modifiedDate)
             </td>
             <td>
-                <a asp-page="./Edit" asp-route-id="@item.leaveHistoryID">Edit</a> |
+                <a asp-page="./Edit" asp-route-id="@item.leaveHistoryID">@L.T("Edit")</a> |
                 <a asp-page="./Details" asp-route-id="@item.leaveHistoryID">Details</a> |
                 <a asp-page="./Delete" asp-route-id="@item.leaveHistoryID">Delete</a>
             </td>

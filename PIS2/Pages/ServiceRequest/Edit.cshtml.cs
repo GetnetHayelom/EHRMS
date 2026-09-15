@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace PIS2.Pages.ServiceRequest
 {
-    [Authorize(Roles = "MIE\\PMS_HRMANAGER,MIE\\PMS_HRCLERK")]
+    [Authorize(Roles = "HRMANAGER,HRCLERK")]
     public class EditModel : PageModel
     {
         private readonly PISContext _context;

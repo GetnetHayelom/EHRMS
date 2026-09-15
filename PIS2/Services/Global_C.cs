@@ -21,4 +21,16 @@
         public static readonly int SEVERANCE_LEGIBILITY_YEAR = 5;
        
     }
+    public static class AppRoles
+    {
+        public const string Admin = "ADMIN";
+        public const string HRManager = "HRMANAGER";
+        public const string User = "USER";
+        public const string HRAdmin = "HRADMIN";
+        public const string Management = "MANAGEMENT";
+        public const string Clinic = "CLINIC";
+        public const string HRPersonnel = "HRPERSONNEL";
+        public const string Payroll = "PAYROLL";
+        public const string Finance = "FINANCE";
+    }
 }

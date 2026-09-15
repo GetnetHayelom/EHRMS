@@ -175,7 +175,7 @@
     </div>
 
     <div class="d-print-none mt-4 d-flex justify-content-end gap-2">
-        @if (User.IsInRole("MIE\\PMS_HRCLERK") && (Model.leaveModel.leaveStatus == Enums.leaveStatus.Hold || Model.leaveModel.leaveStatus == Enums.leaveStatus.Approved))
+        @if (User.IsInRole("HRPERSONNEL") && (Model.leaveModel.leaveStatus == Enums.leaveStatus.Hold || Model.leaveModel.leaveStatus == Enums.leaveStatus.Approved))
         {
             <form method="post">
                 <input asp-for="leaveModel.leaveID" name="leaveId" type="hidden" />

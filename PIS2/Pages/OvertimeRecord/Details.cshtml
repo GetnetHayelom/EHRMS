@@ -142,7 +142,7 @@
 <div class="d-flex justify-content-end">
 
     @if ((Model.overtimeRecordModel.overtimeRecordStatus == Enums.overtimeStatus.Hold || Model.overtimeRecordModel.overtimeRecordStatus == Enums.overtimeStatus.Approved)
-    && User.IsInRole("MIE\\PMS_HRCLERK"))
+    && User.IsInRole("HRPERSONNEL"))
     {
         <form method="post">
             <input asp-for="overtimeRecordID" value="@Model.overtimeRecordModel.overtimeRecordID" type="hidden" />
@@ -150,9 +150,9 @@
         </form>
         
     }
-    @if (Model.overtimeRecordModel.overtimeRecordStatus == Enums.overtimeStatus.Hold && (User.IsInRole("MIE\\PMS_HRCLERK") || Model.overtimeRecordModel.overtimeRecordStatus == Enums.overtimeStatus.Hold && Model.isSelf))
+    @if (Model.overtimeRecordModel.overtimeRecordStatus == Enums.overtimeStatus.Hold && (User.IsInRole("HRPERSONNEL") || Model.overtimeRecordModel.overtimeRecordStatus == Enums.overtimeStatus.Hold && Model.isSelf))
     {
-        <a class="btn btn-primary m-2 d-print-none" asp-page="./Edit" asp-route-id="@Model.overtimeRecordModel.overtimeRecordID">Edit</a>   
+        <a class="btn btn-primary m-2 d-print-none" asp-page="./Edit" asp-route-id="@Model.overtimeRecordModel.overtimeRecordID">@L.T("Edit")</a>   
         <a asp-page="./Delete" asp-route-id="@Model.overtimeRecordModel.overtimeRecordID" role="button" class="btn btn-danger text-decoration-none m-2">Delete</a>
     } 
 

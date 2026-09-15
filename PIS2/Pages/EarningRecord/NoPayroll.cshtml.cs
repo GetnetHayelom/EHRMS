@@ -8,7 +8,7 @@ using PIS2.Models;
 
 namespace PIS2.Pages.Earning
 {
-    [Authorize(Roles = "MIE\\PMS_FINANCE, MIE\\PMS_HRMANAGER")]
+    [Authorize(Roles = "FINANCE, HRMANAGER")]
     public class NoPayrollModel : PageModel
     {
         private readonly PISContext _db;

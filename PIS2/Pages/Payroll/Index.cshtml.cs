@@ -8,7 +8,7 @@ using PIS2.Data;
 
 namespace PIS2.Pages.Payroll
 {
-    [Authorize(Roles = @"MIE\PMS_HRCLERK,MIE\PMS_HRMANAGER,MIE\PMS_PAYROLL")]
+    [Authorize(Roles = @"MIE\HRCLERK,MIE\HRMANAGER,MIE\PAYROLL")]
     public class IndexModel : PageModel
     {
         private readonly PISContext _db;
@@ -31,7 +31,7 @@ namespace PIS2.Pages.Payroll
 
         public async Task<IActionResult> OnPostGenerateAsync(int id)
         {
-            if (!User.IsInRole("MIE\\PMS_PAYROLL")) return RedirectToPage("/Shared/AccessDenied");
+            if (!User.IsInRole("PAYROLL")) return RedirectToPage("/Shared/AccessDenied");
             var selectedPayroll = await _db.Payrolls.FirstOrDefaultAsync(r => r.payrollID == id);
             if(!selectedPayroll.IsPayroll)
             {
@@ -51,7 +51,7 @@ namespace PIS2.Pages.Payroll
         }
         public async Task<IActionResult> OnPostPostAsync(int id)
         {
-            if (!User.IsInRole("MIE\\PMS_HRMANAGER")) return RedirectToPage("/Shared/AccessDenied");
+            if (!User.IsInRole("HRMANAGER")) return RedirectToPage("/Shared/AccessDenied");
             // mark as posted
             await _payrollService.PostPayrollAsync(id, User.Identity.Name ?? "system");
             
@@ -60,14 +60,14 @@ namespace PIS2.Pages.Payroll
 
         public async Task<IActionResult> OnPostCompleteAsync(int id)
         {
-            if (!User.IsInRole("MIE\\PMS_FINANCE")) return RedirectToPage("/Shared/AccessDenied");
+            if (!User.IsInRole("FINANCE")) return RedirectToPage("/Shared/AccessDenied");
             await _payrollService.CompletePayrollAsync(id, User.Identity.Name);
             return RedirectToPage();
         }
 
         public async Task<IActionResult> OnPostApproveAsync(int id)
         {
-            if (!User.IsInRole("MIE\\PMS_HRMANAGER")) return RedirectToPage("/Shared/AccessDenied");
+            if (!User.IsInRole("HRMANAGER")) return RedirectToPage("/Shared/AccessDenied");
             var payroll = await _db.Payrolls.FirstOrDefaultAsync(p => p.payrollID == id);
             if (payroll == null) return NotFound();
 

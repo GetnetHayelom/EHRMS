@@ -2429,7 +2429,7 @@ interface EditorSelection {
         node: Node;
         selector: String;
         parents: Node[];
-    }) => void) => EditorSelection;
+    }) => void) =>@L.T("Edit")orSelection;
     selectorChangedWithUnbind: (selector: string, callback: (active: boolean, args: {
         node: Node;
         selector: String;
@@ -3185,7 +3185,7 @@ interface TinyMCE extends EditorManager {
         Serializer: (settings: DomSerializerSettings, editor?: Editor) => DomSerializer;
         ControlSelection: (selection: EditorSelection, editor: Editor) => ControlSelection;
         BookmarkManager: BookmarkManagerNamespace;
-        Selection: (dom: DOMUtils, win: Window, serializer: DomSerializer, editor: Editor) => EditorSelection;
+        Selection: (dom: DOMUtils, win: Window, serializer: DomSerializer, editor: Editor) =>@L.T("Edit")orSelection;
         StyleSheetLoader: (documentOrShadowRoot: Document | ShadowRoot, settings: StyleSheetLoaderSettings) => StyleSheetLoader;
         Event: EventUtils;
     };

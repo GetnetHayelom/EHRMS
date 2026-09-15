@@ -16,7 +16,7 @@ using static System.Formats.Asn1.AsnWriter;
 
 namespace PIS2.Pages.EmployeeService
 {
-    [Authorize(Roles = "MIE\\PMS_HRCLERK, MIE\\PMS_HRMANAGER")]
+    [Authorize(Roles = "HRCLERK, HRMANAGER")]
     public class IndexModel : PageModel
     {
         private readonly PISContext _context;
@@ -55,7 +55,7 @@ namespace PIS2.Pages.EmployeeService
             EarningTypes = await _context.EarningTypes.ToListAsync() ?? new List<earningType>();
             DeductionTypes = await _context.DeductionTypes.ToListAsync() ?? new List<deductionType>();
 
-            var userID =_context.Users.FirstOrDefault(u => u.userName == User.Identity.Name)?.userID ?? 0;
+            var userID =_context.Users.FirstOrDefault(u => u.UserName == User.Identity.Name)?.Id ?? 0;
 
             var empID = _core.getUserEmp(User.Identity.Name);
 

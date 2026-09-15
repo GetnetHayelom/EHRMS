@@ -34,7 +34,7 @@ namespace PIS2.Services
         public int getUserEmp(string userName)
         {
             
-            var personID = _context.Users.FirstOrDefault(u => u.userName.ToLower() == userName.ToLower())?.personID;
+            var personID = _context.Users.FirstOrDefault(u => u.UserName.ToLower() == userName.ToLower())?.personID;
             var emp =_context.Employments.Where(e => e.personID == personID).FirstOrDefault()?.employmentID ?? 0;
             
             return emp;
@@ -146,65 +146,68 @@ namespace PIS2.Services
                     
                     break;
             }
-
-            
-
             return overtimes;
         }
         public async Task<leaveDetail> GetLeaveSummary(int empID)
         {
-            mainStatus empStatus = _context.Employments.Where(e => e.employmentID == empID).FirstOrDefault().employmentStatus;
-            decimal hRate = 0;
-            if (_context.JobPlacements.Any( jp=> jp.employmentID == empID))
-            {
-                hRate = _context.JobPlacements.OrderByDescending(js => js.jobPlacementDate).First(js => js.employmentID == empID).jobPlacementSalary / 26;
-            }
-            DateTime startDate =await GetLeaveStart(empID);
-            DateTime endDate =await GetLeaveEndAsync(empID);
-            List<leaveModel> leaves = new List<leaveModel>();
-            leaves = _context.Leaves.Where(l=>l.employmentID == empID).Include(l => l.leaveTypeModel).ToList();
-            decimal usedLeave = leaves.Where(l => l.leaveTypeModel.leaveTypeImpact == leaveTypeImpact.Negative).Sum(l => l.leaveDays);
-            decimal accruedLeave = leaves.Where(l => l.leaveTypeModel.leaveTypeImpact == leaveTypeImpact.Positive).Sum(l => l.leaveDays);
-            //total number of days between given date
-            int days = (endDate - startDate).Days;
-            //initialize elapsed year
-            int years = endDate.Year - startDate.Year;
-            //number of days that are extra after allocating the total day per year
-            int spareDays = 0;
-            //the last amount incremented, initialised to the base rate
-            //get the id of 'New Year Balance' Leave Type and use it for selecting parameter
-            decimal lastAnnualLeaveIncrement = leaves.OrderBy(l => l.leaveRequestDate)
-                .LastOrDefault(l => l.leaveTypeID == 63)?.leaveDays ?? 0;
-            //daily accrual rate by deviding last annual increment rate to the number of working days
-            decimal dailyAccrualRate = DateTime.IsLeapYear(endDate.Year)? lastAnnualLeaveIncrement / 366 : lastAnnualLeaveIncrement / 365;
-            //total amount of leave until the given end time
-            decimal totalLeave = 0;
-
-            DateTime lastDate = endDate > DateTime.Now ? DateTime.Now : endDate;
-            //amount of leave that can be utilised
-            decimal allowedLeave = 0;
             
-            if (endDate < startDate.AddYears(years))
-                years--;
+             
+                var employment = await _context.Employments.Where(e => e.employmentID == empID).FirstOrDefaultAsync();
+                decimal hRate = 0;
+                if (_context.JobPlacements.Any( jp=> jp.employmentID == empID))
+                {
+                    hRate = _context.JobPlacements.OrderByDescending(js => js.jobPlacementDate).First(js => js.employmentID == empID).jobPlacementSalary / 26;
+                }
+                DateTime startDate =await GetLeaveStart(empID);
+                DateTime endDate =await GetLeaveEndAsync(empID);
+                List<leaveModel> leaves = new List<leaveModel>();
+                leaves = _context.Leaves.Where(l=>l.employmentID == empID).Include(l => l.leaveTypeModel).ToList();
+                decimal usedLeave = leaves.Where(l => l.leaveTypeModel.leaveTypeImpact == leaveTypeImpact.Negative).Sum(l => l.leaveDays);
+                decimal accruedLeave = leaves.Where(l => l.leaveTypeModel.leaveTypeImpact == leaveTypeImpact.Positive).Sum(l => l.leaveDays);
+                //total number of days between given date
+                int days = (endDate - startDate).Days;
+                //initialize elapsed year
+                int years = endDate.Year - startDate.Year;
+                //number of days that are extra after allocating the total day per year
+                int spareDays = 0;
+                //the last amount incremented, initialised to the base rate
+                //get the id of 'New Year Balance' Leave Type and use it for selecting parameter
+                decimal lastAnnualLeaveIncrement = leaves.OrderBy(l => l.leaveRequestDate)
+                    .LastOrDefault(l => l.leaveTypeID == 63)?.leaveDays ?? 0;
+                //daily accrual rate by deviding last annual increment rate to the number of working days
+                decimal dailyAccrualRate = DateTime.IsLeapYear(endDate.Year)? lastAnnualLeaveIncrement / 366 : lastAnnualLeaveIncrement / 365;
+                //total amount of leave until the given end time
+                decimal totalLeave = 0;
 
-            DateTime partialYearStart = startDate.AddYears(years);
+                DateTime lastDate = endDate > DateTime.Now ? DateTime.Now : endDate;
+                //amount of leave that can be utilised
+                decimal allowedLeave = 0;
+            
+                if (endDate < startDate.AddYears(years))
+                    years--;
 
-            spareDays = Enumerable.Range(0, (endDate - partialYearStart).Days + 1)
-            .Select(offset => partialYearStart.AddDays(offset))
-            .Count();
-            var allocatedForGrant = lastAnnualLeaveIncrement - spareDays * dailyAccrualRate;
+                DateTime partialYearStart = startDate.AddYears(years);
 
-            totalLeave = accruedLeave - usedLeave;
-            if (empStatus == mainStatus.Inactive)
-            {
-                totalLeave -= allocatedForGrant;
-            }
-            allowedLeave = totalLeave - (lastAnnualLeaveIncrement - spareDays * dailyAccrualRate);
-            allowedLeave = allowedLeave < 0 ? 0 : allowedLeave;
-            var lpy = await LeavesPerYear(empID);
-            leaveDetail leaveSummary = new leaveDetail(Math.Round(totalLeave,2), allowedLeave, lastAnnualLeaveIncrement, startDate, endDate, lpy);
-            leaveSummary.leaveCost = allowedLeave * hRate;
-            return leaveSummary;
+                spareDays = Enumerable.Range(0, (endDate - partialYearStart).Days + 1)
+                .Select(offset => partialYearStart.AddDays(offset))
+                .Count();
+                var allocatedForGrant = lastAnnualLeaveIncrement - spareDays * dailyAccrualRate;
+
+                totalLeave = accruedLeave - usedLeave;
+                if (employment.employmentStatus == mainStatus.Inactive)
+                {
+                    totalLeave -= allocatedForGrant;
+                }
+                allowedLeave = totalLeave - (lastAnnualLeaveIncrement - spareDays * dailyAccrualRate);
+                allowedLeave = allowedLeave < 0 ? 0 : allowedLeave;
+                var lpy = await LeavesPerYear(empID);
+                leaveDetail leaveSummary = new leaveDetail(Math.Round(totalLeave,2), allowedLeave, lastAnnualLeaveIncrement, startDate, endDate, lpy);
+                leaveSummary.leaveCost = allowedLeave * hRate;
+                return leaveSummary;
+            
+            return new leaveDetail();
+            
+            
         }
       
         public async Task<List<leavePerYear>> LeavesPerYear(int empID)
@@ -374,7 +377,8 @@ namespace PIS2.Services
         private async Task<DateTime> GetLeaveStart(int empID)
         {
             employmentModel employment = new employmentModel();
-            employment =await _context.Employments.Where(e => e.employmentID == empID).FirstOrDefaultAsync();
+            employment = await _context.Employments.Where(e => e.employmentID == empID).FirstOrDefaultAsync();
+    
             DateTime leaveCountStartDate= employment.employmentDate;
             
             return leaveCountStartDate;
@@ -531,7 +535,7 @@ namespace PIS2.Services
             string useN = _context.Employments
                 .Where(e => e.employmentID == empID)
                 .Select(e => e.personModel != null && e.personModel.userModel != null
-                    ? e.personModel.userModel.userName
+                    ? e.personModel.userModel.UserName
                     : null)
                 .FirstOrDefault();
 
@@ -549,27 +553,27 @@ namespace PIS2.Services
         /// <returns>
         /// List of tuples: (UserGroup role, CompanyID company)
         /// </returns>
-        public async Task<List<(UserGroups Role, int? CompanyID)>> GetUserAccessAsync(string username)
+        public async Task<List<(int roleID, int? CompanyID)>> GetUserAccessAsync(string username)
         {
             if (string.IsNullOrEmpty(username))
-                return new List<(UserGroups, int?)>();
+                return new List<(int, int?)>();
 
             
             var user = await _context.Users
                 .AsNoTracking()
-                .FirstOrDefaultAsync(u => u.userName == username);
+                .FirstOrDefaultAsync(u => u.UserName == username);
 
             if (user == null)
-                return new List<(UserGroups, int?)>();
+                return new List<(int, int?)>();
 
             var accessList = await _context.Accesses
                 .AsNoTracking()
-                .Where(a => a.userID == user.userID && a.accessStatus == mainStatus.Active)
-                .Select(a => new { a.userGroups, a.companyID })
+                .Where(a => a.userID == user.Id && a.accessStatus == mainStatus.Active)
+                .Select(a => new { a.roleID, a.companyID })
                 .ToListAsync();
-
-            return accessList
-                .Select(a => (a.userGroups, a.companyID))
+            var grantedAccesses = accessList;
+            return grantedAccesses
+                .Select(a => (a.roleID, a.companyID))
                 .ToList();
         }
 

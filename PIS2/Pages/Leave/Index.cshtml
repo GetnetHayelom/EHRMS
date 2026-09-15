@@ -91,7 +91,7 @@
                                     }
                                 </td>
                                 <td class="text-center d-print-none">
-                                    @if (User.IsInRole("MIE\\PMS_HRCLERK"))
+                                    @if (User.IsInRole("HRPERSONNEL"))
                                     {
                                         <button class="btn btn-success btn-sm post-button" data-id="@item.LeaveId">Post</button>
                                     }
@@ -175,7 +175,7 @@
                                                             }
                                                         </td>
                                                         <td class="text-center d-print-none">
-                                                            @if (User.IsInRole("MIE\\PMS_HRCLERK"))
+                                                            @if (User.IsInRole("HRPERSONNEL"))
                                                             {
                                                                 <button class="btn btn-success btn-sm post-button" data-id="@item.LeaveId">Post</button>
                                                             }
@@ -266,7 +266,7 @@
                                                             }
                                                         </td>
                                                         <td class="text-center d-print-none">
-                                                            @if (User.IsInRole("MIE\\PMS_HRCLERK"))
+                                                            @if (User.IsInRole("HRPERSONNEL"))
                                                             {
                                                                 <button class="btn btn-success btn-sm post-button" data-id="@item.LeaveId">Post</button>
                                                             }

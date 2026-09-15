@@ -11,7 +11,7 @@ using PIS2.Models;
 
 namespace PIS2.Pages.ServiceRequestType
 {
-    [Authorize(Roles ="MIE\\PMS_HRADMIN")]
+    [Authorize(Roles ="HRADMIN")]
     public class CreateModel : PageModel
     {
         private readonly PISContext _context;

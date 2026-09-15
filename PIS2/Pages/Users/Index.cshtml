@@ -49,9 +49,9 @@
                         @foreach (var item in Model.userModel)
                         {
                             <tr class="table-row-hover"
-                                onclick="location.href='@Url.Page("Details", new { id = item.userID })'"
+                                onclick="location.href='@Url.Page("Details", new { id = item.Id })'"
                                 style="cursor: pointer;">
-                                <td class="fw-semibold">@item.userName</td>
+                                <td class="fw-semibold">@item.UserName</td>
                                 <td>@item.personModel?.personFullName</td>
                                 <td>
                                     @if (item.userStatus == mainStatus.Active)
@@ -76,16 +76,11 @@
                             </td>
                         </tr>
                     }
-                </tbody>
+                </tbody> 
             </table>
         </div>
     </div>
 
 </div>
 
-<style>
-    .table-row-hover:hover {
-        background-color: #f8f9fa !important;
-        transition: background-color 0.2s ease-in-out;
-    }
-</style>
+

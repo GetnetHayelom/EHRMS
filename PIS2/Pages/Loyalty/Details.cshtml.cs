@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace PIS2.Pages.Loyalty
 {
-    [Authorize(Roles = "MIE\\PMS_HRMANAGER")]
+    [Authorize(Roles = "HRMANAGER")]
     public class DetailsModel : PageModel
     {
         private readonly PISContext _context;

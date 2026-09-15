@@ -145,7 +145,7 @@
         <a class="btn btn-warning m-2" asp-page="/Department/Create" asp-route-id="@Model.companyModel.companyID">Add Department</a>
     }
     
-    <a class="btn btn-primary m-2" asp-page="./Edit" asp-route-id="@Model.companyModel.companyID">Edit</a>
+    <a class="btn btn-primary m-2" asp-page="./Edit" asp-route-id="@Model.companyModel.companyID">@L.T("Edit")</a>
     @await Html.PartialAsync("back")
     @await Html.PartialAsync("print")
 </div>

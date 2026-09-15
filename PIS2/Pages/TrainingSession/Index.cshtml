@@ -94,7 +94,7 @@
                                     <span class="badge @statusClass">@item.sessionStatus</span>
                                 </td>
                                 <td class="text-end px-4 d-print-none">
-                                    <a asp-page="./Edit" asp-route-id="@item.trainingSessionID" class="btn btn-sm btn-outline-secondary">Edit</a>
+                                    <a asp-page="./Edit" asp-route-id="@item.trainingSessionID" class="btn btn-sm btn-outline-secondary">@L.T("Edit")</a>
                                     <a asp-page="./Details" asp-route-id="@item.trainingSessionID" class="btn btn-sm btn-primary">Attendance</a>
                                 </td>
                             </tr>

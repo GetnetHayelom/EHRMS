@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 
 namespace PIS2.Pages.Penalty
 {
-    [Authorize(Roles = "MIE\\PMS_HRCLERK")]
+    [Authorize(Roles = "HRPERSONNEL")]
     public class CreateModel : PageModel
     {
         private readonly PISContext _context;

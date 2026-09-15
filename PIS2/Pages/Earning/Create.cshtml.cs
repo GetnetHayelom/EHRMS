@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace PIS2.Pages.Earning
 {
-    [Authorize(Roles = "MIE\\PMS_HRADMIN")]
+    [Authorize(Roles = "HRADMIN")]
     public class CreateModel : PageModel
     {
         private readonly PISContext _context;
@@ -30,7 +30,7 @@ namespace PIS2.Pages.Earning
        
         public async Task<IActionResult> OnPostAsync()
         {
-            if (!User.IsInRole("MIE\\PMS_HRADMIN"))
+            if (!User.IsInRole("HRADMIN"))
             {
                 return RedirectToPage("/Shared/AccessDenied");
             }

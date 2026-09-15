@@ -10,7 +10,7 @@ using PIS2.Enums;
 
 namespace PIS2.Pages.Notice
 {
-    [Authorize(Roles = "MIE\\PMS_HRCLERK,MIE\\PMS_HRMANAGER")]
+    [Authorize(Roles = "HRCLERK,HRMANAGER")]
     public class EditModel : PageModel
     {
         private readonly PISContext _context;
@@ -67,7 +67,7 @@ namespace PIS2.Pages.Notice
                 return Page();
             }
 
-            bool isHR = User.IsInRole("MIE\\PMS_HRMANAGER");
+            bool isHR = User.IsInRole("HRMANAGER");
             bool isPending = existing.noticeStatus == NoticeStatus.Pending;
 
             if (!isPending && !isHR)

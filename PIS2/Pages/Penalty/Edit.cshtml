@@ -8,7 +8,7 @@
 
 <h1 class="fw-bold">Penalty</h1>
 
-<h4 class="fw-bold">Update Penalty</h4>
+<h4 class="fw-bold">@L.T("Update") Penalty</h4>
 <hr />
 <div class="d-flex gap-3">
     <div class="col-md-4 card shadow-sm m-2 p-2">
@@ -60,7 +60,7 @@
                 <span asp-validation-for="penaltyModel.penaltyStatus" class="text-danger"></span>
             </div>
             <div class="form-group d-flex justify-content-end">
-                <input type="submit" value="Save" class="btn btn-success m-2" />
+                <input type="submit" value='@L.T("Save")' class="btn btn-success m-2" />
             </div>
         </form>
     </div>

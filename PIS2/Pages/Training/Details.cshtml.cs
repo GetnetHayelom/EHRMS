@@ -7,7 +7,7 @@ using PIS2.Models;
 
 namespace PIS2.Pages.Training
 {
-    [Authorize(Roles = "MIE\\PMS_HRCLERK, MIE\\PMS_HRMANAGER")]
+    [Authorize(Roles = "HRCLERK, HRMANAGER")]
     public class DetailsModel : PageModel
     {
         private readonly PISContext _context;

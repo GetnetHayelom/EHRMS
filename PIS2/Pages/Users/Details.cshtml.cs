@@ -29,7 +29,7 @@ namespace PIS2.Pages.Users
             }
 
             var usermodel = await _context.Users.Include(u => u.personModel)
-                .Include(u => u.UserHistories).FirstOrDefaultAsync(m => m.userID == id);
+                .Include(u => u.UserHistories).FirstOrDefaultAsync(m => m.Id == id);
             if (usermodel == null)
             {
                 return NotFound();

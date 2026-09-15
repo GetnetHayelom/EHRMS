@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace PIS2.Pages.Structures
 {
-    [Authorize(Roles = "MIE\\PMS_HRMANAGER")]
+    [Authorize(Roles = "HRMANAGER")]
     public class CreateModel : PageModel
     {
         private readonly PISContext _context;

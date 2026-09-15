@@ -18,7 +18,7 @@
                 <i class="bi bi-arrow-left-circle"></i> Back to List
             </a>
             <a asp-page="Edit" asp-route-id="@Model.jobModel.jobID" class="btn btn-primary me-2 d-print-none">
-                <i class="bi bi-pencil-square"></i> Edit
+                <i class="bi bi-pencil-square"></i>@L.T("Edit")
             </a>
             <button type="button" onclick="window.print()" class="btn btn-primary">
                 <i class="bi bi-printer"></i> Print
@@ -67,7 +67,7 @@
             <i class="bi bi-arrow-left-circle"></i> Back
         </a>
         <a asp-page="Edit" asp-route-id="@Model.jobModel.jobID" class="btn btn-primary px-4 m-2">
-            <i class="bi bi-pencil-square"></i> Edit
+            <i class="bi bi-pencil-square"></i>@L.T("Edit")
         </a>
         @await Html.PartialAsync("print")
         

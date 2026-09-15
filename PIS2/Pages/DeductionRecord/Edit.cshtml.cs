@@ -24,7 +24,7 @@ namespace PIS2.Pages.DeductionRecord
 
         public async Task<IActionResult> OnGetAsync(int id)
         {
-            if (!(User.IsInRole("MIE\\PMS_HRCLERK") || User.IsInRole("MIE\\PMS_HRMANAGER"))) { return RedirectToPage("/Shared/AccessDenied"); }
+            if (!(User.IsInRole("HRPERSONNEL") || User.IsInRole("HRMANAGER"))) { return RedirectToPage("/Shared/AccessDenied"); }
             Deduction = await _db.Deductions.FindAsync(id);
 
             if (Deduction == null)
@@ -38,7 +38,7 @@ namespace PIS2.Pages.DeductionRecord
 
         public async Task<IActionResult> OnPostAsync()
         {
-            if (!(User.IsInRole("MIE\\PMS_HRCLERK") || User.IsInRole("MIE\\PMS_HRMANAGER"))) { return RedirectToPage("/Shared/AccessDenied"); }
+            if (!(User.IsInRole("HRPERSONNEL") || User.IsInRole("HRMANAGER"))) { return RedirectToPage("/Shared/AccessDenied"); }
             ModelState.Clear();
             Deduction.modifiedBy = User.Identity?.Name ?? "System";
 

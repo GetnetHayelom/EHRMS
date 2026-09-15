@@ -8,7 +8,7 @@
 }
 
 <h1 class="fw-bold">Overtime Types</h1>
-<h4 class="fw-bold">Update Overtime Type</h4>
+<h4 class="fw-bold">@L.T("Update") Overtime Type</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
@@ -36,7 +36,7 @@
                 <span asp-validation-for="overtimeModel.overtimeRate" class="text-danger"></span>
             </div>
             <div class="form-group d-flex justify-content-end m-2">
-                <input type="submit" value="Save" class="btn btn-success" />
+                <input type="submit" value='@L.T("Save")' class="btn btn-success" />
             </div>
         </form>
     </div>

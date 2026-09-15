@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace PIS2.Pages.JobCategory
 {
-    [Authorize(Roles = "MIE\\PMS_HRADMIN")]
+    [Authorize(Roles = "HRADMIN")]
     public class DeleteModel : PageModel
     {
         private readonly PISContext _context;
@@ -46,7 +46,7 @@ namespace PIS2.Pages.JobCategory
 
         public async Task<IActionResult> OnPostAsync(int? id)
         {
-            if (!User.IsInRole("MIE\\PMS_HRADMIN"))
+            if (!User.IsInRole("HRADMIN"))
             {
                 return RedirectToPage("/Shared/AccessDenied");
             }

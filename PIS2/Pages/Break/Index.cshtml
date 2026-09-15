@@ -53,7 +53,7 @@
                 @Html.DisplayFor(modelItem => item.breakStatus)
             </td>
             <td>
-                <a asp-page="./Edit" asp-route-id="@item.breakID">Edit</a> |
+                <a asp-page="./Edit" asp-route-id="@item.breakID">@L.T("Edit")</a> |
                 <a asp-page="./Details" asp-route-id="@item.breakID">Details</a> |
                 <a asp-page="./Delete" asp-route-id="@item.breakID">Delete</a>
             </td>

@@ -168,7 +168,7 @@
             
         </div>
         <!--CALL TO ACTION-->
-        @if (User.IsInRole("MIE\\PMS_HRCLERK"))
+        @if (User.IsInRole("HRPERSONNEL"))
         {
             <div>
                 <div class="btn-group shadow-sm">
@@ -186,7 +186,7 @@
 
                 <div class="btn-group shadow-sm">
                     <a asp-page="./Edit" asp-route-id="@Model.personModel.personID" class="btn btn-outline-primary">
-                        <i class="bi bi-pencil"></i> Edit
+                        <i class="bi bi-pencil"></i>@L.T("Edit")
                     </a>
                     <button class="btn btn-outline-dark" onclick="printEmployeeID()">
                         <i class="bi bi-printer"></i> ID Card
@@ -293,7 +293,7 @@
                                             <th>Date</th>
                                             <th>Title/School</th>
                                             <th>CGPA</th>
-                                            @if (User.IsInRole("MIE\\PMS_HRCLERK"))
+                                            @if (User.IsInRole("HRPERSONNEL"))
                                             {
                                                 <th class="text-end pe-3">Action</th>
                                             }
@@ -310,10 +310,10 @@
                                                     <div class="small text-muted">@item.educationLevelInstitutionName</div>
                                                 </td>
                                                 <td><span class="badge bg-secondary">@item.educationLevelMark</span></td>
-                                                @if(User.IsInRole("<IE\\PMS_HRCLERK"))
+                                                @if(User.IsInRole("<IE\\HRCLERK"))
                                                 {
                                                     <td class="text-end pe-3">
-                                                        <a href="@Url.Page("/PersonEducationLevel/Edit", new { id = item.personEducationLevelID })" class="btn btn-sm btn-light">Edit</a>
+                                                        <a href="@Url.Page("/PersonEducationLevel/Edit", new { id = item.personEducationLevelID })" class="btn btn-sm btn-light">@L.T("Edit")</a>
                                                     </td>
                                                 }
                                                 
@@ -322,7 +322,7 @@
                                     </tbody>
                                 </table>
                             </div>
-                            @if (User.IsInRole("MIE\\PMS_HRCLERK"))
+                            @if (User.IsInRole("HRPERSONNEL"))
                             {
                                 <div class="p-3 bg-light border-top text-end">
                                     <a asp-page="/PersonEducationLevel/Create" asp-route-id="@Model.personModel.personID" class="btn btn-sm btn-primary">+ Add New</a>
@@ -392,7 +392,7 @@
                                                 <th>Relationship</th>
                                                 <th>Last Updated</th>
                                                 <th>Verified By</th>
-                                                @if (User.IsInRole("MIE\\PMS_HRCLERK"))
+                                                @if (User.IsInRole("HRPERSONNEL"))
                                                 {
                                                     <th class="text-end pe-3">Action</th>
                                                 }
@@ -436,7 +436,7 @@
                                         </tbody>
                                     </table>
                                 </div>
-                                @if(User.IsInRole("MIE\\PMS_HRCLERK"))
+                                @if(User.IsInRole("HRPERSONNEL"))
                                 {
                                     <div class="p-3 bg-light border-top text-end">
                                         <a href="/Family/Create?id=@Model.personModel.personID" class="btn btn-sm btn-primary">
@@ -469,7 +469,7 @@
                                                 <th>Job Title & Company</th>
                                                 <th>Type</th>
                                                 <th>Salary</th>
-                                                @if (User.IsInRole("MIE\\PMS_HRCLERK"))
+                                                @if (User.IsInRole("HRPERSONNEL"))
                                                 {
                                                     <th class="text-end pe-3">Action</th>
                                                 }
@@ -489,10 +489,10 @@
                                                     </td>
                                                     <td><span class="badge bg-light text-dark border">@item.experienceType</span></td>
                                                     <td class="fw-medium text-success">@item.jobSalary</td>
-                                                    @if (User.IsInRole("MIE\\PMS_HRCLERK"))
+                                                    @if (User.IsInRole("HRPERSONNEL"))
                                                     {
                                                         <td class="text-end pe-3">
-                                                            <a href="@Url.Page("/Experience/Edit", new { id = item.experienceID })" class="btn btn-sm btn-light border">Edit</a>
+                                                            <a href="@Url.Page("/Experience/Edit", new { id = item.experienceID })" class="btn btn-sm btn-light border">@L.T("Edit")</a>
                                                         </td>
                                                     }
                                                 </tr>
@@ -500,7 +500,7 @@
                                         </tbody>
                                     </table>
                                 </div>
-                                @if (User.IsInRole("MIE\\PMS_HRCLERK"))
+                                @if (User.IsInRole("HRPERSONNEL"))
                                 {
                                     <div class="p-3 bg-light border-top text-end">
                                         <a asp-page="/Experience/Create" asp-route-id="@Model.personModel.personID" class="btn btn-sm btn-primary">+ Add Experience</a>
@@ -587,7 +587,7 @@
     <div class="id-card">
 
         <div class="id-header">
-            <h3 class="fw-bold">MESFIN METALS & ENGINEERING PLC</h3>
+            <h3 class="fw-bold">COMPANY 1 PLC</h3>
             <p class="id-subtitle">Employee Identification</p>
         </div>
 

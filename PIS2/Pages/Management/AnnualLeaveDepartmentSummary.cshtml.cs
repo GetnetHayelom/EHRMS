@@ -6,7 +6,7 @@ using PIS2.Views;
 
 namespace PIS2.Pages.Management
 {
-    [Authorize(Roles = "MIE\\PMS_HRMANAGER,MIE\\PMS_MANAGEMENT,MIE\\PMS_HRCLERK")]
+    [Authorize(Roles = "HRMANAGER,MANAGEMENT,HRCLERK")]
     public class AnnualLeaveDepartmentSummaryModel : PageModel
     {
         private readonly PISContext _context;

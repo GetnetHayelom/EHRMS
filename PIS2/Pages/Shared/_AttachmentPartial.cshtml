@@ -6,7 +6,7 @@
     </div>
 
     <div class="card-body">
-        @if(User.IsInRole("MIE\\PMS_HRCLERK"))
+        @if(User.IsInRole("HRPERSONNEL"))
         {
             <form id="uploadForm" enctype="multipart/form-data">
                 <input type="hidden" name="tableName" value="@Model.tableName" />

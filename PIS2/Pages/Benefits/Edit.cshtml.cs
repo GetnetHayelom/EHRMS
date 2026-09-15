@@ -9,7 +9,7 @@ using PIS2.Services;
 
 namespace PIS2.Pages.Benefits
 {
-    [Authorize(Roles ="MIE\\PMS_HRCLERK, MIE\\PMS_HRMANAGER, MIE\\PMS_FINANCE")]
+    [Authorize(Roles ="HRCLERK, HRMANAGER, FINANCE")]
     public class EditModel : PageModel
     {
         private readonly PISContext _context;
@@ -48,7 +48,7 @@ namespace PIS2.Pages.Benefits
             {
                 case Enums.payrollStatus.PENDING:
 
-                    if (User.IsInRole("MIE\\PMS_HRMANAGER"))
+                    if (User.IsInRole("HRMANAGER"))
                     {
                         
                         if (OtherPay.payrollStatus == Enums.payrollStatus.APPROVED)
@@ -63,7 +63,7 @@ namespace PIS2.Pages.Benefits
 
                 case Enums.payrollStatus.APPROVED:
 
-                    if (!User.IsInRole("MIE\\PMS_HRMANAGER"))
+                    if (!User.IsInRole("HRMANAGER"))
                         return RedirectToPage("/Shared/AccessDenied");
 
                     if (OtherPay.payrollStatus == Enums.payrollStatus.POSTED)
@@ -73,7 +73,7 @@ namespace PIS2.Pages.Benefits
 
                 case Enums.payrollStatus.POSTED:
 
-                    if (!User.IsInRole("MIE\\PMS_FINANCE"))
+                    if (!User.IsInRole("FINANCE"))
                         return RedirectToPage("/Shared/AccessDenied");
 
                     if (OtherPay.payrollStatus == Enums.payrollStatus.COMPLETED)
@@ -109,7 +109,7 @@ namespace PIS2.Pages.Benefits
 
         public async Task<IActionResult> OnPostApproveAsync(int id)
         {
-            if (!User.IsInRole("MIE\\PMS_HRMANAGER")) return RedirectToPage("/Shared/AccessDenied");
+            if (!User.IsInRole("HRMANAGER")) return RedirectToPage("/Shared/AccessDenied");
             var payroll = await _context.Payrolls.FirstOrDefaultAsync(p => p.payrollID == id);
             if (payroll == null) return NotFound();
 
@@ -122,7 +122,7 @@ namespace PIS2.Pages.Benefits
 
         public async Task<IActionResult> OnPostPostAsync(int id)
         {
-            if (!User.IsInRole("MIE\\PMS_PAYROLL")) return RedirectToPage("/Shared/AccessDenied");
+            if (!User.IsInRole("PAYROLL")) return RedirectToPage("/Shared/AccessDenied");
             var payroll = await _context.Payrolls.FirstOrDefaultAsync(p => p.payrollID == id);
             if (payroll == null) return NotFound();
             if (payroll.payrollStatus == Enums.payrollStatus.PENDING) return BadRequest("Payroll must be approved first.");
@@ -134,7 +134,7 @@ namespace PIS2.Pages.Benefits
         }
         public async Task<IActionResult> OnPostCompleteAsync(int id)
         {
-            if (!User.IsInRole("MIE\\PMS_FINANCE")) return RedirectToPage("/Shared/AccessDenied");
+            if (!User.IsInRole("FINANCE")) return RedirectToPage("/Shared/AccessDenied");
             await _payrollService.CompletePayrollAsync(id, User.Identity.Name);
             return RedirectToPage();
         }

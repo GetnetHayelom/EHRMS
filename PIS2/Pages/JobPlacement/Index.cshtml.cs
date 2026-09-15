@@ -26,7 +26,7 @@ namespace PIS2.Pages.JobPlacement
         public int jpCount { get; set; }
         public async Task OnGetAsync()
         {
-            var userID = _context.Users.FirstOrDefault(u => u.userName == User.Identity.Name)?.userID ?? 0;
+            var userID = _context.Users.FirstOrDefault(u => u.UserName == User.Identity.Name)?.Id ?? 0;
             var empID = _core.getUserEmp(User.Identity.Name);
             
             var company = _context.JobPlacements.Include(j => j.departmentModel)

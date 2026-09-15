@@ -197,7 +197,7 @@
                         <span class="badge bg-secondary">@Html.DisplayFor(modelItem => item.allowanceStatus)</span>
                     }
                 </td>
-                 <td class="d-print-none">   @if(User.IsInRole("MIE\\PMS_HRADMIN"))
+                 <td class="d-print-none">   @if(User.IsInRole("HRADMIN"))
                     {
                        <div class="btn-group" role="group">
                             <a asp-page="./Details" asp-route-id="@item.allowanceID" class="btn btn-sm btn-outline-primary" title="View Details">

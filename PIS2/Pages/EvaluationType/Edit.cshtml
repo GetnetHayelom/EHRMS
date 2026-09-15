@@ -6,7 +6,7 @@
 }
 
 <h2 class="fw-bold mb-0">Evaluation Type</h2>
-<p class="text-muted mb-0">Update Evaluation Type #@Model.EvaluationType.evaluationTypeID</p>
+<p class="text-muted mb-0">@L.T("Update") Evaluation Type #@Model.EvaluationType.evaluationTypeID</p>
 
 <form method="post" class="card shadow-sm">
     <input type="hidden" asp-for="EvaluationType.evaluationTypeID" />
@@ -47,7 +47,7 @@
     </div>
     <div class="d-flex justify-content-end m-2 gap-2">
         
-        <button type="submit" class="btn btn-success">Update</button>
+        <button type="submit" class="btn btn-success">@L.T("Update")</button>
         <a asp-page="Index" class="btn btn-secondary">Cancel</a>
     </div>
     
@@ -124,7 +124,7 @@
         <td><h4 class="text-small subtask-no"></h4></td>
         <td><input type="text" class="v-name form-control form-control-sm" placeholder="Subtask name" /></td>
         <td><input type="number" class="v-weight form-control form-control-sm" placeholder="Weight" onblur="createNewSubTask(this)" /></td>
-        <td colspan="5" class="text-muted small italic">Save subtask to enable scoring</td>
+        <td colspan="5" class="text-muted small italic">@L.T("Save") subtask to enable scoring</td>
     </tr>
 </template>
 

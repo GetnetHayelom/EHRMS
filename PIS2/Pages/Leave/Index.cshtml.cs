@@ -19,7 +19,7 @@ using static PIS2.Pages.OvertimeRecord.IndexModel;
 
 namespace PIS2.Pages.Leave
 {
-    [Authorize(Roles = "MIE\\PMS_HRCLERK, MIE\\PMS_HRMANAGER")]
+    [Authorize(Roles = "HRCLERK, HRMANAGER")]
     public class IndexModel : PageModel
     {
         private readonly PISContext _context;
@@ -48,7 +48,7 @@ namespace PIS2.Pages.Leave
         public IList<companyModel> Companies { get; set; } = default!;
         public async Task OnGetAsync()
         {
-            var userID = _context.Users.FirstOrDefault(u => u.userName == User.Identity.Name)?.userID ?? 0;
+            var userID = _context.Users.FirstOrDefault(u => u.UserName == User.Identity.Name)?.Id ?? 0;
 
             var empID = _core.getUserEmp(User.Identity.Name);
            
@@ -117,7 +117,7 @@ namespace PIS2.Pages.Leave
             if (leave == null)
                 return new JsonResult(new { success = false, message = "Leave not found." });
 
-            if (!User.IsInRole("MIE\\PMS_HRCLERK"))
+            if (!User.IsInRole("HRPERSONNEL"))
                 return new JsonResult(new { success = false, message = "Access denied." });
 
             leave.leaveStatus = leaveStatus.Posted;

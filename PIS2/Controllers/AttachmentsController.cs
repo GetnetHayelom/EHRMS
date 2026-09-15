@@ -150,7 +150,7 @@ namespace PIS2.Controllers
 
         
         //VIEW ATTACHMENTS
-        [Authorize(Roles = "MIE\\PMS_HRCLERK, MIE\\PMS_HRMANAGER")]
+        [Authorize(Roles = "HRCLERK, HRMANAGER")]
         [HttpGet("view/{id}")]
         [ResponseCache(Duration = 86400, Location = ResponseCacheLocation.Client)]        
         public async Task<IActionResult> View(int id)
@@ -211,7 +211,7 @@ namespace PIS2.Controllers
 
         
         //UPLOAD PROFILE PICTURE
-        [Authorize(Roles = "MIE\\PMS_HRCLERK, MIE\\PMS_HRMANAGER")]
+        [Authorize(Roles = "HRCLERK, HRMANAGER")]
         [HttpPost("uploadprofile")]
         [RequestSizeLimit(10_485_760)]
         public async Task<IActionResult> UploadProfile(

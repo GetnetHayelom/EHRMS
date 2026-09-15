@@ -400,9 +400,9 @@
     <div class="mt-4 pt-3 border-top d-print-none d-flex justify-content-end align-items-center">
         <a class="btn btn-outline-secondary" asp-page="./Index"><i class="bi bi-arrow-left"></i> Employee Catalog</a>
         <div class="d-flex gap-2">
-            @if (User.IsInRole("PMS_HRCLERK"))
+            @if (User.IsInRole("HRPERSONNEL"))
             {
-                <a class="btn btn-primary m-2" asp-page="./Edit" asp-route-id="@Model.employmentModel.employmentID"><i class="bi bi-pencil-square me-2"></i>Edit Record</a>
+                <a class="btn btn-primary m-2" asp-page="./Edit" asp-route-id="@Model.employmentModel.employmentID"><i class="bi bi-pencil-square me-2"></i>@L.T("Edit") Record</a>
             }
             @await Html.PartialAsync("print")
         </div>

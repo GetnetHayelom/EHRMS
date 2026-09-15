@@ -5,11 +5,11 @@
     ViewData["Title"] = "Edit Earning Type";
 }
 <h2 class="fw-bold">Compensation and Benefit Types</h2>
-<p class="text-muted mb-0">Update earninig type details or status #@Model.EarningType.earningTypeID</p>
+<p class="text-muted mb-0">@L.T("Update") earninig type details or status #@Model.EarningType.earningTypeID</p>
 <div class="container mt-2">
     <div class="card shadow-sm border-0 rounded-4">
         <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center rounded-top-4">
-            <h4 class="mb-0">Edit Earning Type</h4>
+            <h4 class="mb-0">@L.T("Edit") Earning Type</h4>
             <a asp-page="Index" class="btn btn-light btn-sm rounded-pill">
                 <i class="bi bi-arrow-left"></i> Back to List
             </a>
@@ -87,7 +87,7 @@
 
                 <div class="text-end">
                     <button type="submit" class="btn btn-success px-4 rounded-pill">
-                        <i class="bi bi-save"></i> Save Changes
+                        <i class="bi bi-save"></i>@L.T("Save") Changes
                     </button>
                     <a asp-page="Index" class="btn btn-outline-secondary px-4 rounded-pill ms-2">
                         <i class="bi bi-x-circle"></i> Cancel

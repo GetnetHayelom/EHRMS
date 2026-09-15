@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace PIS2.Pages.JobRequirement
 {
-    [Authorize(Roles = "MIE\\PMS_HRMANAGEMENT, MIE\\PMS_HRCLERK")]
+    [Authorize(Roles = "HRMANAGEMENT, HRCLERK")]
     public class DetailsModel : PageModel
     {
         private readonly PISContext _context;

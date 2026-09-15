@@ -11,7 +11,7 @@
         <h2 class="fw-bold text-dark">
             <i class="bi bi-megaphone-fill me-2"></i> Notice Board
         </h2>
-        @if (User.IsInRole("MIE\\PMS_HRCLERK"))
+        @if (User.IsInRole("HRPERSONNEL"))
         {
             <a asp-page="/Notice/Create" class="btn btn-sm btn-primary">
                 <i class="bi bi-file-plus-fill me-2"></i>New Notice
@@ -71,10 +71,10 @@
                                 
                                 <a href="/Notice/Details/@notice.noticeID" class="btn btn-sm btn-info">Preview</a>
 
-                                @if (User.IsInRole("MIE\\PMS_HRCLERK"))
+                                @if (User.IsInRole("HRPERSONNEL"))
                                 {
                                     <a href="/Notice/Edit?id=@notice.noticeID" class="btn btn-sm btn-primary">
-                                        <i class="bi bi-pencil-fill me-2"></i>Edit
+                                        <i class="bi bi-pencil-fill me-2"></i>@L.T("Edit")
                                     </a>
                                 }
                             </div>

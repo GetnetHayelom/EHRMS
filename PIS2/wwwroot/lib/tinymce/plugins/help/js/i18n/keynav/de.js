@@ -33,7 +33,7 @@ tinymce.Resource.add('tinymce.html-i18n.help-keynav.de',
   '  <li>Elementpfad in der Fußzeile</li>\n' +
   '  <li>Umschaltfläche „Wörter zählen“ in der Fußzeile</li>\n' +
   '  <li>Branding-Link in der Fußzeile</li>\n' +
-  '  <li>Editor-Ziehpunkt zur Größenänderung in der Fußzeile</li>\n' +
+  '  <li>@L.T("Edit")or-Ziehpunkt zur Größenänderung in der Fußzeile</li>\n' +
   '</ol>\n' +
   '\n' +
   '<p>Falls ein Abschnitt der Benutzeroberflächen nicht vorhanden ist, wird er übersprungen.</p>\n' +

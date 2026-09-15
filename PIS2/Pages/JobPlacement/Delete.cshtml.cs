@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace PIS2.Pages.JobPlacement
 {
-    [Authorize(Roles = "MIE\\PMS_HRMANAGER")]
+    [Authorize(Roles = "HRMANAGER")]
     public class DeleteModel : PageModel
     {
         private readonly PISContext _context;
@@ -26,7 +26,7 @@ namespace PIS2.Pages.JobPlacement
 
         public async Task<IActionResult> OnGetAsync(int? id, string? referer)
         {
-            if (User.IsInRole("PMS_HRCLERK"))
+            if (User.IsInRole("HRPERSONNEL"))
             {
                 if (id == null)
                 {
@@ -53,7 +53,7 @@ namespace PIS2.Pages.JobPlacement
 
         public async Task<IActionResult> OnPostAsync(int? id)
         {
-            if (User.IsInRole("PMS_HRCLERK"))
+            if (User.IsInRole("HRPERSONNEL"))
             {
                 if (id == null)
                 {

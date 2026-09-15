@@ -14,7 +14,7 @@ using PIS2.Pages.Shared;
 
 namespace PIS2.Pages.delegation
 {
-    [Authorize(Roles = "MIE\\PMS_MANAGEMENT,MIE\\PMS_HRCLERK, MIE\\PMS_HRMANAGER")]
+    [Authorize(Roles = "MANAGEMENT,HRCLERK, HRMANAGER")]
     public class CreateModel : PageModel
     {
         private readonly PISContext _context;

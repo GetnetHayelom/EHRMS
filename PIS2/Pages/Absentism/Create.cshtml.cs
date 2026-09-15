@@ -52,7 +52,7 @@ namespace PIS2.Pages.Absentism
         {
 
             
-            if (!User.IsInRole("MIE\\PMS_HRCLERK"))
+            if (!User.IsInRole("HRPERSONNEL"))
             {
                 return RedirectToPage("/Shared/AccessDenied");
             }
@@ -121,7 +121,7 @@ namespace PIS2.Pages.Absentism
         public async Task<IActionResult> OnPostCreateAsync()
         {
 
-            if (!User.IsInRole("MIE\\PMS_HRCLERK"))
+            if (!User.IsInRole("HRPERSONNEL"))
             {
                 return RedirectToPage("/Shared/AccessDenied");
             }

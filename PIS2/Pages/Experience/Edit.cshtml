@@ -8,7 +8,7 @@
 
 <h2 class="fw-bold">Experience</h2>
 
-<h6 class="text-muted">Update Expereince Record</h6>
+<h6 class="text-muted">@L.T("Update") Expereince Record</h6>
 <hr />
 <div class="d-flex gap-3">
     <div class="card shadow-sm p-2 col-md-4">
@@ -82,7 +82,7 @@
             <div class="form-group d-flex m-2 justify-content-end">
                 
                 <a asp-page="./Create" asp-route-id="@Model.experienceModel.personID" class="btn btn-outline-primary m-2">Add Experience</a>
-                <input type="submit" value="Save" class="btn btn-success m-2" />
+                <input type="submit" value='@L.T("Save")' class="btn btn-success m-2" />
             </div>
         </form>
         @if (TempData["SuccessMessage"] != null)

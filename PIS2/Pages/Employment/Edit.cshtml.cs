@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace PIS2.Pages.Employment
 {
-    [Authorize(Roles = "MIE\\PMS_HRMANAGER,MIE\\PMS_HRCLERK,MIE\\PMS_MANAGEMENT")]
+    [Authorize(Roles = "HRMANAGER,HRCLERK,MANAGEMENT")]
     public class EditModel : PageModel
     {
         private readonly PISContext _context;
@@ -45,7 +45,7 @@ namespace PIS2.Pages.Employment
         public bool EmpSelected { get; set; } = true;
         public async Task<IActionResult> OnGetAsync(int? id)
         {
-            if (!User.IsInRole("MIE\\PMS_HRCLERK"))
+            if (!User.IsInRole("HRPERSONNEL"))
             {
                 return RedirectToPage("/Shared/AccessDenied");
             }
@@ -115,7 +115,7 @@ namespace PIS2.Pages.Employment
         // For more information, see https://aka.ms/RazorPagesCRUD.
         public async Task<IActionResult> OnPostUpdateEmploymentAsync()
         {
-            if (!User.IsInRole("MIE\\PMS_HRCLERK"))
+            if (!User.IsInRole("HRPERSONNEL"))
             {
                 return RedirectToPage("/Shared/AccessDenied");
             }
@@ -159,7 +159,7 @@ namespace PIS2.Pages.Employment
         }
         public async Task<IActionResult> OnPostUpdatePerson(int id)
         {
-            if (!User.IsInRole("MIE\\PMS_HRCLERK"))
+            if (!User.IsInRole("HRPERSONNEL"))
             {
                 return RedirectToPage("/Shared/AccessDenied");
             }
@@ -201,7 +201,7 @@ namespace PIS2.Pages.Employment
         }
         public async Task<IActionResult> OnPostSaveJobPlacement(int id)
         {
-            if (!User.IsInRole("MIE\\PMS_HRCLERK"))
+            if (!User.IsInRole("HRPERSONNEL"))
             {
                 return RedirectToPage("/Shared/AccessDenied");
             }
@@ -257,7 +257,7 @@ namespace PIS2.Pages.Employment
         }
         public async Task<IActionResult> OnPostAddExperience(int id)
         {
-            if (!User.IsInRole("MIE\\PMS_HRCLERK"))
+            if (!User.IsInRole("HRPERSONNEL"))
             {
                 return RedirectToPage("/Shared/AccessDenied");
             }

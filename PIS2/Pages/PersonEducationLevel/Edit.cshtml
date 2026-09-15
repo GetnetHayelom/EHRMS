@@ -8,7 +8,7 @@
 
 <h1 class="fw-bold">Education and Certification</h1>
 
-<h4 class="fw-bold">Edit Certification Record</h4>
+<h4 class="fw-bold">@L.T("Edit") Certification Record</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
@@ -52,7 +52,7 @@
                 <span asp-validation-for="personEducationLevelModel.educationLevelNumber" class="text-danger"></span>
             </div>
             <div class="form-group d-flex justify-content-end">
-                <input type="submit" value="Save" class="btn btn-success m-2" />
+                <input type="submit" value='@L.T("Save")' class="btn btn-success m-2" />
                 <a class="btn btn-danger m-2" asp-page="./Delete" asp-route-id="@Model.personEducationLevelModel.personEducationLevelID">Delete</a>
             </div>
         </form>

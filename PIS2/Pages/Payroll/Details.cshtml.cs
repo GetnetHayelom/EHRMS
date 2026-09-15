@@ -26,7 +26,7 @@ namespace PIS2.Pages.Payroll
         public List<deductionType> DeductionTypes { get; set; }
         public int OtType { get; set; }
 
-        [Authorize(Roles = @"MIE\PMS_HRCLERK,MIE\PMS_HRMANAGER,MIE\PMS_PAYROLL")]
+        [Authorize(Roles = @"MIE\HRCLERK,MIE\HRMANAGER,MIE\PAYROLL")]
         public async Task<IActionResult> OnGetAsync(int id)
         {
             EarningTypes = await _db.EarningTypes.ToListAsync();
@@ -55,7 +55,7 @@ namespace PIS2.Pages.Payroll
 
         public async Task<IActionResult> OnPostApproveAsync(int id)
         {
-            if (!User.IsInRole("MIE\\PMS_HRMANAGER")) return RedirectToPage("/Shared/AccessDenied");
+            if (!User.IsInRole("HRMANAGER")) return RedirectToPage("/Shared/AccessDenied");
             var payroll = await _db.Payrolls.FirstOrDefaultAsync(p => p.payrollID == id);
             if (payroll == null) return NotFound();
 
@@ -68,7 +68,7 @@ namespace PIS2.Pages.Payroll
 
         public async Task<IActionResult> OnPostPostAsync(int id)
         {
-            if (!User.IsInRole("MIE\\PMS_PAYROLL")) return RedirectToPage("/Shared/AccessDenied");
+            if (!User.IsInRole("PAYROLL")) return RedirectToPage("/Shared/AccessDenied");
             var payroll = await _db.Payrolls.FirstOrDefaultAsync(p => p.payrollID == id);
             if (payroll == null) return NotFound();
             if (payroll.payrollStatus == payrollStatus.PENDING) return BadRequest("Payroll must be approved first.");
@@ -81,7 +81,7 @@ namespace PIS2.Pages.Payroll
         }
         public async Task<IActionResult> OnPostProcessAsync(int id)
         {
-            if (!User.IsInRole("MIE\\PMS_PAYROLL")) return RedirectToPage("/Shared/AccessDenied");
+            if (!User.IsInRole("PAYROLL")) return RedirectToPage("/Shared/AccessDenied");
             var payroll = await _db.Payrolls.FirstOrDefaultAsync(p => p.payrollID == id);
             if (payroll == null) return NotFound();
             if (payroll.payrollStatus == payrollStatus.PENDING) return BadRequest("Payroll must be approved first.");
@@ -96,7 +96,7 @@ namespace PIS2.Pages.Payroll
 
         public async Task<IActionResult> OnPostCompleteAsync(int id)
         {
-            if (!User.IsInRole("MIE\\PMS_FINANCE")) return RedirectToPage("/Shared/AccessDenied");
+            if (!User.IsInRole("FINANCE")) return RedirectToPage("/Shared/AccessDenied");
             await _payrollService.CompletePayrollAsync(id, User.Identity.Name);
             return RedirectToPage();
         }

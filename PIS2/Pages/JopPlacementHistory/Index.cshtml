@@ -83,7 +83,7 @@
                 @Html.DisplayFor(modelItem => item.modifiedBy)
             </td>
             <td>
-                <a asp-page="./Edit" asp-route-id="@item.jobPlacementID">Edit</a> |
+                <a asp-page="./Edit" asp-route-id="@item.jobPlacementID">@L.T("Edit")</a> |
                 <a asp-page="./Details" asp-route-id="@item.jobPlacementID">Details</a> |
                 <a asp-page="./Delete" asp-route-id="@item.jobPlacementID">Delete</a>
             </td>

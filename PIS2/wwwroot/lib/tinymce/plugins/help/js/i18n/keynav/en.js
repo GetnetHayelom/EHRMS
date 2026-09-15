@@ -33,7 +33,7 @@ tinymce.Resource.add('tinymce.html-i18n.help-keynav.en',
   '  <li>Element path in the footer</li>\n' +
   '  <li>Word count toggle button in the footer</li>\n' +
   '  <li>Branding link in the footer</li>\n' +
-  '  <li>Editor resize handle in the footer</li>\n' +
+  '  <li>@L.T("Edit")or resize handle in the footer</li>\n' +
   '</ol>\n' +
   '\n' +
   '<p>If a UI section is not present, it is skipped.</p>\n' +

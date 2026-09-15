@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace PIS2.Controllers
 {
-    [Authorize(Roles = "MIE\\PMS_SYSADMIN")]
+    [Authorize(Roles = "SYSADMIN")]
     [Route("admin/systemlogs")]
     public class SystemLogsController : Controller
     {

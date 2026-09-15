@@ -11,7 +11,7 @@
         <h1 class="fw-bold">Absenteeism</h1>
         <h6 class="fw-bold text-muted">Absenteeism Records(Use filters for cutomized report)</h6>
     </div>
-    @if (User.IsInRole("MIE\\PMS_HRCLERK"))
+    @if (User.IsInRole("HRPERSONNEL"))
     {
         <p class="d-print-none">
             <a asp-page="Create" class="btn btn-primary text-decoration-none text-white">Add New Absenteeism Record</a>

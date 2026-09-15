@@ -1,0 +1,190 @@
+﻿@page
+@model PIS2.Pages.Localization.Languages.IndexModel
+
+@{
+ViewData["Title"] = "Languages";
+}
+
+<div class="container-fluid">
+
+<!-- Page Header -->
+<div class="d-flex justify-content-between align-items-center mb-4">
+
+    <div>
+        <h3 class="mb-1">
+            <i class="bi bi-translate me-2"></i>
+            @L.T("Languages")
+        </h3>
+
+        <div class="text-muted">
+            @L.T("ManageApplicationLanguages")
+        </div>
+    </div>
+    <div class="d-flex gap-2">
+
+        <a asp-page="AddTranslation" class="btn btn-success"> <i class="bi bi-plus-lg me-1"></i>
+
+             @L.T("AddTranslationKey")
+
+        </a>
+
+        <a asp-page="Create" class="btn btn-primary"><i class="bi bi-plus-lg me-1"></i> @L.T("AddLanguage") </a>
+
+    </div>
+    
+
+</div>
+
+
+<!-- Languages Card -->
+<div class="card shadow-sm border-0">
+
+    <div class="card-body p-0">
+
+        <div class="table-responsive">
+
+            <table class="table table-hover align-middle mb-0">
+
+                <thead class="table-light">
+
+                    <tr>
+                        <th>
+                            @L.T("Language")
+                        </th>
+
+                        <th>
+                            @L.T("Code")
+                        </th>
+
+                        <th>
+                            @L.T("NativeName")
+                        </th>
+
+                        <th>
+                            @L.T("Direction")
+                        </th>
+
+                        <th>
+                            @L.T("Status")
+                        </th>
+
+                        <th>
+                            @L.T("Default")
+                        </th>
+
+                        <th class="text-end">
+                            @L.T("Actions")
+                        </th>
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    @if (!Model.Languages.Any())
+                    {
+                        <tr>
+                            <td colspan="7" class="text-center py-5 text-muted"><i class="bi bi-translate fs-2 d-block mb-2"></i>
+
+                                @L.T("NoRecordsFound")
+
+                            </td>
+                        </tr>
+                    }
+                    else
+                    {
+                        foreach (var language in Model.Languages)
+                        {
+                            <tr>
+
+                                <td>
+                                    <div class="fw-semibold">
+                                        @language.languageName
+                                    </div>
+                                </td>
+
+                                <td>
+                                    <span class="badge text-primary border">
+                                        @language.languageCode
+                                    </span>
+                                </td>
+
+                                <td>
+                                    @language.nativeName
+                                </td>
+
+                                <td>
+                                    @if (language.isRTL)
+                                    {
+                                        <span class="badge bg-danger">
+                                            RTL
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-success">
+                                            LTR
+                                        </span>
+                                    }
+                                </td>
+
+                                <td>
+                                    @if (language.isActive)
+                                        {
+                                            <span class="badge bg-success">@Html.DisplayFor(modelItem => language.isActive)</span>
+                                        }
+                                        else if (!language.isActive)
+                                        {
+                                            <span class="badge bg-danger">@Html.DisplayFor(modelItem => language.isActive)</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-secondary">@Html.DisplayFor(modelItem => language.isActive)</span>
+                                        }
+                                    
+                                </td>
+
+                                <td>
+                                    @if (language.isDefault)
+                                    {
+                                        <span class="badge text-primary">
+                                            <i class="bi bi-check-circle me-1"></i>
+                                            Yes
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">
+                                            —
+                                        </span>
+                                    }
+                                </td>
+
+                                <td class="text-end">
+
+                                    <div class="btn-group btn-group-sm">
+                                        <a asp-page="Details" asp-route-id="@language.languageID" class="btn btn-sm btn-outline-primary" title="Details">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                        <a asp-page="Edit" asp-route-id="@language.languageID" class="btn btn-sm btn-outline-primary" title="Edit">
+                                            <i class="bi bi-pencil-square"></i>
+                                        </a>
+                                    </div>
+                                </td>
+
+                            </tr>
+                        }
+                    }
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+</div>

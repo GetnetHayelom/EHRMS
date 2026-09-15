@@ -44,7 +44,7 @@ namespace PIS2.Pages.OvertimeRecord
             else
             {
                 overtimeRecordModel = overtimerecordmodel;
-                var currentUser = _context.Users.FirstOrDefault(u => u.userName == User.Identity.Name);
+                var currentUser = _context.Users.FirstOrDefault(u => u.UserName == User.Identity.Name);
 
                 if (currentUser != null && currentUser.personID == overtimeRecordModel.employmentModel?.personID)
                 {
