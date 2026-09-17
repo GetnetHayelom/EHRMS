@@ -1,0 +1,27 @@
+﻿using PIS2.Enums;
+using PIS2.Models.Foundation;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
+namespace PIS2.Models.HR
+{
+    public class bankInfoModel
+    {
+        [Key]
+        public int bankInfoID { get; set; }
+        [Required]
+        public int personID { get; set; }
+        public virtual personModel? personModel { get; set; }
+        [Required]
+        public string bankName { get; set; }
+        [Required]
+        public string bankAccountNumber { get; set; }
+        public string? bankBranch { get; set; }
+        public mainStatus bankInfoStatus { get; set; }
+        public ICollection<payrollPay>? PayrollPays { get; set; } = null!;
+        public string modifiedBy { get; set; }
+        public DateTime modifiedDate { get; set; } = DateTime.Now;
+
+        public bankInfoModel() { }
+    }
+}

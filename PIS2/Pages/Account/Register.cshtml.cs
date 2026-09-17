@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
 using PIS2.Enums;
-using PIS2.Models;
+using PIS2.Models.Foundation;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;

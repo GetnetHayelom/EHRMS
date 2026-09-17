@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using PIS2.Data;
 using PIS2.Enums;
-using PIS2.Models;
+using PIS2.Models.Organization;
 
 namespace PIS2.Pages.Company
 {
@@ -24,7 +24,7 @@ namespace PIS2.Pages.Company
         [BindProperty]
         public companyModel companyModel { get; set; } = default!;
         public SelectList Manager { get; set; }
-        public List<Models.AuditLog> History { get; set; } = new();
+        public List<Models.Foundation.AuditLog> History { get; set; } = new();
         public async Task<IActionResult> OnGetAsync(int? id)
         {
             if (!User.IsInRole("HRADMIN"))

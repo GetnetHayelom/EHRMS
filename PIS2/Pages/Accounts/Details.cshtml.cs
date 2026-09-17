@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using PIS2.Data;
 using PIS2.Enums;
-using PIS2.Models;
+using PIS2.Models.Finance;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,7 +23,7 @@ namespace PIS2.Pages.Account
         }
 
         public accountModel accountModel { get; set; } = default!;
-        public List<Models.AuditLog> History { get; set; } = new();
+        public List<Models.Foundation.AuditLog> History { get; set; } = new();
         public List<subAccountModel> SubAccounts { get; set; } = new();
         public List<JournalEntryLine> JournalEntries { get; set; } = new();
         public List<JournalEntryDTO> Journals { get; set; } = new();

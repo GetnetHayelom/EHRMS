@@ -18,7 +18,7 @@ namespace PIS2.Pages.Benefits
         }
 
         public payrollModel OtherPay { get; set; } = default!;
-        public List<Models.AuditLog> History { get; set; } = new();
+        public List<Models.Foundation.AuditLog> History { get; set; } = new();
         public List<earningType> EarningTypes { get; set; }
         public List<deductionType> DeductionTypes { get; set; }
 

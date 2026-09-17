@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Hosting;
 using PIS2.Data;
 using PIS2.Enums;
-using PIS2.Models;
+using PIS2.Models.Organization;
 using PIS2.Pages.Employment;
 using PIS2.Pages.Report;
 using PIS2.Services;

@@ -2,7 +2,7 @@
 @model PIS2.Pages.Users.EditModel
 @using Microsoft.AspNetCore.Mvc.Rendering
 @using PIS2.Enums
-@using PIS2.Models
+@using PIS2.Models.Foundation
 
 @{
     ViewData["Title"] = "Edit User";
@@ -101,7 +101,7 @@
             </div>
             <div class="card-body">
                 <div id="accessSection">
-                    @await Html.PartialAsync("_AccessTable", Model.UserAccesses ?? new List<accessModel>())
+                    @await Html.PartialAsync("_AccessTable", Model.UserAccesses ?? new List<PIS2.Models.Foundation.accessModel>())
                 </div>
 
                 <!-- Add/Edit Access Form -->
@@ -124,7 +124,7 @@
                                 <label class="form-label">Company</label>
                                 <select id="companyID" asp-for="AccessInput.companyID" class="form-select">
                                     <option value="">All Companies</option>
-                                    @foreach (var c in Model.CompanySelectList ?? new List<companyModel>())
+                                    @foreach (var c in Model.CompanySelectList ?? new List<PIS2.Models.Organization.companyModel>())
                                     {
                                         <option value="@c.companyID">@c.companyName</option>
                                     }

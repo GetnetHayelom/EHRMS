@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using PIS2.Data;
 using PIS2.Enums;
-using PIS2.Models;
+using PIS2.Models.HR;
 using PIS2.Services;
 using static System.Formats.Asn1.AsnWriter;
 using static PIS2.Pages.Leave.IndexModel;

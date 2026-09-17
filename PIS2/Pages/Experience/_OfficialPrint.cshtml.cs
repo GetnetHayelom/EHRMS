@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using PIS2.Data;
 using PIS2.Enums;
 using PIS2.Models;
+using PIS2.Models.Foundation;
 using PIS2.Services;
 using System.Diagnostics.Metrics;
 

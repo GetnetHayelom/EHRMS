@@ -21,7 +21,7 @@ namespace PIS2.Pages.JobCategory
         }
 
         public jobCategoryModel jobCategoryModel { get; set; } = default!;
-        public List<Models.AuditLog> History { get; set; } = new();
+        public List<Models.Foundation.AuditLog> History { get; set; } = new();
         public async Task<IActionResult> OnGetAsync(int? id)
         {
             if (id == null)

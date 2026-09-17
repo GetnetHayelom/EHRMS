@@ -1,0 +1,22 @@
+﻿using System.ComponentModel.DataAnnotations;
+using PIS2.Enums;
+
+namespace PIS2.Models.HR
+{
+
+
+    public class loyaltyHistoryModel
+    {
+        [Key] public int loyaltyHistoryID { get; private set; }
+        public int employmentID { get; set; }
+        public virtual employmentModel? employmentModel { get; set; }
+        public int loyaltyID { get; set; }
+        public virtual loyaltyModel? loyaltyModel { get; set; }  
+        public double loyaltyAmount { get; set; }
+        public loyaltyStatus loyaltyHistoryStatus { get; set; }
+        public string modifiedBy { get; set; }
+        public DateTime modifiedDate { get; set; }= DateTime.Now;
+        public loyaltyHistoryModel() { }
+    }
+    
+}

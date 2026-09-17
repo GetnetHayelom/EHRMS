@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using PIS2.Data;
-using PIS2.Models;
+using PIS2.Models.HR;
 
 namespace PIS2.Pages.ServiceRequestType
 {

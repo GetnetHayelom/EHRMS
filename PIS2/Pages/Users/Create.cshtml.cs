@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration.UserSecrets;
 using PIS2.Data;
 using PIS2.Enums;
-using PIS2.Models;
+using PIS2.Models.Foundation;
 using PIS2.Pages.Shared;
 using PIS2.Services;
 using System;

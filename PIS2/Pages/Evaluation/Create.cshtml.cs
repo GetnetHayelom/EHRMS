@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using PIS2.Data;
 using PIS2.Enums;
 using PIS2.Models;
+using PIS2.Models.Organization;
 using static PIS2.Pages.Evaluation.EditModel;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 

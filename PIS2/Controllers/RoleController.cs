@@ -1,11 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using PIS2.Models;
 
 namespace PIS2.Controllers
 {
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Identity;
     using Microsoft.AspNetCore.Mvc;
+    using PIS2.Models.Foundation;
 
     [Authorize(Roles = "Admin")] // Only existing admins can assign roles
     public class RoleAdminController : Controller

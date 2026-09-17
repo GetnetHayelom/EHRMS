@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using PIS2.Data;
-using PIS2.Models;
+using PIS2.Models.Organization;
 using PIS2.Views;
 using System.Linq;
 

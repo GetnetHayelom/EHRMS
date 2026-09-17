@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
-using PIS2.Models;
+using PIS2.Models.Foundation;
 
 namespace PIS2.Middleware
 {

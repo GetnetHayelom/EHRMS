@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using PIS2.Data;
-using PIS2.Models;
+using PIS2.Models.Finance;
 using PIS2.Pages.Shared;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 

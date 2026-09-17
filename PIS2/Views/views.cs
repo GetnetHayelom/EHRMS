@@ -2,6 +2,9 @@
 using Microsoft.EntityFrameworkCore;
 using PIS2.Enums;
 using PIS2.Models;
+using PIS2.Models.Foundation;
+using PIS2.Models.HR;
+using PIS2.Models.Organization;
 using PIS2.Pages.Management;
 using PIS2.Pages.OvertimeHistory;
 using System.ComponentModel.DataAnnotations.Schema;

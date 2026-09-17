@@ -1,6 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using PIS2.Data;
 using PIS2.Models;
+using PIS2.Models.HR;
+using PIS2.Models.Organization;
 namespace PIS2.Views
 {
     public class CompanyView

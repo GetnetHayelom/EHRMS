@@ -92,7 +92,7 @@ namespace PIS2.Pages.AuditLog
     {
         public string User { get; set; }
         public DateTime Date { get; set; }
-        public List<Models.AuditLog> Changes { get; set; } = new();
+        public List<Models.Foundation.AuditLog> Changes { get; set; } = new();
     }
 
 }

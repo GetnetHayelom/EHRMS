@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using PIS2.Data;
-using PIS2.Models;
+using PIS2.Models.Finance;
 using System;
 using System.Collections.Generic;
 using System.Linq;

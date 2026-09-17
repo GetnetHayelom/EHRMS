@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using PIS2.Models;
+using PIS2.Models.Foundation;
 
 namespace PIS2.Data
 {

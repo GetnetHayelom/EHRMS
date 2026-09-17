@@ -1,5 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using PIS2.Enums;
+using PIS2.Models.Finance;
+using PIS2.Models.HR;
+using PIS2.Models.Organization;
 using PIS2.Pages.EmployeeService;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.Contracts;

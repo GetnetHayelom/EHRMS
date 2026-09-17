@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using PIS2.Data;
-using PIS2.Models;
+using PIS2.Models.Foundation;
 using System.Data;
 
 namespace PIS2.Services

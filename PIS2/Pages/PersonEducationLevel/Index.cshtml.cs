@@ -7,6 +7,7 @@ using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.Blazor;
 using PIS2.Data;
 using PIS2.Enums;
 using PIS2.Models;
+using PIS2.Models.Organization;
 using PIS2.Views;
 using System;
 using System.Collections.Generic;

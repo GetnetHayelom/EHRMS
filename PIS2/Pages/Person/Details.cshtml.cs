@@ -7,6 +7,8 @@ using Microsoft.Extensions.Hosting;
 using PIS2.Data;
 using PIS2.Enums;
 using PIS2.Models;
+using PIS2.Models.Foundation;
+using PIS2.Models.HR;
 using System;
 using System.Collections.Generic;
 using System.Linq;

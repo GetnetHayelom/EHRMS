@@ -17,7 +17,7 @@ namespace PIS2.Pages.Earning
         }
 
         public earningType EarningType { get; set; }
-        public List<Models.AuditLog> AuditLogs { get; set; }
+        public List<Models.Foundation.AuditLog> AuditLogs { get; set; }
 
         public async Task<IActionResult> OnGetAsync(int id)
         {

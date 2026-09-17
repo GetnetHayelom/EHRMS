@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using PIS2.Data;
 using PIS2.Enums;
 using PIS2.Models;
+using PIS2.Models.HR;
 using PIS2.Services;
 using PIS2.Views;
 using System;
@@ -200,7 +201,7 @@ namespace PIS2.Pages.Termination
 
             return RedirectToPage("./Details", new { id = terminationID });
         }
-        public List<Models.AuditLog> History { get; set; } = new();
+        public List<Models.Foundation.AuditLog> History { get; set; } = new();
         public string FormatAuditValue(string columnName, string value)
         {
             if (string.IsNullOrEmpty(value)) return "None";

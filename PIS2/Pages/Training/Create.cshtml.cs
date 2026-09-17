@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Authorization.Infrastructure;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using PIS2.Data;
-using PIS2.Models;
+using PIS2.Models.HR;
 
 namespace PIS2.Pages.Training
 {

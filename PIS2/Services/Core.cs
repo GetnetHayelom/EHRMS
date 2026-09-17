@@ -11,6 +11,8 @@ using PIS2.Views;
 using System.Threading.Tasks;
 using PIS2.Data;
 using PIS2.Enums;
+using PIS2.Models.Foundation;
+using PIS2.Models.HR;
 
 namespace PIS2.Services
 {

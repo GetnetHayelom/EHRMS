@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using PIS2.Data;
 using PIS2.Middleware;
-using PIS2.Models;
+using PIS2.Models.Foundation;
 using PIS2.Services;
 using Serilog;
 using Serilog.Events;

@@ -5,8 +5,8 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ValueGeneration.Internal;
 using PIS2.Data;
-using PIS2.Models;
 using PIS2.Enums;
+using PIS2.Models.Foundation;
 
 namespace PIS2.Pages.Notice
 {

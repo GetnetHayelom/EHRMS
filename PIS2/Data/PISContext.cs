@@ -3,6 +3,10 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
 using PIS2.Models;
+using PIS2.Models.Finance;
+using PIS2.Models.Foundation;
+using PIS2.Models.HR;
+using PIS2.Models.Organization;
 using PIS2.Pages.Report;
 using PIS2.Views;
 

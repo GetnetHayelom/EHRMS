@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using PIS2.Data;
 using PIS2.Enums;
 using PIS2.Models;
+using PIS2.Models.HR;
 
 namespace PIS2.Pages.JobGrade
 {
@@ -21,7 +22,7 @@ namespace PIS2.Pages.JobGrade
         }
 
         public jobGradeModel jobGradeModel { get; set; } = default!;
-        public List<Models.AuditLog> History { get; set; } = new();
+        public List<Models.Foundation.AuditLog> History { get; set; } = new();
         public List<jobModel> Jobs { get; set; }
         public List<jobStepModel> JobSteps { get; set; }
         public async Task<IActionResult> OnGetAsync(int? id)

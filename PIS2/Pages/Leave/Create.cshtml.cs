@@ -13,6 +13,8 @@ using PIS2.Models;
 using PIS2.Services;
 using static System.Formats.Asn1.AsnWriter;
 using PIS2.Views;
+using PIS2.Models.Foundation;
+using PIS2.Models.HR;
 
 namespace PIS2.Pages.Leave
 {

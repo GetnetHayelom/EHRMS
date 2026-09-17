@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.Blazor;
 using PIS2.Data;
-using PIS2.Models;
 using PIS2.Views;
 using PIS2.Enums;
 using System;
@@ -12,6 +11,8 @@ using System.Linq;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
+using PIS2.Models.Organization;
+using PIS2.Models.HR;
 
 namespace PIS2.Pages.Report
 {

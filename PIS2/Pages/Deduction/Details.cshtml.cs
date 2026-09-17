@@ -17,7 +17,7 @@ namespace PIS2.Pages.Deduction
         }
 
         public deductionType DeductionType { get; set; }
-        public List<Models.AuditLog> History { get; set; } = new();
+        public List<Models.Foundation.AuditLog> History { get; set; } = new();
         public async Task<IActionResult> OnGetAsync(int? id)
         {
             if (id == null)

@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Conventions;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using PIS2.Data;
 using PIS2.Models;
+using PIS2.Models.Foundation;
 using System.IO;
 
 namespace PIS2.Controllers
@@ -81,7 +82,7 @@ namespace PIS2.Controllers
 
             try
             {
-                var attachment = new Models.AttachmentModel
+                var attachment = new Models.Foundation.AttachmentModel
                 {
                     TableName = tableName,
                     RecordId = recordId,
