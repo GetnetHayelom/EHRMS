@@ -4,6 +4,7 @@ using PIS2.Data;
 using PIS2.Middleware;
 using PIS2.Models.Foundation;
 using PIS2.Services;
+using PIS2.Services.Finance;
 using Serilog;
 using Serilog.Events;
 
@@ -62,6 +63,7 @@ builder.Services.AddScoped<AccessService>();
 builder.Services.AddScoped<LanguageContext>();
 builder.Services.AddScoped<LocalizationService>();
 builder.Services.AddScoped<LocalizationHelper>();
+builder.Services.AddScoped<JournalService>();
 
 // Configure database context
 builder.Services.AddDbContext<PISContext>(options =>

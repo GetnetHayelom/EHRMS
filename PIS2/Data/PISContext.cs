@@ -7,6 +7,7 @@ using PIS2.Models.Finance;
 using PIS2.Models.Foundation;
 using PIS2.Models.HR;
 using PIS2.Models.Organization;
+using PIS2.Models.Supply;
 using PIS2.Pages.Report;
 using PIS2.Views;
 
@@ -34,7 +35,7 @@ namespace PIS2.Data
                 property.SetPrecision(18);
                 property.SetScale(2);
             }
-
+            #region Access Related
             modelBuilder.Entity<accessModel>(entity =>
             {
                 entity.HasKey(a => a.accessID);
@@ -56,11 +57,12 @@ namespace PIS2.Data
                 entity.Property(h => h.modifiedBy).IsRequired().HasMaxLength(100);
                 
             });
-
+            #endregion
 
             modelBuilder.Entity<accountModel>(entity =>
             {
                 entity.HasMany(e => e.SubAccounts).WithOne(p => p.accountModel).HasForeignKey(e => e.accountID).OnDelete(DeleteBehavior.NoAction);
+                entity.HasOne(a => a.ParentAccount).WithMany(a => a.ChildAccounts).HasForeignKey(a => a.ParentAccountID).OnDelete(DeleteBehavior.Restrict);
 
                 entity.HasIndex(e => e.accountNumber).IsUnique();
                 entity.HasIndex(e => e.accountName).IsUnique();
@@ -77,6 +79,8 @@ namespace PIS2.Data
                 entity.HasIndex(e => new { e.addressCountry, e.addressRegion, e.addressZone, e.addressWoreda, e.addressTabya }).IsUnique();
                 entity.ToTable(tb => tb.UseSqlOutputClause(false));
             });
+
+            #region Allowance Related
 
             modelBuilder.Entity<allowanceModel>(entity =>
             {
@@ -121,6 +125,7 @@ namespace PIS2.Data
                 entity.HasOne(e => e.allowanceAssignmentModel).WithMany(d => d.AllowanceAssignmentHistories).HasForeignKey(e => e.allowanceAssignmentID).OnDelete(DeleteBehavior.NoAction);
 
             });
+            #endregion
 
             modelBuilder.Entity<ApplicantModel>(e =>
             {
@@ -162,6 +167,7 @@ namespace PIS2.Data
                 entity.ToTable(tb => tb.UseSqlOutputClause(false));
             });
 
+            #region Organization
             modelBuilder.Entity<businessUnitModel>(entity =>
             {
                 entity.HasMany(e => e.Departments).WithOne(p => p.businessUnitModel).HasForeignKey(p => p.businessUnitID).OnDelete(DeleteBehavior.NoAction);
@@ -182,6 +188,71 @@ namespace PIS2.Data
 
                 entity.ToTable(tb => tb.UseSqlOutputClause(false));
             });
+            modelBuilder.Entity<departmentModel>(entity =>
+            {
+                entity.HasIndex(e => e.employmentID, "IX_Departments_employmentModelemploymentID");
+
+                entity.HasIndex(e => e.subAccountID, "IX_Departments_subAccountModelsubAccountID");
+
+                entity.Property(e => e.departmentID).HasColumnName("departmentID");
+                entity.Property(e => e.companyID).HasColumnName("companyID");
+                entity.Property(e => e.departmentName).HasColumnName("departmentName");
+                entity.Property(e => e.departmentShort).HasColumnName("departmentShort");
+                entity.Property(e => e.departmentStatus).HasColumnName("departmentStatus");
+                entity.Property(e => e.employmentID).HasColumnName("employmentID");
+                entity.Property(e => e.subAccountID).HasColumnName("subAccountID");
+                entity.Property(e => e.businessUnitID).HasColumnName("businessUnitID");
+                entity.Property(e => e.modifiedBy).HasColumnName("modifiedBy");
+
+                entity.HasOne(d => d.companyModel).WithMany(p => p.Departments).HasForeignKey(d => d.companyID).OnDelete(DeleteBehavior.NoAction);
+                entity.HasOne(d => d.businessUnitModel).WithMany(p => p.Departments).HasForeignKey(d => d.businessUnitID).OnDelete(DeleteBehavior.NoAction);
+
+                entity.HasOne(d => d.employmentModel).WithMany(p => p.departmentModel).HasForeignKey(d => d.employmentID).OnDelete(DeleteBehavior.NoAction);
+
+                entity.HasOne(d => d.subAccountModel).WithMany(p => p.Departments).HasForeignKey(d => d.subAccountID).OnDelete(DeleteBehavior.NoAction);
+                entity.HasMany(e =>e.JobPlacements).WithOne(p => p.departmentModel).HasForeignKey(d => d.departmentID).OnDelete(DeleteBehavior.NoAction);
+                entity.HasMany(d => d.OvertimeRecords).WithOne(or => or.departmentModel).HasForeignKey(d => d.departmentID).OnDelete(DeleteBehavior.NoAction);
+                entity.HasOne(d => d.businessUnitModel).WithMany(p => p.Departments).HasForeignKey(d => d.businessUnitID).OnDelete(DeleteBehavior.NoAction);
+
+                entity.HasIndex(e => new { e.companyID, e.departmentName}).IsUnique();
+
+                entity.ToTable(tb => tb.UseSqlOutputClause(false));
+            });
+
+            modelBuilder.Entity<departmentHistoryModel>(entity =>
+            {
+                entity.Property(e => e.departmentHistoryID).HasColumnName("departmentHistoryID");
+                entity.Property(e => e.departmentID).HasColumnName("departmentID");
+                entity.Property(e => e.departmentName).HasColumnName("departmentName");
+                entity.Property(e => e.departmentStatus).HasColumnName("departmentStatus");
+                entity.Property(e => e.employmentID).HasColumnName("employmentID");
+                entity.Property(e => e.modifiedDate).HasColumnName("modifiedDate");
+                entity.Property(e => e.modifiedBy).HasColumnName("modifiedBy");
+
+                entity.HasOne(e => e.departmentModel).WithMany(e => e.DepartmentHistories).HasForeignKey(d => d.departmentID).OnDelete(DeleteBehavior.NoAction);
+                
+            });
+            modelBuilder.Entity<workSiteModel>(entity =>
+            {
+                entity.HasKey(e => e.workSiteID);
+
+                entity.ToTable("workSiteModel");
+
+                entity.HasIndex(e => e.addressID, "IX_workSiteModel_AddressModeladdressID");
+
+                entity.HasOne(d => d.addressModel).WithMany(p => p.WorkSites).HasForeignKey(d => d.addressID).OnDelete(DeleteBehavior.NoAction);
+                entity.HasMany(d => d.WorkSiteHistories).WithOne(p => p.workSiteModel).HasForeignKey(d => d.workSiteID).OnDelete(DeleteBehavior.NoAction);
+                entity.HasOne(d => d.employmentModel).WithMany(e => e.WorkSites).HasForeignKey(d => d.employmentID).OnDelete(DeleteBehavior.NoAction);
+
+                entity.HasIndex(d => d.workSiteName).IsUnique();
+                entity.ToTable(tb => tb.UseSqlOutputClause(false));
+            });
+            modelBuilder.Entity<workSiteHistoryModel>(entity =>
+            {
+                entity.HasOne(e => e.workSiteModel).WithMany(p => p.WorkSiteHistories).HasForeignKey(d => d.workSiteID).OnDelete(DeleteBehavior.NoAction);
+            });
+            #endregion
+
             modelBuilder.Entity<contractModel>(entity =>
             {
                 entity.Property(e => e.contractID).HasColumnName("contractID");
@@ -243,50 +314,7 @@ namespace PIS2.Data
                 entity.HasOne(e => e.delegationModel).WithMany(e => e.DelegationHistories).HasForeignKey(e => e.delegationID).OnDelete(DeleteBehavior.NoAction);
                
             });
-            modelBuilder.Entity<departmentModel>(entity =>
-            {
-                entity.HasIndex(e => e.employmentID, "IX_Departments_employmentModelemploymentID");
-
-                entity.HasIndex(e => e.subAccountID, "IX_Departments_subAccountModelsubAccountID");
-
-                entity.Property(e => e.departmentID).HasColumnName("departmentID");
-                entity.Property(e => e.companyID).HasColumnName("companyID");
-                entity.Property(e => e.departmentName).HasColumnName("departmentName");
-                entity.Property(e => e.departmentShort).HasColumnName("departmentShort");
-                entity.Property(e => e.departmentStatus).HasColumnName("departmentStatus");
-                entity.Property(e => e.employmentID).HasColumnName("employmentID");
-                entity.Property(e => e.subAccountID).HasColumnName("subAccountID");
-                entity.Property(e => e.businessUnitID).HasColumnName("businessUnitID");
-                entity.Property(e => e.modifiedBy).HasColumnName("modifiedBy");
-
-                entity.HasOne(d => d.companyModel).WithMany(p => p.Departments).HasForeignKey(d => d.companyID).OnDelete(DeleteBehavior.NoAction);
-                entity.HasOne(d => d.businessUnitModel).WithMany(p => p.Departments).HasForeignKey(d => d.businessUnitID).OnDelete(DeleteBehavior.NoAction);
-
-                entity.HasOne(d => d.employmentModel).WithMany(p => p.departmentModel).HasForeignKey(d => d.employmentID).OnDelete(DeleteBehavior.NoAction);
-
-                entity.HasOne(d => d.subAccountModel).WithMany(p => p.Departments).HasForeignKey(d => d.subAccountID).OnDelete(DeleteBehavior.NoAction);
-                entity.HasMany(e =>e.JobPlacements).WithOne(p => p.departmentModel).HasForeignKey(d => d.departmentID).OnDelete(DeleteBehavior.NoAction);
-                entity.HasMany(d => d.OvertimeRecords).WithOne(or => or.departmentModel).HasForeignKey(d => d.departmentID).OnDelete(DeleteBehavior.NoAction);
-                entity.HasOne(d => d.businessUnitModel).WithMany(p => p.Departments).HasForeignKey(d => d.businessUnitID).OnDelete(DeleteBehavior.NoAction);
-
-                entity.HasIndex(e => new { e.companyID, e.departmentName}).IsUnique();
-
-                entity.ToTable(tb => tb.UseSqlOutputClause(false));
-            });
-
-            modelBuilder.Entity<departmentHistoryModel>(entity =>
-            {
-                entity.Property(e => e.departmentHistoryID).HasColumnName("departmentHistoryID");
-                entity.Property(e => e.departmentID).HasColumnName("departmentID");
-                entity.Property(e => e.departmentName).HasColumnName("departmentName");
-                entity.Property(e => e.departmentStatus).HasColumnName("departmentStatus");
-                entity.Property(e => e.employmentID).HasColumnName("employmentID");
-                entity.Property(e => e.modifiedDate).HasColumnName("modifiedDate");
-                entity.Property(e => e.modifiedBy).HasColumnName("modifiedBy");
-
-                entity.HasOne(e => e.departmentModel).WithMany(e => e.DepartmentHistories).HasForeignKey(d => d.departmentID).OnDelete(DeleteBehavior.NoAction);
-                
-            });
+            
 
             modelBuilder.Entity<disciplineModel>(entity =>
             {
@@ -296,7 +324,6 @@ namespace PIS2.Data
                       .HasMaxLength(100);
                 entity.ToTable(tb => tb.UseSqlOutputClause(false));
             });
-
 
             modelBuilder.Entity<educationLevelModel>(entity =>
             {
@@ -626,11 +653,8 @@ namespace PIS2.Data
                 
             });
 
-      
-
             modelBuilder.Entity<jobReqCost>(entity =>
             {
-                
                 entity.ToTable(tb => tb.UseSqlOutputClause(false));
             });
             modelBuilder.Entity<jobStepModel>(entity =>
@@ -727,7 +751,8 @@ namespace PIS2.Data
             });
             modelBuilder.Entity<LetterSequence>(entity =>
             { });
-                modelBuilder.Entity<loyaltyModel>(entity =>
+
+            modelBuilder.Entity<loyaltyModel>(entity =>
             {
                 entity.HasMany(e => e.LoyaltyHistories).WithOne(d => d.loyaltyModel).HasForeignKey(e => e.loyaltyID).OnDelete(DeleteBehavior.NoAction);
 
@@ -751,8 +776,6 @@ namespace PIS2.Data
                 entity.HasIndex(d => new {d.loyaltyID, d.employmentID}).IsUnique();
                 entity.ToTable(tb => tb.UseSqlOutputClause(false));
             });
-
-
 
             modelBuilder.Entity<NoticeModel>(entity =>
             {
@@ -795,6 +818,7 @@ namespace PIS2.Data
 
             });
 
+            #region Ovetime
             modelBuilder.Entity<overtimeModel>(entity =>
             {
                 entity.HasMany(e => e.OvertimeRecords).WithOne(p => p.overtimeModel).HasForeignKey(d => d.overtimeID).OnDelete(DeleteBehavior.NoAction);
@@ -802,7 +826,6 @@ namespace PIS2.Data
                 entity.HasIndex(e => e.overtimeName).IsUnique();
                 entity.ToTable(tb => tb.UseSqlOutputClause(false));
             });
-
             modelBuilder.Entity<overtimeRecordModel>(entity =>
             {
                 entity.HasIndex(e => e.employmentID, "IX_OvertimeRecords_employmentModelemploymentID");
@@ -833,7 +856,6 @@ namespace PIS2.Data
                 entity.ToTable(tb => tb.UseSqlOutputClause(false));
 
             });
-
             modelBuilder.Entity<overtimeHistoryModel>(entity =>
             {
                 entity.Property(e => e.overtimeHistoryID).HasColumnName("overtimeHistoryID");
@@ -844,6 +866,7 @@ namespace PIS2.Data
 
                 entity.HasOne(e => e.overtimeRecordModel).WithMany(p => p.OvertimeHistories).HasForeignKey(d => d.overtimeRecordID).OnDelete(DeleteBehavior.NoAction);
             });
+            #endregion
 
             modelBuilder.Entity<penaltyModel>(entity => {
                
@@ -931,6 +954,7 @@ namespace PIS2.Data
                 entity.HasIndex(d => new { d.educationLevelID, d.personID, d.educationField}).IsUnique();
                 entity.ToTable(tb => tb.UseSqlOutputClause(false));
             });
+
             modelBuilder.Entity<prohibitionModel>(e =>
             {
                 e.Property(e => e.prohibitionID).HasColumnName("prohibitionID");
@@ -997,6 +1021,7 @@ namespace PIS2.Data
                 entity.ToTable(t => t.UseSqlOutputClause(false));
                  
             });
+
             modelBuilder.Entity<shiftModel>(entity =>
             {
                 entity.HasMany(e => e.Breaks).WithOne(p => p.shiftModel).HasForeignKey(e => e.shiftID).OnDelete(DeleteBehavior.NoAction);
@@ -1060,7 +1085,6 @@ namespace PIS2.Data
             {
                 entity.HasIndex(e => e.subAccountID, "IX_SubAccounts_accountModelaccountID");
 
-                entity.HasOne(d => d.accountModel).WithMany(p => p.SubAccounts).HasForeignKey(d => d.accountID).OnDelete(DeleteBehavior.NoAction);
                 entity.HasMany(e => e.Departments).WithOne(p => p.subAccountModel).HasForeignKey(d => d.subAccountID).OnDelete(DeleteBehavior.NoAction);
                 entity.HasMany(e => e.WorkSites).WithOne(p => p.subAccountModel).HasForeignKey(d => d.subAccountID).OnDelete(DeleteBehavior.NoAction);
 
@@ -1114,29 +1138,15 @@ namespace PIS2.Data
 
                 e.ToTable(t => t.UseSqlOutputClause(false));
             });
-            modelBuilder.Entity<workSiteModel>(entity =>
-            {
-                entity.HasKey(e => e.workSiteID);
 
-                entity.ToTable("workSiteModel");
+            
 
-                entity.HasIndex(e => e.addressID, "IX_workSiteModel_AddressModeladdressID");
-
-                entity.HasOne(d => d.addressModel).WithMany(p => p.WorkSites).HasForeignKey(d => d.addressID).OnDelete(DeleteBehavior.NoAction);
-                entity.HasMany(d => d.WorkSiteHistories).WithOne(p => p.workSiteModel).HasForeignKey(d => d.workSiteID).OnDelete(DeleteBehavior.NoAction);
-                entity.HasOne(d => d.employmentModel).WithMany(e => e.WorkSites).HasForeignKey(d => d.employmentID).OnDelete(DeleteBehavior.NoAction);
-                
-                entity.HasIndex(d => d.workSiteName).IsUnique();
-                entity.ToTable(tb => tb.UseSqlOutputClause(false));
-            });
-            modelBuilder.Entity<workSiteHistoryModel>(entity =>
-            {
-                entity.HasOne(e => e.workSiteModel).WithMany(p => p.WorkSiteHistories).HasForeignKey(d => d.workSiteID).OnDelete(DeleteBehavior.NoAction);
-            });
             //
             /// <summary>
             /// Payroll related
             /// </summary>
+            /// 
+            #region 
             // payrollModel
             modelBuilder.Entity<payrollModel>(entity =>
             {
@@ -1229,28 +1239,375 @@ namespace PIS2.Data
             modelBuilder.Entity<BudgetLine>(entity =>
             {
                 entity.ToTable(tb => tb.UseSqlOutputClause(false));
-            });            
+            });
+#endregion
 
+            #region Finance Module Related
             //account Journal
-            modelBuilder.Entity<JournalEntry>()
-                .HasMany(j => j.Lines)
-                .WithOne(l => l.JournalEntry)
-                .HasForeignKey(l => l.JournalEntryID);
+            modelBuilder.Entity<JournalEntry>(entity =>
+            {
+                entity.HasOne(e => e.Company).WithMany().HasForeignKey(e => e.companyID).OnDelete(DeleteBehavior.Restrict);
+                entity.HasOne(e => e.AccountingPeriod).WithMany(p => p.JournalEntries).HasForeignKey(e => e.accountingPeriodID).OnDelete(DeleteBehavior.Restrict);
 
-            modelBuilder.Entity<JournalEntryLine>()
-                .HasOne(l => l.Account)
-                .WithMany()
-                .HasForeignKey(l => l.accountID);
+                entity.HasIndex(e => new
+                {
+                    e.companyID,
+                    e.Reference
+                });
 
-            modelBuilder.Entity<JournalEntryLine>()
-                .HasOne(l => l.SubAccount)
-                .WithMany()
-                .HasForeignKey(l => l.subAccountID);
+                entity.ToTable(tb => tb.UseSqlOutputClause(false));
+            });
 
+            modelBuilder.Entity<JournalEntryLine>(e =>
+            {
+                e.HasOne(l => l.JournalEntry).WithMany(j => j.Lines).HasForeignKey(l => l.JournalEntryID).OnDelete(DeleteBehavior.Restrict);
+                e.HasOne(l => l.Account).WithMany().HasForeignKey(l => l.accountID).OnDelete(DeleteBehavior.Restrict);
+                e.HasOne(l => l.SubAccount).WithMany().HasForeignKey(l => l.subAccountID);
+                e.HasIndex(l => new
+                {
+                    l.JournalEntryID,
+                    l.lineNumber
+                }).IsUnique();
+
+                e.ToTable(tb => tb.UseSqlOutputClause(false));
+            });
+    
+
+            // Company Account assignment
+            modelBuilder.Entity<companyAccountModel>().HasIndex(c => new { c.companyID, c.accountID }).IsUnique();
+
+            modelBuilder.Entity<fiscalYearModel>(entity =>
+            {
+                // One record for each fiscal year
+                entity.HasIndex(e => e.year).IsUnique();
+
+                entity.HasMany(e => e.Periods).WithOne(e => e.FiscalYear).HasForeignKey(e => e.fiscalYearID).OnDelete(DeleteBehavior.Restrict);
+
+                entity.ToTable(tb => tb.UseSqlOutputClause(false));
+            });
+
+            modelBuilder.Entity<accountingPeriodModel>(entity =>
+            {
+                // Period 1 can exist only once within a fiscal year
+                entity.HasIndex(e => new {e.fiscalYearID, e.periodNumber}).IsUnique();
+
+                entity.ToTable(tb => tb.UseSqlOutputClause(false));
+            });
+            modelBuilder.Entity<bankAccountModel>(entity =>
+            {
+                entity.HasOne(e => e.Company).WithMany().HasForeignKey(e => e.companyID).OnDelete(DeleteBehavior.Restrict);
+                entity.HasOne(e => e.Account).WithMany().HasForeignKey(e => e.accountID).OnDelete(DeleteBehavior.Restrict);
+                entity.HasOne(e => e.SubAccount).WithMany().HasForeignKey(e => e.subAccountID).OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasIndex(e => new{e.companyID, e.bankAccountNumber}).IsUnique();
+                entity.Property(e => e.openingBalance).HasColumnType("decimal(18,2)");
+                entity.ToTable(tb => tb.UseSqlOutputClause(false));
+            });
+            modelBuilder.Entity<cashAccountModel>(entity =>
+            {
+                entity.HasOne(e => e.Company).WithMany().HasForeignKey(e => e.companyID).OnDelete(DeleteBehavior.Restrict);
+                entity.HasOne(e => e.Account).WithMany().HasForeignKey(e => e.accountID).OnDelete(DeleteBehavior.Restrict);
+                entity.HasOne(e => e.SubAccount).WithMany().HasForeignKey(e => e.subAccountID).OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasIndex(e => new{e.companyID,e.cashAccountName}).IsUnique();
+                entity.Property(e => e.openingBalance).HasColumnType("decimal(18,2)");
+                entity.ToTable(tb => tb.UseSqlOutputClause(false));
+            });
+            modelBuilder.Entity<bankTransactionModel>(entity =>
+            {
+                entity.HasOne(e => e.BankAccount)
+                    .WithMany(e => e.Transactions)
+                    .HasForeignKey(e => e.bankAccountID)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(e => e.JournalEntry)
+                    .WithMany()
+                    .HasForeignKey(e => e.journalEntryID)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasIndex(e => new
+                {
+                    e.bankAccountID,
+                    e.reference
+                });
+
+                entity.Property(e => e.amount)
+                    .HasColumnType("decimal(18,2)");
+
+                entity.ToTable(tb => tb.UseSqlOutputClause(false));
+            });
+            modelBuilder.Entity<cashTransactionModel>(entity =>
+            {
+                entity.HasOne(e => e.CashAccount)
+                    .WithMany(e => e.Transactions)
+                    .HasForeignKey(e => e.cashAccountID)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(e => e.JournalEntry)
+                    .WithMany()
+                    .HasForeignKey(e => e.journalEntryID)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasIndex(e => new
+                {
+                    e.cashAccountID,
+                    e.reference
+                });
+
+                entity.Property(e => e.amount)
+                    .HasColumnType("decimal(18,2)");
+
+                entity.ToTable(tb => tb.UseSqlOutputClause(false));
+            });
+            modelBuilder.Entity<cashBankTransferModel>(entity =>
+            {
+                entity.HasOne(e => e.Company)
+                    .WithMany()
+                    .HasForeignKey(e => e.companyID)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(e => e.SourceBankAccount)
+                    .WithMany()
+                    .HasForeignKey(e => e.sourceBankAccountID)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(e => e.DestinationBankAccount)
+                    .WithMany()
+                    .HasForeignKey(e => e.destinationBankAccountID)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(e => e.SourceCashAccount)
+                    .WithMany()
+                    .HasForeignKey(e => e.sourceCashAccountID)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(e => e.DestinationCashAccount)
+                    .WithMany()
+                    .HasForeignKey(e => e.destinationCashAccountID)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(e => e.AccountingPeriod)
+                    .WithMany()
+                    .HasForeignKey(e => e.accountingPeriodID)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(e => e.JournalEntry)
+                    .WithMany()
+                    .HasForeignKey(e => e.journalEntryID)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasIndex(e => new
+                {
+                    e.companyID,
+                    e.reference
+                });
+
+                entity.Property(e => e.amount)
+                    .HasColumnType("decimal(18,2)");
+
+                entity.ToTable(tb => tb.UseSqlOutputClause(false));
+            });
+            modelBuilder.Entity<bankReconciliationModel>(entity =>
+            {
+                entity.HasOne(e => e.BankAccount)
+                    .WithMany()
+                    .HasForeignKey(e => e.bankAccountID)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasIndex(e => new
+                {
+                    e.bankAccountID,
+                    e.statementStartDate,
+                    e.statementEndDate
+                })
+                .IsUnique();
+
+                entity.Property(e => e.statementOpeningBalance)
+                    .HasColumnType("decimal(18,2)");
+
+                entity.Property(e => e.statementClosingBalance)
+                    .HasColumnType("decimal(18,2)");
+
+                entity.ToTable(tb => tb.UseSqlOutputClause(false));
+            });
+            modelBuilder.Entity<bankReconciliationLineModel>(entity =>
+            {
+                entity.HasOne(e => e.BankReconciliation)
+                    .WithMany(e => e.Lines)
+                    .HasForeignKey(e => e.bankReconciliationID)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                entity.HasOne(e => e.BankTransaction)
+                    .WithMany()
+                    .HasForeignKey(e => e.bankTransactionID)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                entity.Property(e => e.debit)
+                    .HasColumnType("decimal(18,2)");
+
+                entity.Property(e => e.credit)
+                    .HasColumnType("decimal(18,2)");
+
+                entity.Property(e => e.statementBalance)
+                    .HasColumnType("decimal(18,2)");
+
+                entity.ToTable(tb => tb.UseSqlOutputClause(false));
+            });
+            #endregion
+
+            #region Supply Module Related
+            modelBuilder.Entity<supplierModel>(entity =>
+            {
+                entity.HasIndex(e => new
+                {
+                    e.companyID,
+                    e.supplierCode
+                })
+                .IsUnique();
+
+                entity.HasIndex(e => new
+                {
+                    e.companyID,
+                    e.supplierName
+                });
+
+                entity.HasOne(e => e.Company)
+                    .WithMany()
+                    .HasForeignKey(e => e.companyID)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(e => e.PayableAccount)
+                    .WithMany()
+                    .HasForeignKey(e => e.payableAccountID)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(e => e.PayableSubAccount)
+                    .WithMany()
+                    .HasForeignKey(e => e.payableSubAccountID)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                entity.Property(e => e.openingBalance)
+                    .HasColumnType("decimal(18,2)");
+
+                entity.Property(e => e.paymentTermDays)
+                    .HasDefaultValue(30);
+
+                entity.Property(e => e.currencyCode)
+                    .HasDefaultValue("ETB");
+
+                entity.ToTable(tb => tb.UseSqlOutputClause(false));
+            });
+            modelBuilder.Entity<supplierInvoiceModel>(entity =>
+            {
+                entity.HasIndex(e => new
+                {
+                    e.companyID,
+                    e.invoiceNumber
+                })
+                .IsUnique();
+
+                entity.HasOne(e => e.Company)
+                    .WithMany()
+                    .HasForeignKey(e => e.companyID)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(e => e.Supplier)
+                    .WithMany(e => e.Invoices)
+                    .HasForeignKey(e => e.supplierID)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(e => e.AccountingPeriod)
+                    .WithMany()
+                    .HasForeignKey(e => e.accountingPeriodID)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(e => e.JournalEntry)
+                    .WithMany()
+                    .HasForeignKey(e => e.journalEntryID)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                entity.ToTable(tb => tb.UseSqlOutputClause(false));
+            });
+            modelBuilder.Entity<supplierInvoiceLineModel>(entity =>
+            {
+                entity.HasOne(e => e.SupplierInvoice)
+                    .WithMany(e => e.Lines)
+                    .HasForeignKey(e => e.supplierInvoiceID)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                entity.HasOne(e => e.Account)
+                    .WithMany()
+                    .HasForeignKey(e => e.accountID)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(e => e.SubAccount)
+                    .WithMany()
+                    .HasForeignKey(e => e.subAccountID)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                entity.ToTable(tb => tb.UseSqlOutputClause(false));
+            });
+            modelBuilder.Entity<supplierPaymentModel>(entity =>
+            {
+                entity.HasIndex(e => new
+                {
+                    e.companyID,
+                    e.paymentReference
+                })
+                .IsUnique();
+
+                entity.HasOne(e => e.Company)
+                    .WithMany()
+                    .HasForeignKey(e => e.companyID)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(e => e.Supplier)
+                    .WithMany(e => e.Payments)
+                    .HasForeignKey(e => e.supplierID)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(e => e.AccountingPeriod)
+                    .WithMany()
+                    .HasForeignKey(e => e.accountingPeriodID)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(e => e.BankAccount)
+                    .WithMany()
+                    .HasForeignKey(e => e.bankAccountID)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(e => e.CashAccount)
+                    .WithMany()
+                    .HasForeignKey(e => e.cashAccountID)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(e => e.JournalEntry)
+                    .WithMany()
+                    .HasForeignKey(e => e.journalEntryID)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                entity.ToTable(tb => tb.UseSqlOutputClause(false));
+            });
+            modelBuilder.Entity<supplierPaymentAllocationModel>(entity =>
+            {
+                entity.HasOne(e => e.SupplierPayment)
+                    .WithMany(e => e.Allocations)
+                    .HasForeignKey(e => e.supplierPaymentID)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                entity.HasOne(e => e.SupplierInvoice)
+                    .WithMany(e => e.PaymentAllocations)
+                    .HasForeignKey(e => e.supplierInvoiceID)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                entity.ToTable(tb => tb.UseSqlOutputClause(false));
+            });
+            #endregion
             ///<summary>
             ///TRAINING MODULE
             /// </summary>
             /// 
+            #region Training Related
             //TRAINING
             modelBuilder.Entity<trainingModel>(entity =>
             {
@@ -1283,10 +1640,12 @@ namespace PIS2.Data
                 entity.ToTable("TrainingCostAllocations",tb => tb.UseSqlOutputClause(false));
                 
             });
-
+#endregion
             /// <summary>
             /// VIEWS
             ///</summary>
+            ///
+            #region 
             // Leave Report View
             modelBuilder.Entity<LeaveReportView>()
             .HasNoKey()
@@ -1470,10 +1829,13 @@ namespace PIS2.Data
             modelBuilder.Entity<UserView>()
            .HasNoKey()
            .ToView("vw_UserView");
-
+#endregion
+            
             ///<summary>
             ///Language Related
             /// </summary>
+            /// 
+            #region Language Related
             modelBuilder.Entity<AppTranslationModel>()
              .HasOne(x => x.Language)
              .WithMany(x => x.AppTranslations)
@@ -1483,14 +1845,7 @@ namespace PIS2.Data
             modelBuilder.Entity<EntityTranslationModel>(e => 
             {
                 e.HasOne(x => x.Language).WithMany(x => x.EntityTranslations).HasForeignKey(x => x.languageID).OnDelete(DeleteBehavior.Restrict);
-                e.HasIndex(x => new
-                {
-                    x.entityType,
-                    x.entityID,
-                    x.propertyName,
-                    x.languageID
-                })
-                .IsUnique();
+                e.HasIndex(x => new {x.entityType, x.entityID, x.propertyName, x.languageID}).IsUnique();
             });
                 
 
@@ -1505,9 +1860,10 @@ namespace PIS2.Data
             modelBuilder.Entity<LanguageModel>()
             .HasIndex(x => x.languageCode)
             .IsUnique();
+            #endregion
 
         }
-        
+        #region Datasets for Basic Models
         public DbSet<accessModel> Accesses { get; set; }
         public DbSet<accessHistoryModel> AccessHistories { get; set; }
         public DbSet<accountModel> Accounts { get; set; }
@@ -1593,10 +1949,12 @@ namespace PIS2.Data
         public DbSet<workSiteHistoryModel> WorkSitesHistories { get; set; }
         public DbSet<loyaltyModel> Loyalties { get; set; } = default!;
         public DbSet<loyaltyHistoryModel> LoyaltyHistories { get; set; } = default!;
-
+        #endregion
         ///<summary>
-        /// Payroll related
+        /// Finance & Payroll related
         ///</summary>
+        ///
+        #region Finance and Payroll
         public DbSet<payrollModel> Payrolls { get; set; }
         public DbSet<payrollHistory> PayrollHistories { get; set; }
         public DbSet<payrollPay> PayrollPays { get; set; }
@@ -1611,13 +1969,33 @@ namespace PIS2.Data
         public DbSet<taxRateModel> TaxRates { get; set; }
         public DbSet<JournalEntry> JournalEntries { get; set; }
         public DbSet<JournalEntryLine> JournalEntryLines { get; set; }
+        public DbSet<companyAccountModel> CompanyAccounts { get; set; }
+        public DbSet<bankAccountModel> BankAccounts { get; set; }
         public DbSet<BudgetPlan> BudgetPlans { get; set; }
         public DbSet<BudgetLine> BudgetLines { get; set; }
-
+        public DbSet<cashAccountModel> CashAccounts { get; set; }
+        public DbSet<bankTransactionModel> BankTransactions { get; set; }
+        public DbSet<cashTransactionModel> CashTransactions { get; set; }
+        public DbSet<cashBankTransferModel> CashBankTransfers { get; set; }
+        public DbSet<bankReconciliationModel> BankReconciliations { get; set; }
+        public DbSet<bankReconciliationLineModel> BankReconciliationLines { get; set; }
+        #endregion
+        /// <summary>
+        /// Supply Related DataSets
+        /// </summary>
+        /// 
+        #region Supply
+        public DbSet<supplierModel> Suppliers { get; set; }
+        public DbSet<supplierInvoiceModel> SupplierInvoices { get; set; }
+        public DbSet<supplierInvoiceLineModel> SupplierInvoiceLines { get; set; }
+        public DbSet<supplierPaymentModel> SupplierPayments { get; set; }
+        public DbSet<supplierPaymentAllocationModel> SupplierPaymentAllocations { get; set; }
+        #endregion
         /// <summary>
         /// ///Views
         /// </summary>
-
+        /// 
+        #region
         public DbSet<LeaveReportView> LeaveReportView { get; set; } = default!;
         public DbSet<CertificationSummaryView> CertificationSummaryView { get; set; } = default!;
         public DbSet<CompanySummary> CompanySummaryView { get; set; } = default!;
@@ -1648,24 +2026,26 @@ namespace PIS2.Data
         public DbSet<YearlyJobPlacementSalaryView> YearlyJobPlacementSalaryView { get; set; } = default!;
         public DbSet<EmployeeSalaryGrowthView> EmployeeSalaryGrowthView { get; set; } = default!;
         public DbSet<UserView> UserView { get; set; } = default!;
-
+        #endregion
         /// <summary>
         /// Training Module
         /// </summary>
+        /// 
+        #region
         public DbSet<trainingModel> Trainings { get; set; }
         public DbSet<trainingSessionModel> TrainingSessions { get; set; }
         public DbSet<trainingAttendanceModel> TrainingAttendances { get; set; }
         public DbSet<trainingCostAllocationModel> TrainingCostAllocations { get; set; }
-
+        #endregion
         /// <summary>
         /// Language Related 
         /// </summary>
         /// 
+        #region
         public DbSet<LanguageModel> Languages { get; set; }
-
         public DbSet<AppTranslationModel> AppTranslations { get; set; }
-
         public DbSet<EntityTranslationModel> EntityTranslations { get; set; }
+        #endregion
     }
     
 }
