@@ -71,7 +71,8 @@ namespace PIS2.Models.Supply
         public virtual accountModel? PayableAccount { get; set; }
 
         // Supplier-specific subaccount
-        public int? payableSubAccountID { get; set; }
+        [Required]
+        public int payableSubAccountID { get; set; }
 
         public virtual subAccountModel? PayableSubAccount { get; set; }
 
